@@ -32,3 +32,5 @@ pnpm-debug.log*
 # Testing
 coverage/
 .nyc_output/
+
+/generated/prisma

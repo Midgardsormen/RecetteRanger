@@ -1,0 +1,71 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { RecipeService } from './recipe.service';
+import { CreateRecipeDto } from './dto/create-recipe.dto';
+import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { RecipeDto } from './dto/recipe.dto';
+
+@ApiTags('recipes')
+@Controller('recipes')
+export class RecipeController {
+  constructor(private readonly recipeService: RecipeService) {}
+
+  @Post()
+  @ApiOperation({ summary: 'Créer une nouvelle recette' })
+  @ApiResponse({
+    status: 201,
+    description: 'Recette créée avec succès',
+    type: RecipeDto
+  })
+  @ApiResponse({ status: 400, description: 'Données invalides' })
+  create(@Body() createRecipeDto: CreateRecipeDto) {
+    return this.recipeService.create(createRecipeDto);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Récupérer toutes les recettes' })
+  @ApiQuery({ name: 'ownerId', required: false, description: 'Filtrer par propriétaire' })
+  @ApiResponse({
+    status: 200,
+    description: 'Liste des recettes',
+    type: [RecipeDto]
+  })
+  findAll(@Query('ownerId') ownerId?: string) {
+    return this.recipeService.findAll(ownerId);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Récupérer une recette par ID' })
+  @ApiParam({ name: 'id', description: 'ID de la recette' })
+  @ApiResponse({
+    status: 200,
+    description: 'Recette trouvée',
+    type: RecipeDto
+  })
+  @ApiResponse({ status: 404, description: 'Recette non trouvée' })
+  findOne(@Param('id') id: string) {
+    return this.recipeService.findOne(id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Mettre à jour une recette' })
+  @ApiParam({ name: 'id', description: 'ID de la recette' })
+  @ApiResponse({
+    status: 200,
+    description: 'Recette mise à jour',
+    type: RecipeDto
+  })
+  @ApiResponse({ status: 404, description: 'Recette non trouvée' })
+  update(@Param('id') id: string, @Body() updateRecipeDto: UpdateRecipeDto) {
+    return this.recipeService.update(id, updateRecipeDto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Supprimer une recette' })
+  @ApiParam({ name: 'id', description: 'ID de la recette' })
+  @ApiResponse({ status: 200, description: 'Recette supprimée' })
+  @ApiResponse({ status: 404, description: 'Recette non trouvée' })
+  remove(@Param('id') id: string) {
+    return this.recipeService.remove(id);
+  }
+}
