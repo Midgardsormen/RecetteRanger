@@ -1,7 +1,16 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Navigation from '../features/navigation/Navigation.svelte';
+  import { authStore } from '../stores/auth.store';
+  import { apiService } from '../services/api.service';
 
   let { title = 'RecetteRanger', currentPage = '/' }: { title?: string; currentPage?: string } = $props();
+
+  // Vérifier l'authentification au démarrage
+  onMount(async () => {
+    const user = await apiService.checkAuth();
+    authStore.initialize(user);
+  });
 </script>
 
 <svelte:head>

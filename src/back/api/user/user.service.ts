@@ -71,9 +71,18 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     await this.findOne(id); // Vérifie que l'utilisateur existe
 
+    // Préparer les données de mise à jour
+    const { password, ...otherData } = updateUserDto;
+    const updateData: any = { ...otherData };
+
+    // Si un nouveau mot de passe est fourni, le hasher
+    if (password) {
+      updateData.passwordHash = await bcrypt.hash(password, 10);
+    }
+
     return this.prisma.user.update({
       where: { id },
-      data: updateUserDto,
+      data: updateData,
       select: {
         id: true,
         pseudo: true,

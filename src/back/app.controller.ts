@@ -37,4 +37,16 @@ export class AppController {
     });
     res.send(html);
   }
+
+  @Get('login')
+  async getLogin(@Res() res: Response) {
+    const html = await this.svelteRenderService.render('Login', {});
+    res.send(html);
+  }
+
+  @Get('register')
+  async getRegister(@Res() res: Response) {
+    const html = await this.svelteRenderService.render('Register', {});
+    res.send(html);
+  }
 }

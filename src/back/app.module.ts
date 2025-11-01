@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { SvelteRenderService } from './services/svelte-render.service';
 import { NavigationModule } from './modules/navigation/navigation.module';
 import { PrismaModule } from './shared/prisma/prisma.module';
+import { AuthModule } from './api/auth/auth.module';
 import { UserModule } from './api/user/user.module';
 import { RecipeModule } from './api/recipe/recipe.module';
 import { IngredientModule } from './api/ingredient/ingredient.module';
@@ -12,6 +13,7 @@ import { ShoppingListModule } from './api/shopping-list/shopping-list.module';
 @Module({
   imports: [
     PrismaModule,
+    AuthModule,
     NavigationModule,
     UserModule,
     RecipeModule,

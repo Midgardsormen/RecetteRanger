@@ -29,10 +29,12 @@ export default defineConfig({
           'page-recettes': ['./src/view/pages/Recettes.svelte'],
           'page-plannings': ['./src/view/pages/Plannings.svelte'],
           'page-shopping-lists': ['./src/view/pages/ShoppingLists.svelte'],
+          'page-login': ['./src/view/pages/Login.svelte'],
+          'page-register': ['./src/view/pages/Register.svelte'],
           // Shared components
           'components': [
-            './src/view/shared/components/Layout.svelte',
-            './src/view/shared/components/Navigation.svelte'
+            './src/view/layouts/Layout.svelte',
+            './src/view/features/navigation/Navigation.svelte'
           ]
         },
         chunkFileNames: 'assets/[name]-[hash].js',

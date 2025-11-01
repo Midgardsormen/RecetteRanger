@@ -12,7 +12,8 @@
       "Bash(npm run build:server:*)",
       "Bash(tree:*)",
       "Bash(npm install:*)",
-      "Bash(npx prisma generate:*)"
+      "Bash(npx prisma generate:*)",
+      "Bash(npm run build:client:*)"
     ],
     "deny": [],
     "ask": []

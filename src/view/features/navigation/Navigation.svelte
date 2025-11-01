@@ -1,4 +1,6 @@
 <script lang="ts">
+  import UserMenu from '../../components/UserMenu.svelte';
+
   let { currentPage = '' }: { currentPage?: string } = $props();
 
   const navItems = [
@@ -29,6 +31,9 @@
         </li>
       {/each}
     </ul>
+    <div class="navigation__user">
+      <UserMenu />
+    </div>
   </div>
 </nav>
 
@@ -65,9 +70,21 @@
       gap: $spacing-base * 2;
 
       @media (max-width: $breakpoint-mobile) {
-        flex-direction: column;
+        flex-wrap: wrap;
         gap: $spacing-base;
         padding: $spacing-base;
+      }
+    }
+
+    // Element: user
+    &__user {
+      margin-left: auto;
+
+      @media (max-width: $breakpoint-mobile) {
+        margin-left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
       }
     }
 
