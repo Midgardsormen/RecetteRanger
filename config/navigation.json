@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "href": "/",
+      "label": "Home",
+      "icon": "🏠",
+      "order": 1,
+      "visible": true
+    },
+    {
+      "href": "/recettes",
+      "label": "Recipes",
+      "icon": "📖",
+      "order": 2,
+      "visible": true
+    },
+    {
+      "href": "/plannings",
+      "label": "Meal Plans",
+      "icon": "📅",
+      "order": 3,
+      "visible": true
+    },
+    {
+      "href": "/shopping-lists",
+      "label": "Shopping Lists",
+      "icon": "🛒",
+      "order": 4,
+      "visible": true
+    }
+  ]
+}

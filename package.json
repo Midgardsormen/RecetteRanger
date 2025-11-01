@@ -1,0 +1,46 @@
+{
+  "name": "recette-ranger",
+  "version": "1.0.0",
+  "description": "Application de gestion de recettes avec NestJS et Svelte SSR",
+  "scripts": {
+    "build": "npm run build:server && npm run build:client",
+    "build:server": "nest build",
+    "build:client": "vite build --outDir dist/client --ssrManifest",
+    "build:ssr": "vite build --ssr src/view/entry-server.ts --outDir dist/server",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:prod": "node dist/main",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "nest start --watch",
+    "dev:client": "vite",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.3.0",
+    "@nestjs/core": "^10.3.0",
+    "@nestjs/platform-express": "^10.3.0",
+    "reflect-metadata": "^0.2.1",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.3.0",
+    "@nestjs/schematics": "^10.1.0",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "sass": "^1.93.3",
+    "svelte": "^5.0.0",
+    "svelte-preprocess": "^6.0.3",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11"
+  }
+}
