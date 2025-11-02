@@ -1,48 +1,48 @@
 <script lang="ts">
-  import Layout from '../layouts/Layout.svelte';
+  import Layout from '../../layouts/Layout.svelte';
 
-  let { recettes = [] }: { recettes?: any[] } = $props();
+  let { recettes = [], user = null }: { recettes?: any[], user?: any } = $props();
 </script>
 
-<Layout title="Mes recettes" currentPage="/recettes">
-  <div class="recettes">
-    <header class="recettes__header">
-      <h1 class="recettes__title">📖 Mes recettes</h1>
-      <button class="recettes__btn">+ Ajouter une recette</button>
-    </header>
+<Layout title="Mes recettes" currentPage="/recettes" {user}>
+<div id="recettes" class="recettes">
+  <header class="recettes__header">
+    <h1 class="recettes__title">📖 Mes recettes</h1>
+    <button class="recettes__btn">+ Ajouter une recette</button>
+  </header>
 
-    <div class="recettes__search">
-      <input
-        type="text"
-        placeholder="Rechercher une recette..."
-        class="recettes__search-input"
-      />
-      <div class="recettes__filters">
-        <button class="recettes__filter-btn">Toutes</button>
-        <button class="recettes__filter-btn">Entrées</button>
-        <button class="recettes__filter-btn">Plats</button>
-        <button class="recettes__filter-btn">Desserts</button>
-      </div>
+  <div class="recettes__search">
+    <input
+      type="text"
+      placeholder="Rechercher une recette..."
+      class="recettes__search-input"
+    />
+    <div class="recettes__filters">
+      <button class="recettes__filter-btn">Toutes</button>
+      <button class="recettes__filter-btn">Entrées</button>
+      <button class="recettes__filter-btn">Plats</button>
+      <button class="recettes__filter-btn">Desserts</button>
     </div>
-
-    {#if recettes.length === 0}
-      <div class="recettes__empty">
-        <div class="recettes__empty-icon">📖</div>
-        <h2 class="recettes__empty-title">Aucune recette pour le moment</h2>
-        <p class="recettes__empty-text">Commencez par ajouter votre première recette!</p>
-        <button class="recettes__btn">Ajouter une recette</button>
-      </div>
-    {:else}
-      <div class="recettes__grid">
-        {#each recettes as recette}
-          <div class="recettes__card">
-            <h3>{recette.nom}</h3>
-            <p>{recette.description}</p>
-          </div>
-        {/each}
-      </div>
-    {/if}
   </div>
+
+  {#if recettes.length === 0}
+    <div class="recettes__empty">
+      <div class="recettes__empty-icon">📖</div>
+      <h2 class="recettes__empty-title">Aucune recette pour le moment</h2>
+      <p class="recettes__empty-text">Commencez par ajouter votre première recette!</p>
+      <button class="recettes__btn">Ajouter une recette</button>
+    </div>
+  {:else}
+    <div class="recettes__grid">
+      {#each recettes as recette}
+        <div class="recettes__card">
+          <h3>{recette.nom}</h3>
+          <p>{recette.description}</p>
+        </div>
+      {/each}
+    </div>
+  {/if}
+</div>
 </Layout>
 
 <style lang="scss">

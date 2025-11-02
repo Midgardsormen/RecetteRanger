@@ -11,7 +11,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @ApiTags('ingredients')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('ingredients')
+@Controller('api/ingredients')
 export class IngredientController {
   constructor(private readonly ingredientService: IngredientService) {}
 

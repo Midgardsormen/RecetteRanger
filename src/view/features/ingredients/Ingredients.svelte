@@ -1,19 +1,22 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Layout from '../layouts/Layout.svelte';
-  import IngredientDrawer from '../components/ingredients/IngredientDrawer.svelte';
-  import { apiService } from '../services/api.service';
-  import type { Ingredient, SearchIngredientsDto } from '../types/ingredient.types';
-  import { StoreAisle, Unit, StoreAisleLabels, UnitLabels } from '../types/ingredient.types';
+  import Layout from '../../layouts/Layout.svelte';
+  import IngredientDrawer from '../../components/ingredients/IngredientDrawer.svelte';
+  import { apiService } from '../../services/api.service';
+  import type { Ingredient, SearchIngredientsDto } from '../../types/ingredient.types';
+  import { StoreAisle, Unit, StoreAisleLabels, UnitLabels } from '../../types/ingredient.types';
 
-  let ingredients: Ingredient[] = $state([]);
+  // Recevoir les données du SSR
+  let { ingredients: initialIngredients = [], user = null }: { ingredients?: Ingredient[], user?: any } = $props();
+
+  let ingredients: Ingredient[] = $state(initialIngredients);
   let loading = $state(false);
   let error = $state('');
 
   // Pagination
   let currentPage = $state(0);
   let totalPages = $state(0);
-  let totalIngredients = $state(0);
+  let totalIngredients = $state(initialIngredients.length);
 
   // Filtres et recherche
   let searchQuery = $state('');
@@ -29,7 +32,10 @@
   let searchTimeout: ReturnType<typeof setTimeout>;
 
   onMount(() => {
-    loadIngredients();
+    // Si pas de données SSR, charger les ingrédients
+    if (ingredients.length === 0) {
+      loadIngredients();
+    }
   });
 
   async function loadIngredients() {
@@ -118,188 +124,177 @@
   }
 </script>
 
-<Layout title="Ingrédients" currentPage="/ingredients">
-  <div class="ingredients">
-    <header class="ingredients__header">
-      <h1 class="ingredients__title">🥗 Mes ingrédients</h1>
-      <button class="ingredients__btn" onclick={() => openDrawer()}>
-        + Ajouter un ingrédient
-      </button>
-    </header>
+<Layout title="Ingrédients" currentPage="/ingredients" {user}>
+<div id="ingredients" class="ingredients">
+  <header class="ingredients__header">
+    <h1 class="ingredients__title">🥗 Mes ingrédients</h1>
+    <button class="ingredients__btn" onclick={() => openDrawer()}>
+      + Ajouter un ingrédient
+    </button>
+  </header>
 
-    <!-- Recherche et filtres -->
-    <div class="ingredients__search">
-      <input
-        type="text"
-        placeholder="Rechercher un ingrédient..."
-        class="ingredients__search-input"
-        bind:value={searchQuery}
-        oninput={handleSearchInput}
-      />
+  <!-- Recherche et filtres -->
+  <div class="ingredients__search">
+    <input
+      type="text"
+      placeholder="Rechercher un ingrédient..."
+      class="ingredients__search-input"
+      bind:value={searchQuery}
+      oninput={handleSearchInput}
+    />
 
-      <div class="ingredients__filters">
-        <select
-          class="ingredients__select"
-          bind:value={selectedAisle}
-          onchange={handleFilterChange}
-        >
-          <option value="">Toutes les catégories</option>
-          {#each Object.entries(StoreAisleLabels) as [key, label]}
-            <option value={key}>{label}</option>
-          {/each}
-        </select>
-
-        <select
-          class="ingredients__select"
-          bind:value={selectedUnit}
-          onchange={handleFilterChange}
-        >
-          <option value="">Toutes les unités</option>
-          {#each Object.entries(UnitLabels) as [key, label]}
-            <option value={key}>{label}</option>
-          {/each}
-        </select>
-
-        <select
-          class="ingredients__select"
-          bind:value={sortBy}
-          onchange={handleFilterChange}
-        >
-          <option value="alpha">Alphabétique</option>
-          <option value="date">Date d'ajout</option>
-          <option value="popularity">Popularité</option>
-        </select>
-      </div>
-    </div>
-
-    {#if error}
-      <div class="ingredients__error">{error}</div>
-    {/if}
-
-    {#if loading}
-      <div class="ingredients__loading">Chargement...</div>
-    {:else if ingredients.length === 0}
-      <div class="ingredients__empty">
-        <div class="ingredients__empty-icon">🥗</div>
-        <h2 class="ingredients__empty-title">Aucun ingrédient trouvé</h2>
-        <p class="ingredients__empty-text">
-          {searchQuery || selectedAisle || selectedUnit
-            ? 'Essayez de modifier vos filtres de recherche'
-            : 'Commencez par ajouter votre premier ingrédient!'}
-        </p>
-        {#if !searchQuery && !selectedAisle && !selectedUnit}
-          <button class="ingredients__btn" onclick={() => openDrawer()}>
-            Ajouter un ingrédient
-          </button>
-        {/if}
-      </div>
-    {:else}
-      <div class="ingredients__grid">
-        {#each ingredients as ingredient (ingredient.id)}
-          <div class="ingredients__card">
-            <div class="ingredients__card-header">
-              {#if ingredient.imageUrl}
-                <img
-                  src={ingredient.imageUrl}
-                  alt={ingredient.label}
-                  class="ingredients__card-img"
-                />
-              {:else}
-                <div class="ingredients__card-placeholder">🍽️</div>
-              {/if}
-            </div>
-
-            <div class="ingredients__card-body">
-              <h3 class="ingredients__card-title">{ingredient.label}</h3>
-              <p class="ingredients__card-aisle">
-                {StoreAisleLabels[ingredient.aisle]}
-              </p>
-
-              <div class="ingredients__card-units">
-                {#each ingredient.units.slice(0, 3) as unit}
-                  <span class="ingredients__unit-badge">{UnitLabels[unit]}</span>
-                {/each}
-                {#if ingredient.units.length > 3}
-                  <span class="ingredients__unit-badge">+{ingredient.units.length - 3}</span>
-                {/if}
-              </div>
-
-              {#if ingredient.seasonMonths.length > 0}
-                <p class="ingredients__card-season">
-                  🗓️ {ingredient.seasonMonths.length} mois de saison
-                </p>
-              {/if}
-
-              <p class="ingredients__card-usage">
-                📊 Utilisé {ingredient.usageCount} fois
-              </p>
-            </div>
-
-            <div class="ingredients__card-actions">
-              <button
-                class="ingredients__card-btn ingredients__card-btn--edit"
-                onclick={() => openDrawer(ingredient)}
-              >
-                ✏️ Modifier
-              </button>
-              <button
-                class="ingredients__card-btn ingredients__card-btn--delete"
-                onclick={() => handleDelete(ingredient.id)}
-              >
-                🗑️ Supprimer
-              </button>
-            </div>
-          </div>
+    <div class="ingredients__filters">
+      <select
+        class="ingredients__select"
+        bind:value={selectedAisle}
+        onchange={handleFilterChange}
+      >
+        <option value="">Toutes les catégories</option>
+        {#each Object.entries(StoreAisleLabels) as [key, label]}
+          <option value={key}>{label}</option>
         {/each}
-      </div>
+      </select>
 
-      <!-- Pagination -->
-      {#if totalPages > 1}
-        <div class="ingredients__pagination">
-          <button
-            class="ingredients__pagination-btn"
-            onclick={previousPage}
-            disabled={currentPage === 0}
-          >
-            ← Précédent
-          </button>
-
-          <div class="ingredients__pagination-pages">
-            {#each Array(totalPages) as _, i}
-              <button
-                class="ingredients__pagination-page"
-                class:ingredients__pagination-page--active={i === currentPage}
-                onclick={() => goToPage(i)}
-              >
-                {i + 1}
-              </button>
-            {/each}
-          </div>
-
-          <button
-            class="ingredients__pagination-btn"
-            onclick={nextPage}
-            disabled={currentPage >= totalPages - 1}
-          >
-            Suivant →
-          </button>
-        </div>
-
-        <p class="ingredients__pagination-info">
-          Page {currentPage + 1} sur {totalPages} • {totalIngredients} ingrédient{totalIngredients > 1 ? 's' : ''}
-        </p>
-      {/if}
-    {/if}
+      <select
+        class="ingredients__select"
+        bind:value={sortBy}
+        onchange={handleFilterChange}
+      >
+        <option value="alpha">Alphabétique</option>
+        <option value="date">Date d'ajout</option>
+        <option value="popularity">Popularité</option>
+      </select>
+    </div>
   </div>
 
-  <!-- Drawer -->
-  {#if isDrawerOpen}
-    <IngredientDrawer
-      ingredient={editingIngredient}
-      onSave={handleIngredientSaved}
-      onClose={closeDrawer}
-    />
+  {#if error}
+    <div class="ingredients__error">{error}</div>
   {/if}
+
+  {#if loading}
+    <div class="ingredients__loading">Chargement...</div>
+  {:else if ingredients.length === 0}
+    <div class="ingredients__empty">
+      <div class="ingredients__empty-icon">🥗</div>
+      <h2 class="ingredients__empty-title">Aucun ingrédient trouvé</h2>
+      <p class="ingredients__empty-text">
+        {searchQuery || selectedAisle || selectedUnit
+          ? 'Essayez de modifier vos filtres de recherche'
+          : 'Commencez par ajouter votre premier ingrédient!'}
+      </p>
+      {#if !searchQuery && !selectedAisle && !selectedUnit}
+        <button class="ingredients__btn" onclick={() => openDrawer()}>
+          Ajouter un ingrédient
+        </button>
+      {/if}
+    </div>
+  {:else}
+    <div class="ingredients__grid">
+      {#each ingredients as ingredient (ingredient.id)}
+        <div class="ingredients__card">
+          <div class="ingredients__card-header">
+            {#if ingredient.imageUrl}
+              <img
+                src={ingredient.imageUrl}
+                alt={ingredient.label}
+                class="ingredients__card-img"
+              />
+            {:else}
+              <div class="ingredients__card-placeholder">🍽️</div>
+            {/if}
+          </div>
+
+          <div class="ingredients__card-body">
+            <h3 class="ingredients__card-title">{ingredient.label}</h3>
+            <p class="ingredients__card-aisle">
+              {StoreAisleLabels[ingredient.aisle]}
+            </p>
+
+            <div class="ingredients__card-units">
+              {#each ingredient.units.slice(0, 3) as unit}
+                <span class="ingredients__unit-badge">{UnitLabels[unit]}</span>
+              {/each}
+              {#if ingredient.units.length > 3}
+                <span class="ingredients__unit-badge">+{ingredient.units.length - 3}</span>
+              {/if}
+            </div>
+
+            {#if ingredient.seasonMonths.length > 0}
+              <p class="ingredients__card-season">
+                🗓️ {ingredient.seasonMonths.length} mois de saison
+              </p>
+            {/if}
+
+            <p class="ingredients__card-usage">
+              📊 Utilisé {ingredient.usageCount} fois
+            </p>
+          </div>
+
+          <div class="ingredients__card-actions">
+            <button
+              class="ingredients__card-btn ingredients__card-btn--edit"
+              onclick={() => openDrawer(ingredient)}
+            >
+              ✏️ Modifier
+            </button>
+            <button
+              class="ingredients__card-btn ingredients__card-btn--delete"
+              onclick={() => handleDelete(ingredient.id)}
+            >
+              🗑️ Supprimer
+            </button>
+          </div>
+        </div>
+      {/each}
+    </div>
+
+    <!-- Pagination -->
+    {#if totalPages > 1}
+      <div class="ingredients__pagination">
+        <button
+          class="ingredients__pagination-btn"
+          onclick={previousPage}
+          disabled={currentPage === 0}
+        >
+          ← Précédent
+        </button>
+
+        <div class="ingredients__pagination-pages">
+          {#each Array(totalPages) as _, i}
+            <button
+              class="ingredients__pagination-page"
+              class:ingredients__pagination-page--active={i === currentPage}
+              onclick={() => goToPage(i)}
+            >
+              {i + 1}
+            </button>
+          {/each}
+        </div>
+
+        <button
+          class="ingredients__pagination-btn"
+          onclick={nextPage}
+          disabled={currentPage >= totalPages - 1}
+        >
+          Suivant →
+        </button>
+      </div>
+
+      <p class="ingredients__pagination-info">
+        Page {currentPage + 1} sur {totalPages} • {totalIngredients} ingrédient{totalIngredients > 1 ? 's' : ''}
+      </p>
+    {/if}
+  {/if}
+</div>
+
+<!-- Drawer -->
+{#if isDrawerOpen}
+  <IngredientDrawer
+    ingredient={editingIngredient}
+    onSave={handleIngredientSaved}
+    onClose={closeDrawer}
+  />
+{/if}
 </Layout>
 
 <style lang="scss">

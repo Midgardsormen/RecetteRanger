@@ -70,7 +70,7 @@
           <img src={user.avatarUrl} alt={user.pseudo} />
         {:else}
           <span class="user-menu__avatar-fallback">
-            {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+            {user.firstName?.[0] || ''}{user.lastName?.[0] || ''}
           </span>
         {/if}
       </div>

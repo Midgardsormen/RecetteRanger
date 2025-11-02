@@ -1,34 +1,34 @@
 <script lang="ts">
-  import Layout from '../layouts/Layout.svelte';
+  import Layout from '../../layouts/Layout.svelte';
 
-  let { plannings = [] }: { plannings?: any[] } = $props();
+  let { plannings = [], user = null }: { plannings?: any[], user?: any } = $props();
 </script>
 
-<Layout title="Mes plannings" currentPage="/plannings">
-  <div class="plannings">
-    <header class="plannings__header">
-      <h1 class="plannings__title">📅 Mes plannings</h1>
-      <button class="plannings__btn">+ Créer un planning</button>
-    </header>
+<Layout title="Mes plannings" currentPage="/plannings" {user}>
+<div id="plannings" class="plannings">
+  <header class="plannings__header">
+    <h1 class="plannings__title">📅 Mes plannings</h1>
+    <button class="plannings__btn">+ Créer un planning</button>
+  </header>
 
-    {#if plannings.length === 0}
-      <div class="plannings__empty">
-        <div class="plannings__empty-icon">📅</div>
-        <h2 class="plannings__empty-title">Aucun planning pour le moment</h2>
-        <p class="plannings__empty-text">Planifiez vos repas de la semaine pour mieux vous organiser!</p>
-        <button class="plannings__btn">Créer mon premier planning</button>
-      </div>
-    {:else}
-      <div class="plannings__grid">
-        {#each plannings as planning}
-          <div class="plannings__card">
-            <h3>{planning.nom}</h3>
-            <p>{planning.description}</p>
-          </div>
-        {/each}
-      </div>
-    {/if}
-  </div>
+  {#if plannings.length === 0}
+    <div class="plannings__empty">
+      <div class="plannings__empty-icon">📅</div>
+      <h2 class="plannings__empty-title">Aucun planning pour le moment</h2>
+      <p class="plannings__empty-text">Planifiez vos repas de la semaine pour mieux vous organiser!</p>
+      <button class="plannings__btn">Créer mon premier planning</button>
+    </div>
+  {:else}
+    <div class="plannings__grid">
+      {#each plannings as planning}
+        <div class="plannings__card">
+          <h3>{planning.nom}</h3>
+          <p>{planning.description}</p>
+        </div>
+      {/each}
+    </div>
+  {/if}
+</div>
 </Layout>
 
 <style lang="scss">

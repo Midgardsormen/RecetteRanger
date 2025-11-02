@@ -1,30 +1,15 @@
 <script lang="ts">
-  import { authStore } from '../stores/auth.store';
-  import { apiService } from '../services/api.service';
+  import { authStore } from '../../stores/auth.store';
+  import { apiService } from '../../services/api.service';
 
-  let pseudo = '';
-  let firstName = '';
-  let lastName = '';
-  let email = '';
+  let identifier = '';
   let password = '';
-  let confirmPassword = '';
   let error = '';
   let isLoading = false;
 
-  async function handleRegister() {
-    // Validation
-    if (!pseudo || !firstName || !lastName || !email || !password || !confirmPassword) {
+  async function handleLogin() {
+    if (!identifier || !password) {
       error = 'Veuillez remplir tous les champs';
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      error = 'Les mots de passe ne correspondent pas';
-      return;
-    }
-
-    if (password.length < 8) {
-      error = 'Le mot de passe doit contenir au moins 8 caractères';
       return;
     }
 
@@ -32,14 +17,7 @@
     error = '';
 
     try {
-      const response = await apiService.register({
-        pseudo,
-        firstName,
-        lastName,
-        email,
-        password,
-      });
-
+      const response = await apiService.login({ identifier, password });
       // Le token est maintenant dans un cookie HTTP-only, on stocke juste l'utilisateur
       authStore.login(response.user);
 
@@ -52,15 +30,15 @@
     }
   }
 
-  function goToLogin() {
-    window.location.href = '/login';
+  function goToRegister() {
+    window.location.href = '/register';
   }
 </script>
 
-<div class="register-container">
-  <div class="register-card">
-    <h1>Créer un compte</h1>
-    <p class="subtitle">Rejoignez RecetteRanger et commencez à organiser vos recettes</p>
+<div id="login" class="login-container">
+  <div class="login-card">
+    <h1>Connexion</h1>
+    <p class="subtitle">Connectez-vous à votre compte RecetteRanger</p>
 
     {#if error}
       <div class="error-message">
@@ -68,54 +46,16 @@
       </div>
     {/if}
 
-    <form on:submit|preventDefault={handleRegister}>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="firstName">Prénom</label>
-          <input
-            id="firstName"
-            type="text"
-            bind:value={firstName}
-            placeholder="John"
-            disabled={isLoading}
-            autocomplete="given-name"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="lastName">Nom</label>
-          <input
-            id="lastName"
-            type="text"
-            bind:value={lastName}
-            placeholder="Doe"
-            disabled={isLoading}
-            autocomplete="family-name"
-          />
-        </div>
-      </div>
-
+    <form on:submit|preventDefault={handleLogin}>
       <div class="form-group">
-        <label for="pseudo">Pseudo</label>
+        <label for="identifier">Email ou Pseudo</label>
         <input
-          id="pseudo"
+          id="identifier"
           type="text"
-          bind:value={pseudo}
-          placeholder="john_doe"
-          disabled={isLoading}
-          autocomplete="username"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          bind:value={email}
+          bind:value={identifier}
           placeholder="john.doe@example.com"
           disabled={isLoading}
-          autocomplete="email"
+          autocomplete="username"
         />
       </div>
 
@@ -127,39 +67,26 @@
           bind:value={password}
           placeholder="••••••••"
           disabled={isLoading}
-          autocomplete="new-password"
-        />
-        <small>Minimum 8 caractères</small>
-      </div>
-
-      <div class="form-group">
-        <label for="confirmPassword">Confirmer le mot de passe</label>
-        <input
-          id="confirmPassword"
-          type="password"
-          bind:value={confirmPassword}
-          placeholder="••••••••"
-          disabled={isLoading}
-          autocomplete="new-password"
+          autocomplete="current-password"
         />
       </div>
 
       <button type="submit" class="btn-primary" disabled={isLoading}>
-        {isLoading ? 'Création...' : 'Créer mon compte'}
+        {isLoading ? 'Connexion...' : 'Se connecter'}
       </button>
     </form>
 
     <div class="footer">
-      <p>Vous avez déjà un compte ?</p>
-      <button type="button" class="btn-secondary" on:click={goToLogin}>
-        Se connecter
+      <p>Pas encore de compte ?</p>
+      <button type="button" class="btn-secondary" on:click={goToRegister}>
+        Créer un compte
       </button>
     </div>
   </div>
 </div>
 
 <style>
-  .register-container {
+  .login-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -168,12 +95,12 @@
     padding: 1rem;
   }
 
-  .register-card {
+  .login-card {
     background: white;
     border-radius: 12px;
     padding: 2.5rem;
     width: 100%;
-    max-width: 500px;
+    max-width: 420px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   }
 
@@ -205,12 +132,6 @@
     gap: 1.25rem;
   }
 
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
   .form-group {
     display: flex;
     flex-direction: column;
@@ -239,11 +160,6 @@
   input:disabled {
     background: #f5f5f5;
     cursor: not-allowed;
-  }
-
-  small {
-    color: #888;
-    font-size: 0.85rem;
   }
 
   .btn-primary,

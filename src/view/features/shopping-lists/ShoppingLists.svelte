@@ -1,34 +1,34 @@
 <script lang="ts">
-  import Layout from '../layouts/Layout.svelte';
+  import Layout from '../../layouts/Layout.svelte';
 
-  let { listes = [] }: { listes?: any[] } = $props();
+  let { listes = [], user = null }: { listes?: any[], user?: any } = $props();
 </script>
 
-<Layout title="Shopping Lists" currentPage="/shopping-lists">
-  <div class="shopping-lists">
-    <header class="shopping-lists__header">
-      <h1 class="shopping-lists__title">🛒 Shopping Lists</h1>
-      <button class="shopping-lists__btn">+ New List</button>
-    </header>
+<Layout title="Shopping Lists" currentPage="/shopping-lists" {user}>
+<div id="shopping-lists" class="shopping-lists">
+  <header class="shopping-lists__header">
+    <h1 class="shopping-lists__title">🛒 Shopping Lists</h1>
+    <button class="shopping-lists__btn">+ New List</button>
+  </header>
 
-    {#if listes.length === 0}
-      <div class="shopping-lists__empty">
-        <div class="shopping-lists__empty-icon">🛒</div>
-        <h2 class="shopping-lists__empty-title">No shopping lists</h2>
-        <p class="shopping-lists__empty-text">Create your shopping lists to never forget anything when shopping!</p>
-        <button class="shopping-lists__btn">Create my first list</button>
-      </div>
-    {:else}
-      <div class="shopping-lists__grid">
-        {#each listes as liste}
-          <div class="shopping-lists__card">
-            <h3>{liste.nom}</h3>
-            <p>{liste.description}</p>
-          </div>
-        {/each}
-      </div>
-    {/if}
-  </div>
+  {#if listes.length === 0}
+    <div class="shopping-lists__empty">
+      <div class="shopping-lists__empty-icon">🛒</div>
+      <h2 class="shopping-lists__empty-title">No shopping lists</h2>
+      <p class="shopping-lists__empty-text">Create your shopping lists to never forget anything when shopping!</p>
+      <button class="shopping-lists__btn">Create my first list</button>
+    </div>
+  {:else}
+    <div class="shopping-lists__grid">
+      {#each listes as liste}
+        <div class="shopping-lists__card">
+          <h3>{liste.nom}</h3>
+          <p>{liste.description}</p>
+        </div>
+      {/each}
+    </div>
+  {/if}
+</div>
 </Layout>
 
 <style lang="scss">

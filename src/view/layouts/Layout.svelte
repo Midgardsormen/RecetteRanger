@@ -4,12 +4,19 @@
   import { authStore } from '../stores/auth.store';
   import { apiService } from '../services/api.service';
 
-  let { title = 'RecetteRanger', currentPage = '/' }: { title?: string; currentPage?: string } = $props();
+  let { title = 'RecetteRanger', currentPage = '/', user = null }: { title?: string; currentPage?: string; user?: any } = $props();
 
-  // Vérifier l'authentification au démarrage
-  onMount(async () => {
-    const user = await apiService.checkAuth();
+  // Initialiser immédiatement l'authStore si on a les données SSR
+  if (user) {
     authStore.initialize(user);
+  }
+
+  // Vérifier l'authentification via API uniquement si pas de données SSR
+  onMount(async () => {
+    if (!user) {
+      const authenticatedUser = await apiService.checkAuth();
+      authStore.initialize(authenticatedUser);
+    }
   });
 </script>
 

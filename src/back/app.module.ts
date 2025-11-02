@@ -10,6 +10,13 @@ import { IngredientModule } from './api/ingredient/ingredient.module';
 import { MealPlanModule } from './api/meal-plan/meal-plan.module';
 import { ShoppingListModule } from './api/shopping-list/shopping-list.module';
 
+// Modules SSR pour les pages
+import { HomeModule } from './modules/home/home.module';
+import { IngredientsModule } from './modules/ingredients/ingredients.module';
+import { RecettesModule } from './modules/recettes/recettes.module';
+import { PlanningsModule } from './modules/plannings/plannings.module';
+import { ShoppingListsModule } from './modules/shopping-lists/shopping-lists.module';
+
 @Module({
   imports: [
     PrismaModule,
@@ -20,6 +27,12 @@ import { ShoppingListModule } from './api/shopping-list/shopping-list.module';
     IngredientModule,
     MealPlanModule,
     ShoppingListModule,
+    // Modules SSR
+    HomeModule,
+    IngredientsModule,
+    RecettesModule,
+    PlanningsModule,
+    ShoppingListsModule,
   ],
   controllers: [AppController],
   providers: [SvelteRenderService],

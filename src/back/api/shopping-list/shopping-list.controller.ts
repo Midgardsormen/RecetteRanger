@@ -9,7 +9,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @ApiTags('shopping-lists')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('shopping-lists')
+@Controller('api/shopping-lists')
 export class ShoppingListController {
   constructor(private readonly shoppingListService: ShoppingListService) {}
 

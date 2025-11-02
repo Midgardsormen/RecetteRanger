@@ -9,7 +9,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @ApiTags('recipes')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('recipes')
+@Controller('api/recipes')
 export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 

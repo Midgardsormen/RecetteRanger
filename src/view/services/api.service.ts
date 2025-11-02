@@ -127,46 +127,46 @@ class ApiService {
   // ===== Ingredients API =====
 
   async searchIngredients(searchParams: any) {
-    return this.authenticatedFetch('/ingredients/search', {
+    return this.authenticatedFetch('/api/ingredients/search', {
       method: 'POST',
       body: JSON.stringify(searchParams),
     });
   }
 
   async checkDuplicates(label: string) {
-    return this.authenticatedFetch('/ingredients/check-duplicates', {
+    return this.authenticatedFetch('/api/ingredients/check-duplicates', {
       method: 'POST',
       body: JSON.stringify({ label }),
     });
   }
 
   async createIngredient(data: any) {
-    return this.authenticatedFetch('/ingredients', {
+    return this.authenticatedFetch('/api/ingredients', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async updateIngredient(id: string, data: any) {
-    return this.authenticatedFetch(`/ingredients/${id}`, {
+    return this.authenticatedFetch(`/api/ingredients/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     });
   }
 
   async deleteIngredient(id: string) {
-    return this.authenticatedFetch(`/ingredients/${id}`, {
+    return this.authenticatedFetch(`/api/ingredients/${id}`, {
       method: 'DELETE',
     });
   }
 
   async getIngredient(id: string) {
-    return this.authenticatedFetch(`/ingredients/${id}`);
+    return this.authenticatedFetch(`/api/ingredients/${id}`);
   }
 
   async getAllIngredients(aisle?: string) {
     const query = aisle ? `?aisle=${aisle}` : '';
-    return this.authenticatedFetch(`/ingredients${query}`);
+    return this.authenticatedFetch(`/api/ingredients${query}`);
   }
 }
 

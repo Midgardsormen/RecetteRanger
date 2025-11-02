@@ -1,10 +1,14 @@
 <script lang="ts">
-  import Layout from '../layouts/Layout.svelte';
-  import { authStore } from '../stores/auth.store';
+  import Layout from '../../layouts/Layout.svelte';
+  import { authStore } from '../../stores/auth.store';
 
+  // Recevoir les données du SSR
+  let { user: ssrUser = null }: { user?: any } = $props();
+
+  // Utiliser les données SSR ou le store client
   const { isAuthenticated, user } = $derived({
-    isAuthenticated: $authStore.isAuthenticated,
-    user: $authStore.user
+    isAuthenticated: ssrUser ? true : $authStore.isAuthenticated,
+    user: ssrUser || $authStore.user
   });
 
   function goToRegister() {
@@ -16,85 +20,85 @@
   }
 </script>
 
-<Layout title="Home" currentPage="/">
-  <div class="home">
-    {#if isAuthenticated && user}
-      <!-- Utilisateur connecté - Dashboard -->
-      <div class="home__welcome">
-        <h1 class="home__welcome-title">Bienvenue, {user.firstName} ! 👋</h1>
-        <p class="home__welcome-subtitle">Gérez vos recettes, planifiez vos repas et organisez vos courses en un seul endroit.</p>
-      </div>
+<Layout title="Home" currentPage="/" {user}>
+<div id="home" class="home">
+  {#if isAuthenticated && user}
+    <!-- Utilisateur connecté - Dashboard -->
+    <div class="home__welcome">
+      <h1 class="home__welcome-title">Bienvenue, {user.pseudo} ! 👋</h1>
+      <p class="home__welcome-subtitle">Gérez vos recettes, planifiez vos repas et organisez vos courses en un seul endroit.</p>
+    </div>
 
-      <div class="home__dashboard">
-        <a href="/recettes" class="home__card">
-          <div class="home__card-icon">📖</div>
-          <h2 class="home__card-title">Mes Recettes</h2>
-          <p class="home__card-text">Parcourez et gérez votre collection de recettes</p>
-          <span class="home__card-arrow">→</span>
-        </a>
+    <div class="home__dashboard">
+      <a href="/recettes" class="home__card">
+        <div class="home__card-icon">📖</div>
+        <h2 class="home__card-title">Mes Recettes</h2>
+        <p class="home__card-text">Parcourez et gérez votre collection de recettes</p>
+        <span class="home__card-arrow">→</span>
+      </a>
 
-        <a href="/plannings" class="home__card">
-          <div class="home__card-icon">📅</div>
-          <h2 class="home__card-title">Mes Plannings</h2>
-          <p class="home__card-text">Planifiez vos repas pour la semaine</p>
-          <span class="home__card-arrow">→</span>
-        </a>
+      <a href="/plannings" class="home__card">
+        <div class="home__card-icon">📅</div>
+        <h2 class="home__card-title">Mes Plannings</h2>
+        <p class="home__card-text">Planifiez vos repas pour la semaine</p>
+        <span class="home__card-arrow">→</span>
+      </a>
 
-        <a href="/shopping-lists" class="home__card">
-          <div class="home__card-icon">🛒</div>
-          <h2 class="home__card-title">Mes Listes de Courses</h2>
-          <p class="home__card-text">Organisez vos courses efficacement</p>
-          <span class="home__card-arrow">→</span>
-        </a>
-      </div>
-    {:else}
-      <!-- Utilisateur non connecté - Landing Page -->
-      <div class="home__hero">
-        <div class="home__hero-content">
-          <h1 class="home__hero-title">
-            RecetteRanger 🍳
-          </h1>
-          <p class="home__hero-subtitle">
-            Votre assistant personnel pour gérer vos recettes, planifier vos repas et optimiser vos courses
-          </p>
-          <div class="home__hero-buttons">
-            <button class="home__btn home__btn--primary" onclick={goToRegister}>
-              Commencer gratuitement
-            </button>
-            <button class="home__btn home__btn--secondary" onclick={goToLogin}>
-              Se connecter
-            </button>
-          </div>
+      <a href="/shopping-lists" class="home__card">
+        <div class="home__card-icon">🛒</div>
+        <h2 class="home__card-title">Mes Listes de Courses</h2>
+        <p class="home__card-text">Organisez vos courses efficacement</p>
+        <span class="home__card-arrow">→</span>
+      </a>
+    </div>
+  {:else}
+    <!-- Utilisateur non connecté - Landing Page -->
+    <div class="home__hero">
+      <div class="home__hero-content">
+        <h1 class="home__hero-title">
+          RecetteRanger 🍳
+        </h1>
+        <p class="home__hero-subtitle">
+          Votre assistant personnel pour gérer vos recettes, planifier vos repas et optimiser vos courses
+        </p>
+        <div class="home__hero-buttons">
+          <button class="home__btn home__btn--primary" onclick={goToRegister}>
+            Commencer gratuitement
+          </button>
+          <button class="home__btn home__btn--secondary" onclick={goToLogin}>
+            Se connecter
+          </button>
         </div>
       </div>
+    </div>
 
-      <div class="home__features">
-        <div class="home__feature">
-          <div class="home__feature-icon">📖</div>
-          <h3 class="home__feature-title">Gestion des recettes</h3>
-          <p class="home__feature-text">
-            Créez et organisez toutes vos recettes préférées au même endroit
-          </p>
-        </div>
-
-        <div class="home__feature">
-          <div class="home__feature-icon">📅</div>
-          <h3 class="home__feature-title">Planification des repas</h3>
-          <p class="home__feature-text">
-            Planifiez vos menus pour la semaine et gagnez du temps
-          </p>
-        </div>
-
-        <div class="home__feature">
-          <div class="home__feature-icon">🛒</div>
-          <h3 class="home__feature-title">Listes de courses intelligentes</h3>
-          <p class="home__feature-text">
-            Générez automatiquement vos listes de courses depuis vos plannings
-          </p>
-        </div>
+    <div class="home__features">
+      <div class="home__feature">
+        <div class="home__feature-icon">📖</div>
+        <h3 class="home__feature-title">Gestion des recettes</h3>
+        <p class="home__feature-text">
+          Créez et organisez toutes vos recettes préférées au même endroit
+        </p>
       </div>
-    {/if}
-  </div>
+
+      <div class="home__feature">
+        <div class="home__feature-icon">📅</div>
+        <h3 class="home__feature-title">Planification des repas</h3>
+        <p class="home__feature-text">
+          Planifiez vos menus pour la semaine et gagnez du temps
+        </p>
+      </div>
+
+      <div class="home__feature">
+        <div class="home__feature-icon">🛒</div>
+        <h3 class="home__feature-title">Listes de courses intelligentes</h3>
+        <p class="home__feature-text">
+          Générez automatiquement vos listes de courses depuis vos plannings
+        </p>
+      </div>
+    </div>
+  {/if}
+</div>
 </Layout>
 
 <style lang="scss">

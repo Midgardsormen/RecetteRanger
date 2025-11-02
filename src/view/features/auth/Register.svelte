@@ -1,15 +1,30 @@
 <script lang="ts">
-  import { authStore } from '../stores/auth.store';
-  import { apiService } from '../services/api.service';
+  import { authStore } from '../../stores/auth.store';
+  import { apiService } from '../../services/api.service';
 
-  let identifier = '';
+  let pseudo = '';
+  let firstName = '';
+  let lastName = '';
+  let email = '';
   let password = '';
+  let confirmPassword = '';
   let error = '';
   let isLoading = false;
 
-  async function handleLogin() {
-    if (!identifier || !password) {
+  async function handleRegister() {
+    // Validation
+    if (!pseudo || !firstName || !lastName || !email || !password || !confirmPassword) {
       error = 'Veuillez remplir tous les champs';
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      error = 'Les mots de passe ne correspondent pas';
+      return;
+    }
+
+    if (password.length < 8) {
+      error = 'Le mot de passe doit contenir au moins 8 caractères';
       return;
     }
 
@@ -17,7 +32,14 @@
     error = '';
 
     try {
-      const response = await apiService.login({ identifier, password });
+      const response = await apiService.register({
+        pseudo,
+        firstName,
+        lastName,
+        email,
+        password,
+      });
+
       // Le token est maintenant dans un cookie HTTP-only, on stocke juste l'utilisateur
       authStore.login(response.user);
 
@@ -30,15 +52,15 @@
     }
   }
 
-  function goToRegister() {
-    window.location.href = '/register';
+  function goToLogin() {
+    window.location.href = '/login';
   }
 </script>
 
-<div class="login-container">
-  <div class="login-card">
-    <h1>Connexion</h1>
-    <p class="subtitle">Connectez-vous à votre compte RecetteRanger</p>
+<div id="register" class="register-container">
+  <div class="register-card">
+    <h1>Créer un compte</h1>
+    <p class="subtitle">Rejoignez RecetteRanger et commencez à organiser vos recettes</p>
 
     {#if error}
       <div class="error-message">
@@ -46,16 +68,54 @@
       </div>
     {/if}
 
-    <form on:submit|preventDefault={handleLogin}>
+    <form on:submit|preventDefault={handleRegister}>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">Prénom</label>
+          <input
+            id="firstName"
+            type="text"
+            bind:value={firstName}
+            placeholder="John"
+            disabled={isLoading}
+            autocomplete="given-name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Nom</label>
+          <input
+            id="lastName"
+            type="text"
+            bind:value={lastName}
+            placeholder="Doe"
+            disabled={isLoading}
+            autocomplete="family-name"
+          />
+        </div>
+      </div>
+
       <div class="form-group">
-        <label for="identifier">Email ou Pseudo</label>
+        <label for="pseudo">Pseudo</label>
         <input
-          id="identifier"
+          id="pseudo"
           type="text"
-          bind:value={identifier}
-          placeholder="john.doe@example.com"
+          bind:value={pseudo}
+          placeholder="john_doe"
           disabled={isLoading}
           autocomplete="username"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          bind:value={email}
+          placeholder="john.doe@example.com"
+          disabled={isLoading}
+          autocomplete="email"
         />
       </div>
 
@@ -67,26 +127,39 @@
           bind:value={password}
           placeholder="••••••••"
           disabled={isLoading}
-          autocomplete="current-password"
+          autocomplete="new-password"
+        />
+        <small>Minimum 8 caractères</small>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          bind:value={confirmPassword}
+          placeholder="••••••••"
+          disabled={isLoading}
+          autocomplete="new-password"
         />
       </div>
 
       <button type="submit" class="btn-primary" disabled={isLoading}>
-        {isLoading ? 'Connexion...' : 'Se connecter'}
+        {isLoading ? 'Création...' : 'Créer mon compte'}
       </button>
     </form>
 
     <div class="footer">
-      <p>Pas encore de compte ?</p>
-      <button type="button" class="btn-secondary" on:click={goToRegister}>
-        Créer un compte
+      <p>Vous avez déjà un compte ?</p>
+      <button type="button" class="btn-secondary" on:click={goToLogin}>
+        Se connecter
       </button>
     </div>
   </div>
 </div>
 
 <style>
-  .login-container {
+  .register-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -95,12 +168,12 @@
     padding: 1rem;
   }
 
-  .login-card {
+  .register-card {
     background: white;
     border-radius: 12px;
     padding: 2.5rem;
     width: 100%;
-    max-width: 420px;
+    max-width: 500px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   }
 
@@ -132,6 +205,12 @@
     gap: 1.25rem;
   }
 
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
   .form-group {
     display: flex;
     flex-direction: column;
@@ -160,6 +239,11 @@
   input:disabled {
     background: #f5f5f5;
     cursor: not-allowed;
+  }
+
+  small {
+    color: #888;
+    font-size: 0.85rem;
   }
 
   .btn-primary,

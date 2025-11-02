@@ -9,7 +9,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @ApiTags('meal-plans')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('meal-plans')
+@Controller('api/meal-plans')
 export class MealPlanController {
   constructor(private readonly mealPlanService: MealPlanService) {}
 
