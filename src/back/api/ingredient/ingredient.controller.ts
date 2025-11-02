@@ -1,11 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiCookieAuth } from '@nestjs/swagger';
 import { IngredientService } from './ingredient.service';
 import { CreateIngredientDto } from './dto/create-ingredient.dto';
 import { UpdateIngredientDto } from './dto/update-ingredient.dto';
 import { IngredientDto } from './dto/ingredient.dto';
+import { SearchIngredientsDto } from './dto/search-ingredients.dto';
+import { CheckDuplicatesDto, CheckDuplicatesResponseDto } from './dto/check-duplicates.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('ingredients')
+@ApiCookieAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('ingredients')
 export class IngredientController {
   constructor(private readonly ingredientService: IngredientService) {}
@@ -33,6 +38,27 @@ export class IngredientController {
   })
   findAll(@Query('aisle') aisle?: string) {
     return this.ingredientService.findAll(aisle);
+  }
+
+  @Post('search')
+  @ApiOperation({ summary: 'Recherche avancée d\'ingrédients avec filtres et pagination' })
+  @ApiResponse({
+    status: 200,
+    description: 'Résultats de recherche avec pagination',
+  })
+  search(@Body() searchDto: SearchIngredientsDto) {
+    return this.ingredientService.search(searchDto);
+  }
+
+  @Post('check-duplicates')
+  @ApiOperation({ summary: 'Vérifier si un ingrédient existe déjà ou est similaire' })
+  @ApiResponse({
+    status: 200,
+    description: 'Liste des ingrédients similaires',
+    type: CheckDuplicatesResponseDto,
+  })
+  checkDuplicates(@Body() checkDto: CheckDuplicatesDto) {
+    return this.ingredientService.checkDuplicates(checkDto);
   }
 
   @Get(':id')

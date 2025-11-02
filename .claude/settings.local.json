@@ -1,19 +1,25 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git mv:*)",
+      "Bash(printf:*)",
+      "Bash(update-schema.js)",
+      "Bash(node update-schema.js:*)",
+      "Bash(update-ingredient.js)",
+      "Bash(node update-ingredient.js:*)",
+      "Bash(test:*)",
+      "Bash(schema.part1.txt)",
+      "Bash(echo:*)",
+      "Bash(prisma/schema.tmp)",
+      "Bash(npx prisma format:*)",
+      "Bash(xargs cat:*)",
+      "Bash(git checkout:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma migrate:*)",
       "Bash(npm run build:*)",
-      "Bash(npm run dev:*)",
-      "Bash(netstat:*)",
-      "Bash(findstr:*)",
-      "Bash(taskkill:*)",
-      "Bash(cmd.exe //c \"taskkill //PID 63076 //F\")",
-      "Bash(nul)",
-      "Bash(npm run build:server:*)",
-      "Bash(tree:*)",
-      "Bash(npm install:*)",
-      "Bash(npx prisma generate:*)",
-      "Bash(npm run build:client:*)"
+      "Bash(iconv:*)",
+      "Bash(src/view/pages/Ingredients.svelte.tmp)",
+      "Bash(xargs file:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

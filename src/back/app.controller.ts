@@ -22,6 +22,12 @@ export class AppController {
     res.send(html);
   }
 
+  @Get('ingredients')
+  async getIngredients(@Res() res: Response) {
+    const html = await this.svelteRenderService.render('Ingredients', {});
+    res.send(html);
+  }
+
   @Get('plannings')
   async getPlannings(@Res() res: Response) {
     const html = await this.svelteRenderService.render('Plannings', {

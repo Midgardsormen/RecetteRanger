@@ -123,6 +123,51 @@ class ApiService {
 
     return response.json();
   }
+
+  // ===== Ingredients API =====
+
+  async searchIngredients(searchParams: any) {
+    return this.authenticatedFetch('/ingredients/search', {
+      method: 'POST',
+      body: JSON.stringify(searchParams),
+    });
+  }
+
+  async checkDuplicates(label: string) {
+    return this.authenticatedFetch('/ingredients/check-duplicates', {
+      method: 'POST',
+      body: JSON.stringify({ label }),
+    });
+  }
+
+  async createIngredient(data: any) {
+    return this.authenticatedFetch('/ingredients', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateIngredient(id: string, data: any) {
+    return this.authenticatedFetch(`/ingredients/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteIngredient(id: string) {
+    return this.authenticatedFetch(`/ingredients/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getIngredient(id: string) {
+    return this.authenticatedFetch(`/ingredients/${id}`);
+  }
+
+  async getAllIngredients(aisle?: string) {
+    const query = aisle ? `?aisle=${aisle}` : '';
+    return this.authenticatedFetch(`/ingredients${query}`);
+  }
 }
 
 export const apiService = new ApiService();

@@ -1,0 +1,364 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/* ====== Enums ====== */
+enum StoreAisle {
+  FRUITS_ET_LEGUMES        @map("fruits et légumes")
+  BOUCHERIE                @map("boucherie")
+  VOLAILLE                 @map("volaille")
+  CHARCUTERIE              @map("charcuterie")
+  POISSONNERIE             @map("poissonnerie")
+  ROTISSERIE               @map("rôtisserie")
+  BOULANGERIE              @map("boulangerie")
+  PATISSERIE               @map("pâtisserie")
+  FROMAGERIE               @map("fromagerie")
+  TRAITEUR                 @map("traiteur")
+  PRODUITS_LAITIERS        @map("produits laitiers")
+  OEUFS                    @map("œufs")
+  SURGELES                 @map("surgelés")
+  EPICERIE_SALEE           @map("épicerie salée")
+  PATES_RIZ_CEREALES       @map("pâtes, riz & céréales")
+  CONSERVES                @map("conserves")
+  SAUCES_CONDIMENTS        @map("sauces & condiments")
+  HUILES_VINAIGRES         @map("huiles & vinaigres")
+  EPICES_AIDES_CULINAIRES  @map("épices & aides culinaires")
+  PLATS_CUISINES           @map("plats cuisinés")
+  SNACKING                 @map("snacking (sandwichs & salades)")
+  EPICERIE_SUCREE          @map("épicerie sucrée")
+  BISCUITS_GATEAUX         @map("biscuits & gâteaux")
+  CHOCOLATS_CONFISERIES    @map("chocolats & confiseries")
+  PETIT_DEJEUNER           @map("petit-déjeuner (céréales & tartinables)")
+  CAFE_THE                 @map("café & thé")
+  EAUX                     @map("eaux")
+  SODAS_JUS                @map("sodas & jus")
+  BIERES                   @map("bières")
+  VINS_SPIRITUEUX          @map("vins & spiritueux")
+  PRODUITS_BIO             @map("produits bio")
+  SANS_GLUTEN_DIETETIQUE   @map("sans gluten & diététique")
+  BEBE                     @map("bébé (alimentaire & soins)")
+  ANIMALERIE               @map("animalerie")
+  ENTRETIEN_MAISON         @map("entretien de la maison")
+  LESSIVE_SOIN_LINGE       @map("lessive & soin du linge")
+  PAPIER_HYGIENE_MENAGERE  @map("papier & hygiène ménagère")
+  HYGIENE_BEAUTE           @map("hygiène & beauté")
+  PARAPHARMACIE            @map("parapharmacie")
+  PAPETERIE_FOURNITURES    @map("papeterie & fournitures")
+  PRESSE_LIVRES            @map("presse & livres")
+  MAISON_DECO              @map("maison & déco")
+  ARTS_DE_LA_TABLE         @map("arts de la table")
+  TEXTILE                  @map("textile")
+  ELECTROMENAGER           @map("électroménager")
+  MULTIMEDIA_HIGH_TECH     @map("multimédia & high-tech")
+  BRICOLAGE                @map("bricolage")
+  AUTO_MOBILITE            @map("auto & mobilité")
+  JARDIN_PLANTES           @map("jardin & plantes")
+  FLEURS                   @map("fleurs")
+  JEUX_JOUETS              @map("jeux & jouets")
+  SAISONNIER               @map("saisonnier")
+}
+
+enum RecipeVisibility {
+  PRIVATE
+  SHARED
+  PUBLIC
+}
+
+enum MealSlot {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+  OTHER
+}
+
+enum ShoppingListStatus {
+nenum Unit {
+  PINCEE               @map("pincée")
+  GRAMME               @map("g")
+  KILOGRAMME           @map("kg")
+  MILLIGRAMME          @map("mg")
+  LITRE                @map("l")
+  MILLILITRE           @map("ml")
+  CENTILITRE           @map("cl")
+  CUILLERE_A_CAFE      @map("cuillère à café")
+  CUILLERE_A_SOUPE     @map("cuillère à soupe")
+  TASSE                @map("tasse")
+  VERRE                @map("verre")
+  BOL                  @map("bol")
+  UNITE                @map("unité")
+  TRANCHE              @map("tranche")
+  MORCEAU              @map("morceau")
+  BRANCHE              @map("branche")
+  FEUILLE              @map("feuille")
+  BOUQUET              @map("bouquet")
+  BOTTE                @map("botte")
+  GOUSSE               @map("gousse")
+  ZESTE                @map("zeste")
+  SACHET               @map("sachet")
+  BOITE                @map("boîte")
+  PAQUET               @map("paquet")
+  POT                  @map("pot")
+  BARQUETTE            @map("barquette")
+}
+  OPEN
+nenum Unit {
+  PINCEE               @map("pincée")
+  GRAMME               @map("g")
+  KILOGRAMME           @map("kg")
+  MILLIGRAMME          @map("mg")
+  LITRE                @map("l")
+  MILLILITRE           @map("ml")
+  CENTILITRE           @map("cl")
+  CUILLERE_A_CAFE      @map("cuillère à café")
+  CUILLERE_A_SOUPE     @map("cuillère à soupe")
+  TASSE                @map("tasse")
+  VERRE                @map("verre")
+  BOL                  @map("bol")
+  UNITE                @map("unité")
+  TRANCHE              @map("tranche")
+  MORCEAU              @map("morceau")
+  BRANCHE              @map("branche")
+  FEUILLE              @map("feuille")
+  BOUQUET              @map("bouquet")
+  BOTTE                @map("botte")
+  GOUSSE               @map("gousse")
+  ZESTE                @map("zeste")
+  SACHET               @map("sachet")
+  BOITE                @map("boîte")
+  PAQUET               @map("paquet")
+  POT                  @map("pot")
+  BARQUETTE            @map("barquette")
+}
+  LOCKED
+nenum Unit {
+  PINCEE               @map("pincée")
+  GRAMME               @map("g")
+  KILOGRAMME           @map("kg")
+  MILLIGRAMME          @map("mg")
+  LITRE                @map("l")
+  MILLILITRE           @map("ml")
+  CENTILITRE           @map("cl")
+  CUILLERE_A_CAFE      @map("cuillère à café")
+  CUILLERE_A_SOUPE     @map("cuillère à soupe")
+  TASSE                @map("tasse")
+  VERRE                @map("verre")
+  BOL                  @map("bol")
+  UNITE                @map("unité")
+  TRANCHE              @map("tranche")
+  MORCEAU              @map("morceau")
+  BRANCHE              @map("branche")
+  FEUILLE              @map("feuille")
+  BOUQUET              @map("bouquet")
+  BOTTE                @map("botte")
+  GOUSSE               @map("gousse")
+  ZESTE                @map("zeste")
+  SACHET               @map("sachet")
+  BOITE                @map("boîte")
+  PAQUET               @map("paquet")
+  POT                  @map("pot")
+  BARQUETTE            @map("barquette")
+}
+  ARCHIVED
+nenum Unit {
+  PINCEE               @map("pincée")
+  GRAMME               @map("g")
+  KILOGRAMME           @map("kg")
+  MILLIGRAMME          @map("mg")
+  LITRE                @map("l")
+  MILLILITRE           @map("ml")
+  CENTILITRE           @map("cl")
+  CUILLERE_A_CAFE      @map("cuillère à café")
+  CUILLERE_A_SOUPE     @map("cuillère à soupe")
+  TASSE                @map("tasse")
+  VERRE                @map("verre")
+  BOL                  @map("bol")
+  UNITE                @map("unité")
+  TRANCHE              @map("tranche")
+  MORCEAU              @map("morceau")
+  BRANCHE              @map("branche")
+  FEUILLE              @map("feuille")
+  BOUQUET              @map("bouquet")
+  BOTTE                @map("botte")
+  GOUSSE               @map("gousse")
+  ZESTE                @map("zeste")
+  SACHET               @map("sachet")
+  BOITE                @map("boîte")
+  PAQUET               @map("paquet")
+  POT                  @map("pot")
+  BARQUETTE            @map("barquette")
+}
+}
+nenum Unit {
+  PINCEE               @map("pincée")
+  GRAMME               @map("g")
+  KILOGRAMME           @map("kg")
+  MILLIGRAMME          @map("mg")
+  LITRE                @map("l")
+  MILLILITRE           @map("ml")
+  CENTILITRE           @map("cl")
+  CUILLERE_A_CAFE      @map("cuillère à café")
+  CUILLERE_A_SOUPE     @map("cuillère à soupe")
+  TASSE                @map("tasse")
+  VERRE                @map("verre")
+  BOL                  @map("bol")
+  UNITE                @map("unité")
+  TRANCHE              @map("tranche")
+  MORCEAU              @map("morceau")
+  BRANCHE              @map("branche")
+  FEUILLE              @map("feuille")
+  BOUQUET              @map("bouquet")
+  BOTTE                @map("botte")
+  GOUSSE               @map("gousse")
+  ZESTE                @map("zeste")
+  SACHET               @map("sachet")
+  BOITE                @map("boîte")
+  PAQUET               @map("paquet")
+  POT                  @map("pot")
+  BARQUETTE            @map("barquette")
+}
+
+/* ====== Modèles ====== */
+model User {
+  id            String         @id @default(cuid())
+  pseudo        String         @unique
+  firstName     String
+  lastName      String
+  email         String         @unique
+  passwordHash  String         @map("password_hash")
+  avatarUrl     String?        @db.VarChar(2048)
+
+  recipes       Recipe[]
+  mealDays      MealPlanDay[]
+  shoppingLists ShoppingList[]
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Recipe {
+  id           String            @id @default(cuid())
+  label        String
+  imageUrl     String?           @db.VarChar(2048)
+  description  String?
+  prepMinutes  Int               @default(0)
+  cookMinutes  Int               @default(0)
+  restMinutes  Int               @default(0)
+
+  owner        User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId      String
+  visibility   RecipeVisibility  @default(PRIVATE)
+
+  steps        Step[]
+  ingredients  RecipeIngredient[]
+  mealPlanItems MealPlanItem[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([label])
+}
+
+model Step {
+  id          String  @id @default(cuid())
+  stepNumber  Int
+  description String
+  recipe      Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId    String
+
+  @@unique([recipeId, stepNumber])
+  @@index([recipeId])
+}
+
+model Ingredient {
+  id        String     @id @default(cuid())
+  label     String
+  aisle     StoreAisle
+  createdAt DateTime   @default(now())
+
+  recipeLinks RecipeIngredient[]
+  shoppingListItems ShoppingListItem[]
+
+  @@unique([label, aisle])         // évite les doublons "Tomate" au même rayon
+  @@index([aisle, label])
+}
+
+model RecipeIngredient {
+  id            String      @id @default(cuid())
+  recipe        Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId      String
+  ingredient    Ingredient  @relation(fields: [ingredientId], references: [id])
+  ingredientId  String
+
+  quantity      Decimal?    @db.Decimal(10, 3) // ex: 125.500
+  unit          String?                      // "g", "kg", "ml", "càs", etc.
+  note          String?
+
+  @@unique([recipeId, ingredientId])
+  @@index([ingredientId])
+}
+
+model MealPlanDay {
+  id        String      @id @default(cuid())
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  date      DateTime    // UTC minuit (tu peux normaliser côté service)
+  items     MealPlanItem[]
+
+  @@unique([userId, date])
+  @@index([date])
+}
+
+model MealPlanItem {
+  id        String      @id @default(cuid())
+  day       MealPlanDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  dayId     String
+  slot      MealSlot
+  recipe    Recipe?     @relation(fields: [recipeId], references: [id])
+  recipeId  String?
+  servings  Int         @default(1)
+  note      String?
+
+  @@unique([dayId, slot]) // autorise 1 recette/slot; supprime si tu veux plusieurs
+}
+
+model ShoppingList {
+  id         String              @id @default(cuid())
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  title      String
+  fromDate   DateTime?
+  toDate     DateTime?
+  status     ShoppingListStatus  @default(OPEN)
+  items      ShoppingListItem[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model ShoppingListItem {
+  id           String        @id @default(cuid())
+  list         ShoppingList  @relation(fields: [listId], references: [id], onDelete: Cascade)
+  listId       String
+
+  ingredient   Ingredient?   @relation(fields: [ingredientId], references: [id])
+  ingredientId String?
+  label        String                          // texte libre si pas d’ingredientId
+
+  aisle        StoreAisle?
+  quantity     Decimal?      @db.Decimal(10, 3)
+  unit         String?
+  checked      Boolean       @default(false)
+
+  note         String?
+  fromPlan     Boolean       @default(false)
+}

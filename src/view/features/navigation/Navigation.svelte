@@ -6,6 +6,7 @@
   const navItems = [
     { href: '/', label: 'Home', icon: '🏠' },
     { href: '/recettes', label: 'Recipes', icon: '📖' },
+    { href: '/ingredients', label: 'Ingredients', icon: '🥗' },
     { href: '/plannings', label: 'Meal Plans', icon: '📅' },
     { href: '/shopping-lists', label: 'Shopping Lists', icon: '🛒' }
   ];
