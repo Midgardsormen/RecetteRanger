@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
+  import { SearchBar, ListItem, Button, Title, Filter } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, SearchIngredientsDto } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, UnitLabels } from '../../types/ingredient.types';
@@ -127,43 +128,52 @@
 <Layout title="Ingrédients" currentPage="/ingredients" {user}>
 <div id="ingredients" class="ingredients">
   <header class="ingredients__header">
-    <h1 class="ingredients__title">🥗 Mes ingrédients</h1>
-    <button class="ingredients__btn" onclick={() => openDrawer()}>
+    <Title level={1}>🥗 Mes ingrédients</Title>
+    <Button onclick={() => openDrawer()}>
       + Ajouter un ingrédient
-    </button>
+    </Button>
   </header>
 
   <!-- Recherche et filtres -->
   <div class="ingredients__search">
-    <input
-      type="text"
-      placeholder="Rechercher un ingrédient..."
-      class="ingredients__search-input"
+    <SearchBar
       bind:value={searchQuery}
+      placeholder="Rechercher un ingrédient..."
       oninput={handleSearchInput}
     />
 
     <div class="ingredients__filters">
-      <select
-        class="ingredients__select"
-        bind:value={selectedAisle}
-        onchange={handleFilterChange}
-      >
-        <option value="">Toutes les catégories</option>
-        {#each Object.entries(StoreAisleLabels) as [key, label]}
-          <option value={key}>{label}</option>
-        {/each}
-      </select>
+      <div class="ingredients__filter-group">
+        <span class="ingredients__filter-label">Filtrer par</span>
+        <Filter
+          label="Catégorie"
+          mode="dropdown"
+          bind:value={selectedAisle}
+          onchange={handleFilterChange}
+          options={[
+            { value: '', label: 'Toutes' },
+            ...Object.entries(StoreAisleLabels).map(([key, label]) => ({
+              value: key,
+              label
+            }))
+          ]}
+        />
+      </div>
 
-      <select
-        class="ingredients__select"
-        bind:value={sortBy}
-        onchange={handleFilterChange}
-      >
-        <option value="alpha">Alphabétique</option>
-        <option value="date">Date d'ajout</option>
-        <option value="popularity">Popularité</option>
-      </select>
+      <div class="ingredients__filter-group">
+        <span class="ingredients__filter-label">Trier par</span>
+        <Filter
+          label="Ordre"
+          mode="dropdown"
+          bind:value={sortBy}
+          onchange={handleFilterChange}
+          options={[
+            { value: 'alpha', label: 'Alphabétique' },
+            { value: 'date', label: 'Date d\'ajout' },
+            { value: 'popularity', label: 'Popularité' }
+          ]}
+        />
+      </div>
     </div>
   </div>
 
@@ -183,81 +193,35 @@
           : 'Commencez par ajouter votre premier ingrédient!'}
       </p>
       {#if !searchQuery && !selectedAisle && !selectedUnit}
-        <button class="ingredients__btn" onclick={() => openDrawer()}>
+        <Button onclick={() => openDrawer()}>
           Ajouter un ingrédient
-        </button>
+        </Button>
       {/if}
     </div>
   {:else}
-    <div class="ingredients__grid">
+    <div class="ingredients__list">
       {#each ingredients as ingredient (ingredient.id)}
-        <div class="ingredients__card">
-          <div class="ingredients__card-header">
-            {#if ingredient.imageUrl}
-              <img
-                src={ingredient.imageUrl}
-                alt={ingredient.label}
-                class="ingredients__card-img"
-              />
-            {:else}
-              <div class="ingredients__card-placeholder">🍽️</div>
-            {/if}
-          </div>
-
-          <div class="ingredients__card-body">
-            <h3 class="ingredients__card-title">{ingredient.label}</h3>
-            <p class="ingredients__card-aisle">
-              {StoreAisleLabels[ingredient.aisle]}
-            </p>
-
-            <div class="ingredients__card-units">
-              {#each ingredient.units.slice(0, 3) as unit}
-                <span class="ingredients__unit-badge">{UnitLabels[unit]}</span>
-              {/each}
-              {#if ingredient.units.length > 3}
-                <span class="ingredients__unit-badge">+{ingredient.units.length - 3}</span>
-              {/if}
-            </div>
-
-            {#if ingredient.seasonMonths.length > 0}
-              <p class="ingredients__card-season">
-                🗓️ {ingredient.seasonMonths.length} mois de saison
-              </p>
-            {/if}
-
-            <p class="ingredients__card-usage">
-              📊 Utilisé {ingredient.usageCount} fois
-            </p>
-          </div>
-
-          <div class="ingredients__card-actions">
-            <button
-              class="ingredients__card-btn ingredients__card-btn--edit"
-              onclick={() => openDrawer(ingredient)}
-            >
-              ✏️ Modifier
-            </button>
-            <button
-              class="ingredients__card-btn ingredients__card-btn--delete"
-              onclick={() => handleDelete(ingredient.id)}
-            >
-              🗑️ Supprimer
-            </button>
-          </div>
-        </div>
+        <ListItem
+          imageUrl={ingredient.imageUrl}
+          imagePlaceholder="🍽️"
+          title={ingredient.label}
+          subtitle={StoreAisleLabels[ingredient.aisle]}
+          onEdit={() => openDrawer(ingredient)}
+          onDelete={() => handleDelete(ingredient.id)}
+        />
       {/each}
     </div>
 
     <!-- Pagination -->
     {#if totalPages > 1}
       <div class="ingredients__pagination">
-        <button
-          class="ingredients__pagination-btn"
+        <Button
+          variant="secondary"
           onclick={previousPage}
           disabled={currentPage === 0}
         >
           ← Précédent
-        </button>
+        </Button>
 
         <div class="ingredients__pagination-pages">
           {#each Array(totalPages) as _, i}
@@ -271,13 +235,13 @@
           {/each}
         </div>
 
-        <button
-          class="ingredients__pagination-btn"
+        <Button
+          variant="secondary"
           onclick={nextPage}
           disabled={currentPage >= totalPages - 1}
         >
           Suivant →
-        </button>
+        </Button>
       </div>
 
       <p class="ingredients__pagination-info">
@@ -325,32 +289,6 @@
       gap: $spacing-base;
     }
 
-    &__title {
-      margin: 0;
-      color: $text-dark;
-      font-size: 2rem;
-
-      @media (max-width: $breakpoint-mobile) {
-        font-size: 1.5rem;
-      }
-    }
-
-    &__btn {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-      color: $white;
-      border: none;
-      padding: $spacing-base * 0.75 $spacing-base * 1.5;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all $transition-duration ease;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px $shadow-primary;
-      }
-    }
 
     &__search {
       display: flex;
@@ -358,40 +296,24 @@
       gap: $spacing-base;
     }
 
-    &__search-input {
-      width: 100%;
-      padding: $spacing-base;
-      border: 2px solid $border-color;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color $transition-duration ease;
-
-      &:focus {
-        outline: none;
-        border-color: $primary-color;
-      }
-    }
-
     &__filters {
       display: flex;
-      gap: $spacing-base;
+      gap: $spacing-base * 2;
       flex-wrap: wrap;
     }
 
-    &__select {
-      flex: 1;
-      min-width: 200px;
-      padding: $spacing-base * 0.75;
-      border: 2px solid $border-color;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: border-color $transition-duration ease;
+    &__filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-base * 0.5;
+    }
 
-      &:focus {
-        outline: none;
-        border-color: $primary-color;
-      }
+    &__filter-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $text-gray;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     &__error {
@@ -432,114 +354,18 @@
       margin: 0 0 $spacing-base * 2 0;
     }
 
-    &__grid {
+    &__list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: $spacing-base * 1.5;
-    }
+      grid-template-columns: 1fr;
+      gap: $spacing-base;
 
-    &__card {
-      background: $white;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px $shadow-light;
-      overflow: hidden;
-      transition: transform $transition-duration ease, box-shadow $transition-duration ease;
-
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-      }
-    }
-
-    &__card-header {
-      height: 150px;
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    &__card-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    &__card-placeholder {
-      font-size: 4rem;
-    }
-
-    &__card-body {
-      padding: $spacing-base;
-    }
-
-    &__card-title {
-      margin: 0 0 $spacing-base * 0.5 0;
-      color: $text-dark;
-      font-size: 1.25rem;
-    }
-
-    &__card-aisle {
-      margin: 0 0 $spacing-base * 0.75 0;
-      color: $text-gray;
-      font-size: 0.9rem;
-    }
-
-    &__card-units {
-      display: flex;
-      flex-wrap: wrap;
-      gap: $spacing-base * 0.5;
-      margin-bottom: $spacing-base * 0.75;
-    }
-
-    &__unit-badge {
-      padding: $spacing-base * 0.25 $spacing-base * 0.5;
-      background: rgba(102, 126, 234, 0.15);
-      color: $primary-color;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-
-    &__card-season,
-    &__card-usage {
-      margin: $spacing-base * 0.25 0;
-      color: $text-light;
-      font-size: 0.85rem;
-    }
-
-    &__card-actions {
-      display: flex;
-      gap: $spacing-base * 0.5;
-      padding: $spacing-base;
-      border-top: 1px solid $border-color;
-    }
-
-    &__card-btn {
-      flex: 1;
-      padding: $spacing-base * 0.5;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all $transition-duration ease;
-
-      &--edit {
-        background: rgba(102, 126, 234, 0.15);
-        color: $primary-color;
-
-        &:hover {
-          background: rgba(102, 126, 234, 0.25);
-        }
+      @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: $spacing-base * 1.25;
       }
 
-      &--delete {
-        background: rgba(245, 101, 101, 0.15);
-        color: $danger-color;
-
-        &:hover {
-          background: rgba(245, 101, 101, 0.25);
-        }
+      @media (min-width: 1200px) {
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
@@ -551,24 +377,6 @@
       margin-top: $spacing-base * 2;
     }
 
-    &__pagination-btn {
-      padding: $spacing-base * 0.5 $spacing-base;
-      border: 2px solid $border-color;
-      background: $white;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all $transition-duration ease;
-
-      &:hover:not(:disabled) {
-        border-color: $primary-color;
-        color: $primary-color;
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
 
     &__pagination-pages {
       display: flex;

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Drawer, ImageUpload } from '../../components/ui';
+  import { Drawer, ImageUpload, Input, Select, Checkbox } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, CreateIngredientDto, SimilarIngredient } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, UnitLabels, MONTHS } from '../../types/ingredient.types';
@@ -178,60 +178,52 @@
 >
   <form class="ingredient-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
     <!-- Nom de l'ingrédient -->
-    <div class="form-field">
-      <label class="form-label" for="label">
-        Nom de l'ingrédient <span class="required">*</span>
-      </label>
-      <input
-        id="label"
-        type="text"
-        class="form-input"
-        class:form-input--error={errors.label}
-        bind:value={label}
-        oninput={handleLabelInput}
-        placeholder="Ex: Tomate"
-      />
-      {#if errors.label}
-        <span class="form-error">{errors.label}</span>
-      {/if}
+    <Input
+      id="label"
+      label="Nom de l'ingrédient"
+      bind:value={label}
+      oninput={handleLabelInput}
+      placeholder="Ex: Tomate"
+      required
+      error={errors.label}
+    />
 
-      <!-- Détection de doublons -->
-      {#if checkingDuplicates}
-        <div class="duplicates-check">
-          <span>🔍 Vérification des doublons...</span>
-        </div>
-      {:else if similarIngredients.length > 0}
-        <div class="duplicates">
-          <p class="duplicates__title">
-            ⚠️ Ingrédients similaires trouvés :
-          </p>
-          <ul class="duplicates__list">
-            {#each similarIngredients as similar}
-              <li class="duplicates__item">
-                <span class="duplicates__name">{similar.label}</span>
-                <span class="duplicates__aisle">{similar.aisle}</span>
-                <span class="duplicates__similarity">{similar.similarity}%</span>
-              </li>
-            {/each}
-          </ul>
-          <p class="duplicates__warning">
-            Êtes-vous sûr de vouloir ajouter cet ingrédient ?
-          </p>
-        </div>
-      {/if}
-    </div>
+    <!-- Détection de doublons -->
+    {#if checkingDuplicates}
+      <div class="duplicates-check">
+        <span>🔍 Vérification des doublons...</span>
+      </div>
+    {:else if similarIngredients.length > 0}
+      <div class="duplicates">
+        <p class="duplicates__title">
+          ⚠️ Ingrédients similaires trouvés :
+        </p>
+        <ul class="duplicates__list">
+          {#each similarIngredients as similar}
+            <li class="duplicates__item">
+              <span class="duplicates__name">{similar.label}</span>
+              <span class="duplicates__aisle">{similar.aisle}</span>
+              <span class="duplicates__similarity">{similar.similarity}%</span>
+            </li>
+          {/each}
+        </ul>
+        <p class="duplicates__warning">
+          Êtes-vous sûr de vouloir ajouter cet ingrédient ?
+        </p>
+      </div>
+    {/if}
 
     <!-- Catégorie -->
-    <div class="form-field">
-      <label class="form-label" for="aisle">
-        Catégorie <span class="required">*</span>
-      </label>
-      <select id="aisle" class="form-select" bind:value={aisle}>
-        {#each Object.entries(StoreAisleLabels) as [key, label]}
-          <option value={key}>{label}</option>
-        {/each}
-      </select>
-    </div>
+    <Select
+      id="aisle"
+      label="Catégorie"
+      bind:value={aisle}
+      required
+    >
+      {#each Object.entries(StoreAisleLabels) as [key, label]}
+        <option value={key}>{label}</option>
+      {/each}
+    </Select>
 
     <!-- Unités -->
     <div class="form-field">
@@ -239,15 +231,12 @@
         Unités disponibles <span class="required">*</span>
       </label>
       <div class="checkbox-grid">
-        {#each Object.entries(UnitLabels) as [key, label]}
-          <label class="checkbox">
-            <input
-              type="checkbox"
-              checked={selectedUnits.has(key as Unit)}
-              onchange={() => toggleUnit(key as Unit)}
-            />
-            <span>{label}</span>
-          </label>
+        {#each Object.entries(UnitLabels) as [key, unitLabel]}
+          <Checkbox
+            checked={selectedUnits.has(key as Unit)}
+            label={unitLabel}
+            onchange={() => toggleUnit(key as Unit)}
+          />
         {/each}
       </div>
       {#if errors.units}

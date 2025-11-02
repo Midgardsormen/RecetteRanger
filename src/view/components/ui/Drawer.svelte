@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createFocusTrap, type FocusTrap } from '../../utils';
+  import Button from './Button.svelte';
 
   interface Props {
     isOpen?: boolean;
@@ -125,25 +126,25 @@
       {#if primaryAction || secondaryAction}
         <div class="drawer__footer">
           {#if secondaryAction}
-            <button
-              class="drawer__btn drawer__btn--secondary"
+            <Button
+              variant="ghost"
+              fullWidth
               onclick={secondaryAction.onClick}
               disabled={secondaryAction.disabled}
-              type="button"
             >
               {secondaryAction.label}
-            </button>
+            </Button>
           {/if}
 
           {#if primaryAction}
-            <button
-              class="drawer__btn drawer__btn--primary"
+            <Button
+              variant="primary"
+              fullWidth
               onclick={primaryAction.onClick}
               disabled={primaryAction.disabled || primaryAction.loading}
-              type="button"
             >
               {primaryAction.loading ? 'Chargement...' : primaryAction.label}
-            </button>
+            </Button>
           {/if}
         </div>
       {/if}
@@ -320,52 +321,6 @@
     background: $white;
     position: sticky;
     bottom: 0;
-  }
-
-  .drawer__btn {
-    flex: 1;
-    padding: $spacing-base;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:focus {
-      outline: 2px solid $primary-color;
-      outline-offset: 2px;
-    }
-
-    &--secondary {
-      background: rgba(102, 102, 102, 0.1);
-      color: $text-gray;
-
-      &:hover:not(:disabled) {
-        background: rgba(102, 102, 102, 0.2);
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-
-    &--primary {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-      color: $white;
-
-      &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-      }
-
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-      }
-    }
   }
 
   @media (max-width: 768px) {
