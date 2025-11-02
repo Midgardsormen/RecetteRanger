@@ -1,15 +1,16 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
   import { authStore } from '../../stores/auth.store';
+  import { derived } from 'svelte/store';
 
   // Recevoir les données du SSR
   let { user: ssrUser = null }: { user?: any } = $props();
 
-  // Utiliser les données SSR ou le store client
-  const { isAuthenticated, user } = $derived({
-    isAuthenticated: ssrUser ? true : $authStore.isAuthenticated,
-    user: ssrUser || $authStore.user
-  });
+  // Créer un store dérivé pour l'authentification et l'utilisateur
+  const authState = derived(authStore, ($auth) => ({
+    isAuthenticated: ssrUser ? true : $auth.isAuthenticated,
+    user: ssrUser || $auth.user
+  }));
 
   function goToRegister() {
     window.location.href = '/register';
@@ -20,12 +21,12 @@
   }
 </script>
 
-<Layout title="Home" currentPage="/" {user}>
+<Layout title="Home" currentPage="/" user={$authState.user}>
 <div id="home" class="home">
-  {#if isAuthenticated && user}
+  {#if $authState.isAuthenticated && $authState.user}
     <!-- Utilisateur connecté - Dashboard -->
     <div class="home__welcome">
-      <h1 class="home__welcome-title">Bienvenue, {user.pseudo} ! 👋</h1>
+      <h1 class="home__welcome-title">Bienvenue, {$authState.user.pseudo} ! 👋</h1>
       <p class="home__welcome-subtitle">Gérez vos recettes, planifiez vos repas et organisez vos courses en un seul endroit.</p>
     </div>
 
