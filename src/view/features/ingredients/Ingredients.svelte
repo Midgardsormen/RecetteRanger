@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
-  import IngredientDrawer from '../../components/ingredients/IngredientDrawer.svelte';
+  import { IngredientDrawer } from '../ingredient-drawer';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, SearchIngredientsDto } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, UnitLabels } from '../../types/ingredient.types';
@@ -288,13 +288,12 @@
 </div>
 
 <!-- Drawer -->
-{#if isDrawerOpen}
-  <IngredientDrawer
-    ingredient={editingIngredient}
-    onSave={handleIngredientSaved}
-    onClose={closeDrawer}
-  />
-{/if}
+<IngredientDrawer
+  isOpen={isDrawerOpen}
+  ingredient={editingIngredient}
+  onSave={handleIngredientSaved}
+  onClose={closeDrawer}
+/>
 </Layout>
 
 <style lang="scss">
