@@ -52,6 +52,11 @@ async function bootstrap() {
     prefix: '/assets/',
   });
 
+  // Servir les fichiers uploadés (depuis dist/ vers public/)
+  app.useStaticAssets(join(__dirname, '../public'), {
+    prefix: '/',
+  });
+
   await app.listen(3000);
   console.log('🚀 Application is running on: http://localhost:3000');
   console.log('📚 Swagger documentation available at: http://localhost:3000/api');

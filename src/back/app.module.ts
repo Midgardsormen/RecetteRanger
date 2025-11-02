@@ -9,6 +9,7 @@ import { RecipeModule } from './api/recipe/recipe.module';
 import { IngredientModule } from './api/ingredient/ingredient.module';
 import { MealPlanModule } from './api/meal-plan/meal-plan.module';
 import { ShoppingListModule } from './api/shopping-list/shopping-list.module';
+import { UploadModule } from './api/upload/upload.module';
 
 // Modules SSR pour les pages
 import { HomeModule } from './modules/home/home.module';
@@ -27,6 +28,7 @@ import { ShoppingListsModule } from './modules/shopping-lists/shopping-lists.mod
     IngredientModule,
     MealPlanModule,
     ShoppingListModule,
+    UploadModule,
     // Modules SSR
     HomeModule,
     IngredientsModule,

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Drawer } from '../../components/ui';
+  import { Drawer, ImageUpload } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, CreateIngredientDto, SimilarIngredient } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, UnitLabels, MONTHS } from '../../types/ingredient.types';
@@ -116,6 +116,12 @@
   }
 
   function isValidUrl(url: string): boolean {
+    // Accepter les chemins relatifs qui commencent par /
+    if (url.startsWith('/')) {
+      return true;
+    }
+
+    // Valider les URLs complètes
     try {
       new URL(url);
       return true;
@@ -249,27 +255,23 @@
       {/if}
     </div>
 
-    <!-- URL de l'image -->
+    <!-- Image de l'ingrédient -->
     <div class="form-field">
-      <label class="form-label" for="imageUrl">
-        URL de l'image (optionnel)
+      <label class="form-label">
+        Image de l'ingrédient (optionnel)
       </label>
-      <input
-        id="imageUrl"
-        type="url"
-        class="form-input"
-        class:form-input--error={errors.imageUrl}
-        bind:value={imageUrl}
-        oninput={() => (errors.imageUrl = '')}
-        placeholder="https://exemple.com/image.png"
+      <ImageUpload
+        value={imageUrl}
+        onUpload={(url) => {
+          imageUrl = url;
+          errors.imageUrl = '';
+        }}
+        aspectRatio={1}
+        cropShape="rect"
+        maxSizeMB={5}
       />
       {#if errors.imageUrl}
         <span class="form-error">{errors.imageUrl}</span>
-      {/if}
-      {#if imageUrl && !errors.imageUrl}
-        <div class="image-preview">
-          <img src={imageUrl} alt="Prévisualisation" />
-        </div>
       {/if}
     </div>
 
@@ -330,8 +332,7 @@
     color: $danger-color;
   }
 
-  .form-input,
-  .form-select {
+  .form-input {
     width: 100%;
     padding: $spacing-base * 0.75;
     border: 2px solid $border-color;
@@ -346,6 +347,20 @@
 
     &--error {
       border-color: $danger-color;
+    }
+  }
+
+  .form-select {
+    width: 100%;
+    padding: $spacing-base * 0.75;
+    border: 2px solid $border-color;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
     }
   }
 
@@ -422,21 +437,6 @@
 
     &:hover {
       border-color: $primary-color;
-    }
-  }
-
-  .image-preview {
-    margin-top: $spacing-base * 0.5;
-    max-width: 200px;
-    max-height: 200px;
-    overflow: hidden;
-    border-radius: 8px;
-    border: 2px solid $border-color;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
     }
   }
 

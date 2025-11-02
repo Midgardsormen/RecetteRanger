@@ -32,12 +32,12 @@ export class CreateIngredientDto {
   units: Unit[];
 
   @ApiProperty({
-    description: 'URL de l\'image ou icône de l\'ingrédient',
+    description: 'URL de l\'image ou icône de l\'ingrédient (URL complète ou chemin relatif)',
     required: false,
-    example: 'https://example.com/images/tomate.png',
+    example: '/uploads/ingredients/medium/xxx.webp',
   })
   @IsOptional()
-  @IsUrl({}, { message: 'URL d\'image invalide' })
+  @IsString()
   imageUrl?: string;
 
   @ApiProperty({

@@ -24,13 +24,21 @@ export default defineConfig({
         manualChunks: {
           // Split vendor code
           'vendor-svelte': ['svelte'],
-          // Each page as a separate chunk
-          'page-home': ['./src/view/pages/Home.svelte'],
-          'page-recettes': ['./src/view/pages/Recettes.svelte'],
-          'page-plannings': ['./src/view/pages/Plannings.svelte'],
-          'page-shopping-lists': ['./src/view/pages/ShoppingLists.svelte'],
-          'page-login': ['./src/view/pages/Login.svelte'],
-          'page-register': ['./src/view/pages/Register.svelte'],
+          'vendor-cropperjs': ['cropperjs'],
+          // Each feature as a separate chunk
+          'feature-home': ['./src/view/features/home/Home.svelte'],
+          'feature-recettes': ['./src/view/features/recettes/Recettes.svelte'],
+          'feature-ingredients': ['./src/view/features/ingredients/Ingredients.svelte'],
+          'feature-plannings': ['./src/view/features/plannings/Plannings.svelte'],
+          'feature-shopping-lists': ['./src/view/features/shopping-lists/ShoppingLists.svelte'],
+          'feature-auth-login': ['./src/view/features/auth/Login.svelte'],
+          'feature-auth-register': ['./src/view/features/auth/Register.svelte'],
+          // UI Components
+          'ui-components': [
+            './src/view/components/ui/Drawer.svelte',
+            './src/view/components/ui/Modal.svelte',
+            './src/view/components/ui/ImageUpload.svelte'
+          ],
           // Shared components
           'components': [
             './src/view/layouts/Layout.svelte',

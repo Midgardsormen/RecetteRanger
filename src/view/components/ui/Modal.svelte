@@ -374,7 +374,7 @@
       color: $white;
 
       &:hover:not(:disabled) {
-        background: darken($danger-color, 10%);
+        background: #e03e3e;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
       }
