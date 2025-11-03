@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiCookieAuth } from '@nestjs/swagger';
 import { RecipeService } from './recipe.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
@@ -21,8 +21,28 @@ export class RecipeController {
     type: RecipeDto
   })
   @ApiResponse({ status: 400, description: 'Données invalides' })
-  create(@Body() createRecipeDto: CreateRecipeDto) {
-    return this.recipeService.create(createRecipeDto);
+  async create(@Request() req, @Body() createRecipeDto: CreateRecipeDto) {
+    try {
+      // Ajouter l'ID de l'utilisateur connecté
+      const result = await this.recipeService.create({
+        ...createRecipeDto,
+        ownerId: req.user.id
+      });
+      return result;
+    } catch (error) {
+      console.error('Error creating recipe:', error);
+      throw error;
+    }
+  }
+
+  @Post('search')
+  @ApiOperation({ summary: 'Rechercher des recettes' })
+  @ApiResponse({
+    status: 200,
+    description: 'Résultats de recherche',
+  })
+  search(@Body() searchParams: any) {
+    return this.recipeService.search(searchParams);
   }
 
   @Get()

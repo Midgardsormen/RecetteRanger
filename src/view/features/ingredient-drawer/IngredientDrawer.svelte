@@ -29,23 +29,25 @@
   let saving = $state(false);
   let errors = $state<Record<string, string>>({});
 
-  // Réinitialiser le formulaire quand l'ingrédient change
+  // Réinitialiser le formulaire quand l'ingrédient change ou quand le drawer s'ouvre
   $effect(() => {
-    if (ingredient) {
-      label = ingredient.label;
-      aisle = ingredient.aisle;
-      selectedUnits = new Set(ingredient.units);
-      imageUrl = ingredient.imageUrl || '';
-      selectedMonths = new Set(ingredient.seasonMonths || []);
-    } else {
-      label = '';
-      aisle = StoreAisle.FRUITS_ET_LEGUMES;
-      selectedUnits = new Set();
-      imageUrl = '';
-      selectedMonths = new Set();
+    if (isOpen) {
+      if (ingredient) {
+        label = ingredient.label;
+        aisle = ingredient.aisle;
+        selectedUnits = new Set(ingredient.units);
+        imageUrl = ingredient.imageUrl || '';
+        selectedMonths = new Set(ingredient.seasonMonths || []);
+      } else {
+        label = '';
+        aisle = StoreAisle.FRUITS_ET_LEGUMES;
+        selectedUnits = new Set();
+        imageUrl = '';
+        selectedMonths = new Set();
+      }
+      errors = {};
+      similarIngredients = [];
     }
-    errors = {};
-    similarIngredients = [];
   });
 
   async function checkDuplicates() {

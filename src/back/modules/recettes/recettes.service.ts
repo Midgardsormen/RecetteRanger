@@ -6,10 +6,14 @@ export class RecettesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getRecettesForUser(userId: string) {
-    // Récupérer les recettes de l'utilisateur (utilise ownerId)
+    // Récupérer les recettes de l'utilisateur + les recettes publiques
     return this.prisma.recipe.findMany({
       where: {
-        ownerId: userId
+        OR: [
+          { ownerId: userId }, // Recettes de l'utilisateur
+          { ownerId: null }, // Recettes publiques (disponibles pour tous)
+          { visibility: 'PUBLIC' } // Recettes publiques explicites
+        ]
       },
       include: {
         ingredients: {
@@ -17,7 +21,11 @@ export class RecettesService {
             ingredient: true
           }
         },
-        steps: true
+        steps: {
+          orderBy: {
+            stepNumber: 'asc'
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc'

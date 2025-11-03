@@ -15,14 +15,15 @@ export class RecettesController {
   @UseGuards(JwtAuthGuard)
   async getRecettesPage(@Request() req, @Res() res: Response) {
     // Récupérer les recettes pour l'utilisateur connecté
-    const recettes = await this.recettesService.getRecettesForUser(req.user.id);
+    const recipes = await this.recettesService.getRecettesForUser(req.user.id);
 
     // Rendre la page avec les données en SSR
-    const html = await this.svelteRenderService.render('Recettes', {
-      recettes,
+    const html = await this.svelteRenderService.render('Recipes', {
+      recipes,
       user: req.user
     });
 
+    res.setHeader('Content-Type', 'text/html');
     res.send(html);
   }
 }

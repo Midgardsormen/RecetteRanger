@@ -168,6 +168,39 @@ class ApiService {
     const query = aisle ? `?aisle=${aisle}` : '';
     return this.authenticatedFetch(`/api/ingredients${query}`);
   }
+
+  // ===== Recipes API =====
+
+  async createRecipe(data: any) {
+    return this.authenticatedFetch('/api/recipes', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateRecipe(id: string, data: any) {
+    return this.authenticatedFetch(`/api/recipes/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteRecipe(id: string) {
+    return this.authenticatedFetch(`/api/recipes/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getRecipe(id: string) {
+    return this.authenticatedFetch(`/api/recipes/${id}`);
+  }
+
+  async searchRecipes(searchParams: any) {
+    return this.authenticatedFetch('/api/recipes/search', {
+      method: 'POST',
+      body: JSON.stringify(searchParams),
+    });
+  }
 }
 
 export const apiService = new ApiService();

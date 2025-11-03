@@ -2,6 +2,7 @@
 // Dynamic imports for code splitting - export les fragments autonomes
 export const pages = {
   Home: () => import('./features/home/Home.svelte'),
+  Recipes: () => import('./features/recipes/Recipes.svelte'),
   Recettes: () => import('./features/recettes/Recettes.svelte'),
   Ingredients: () => import('./features/ingredients/Ingredients.svelte'),
   Plannings: () => import('./features/plannings/Plannings.svelte'),
@@ -12,6 +13,7 @@ export const pages = {
 
 // Static imports for SSR (server-side rendering) - export les fragments autonomes
 export { default as Home } from './features/home/Home.svelte';
+export { default as Recipes } from './features/recipes/Recipes.svelte';
 export { default as Recettes } from './features/recettes/Recettes.svelte';
 export { default as Ingredients } from './features/ingredients/Ingredients.svelte';
 export { default as Plannings } from './features/plannings/Plannings.svelte';

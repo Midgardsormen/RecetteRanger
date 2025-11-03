@@ -8,33 +8,104 @@ export class RecipeService {
   constructor(private prisma: PrismaService) {}
 
   async create(createRecipeDto: CreateRecipeDto) {
+    console.log('Creating recipe with data:', JSON.stringify(createRecipeDto, null, 2));
     const { steps, ingredients, ...recipeData } = createRecipeDto;
 
-    return this.prisma.recipe.create({
-      data: {
-        ...recipeData,
-        steps: steps
-          ? {
-              create: steps,
-            }
-          : undefined,
-        ingredients: ingredients
-          ? {
-              create: ingredients,
-            }
-          : undefined,
-      },
-      include: {
-        steps: {
-          orderBy: { stepNumber: 'asc' },
+    try {
+      const result = await this.prisma.recipe.create({
+        data: {
+          ...recipeData,
+          steps: steps
+            ? {
+                create: steps,
+              }
+            : undefined,
+          ingredients: ingredients
+            ? {
+                create: ingredients.map(ing => ({
+                  quantity: ing.quantity ? Number(ing.quantity) : null,
+                  unit: ing.unit || null,
+                  note: ing.note || null,
+                  ingredient: {
+                    connect: { id: ing.ingredientId }
+                  }
+                })),
+              }
+            : undefined,
         },
-        ingredients: {
-          include: {
-            ingredient: true,
+        include: {
+          steps: {
+            orderBy: { stepNumber: 'asc' },
+          },
+          ingredients: {
+            include: {
+              ingredient: true,
+            },
           },
         },
+      });
+      console.log('Recipe created successfully:', result.id);
+      return result;
+    } catch (error) {
+      console.error('Error creating recipe in service:', error);
+      throw error;
+    }
+  }
+
+  async search(searchParams: any) {
+    const { search, category, sortBy = 'alpha', limit = 20, page = 0 } = searchParams;
+
+    const where: any = {};
+
+    if (search) {
+      where.label = {
+        contains: search,
+        mode: 'insensitive',
+      };
+    }
+
+    if (category) {
+      // Note: category n'est pas dans le schéma actuel, on ignore pour l'instant
+    }
+
+    let orderBy: any = { createdAt: 'desc' };
+    if (sortBy === 'alpha') {
+      orderBy = { label: 'asc' };
+    } else if (sortBy === 'popularity') {
+      // Pour l'instant, on utilise createdAt comme fallback
+      orderBy = { createdAt: 'desc' };
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.recipe.findMany({
+        where,
+        include: {
+          steps: {
+            orderBy: { stepNumber: 'asc' },
+          },
+          ingredients: {
+            include: {
+              ingredient: true,
+            },
+          },
+        },
+        orderBy,
+        take: limit,
+        skip: page * limit,
+      }),
+      this.prisma.recipe.count({ where }),
+    ]);
+
+    return {
+      data: items,
+      items,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async findAll(ownerId?: string) {

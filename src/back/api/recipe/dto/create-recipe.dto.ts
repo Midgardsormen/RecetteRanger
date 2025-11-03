@@ -1,59 +1,103 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsOptional, IsNumber, IsArray, ValidateNested, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
 
 class CreateStepDto {
   @ApiProperty({ description: 'Numéro de l\'étape', example: 1 })
+  @IsNumber()
   stepNumber: number;
 
   @ApiProperty({ description: 'Description de l\'étape', example: 'Préchauffer le four à 180°C' })
+  @IsString()
   description: string;
+
+  @ApiProperty({ description: 'Durée de l\'étape (minutes)', example: 10, required: false })
+  @IsOptional()
+  @IsNumber()
+  durationMinutes?: number;
 }
 
 class CreateRecipeIngredientDto {
   @ApiProperty({ description: 'ID de l\'ingrédient' })
+  @IsString()
   ingredientId: string;
 
   @ApiProperty({ description: 'Quantité', example: 250.5, required: false })
+  @IsOptional()
+  @IsNumber()
   quantity?: number;
 
   @ApiProperty({ description: 'Unité de mesure', example: 'g', required: false })
+  @IsOptional()
+  @IsString()
   unit?: string;
 
   @ApiProperty({ description: 'Note sur l\'ingrédient', example: 'Bio de préférence', required: false })
+  @IsOptional()
+  @IsString()
   note?: string;
 }
 
 export class CreateRecipeDto {
   @ApiProperty({ description: 'Nom de la recette', example: 'Tarte aux pommes' })
+  @IsString()
   label: string;
 
   @ApiProperty({ description: 'URL de l\'image', example: 'https://example.com/tarte.jpg', required: false })
+  @IsOptional()
+  @IsString()
   imageUrl?: string;
 
   @ApiProperty({ description: 'Description de la recette', example: 'Une délicieuse tarte...', required: false })
+  @IsOptional()
+  @IsString()
   description?: string;
 
   @ApiProperty({ description: 'Temps de préparation (minutes)', example: 30, default: 0 })
+  @IsOptional()
+  @IsNumber()
   prepMinutes?: number;
 
   @ApiProperty({ description: 'Temps de cuisson (minutes)', example: 45, default: 0 })
+  @IsOptional()
+  @IsNumber()
   cookMinutes?: number;
 
   @ApiProperty({ description: 'Temps de repos (minutes)', example: 20, default: 0 })
+  @IsOptional()
+  @IsNumber()
   restMinutes?: number;
 
-  @ApiProperty({ description: 'ID du propriétaire (utilisateur)' })
-  ownerId: string;
+  @ApiProperty({ description: 'Nombre de personnes', example: 4, required: false })
+  @IsOptional()
+  @IsNumber()
+  servings?: number;
+
+  @ApiProperty({ description: 'ID du propriétaire (utilisateur)', required: false })
+  @IsOptional()
+  @IsString()
+  ownerId?: string;
 
   @ApiProperty({
     description: 'Visibilité de la recette',
     enum: ['PRIVATE', 'SHARED', 'PUBLIC'],
     default: 'PRIVATE'
   })
+  @IsOptional()
+  @IsEnum(['PRIVATE', 'SHARED', 'PUBLIC'])
   visibility?: 'PRIVATE' | 'SHARED' | 'PUBLIC';
 
   @ApiProperty({ description: 'Étapes de la recette', type: [CreateStepDto], required: false })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateStepDto)
   steps?: CreateStepDto[];
 
   @ApiProperty({ description: 'Ingrédients de la recette', type: [CreateRecipeIngredientDto], required: false })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateRecipeIngredientDto)
   ingredients?: CreateRecipeIngredientDto[];
 }

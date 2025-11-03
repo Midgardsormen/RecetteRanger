@@ -29,7 +29,8 @@
       "Bash(findstr:*)",
       "Bash(taskkill //F //PID 36712)",
       "Bash(tasklist:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

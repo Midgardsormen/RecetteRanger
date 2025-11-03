@@ -143,9 +143,10 @@ model Recipe {
   prepMinutes Int     @default(0)
   cookMinutes Int     @default(0)
   restMinutes Int     @default(0)
+  servings    Int     @default(4)
 
-  owner      User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId    String
+  owner      User?            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId    String?
   visibility RecipeVisibility @default(PRIVATE)
 
   steps         Step[]
@@ -160,11 +161,12 @@ model Recipe {
 }
 
 model Step {
-  id          String @id @default(cuid())
-  stepNumber  Int
-  description String
-  recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  recipeId    String
+  id              String @id @default(cuid())
+  stepNumber      Int
+  description     String
+  durationMinutes Int?   @default(0)
+  recipe          Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId        String
 
   @@unique([recipeId, stepNumber])
   @@index([recipeId])
