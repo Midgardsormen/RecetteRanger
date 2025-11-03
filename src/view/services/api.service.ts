@@ -178,6 +178,12 @@ class ApiService {
     });
   }
 
+  async getRecipe(id: string) {
+    return this.authenticatedFetch(`/api/recipes/${id}`, {
+      method: 'GET',
+    });
+  }
+
   async updateRecipe(id: string, data: any) {
     return this.authenticatedFetch(`/api/recipes/${id}`, {
       method: 'PATCH',
@@ -189,10 +195,6 @@ class ApiService {
     return this.authenticatedFetch(`/api/recipes/${id}`, {
       method: 'DELETE',
     });
-  }
-
-  async getRecipe(id: string) {
-    return this.authenticatedFetch(`/api/recipes/${id}`);
   }
 
   async searchRecipes(searchParams: any) {

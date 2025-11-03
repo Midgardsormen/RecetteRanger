@@ -32,4 +32,30 @@ export class RecettesService {
       }
     });
   }
+
+  async getRecetteForUser(recipeId: string, userId: string) {
+    // Récupérer une recette spécifique si l'utilisateur y a accès
+    return this.prisma.recipe.findFirst({
+      where: {
+        id: recipeId,
+        OR: [
+          { ownerId: userId }, // Recettes de l'utilisateur
+          { ownerId: null }, // Recettes publiques (disponibles pour tous)
+          { visibility: 'PUBLIC' } // Recettes publiques explicites
+        ]
+      },
+      include: {
+        ingredients: {
+          include: {
+            ingredient: true
+          }
+        },
+        steps: {
+          orderBy: {
+            stepNumber: 'asc'
+          }
+        }
+      }
+    });
+  }
 }

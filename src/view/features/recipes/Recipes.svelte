@@ -214,10 +214,7 @@
           imageUrl={recipe.imageUrl}
           imagePlaceholder="🍽️"
           clickable={true}
-          onclick={() => {
-            // TODO: Navigation vers la page de détail de la recette
-            console.log('Recette cliquée:', recipe.id);
-          }}
+          onclick={() => window.location.href = `/recettes/${recipe.id}`}
         >
           {#snippet footer()}
             <div class="recipe-card-footer">
