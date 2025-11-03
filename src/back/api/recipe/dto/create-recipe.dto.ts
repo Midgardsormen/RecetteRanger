@@ -68,10 +68,19 @@ export class CreateRecipeDto {
   @IsNumber()
   restMinutes?: number;
 
-  @ApiProperty({ description: 'Nombre de personnes', example: 4, required: false })
+  @ApiProperty({ description: 'Nombre de personnes (recette pour 1 personne par défaut)', example: 1, default: 1 })
   @IsOptional()
   @IsNumber()
   servings?: number;
+
+  @ApiProperty({
+    description: 'Difficulté de la recette',
+    enum: ['VERY_EASY', 'EASY', 'MEDIUM', 'HARD'],
+    default: 'MEDIUM'
+  })
+  @IsOptional()
+  @IsEnum(['VERY_EASY', 'EASY', 'MEDIUM', 'HARD'])
+  difficulty?: 'VERY_EASY' | 'EASY' | 'MEDIUM' | 'HARD';
 
   @ApiProperty({ description: 'ID du propriétaire (utilisateur)', required: false })
   @IsOptional()

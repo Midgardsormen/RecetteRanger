@@ -305,6 +305,7 @@
 <!-- Drawer -->
 <RecipeDrawer
   isOpen={isDrawerOpen}
+  recipe={editingRecipe}
   onSave={handleRecipeSaved}
   onClose={closeDrawer}
 />

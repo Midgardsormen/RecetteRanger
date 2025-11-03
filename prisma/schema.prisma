@@ -86,6 +86,13 @@ enum ShoppingListStatus {
   ARCHIVED
 }
 
+enum RecipeDifficulty {
+  VERY_EASY @map("très facile")
+  EASY      @map("facile")
+  MEDIUM    @map("moyen")
+  HARD      @map("difficile")
+}
+
 enum Unit {
   PINCEE           @map("pincée")
   GRAMME           @map("g")
@@ -136,14 +143,15 @@ model User {
 }
 
 model Recipe {
-  id          String  @id @default(cuid())
+  id          String           @id @default(cuid())
   label       String
-  imageUrl    String? @db.VarChar(2048)
+  imageUrl    String?          @db.VarChar(2048)
   description String?
-  prepMinutes Int     @default(0)
-  cookMinutes Int     @default(0)
-  restMinutes Int     @default(0)
-  servings    Int     @default(4)
+  prepMinutes Int              @default(0)
+  cookMinutes Int              @default(0)
+  restMinutes Int              @default(0)
+  servings    Int              @default(1) // Recettes créées pour 1 personne par défaut
+  difficulty  RecipeDifficulty @default(MEDIUM)
 
   owner      User?            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId    String?

@@ -7,6 +7,12 @@
   // Recevoir les données du SSR
   let { recipe, user = null }: { recipe: Recipe, user?: any } = $props();
 
+  // Nombre de personnes (par défaut 4)
+  let servings = $state(4);
+
+  // Calculer le multiplicateur de quantités
+  let multiplier = $derived(servings / (recipe.servings || 1));
+
   function formatTime(minutes: number): string {
     if (minutes < 60) {
       return `${minutes} min`;
@@ -23,6 +29,23 @@
 
   function goBack() {
     window.location.href = '/recettes';
+  }
+
+  function adjustQuantity(quantity: number | null): string {
+    if (!quantity) return '';
+    const adjusted = quantity * multiplier;
+    // Arrondir à 1 décimale si nécessaire
+    return adjusted % 1 === 0 ? adjusted.toString() : adjusted.toFixed(1);
+  }
+
+  function incrementServings() {
+    servings++;
+  }
+
+  function decrementServings() {
+    if (servings > 1) {
+      servings--;
+    }
   }
 </script>
 
@@ -47,9 +70,11 @@
           <h1>{recipe.label}</h1>
 
           <div class="recipe-meta">
-            <div class="meta-item">
+            <div class="meta-item servings-control">
               <span class="meta-icon">👥</span>
-              <span>{recipe.servings || 4} personnes</span>
+              <button class="servings-btn" onclick={decrementServings} disabled={servings <= 1}>−</button>
+              <span class="servings-value">{servings} {servings > 1 ? 'personnes' : 'personne'}</span>
+              <button class="servings-btn" onclick={incrementServings}>+</button>
             </div>
             <div class="meta-item">
               <span class="meta-icon">⏱️</span>
@@ -95,7 +120,7 @@
                 </span>
                 <span class="ingredient-content">
                   {#if item.quantity}
-                    <strong>{item.quantity} {item.unit ? UnitLabels[item.unit] || item.unit : ''}</strong>
+                    <strong>{adjustQuantity(item.quantity)} {item.unit ? UnitLabels[item.unit] || item.unit : ''}</strong>
                   {/if}
                   <span class="ingredient-name">{item.ingredient?.label || 'Ingrédient'}</span>
                   {#if item.note}
@@ -245,6 +270,53 @@
 
   .meta-icon {
     font-size: 1.5rem;
+  }
+
+  .servings-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--background-color);
+    border-radius: 12px;
+  }
+
+  .servings-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--primary-color);
+    background: var(--surface-color);
+    color: var(--primary-color);
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+      background: var(--primary-color);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+  }
+
+  .servings-value {
+    min-width: 100px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-color);
   }
 
   .time-breakdown {

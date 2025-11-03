@@ -152,9 +152,40 @@ export class RecipeService {
   async update(id: string, updateRecipeDto: UpdateRecipeDto) {
     await this.findOne(id);
 
+    // Extraire les champs scalaires et les relations
+    const { steps, ingredients, ...scalarFields } = updateRecipeDto;
+
+    // Préparer les données pour Prisma
+    const updateData: any = { ...scalarFields };
+
+    // Gérer la mise à jour des étapes si fournies
+    if (steps !== undefined) {
+      updateData.steps = {
+        deleteMany: {}, // Supprimer toutes les étapes existantes
+        create: steps.map((step) => ({
+          stepNumber: step.stepNumber,
+          description: step.description,
+          durationMinutes: step.durationMinutes || 0,
+        })),
+      };
+    }
+
+    // Gérer la mise à jour des ingrédients si fournis
+    if (ingredients !== undefined) {
+      updateData.ingredients = {
+        deleteMany: {}, // Supprimer tous les ingrédients existants
+        create: ingredients.map((ing) => ({
+          ingredientId: ing.ingredientId,
+          quantity: ing.quantity,
+          unit: ing.unit,
+          note: ing.note,
+        })),
+      };
+    }
+
     return this.prisma.recipe.update({
       where: { id },
-      data: updateRecipeDto,
+      data: updateData,
       include: {
         steps: {
           orderBy: { stepNumber: 'asc' },

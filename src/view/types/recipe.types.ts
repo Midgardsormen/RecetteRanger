@@ -8,6 +8,8 @@ export interface Recipe {
   prepMinutes: number;
   cookMinutes: number;
   restMinutes: number;
+  servings: number;
+  difficulty: RecipeDifficulty;
   ownerId: string | null;
   visibility: RecipeVisibility;
   steps: Step[];
@@ -39,6 +41,20 @@ export enum RecipeVisibility {
   SHARED = 'SHARED',
   PUBLIC = 'PUBLIC',
 }
+
+export enum RecipeDifficulty {
+  VERY_EASY = 'VERY_EASY',
+  EASY = 'EASY',
+  MEDIUM = 'MEDIUM',
+  HARD = 'HARD',
+}
+
+export const RecipeDifficultyLabels: Record<RecipeDifficulty, string> = {
+  [RecipeDifficulty.VERY_EASY]: 'Très facile',
+  [RecipeDifficulty.EASY]: 'Facile',
+  [RecipeDifficulty.MEDIUM]: 'Moyen',
+  [RecipeDifficulty.HARD]: 'Difficile',
+};
 
 export enum RecipeCategory {
   ENTREE = 'ENTREE',
@@ -76,6 +92,7 @@ export interface CreateRecipeDto {
   cookMinutes: number;
   restMinutes: number;
   servings: number;
+  difficulty: RecipeDifficulty;
   category?: RecipeCategory;
   visibility?: RecipeVisibility;
   ingredients: CreateRecipeIngredientDto[];
@@ -99,6 +116,7 @@ export interface RecipeFormData {
   // Étape 1
   label: string;
   category: RecipeCategory;
+  difficulty: RecipeDifficulty;
   cookMinutes: number;
   prepMinutes: number;
   servings: number;

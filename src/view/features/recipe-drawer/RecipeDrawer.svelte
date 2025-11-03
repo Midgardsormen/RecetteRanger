@@ -6,19 +6,21 @@
     RecipeFormData,
     RecipeIngredientInput,
     StepInput,
-    CreateRecipeDto
+    CreateRecipeDto,
+    Recipe
   } from '../../types/recipe.types';
-  import { RecipeCategory, RecipeCategoryLabels } from '../../types/recipe.types';
+  import { RecipeCategory, RecipeCategoryLabels, RecipeDifficulty, RecipeDifficultyLabels } from '../../types/recipe.types';
   import type { Ingredient } from '../../types/ingredient.types';
   import { UnitLabels } from '../../types/ingredient.types';
 
   interface Props {
     isOpen?: boolean;
+    recipe?: Recipe | null;
     onSave: () => void;
     onClose: () => void;
   }
 
-  let { isOpen = false, onSave, onClose }: Props = $props();
+  let { isOpen = false, recipe = null, onSave, onClose }: Props = $props();
 
   // Gestion des étapes
   let currentStep = $state<1 | 2 | 3>(1);
@@ -27,9 +29,10 @@
   let formData = $state<RecipeFormData>({
     label: '',
     category: RecipeCategory.PLAT,
+    difficulty: RecipeDifficulty.MEDIUM,
     cookMinutes: 0,
     prepMinutes: 0,
-    servings: 4,
+    servings: 1,
     imageUrl: '',
     ingredients: [],
     steps: []
@@ -45,20 +48,51 @@
   let saving = $state(false);
   let errors = $state<Record<string, string>>({});
 
-  // Réinitialiser quand le drawer s'ouvre/ferme
+  // Réinitialiser ou charger les données quand le drawer s'ouvre/ferme
   $effect(() => {
     if (isOpen) {
       currentStep = 1;
-      formData = {
-        label: '',
-        category: RecipeCategory.PLAT,
-        cookMinutes: 0,
-        prepMinutes: 0,
-        servings: 4,
-        imageUrl: '',
-        ingredients: [],
-        steps: []
-      };
+
+      if (recipe) {
+        // Mode édition : charger les données de la recette
+        formData = {
+          label: recipe.label,
+          category: RecipeCategory.PLAT, // TODO: récupérer depuis recipe quand category sera ajouté
+          difficulty: recipe.difficulty,
+          cookMinutes: recipe.cookMinutes,
+          prepMinutes: recipe.prepMinutes,
+          servings: recipe.servings,
+          imageUrl: recipe.imageUrl || '',
+          ingredients: recipe.ingredients.map(ing => ({
+            ingredientId: ing.ingredientId,
+            ingredientLabel: ing.ingredient?.label || '',
+            quantity: ing.quantity?.toString() || '',
+            unit: ing.unit || '',
+            note: ing.note || '',
+            availableUnits: ing.ingredient?.units || []
+          })),
+          steps: recipe.steps
+            .sort((a, b) => a.stepNumber - b.stepNumber)
+            .map(step => ({
+              description: step.description,
+              durationMinutes: step.durationMinutes?.toString() || ''
+            }))
+        };
+      } else {
+        // Mode création : formulaire vide
+        formData = {
+          label: '',
+          category: RecipeCategory.PLAT,
+          difficulty: RecipeDifficulty.MEDIUM,
+          cookMinutes: 0,
+          prepMinutes: 0,
+          servings: 1,
+          imageUrl: '',
+          ingredients: [],
+          steps: []
+        };
+      }
+
       errors = {};
     }
   });
@@ -217,6 +251,7 @@
         cookMinutes: formData.cookMinutes,
         restMinutes: 0,
         servings: formData.servings,
+        difficulty: formData.difficulty,
         ingredients: formData.ingredients.map(ing => ({
           ingredientId: ing.ingredientId,
           quantity: ing.quantity ? parseFloat(ing.quantity) : undefined,
@@ -230,7 +265,13 @@
         }))
       };
 
-      await apiService.createRecipe(data);
+      if (recipe) {
+        // Mode édition
+        await apiService.updateRecipe(recipe.id, data);
+      } else {
+        // Mode création
+        await apiService.createRecipe(data);
+      }
       onSave();
     } catch (err: any) {
       alert('Erreur : ' + err.message);
@@ -239,20 +280,22 @@
     }
   }
 
-  // Calculer le titre en fonction de l'étape
+  // Calculer le titre en fonction de l'étape et du mode
   function getTitle(): string {
-    return currentStep === 1
-      ? '➕ Nouvelle recette - Informations'
+    const prefix = recipe ? '✏️ Modifier' : '➕ Nouvelle';
+    const suffix = currentStep === 1
+      ? 'Informations'
       : currentStep === 2
-      ? '➕ Nouvelle recette - Ingrédients'
-      : '➕ Nouvelle recette - Étapes';
+      ? 'Ingrédients'
+      : 'Étapes';
+    return `${prefix} recette - ${suffix}`;
   }
 
   // Actions du drawer en fonction de l'étape
   function getPrimaryAction() {
     return currentStep === 3
       ? {
-          label: 'Créer la recette',
+          label: recipe ? 'Modifier la recette' : 'Créer la recette',
           onClick: handleSubmit,
           disabled: saving,
           loading: saving
@@ -317,6 +360,17 @@
         {/each}
       </Select>
 
+      <Select
+        id="difficulty"
+        label="Difficulté"
+        bind:value={formData.difficulty}
+        required
+      >
+        {#each Object.entries(RecipeDifficultyLabels) as [key, label]}
+          <option value={key}>{label}</option>
+        {/each}
+      </Select>
+
       <div class="form-row">
         <Input
           id="prepMinutes"
@@ -343,10 +397,12 @@
         type="number"
         bind:value={formData.servings}
         min="1"
-        placeholder="4"
+        placeholder="1"
         required
         error={errors.servings}
       />
+
+      <p class="help-text">💡 Créez la recette pour 1 personne. Les quantités seront ajustées automatiquement lors de la consultation.</p>
 
       <div class="form-field">
         <label class="form-label">Photo de la recette (optionnel)</label>
@@ -584,6 +640,17 @@
     color: $danger-color;
     font-size: 0.9rem;
     margin-top: $spacing-base * 0.5;
+  }
+
+  .help-text {
+    margin: -0.5rem 0 0 0;
+    padding: 0.75rem;
+    background: rgba(102, 126, 234, 0.05);
+    border-left: 3px solid $primary-color;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: $text-gray;
+    line-height: 1.5;
   }
 
   // Étape 2 : Ingrédients
