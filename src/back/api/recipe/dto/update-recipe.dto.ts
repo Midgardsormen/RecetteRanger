@@ -36,6 +36,10 @@ class UpdateRecipeIngredientDto {
   @IsOptional()
   @IsString()
   note?: string;
+
+  @ApiProperty({ description: 'Indique si la quantité est ajustable selon le nombre de personnes', default: true, required: false })
+  @IsOptional()
+  scalable?: boolean;
 }
 
 export class UpdateRecipeDto {

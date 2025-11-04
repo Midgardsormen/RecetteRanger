@@ -23,6 +23,7 @@
   let searchQuery = $state('');
   let selectedCategory = $state<RecipeCategory | ''>('');
   let sortBy = $state<'alpha' | 'date' | 'popularity'>('alpha');
+  let filter = $state<'all' | 'mine'>('all');
 
   // Drawer
   let isDrawerOpen = $state(false);
@@ -47,6 +48,7 @@
         search: searchQuery || undefined,
         category: selectedCategory || undefined,
         sortBy,
+        filter,
         limit: 20,
         page: currentPage,
       };
@@ -150,6 +152,20 @@
     />
 
     <div class="recipes__filters">
+      <div class="recipes__filter-group">
+        <span class="recipes__filter-label">Affichage</span>
+        <Filter
+          label="Recettes"
+          mode="dropdown"
+          bind:value={filter}
+          onchange={handleFilterChange}
+          options={[
+            { value: 'all', label: 'Toutes les recettes' },
+            { value: 'mine', label: 'Mes recettes' }
+          ]}
+        />
+      </div>
+
       <div class="recipes__filter-group">
         <span class="recipes__filter-label">Filtrer par</span>
         <Filter

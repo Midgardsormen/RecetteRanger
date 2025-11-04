@@ -31,10 +31,16 @@
     window.location.href = '/recettes';
   }
 
-  function adjustQuantity(quantity: number | null): string {
+  function adjustQuantity(quantity: number | null, scalable: boolean): string {
     if (!quantity) return '';
+
+    // Si l'ingrédient n'est pas scalable, retourner la quantité d'origine
+    if (!scalable) {
+      return quantity.toString();
+    }
+
+    // Sinon, multiplication normale
     const adjusted = quantity * multiplier;
-    // Arrondir à 1 décimale si nécessaire
     return adjusted % 1 === 0 ? adjusted.toString() : adjusted.toFixed(1);
   }
 
@@ -120,7 +126,7 @@
                 </span>
                 <span class="ingredient-content">
                   {#if item.quantity}
-                    <strong>{adjustQuantity(item.quantity)} {item.unit ? UnitLabels[item.unit] || item.unit : ''}</strong>
+                    <strong>{adjustQuantity(item.quantity, item.scalable)} {item.unit ? UnitLabels[item.unit] || item.unit : ''}</strong>
                   {/if}
                   <span class="ingredient-name">{item.ingredient?.label || 'Ingrédient'}</span>
                   {#if item.note}

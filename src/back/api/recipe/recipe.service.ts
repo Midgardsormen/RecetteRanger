@@ -26,6 +26,7 @@ export class RecipeService {
                   quantity: ing.quantity ? Number(ing.quantity) : null,
                   unit: ing.unit || null,
                   note: ing.note || null,
+                  scalable: ing.scalable !== undefined ? ing.scalable : true,
                   ingredient: {
                     connect: { id: ing.ingredientId }
                   }
@@ -53,7 +54,7 @@ export class RecipeService {
   }
 
   async search(searchParams: any) {
-    const { search, category, sortBy = 'alpha', limit = 20, page = 0 } = searchParams;
+    const { search, category, sortBy = 'alpha', limit = 20, page = 0, userId, filter = 'all' } = searchParams;
 
     const where: any = {};
 
@@ -66,6 +67,21 @@ export class RecipeService {
 
     if (category) {
       // Note: category n'est pas dans le schéma actuel, on ignore pour l'instant
+    }
+
+    // Filtrage par visibilité et propriétaire
+    if (filter === 'mine' && userId) {
+      // Afficher uniquement les recettes de l'utilisateur connecté
+      where.ownerId = userId;
+    } else if (filter === 'all' && userId) {
+      // Afficher les recettes publiques + les recettes de l'utilisateur
+      where.OR = [
+        { visibility: 'PUBLIC' },
+        { ownerId: userId }
+      ];
+    } else {
+      // Si pas d'userId (utilisateur non connecté), afficher uniquement les recettes publiques
+      where.visibility = 'PUBLIC';
     }
 
     let orderBy: any = { createdAt: 'desc' };
@@ -88,6 +104,12 @@ export class RecipeService {
               ingredient: true,
             },
           },
+          owner: {
+            select: {
+              id: true,
+              pseudo: true,
+            }
+          }
         },
         orderBy,
         take: limit,
@@ -179,6 +201,7 @@ export class RecipeService {
           quantity: ing.quantity,
           unit: ing.unit,
           note: ing.note,
+          scalable: ing.scalable !== undefined ? ing.scalable : true,
         })),
       };
     }

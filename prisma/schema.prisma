@@ -68,7 +68,6 @@ enum StoreAisle {
 
 enum RecipeVisibility {
   PRIVATE
-  SHARED
   PUBLIC
 }
 
@@ -209,6 +208,7 @@ model RecipeIngredient {
   quantity Decimal? @db.Decimal(10, 3) // ex: 125.500
   unit     String? // "g", "kg", "ml", "càs", etc.
   note     String?
+  scalable Boolean  @default(true) // Indique si la quantité doit être multipliée selon le nombre de personnes
 
   @@unique([recipeId, ingredientId])
   @@index([ingredientId])

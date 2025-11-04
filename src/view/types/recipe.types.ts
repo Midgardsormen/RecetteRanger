@@ -34,11 +34,11 @@ export interface RecipeIngredient {
   quantity: number | null;
   unit: string | null;
   note: string | null;
+  scalable: boolean;
 }
 
 export enum RecipeVisibility {
   PRIVATE = 'PRIVATE',
-  SHARED = 'SHARED',
   PUBLIC = 'PUBLIC',
 }
 
@@ -80,7 +80,6 @@ export const RecipeCategoryLabels: Record<RecipeCategory, string> = {
 
 export const RecipeVisibilityLabels: Record<RecipeVisibility, string> = {
   [RecipeVisibility.PRIVATE]: 'Privée',
-  [RecipeVisibility.SHARED]: 'Partagée',
   [RecipeVisibility.PUBLIC]: 'Publique',
 };
 
@@ -104,6 +103,7 @@ export interface CreateRecipeIngredientDto {
   quantity?: number;
   unit?: string;
   note?: string;
+  scalable?: boolean;
 }
 
 export interface CreateStepDto {
@@ -121,6 +121,7 @@ export interface RecipeFormData {
   prepMinutes: number;
   servings: number;
   imageUrl: string;
+  visibility: RecipeVisibility;
 
   // Étape 2
   ingredients: RecipeIngredientInput[];
@@ -135,6 +136,7 @@ export interface RecipeIngredientInput {
   quantity: string; // String pour gérer les décimales dans l'input
   unit: string;
   note: string;
+  scalable: boolean; // Quantité ajustable selon le nombre de personnes
   availableUnits?: string[]; // Unités disponibles pour cet ingrédient
 }
 

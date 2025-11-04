@@ -36,6 +36,10 @@ class CreateRecipeIngredientDto {
   @IsOptional()
   @IsString()
   note?: string;
+
+  @ApiProperty({ description: 'Indique si la quantité est ajustable selon le nombre de personnes', default: true, required: false })
+  @IsOptional()
+  scalable?: boolean;
 }
 
 export class CreateRecipeDto {
@@ -89,12 +93,12 @@ export class CreateRecipeDto {
 
   @ApiProperty({
     description: 'Visibilité de la recette',
-    enum: ['PRIVATE', 'SHARED', 'PUBLIC'],
+    enum: ['PRIVATE', 'PUBLIC'],
     default: 'PRIVATE'
   })
   @IsOptional()
-  @IsEnum(['PRIVATE', 'SHARED', 'PUBLIC'])
-  visibility?: 'PRIVATE' | 'SHARED' | 'PUBLIC';
+  @IsEnum(['PRIVATE', 'PUBLIC'])
+  visibility?: 'PRIVATE' | 'PUBLIC';
 
   @ApiProperty({ description: 'Étapes de la recette', type: [CreateStepDto], required: false })
   @IsOptional()

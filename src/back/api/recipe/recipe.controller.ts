@@ -41,8 +41,12 @@ export class RecipeController {
     status: 200,
     description: 'Résultats de recherche',
   })
-  search(@Body() searchParams: any) {
-    return this.recipeService.search(searchParams);
+  search(@Request() req, @Body() searchParams: any) {
+    // Ajouter l'ID de l'utilisateur connecté aux paramètres de recherche
+    return this.recipeService.search({
+      ...searchParams,
+      userId: req.user?.id
+    });
   }
 
   @Get()

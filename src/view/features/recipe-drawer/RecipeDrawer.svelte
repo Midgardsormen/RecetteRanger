@@ -9,7 +9,7 @@
     CreateRecipeDto,
     Recipe
   } from '../../types/recipe.types';
-  import { RecipeCategory, RecipeCategoryLabels, RecipeDifficulty, RecipeDifficultyLabels } from '../../types/recipe.types';
+  import { RecipeCategory, RecipeCategoryLabels, RecipeDifficulty, RecipeDifficultyLabels, RecipeVisibility, RecipeVisibilityLabels } from '../../types/recipe.types';
   import type { Ingredient } from '../../types/ingredient.types';
   import { UnitLabels } from '../../types/ingredient.types';
 
@@ -34,6 +34,7 @@
     prepMinutes: 0,
     servings: 1,
     imageUrl: '',
+    visibility: RecipeVisibility.PRIVATE,
     ingredients: [],
     steps: []
   });
@@ -63,12 +64,14 @@
           prepMinutes: recipe.prepMinutes,
           servings: recipe.servings,
           imageUrl: recipe.imageUrl || '',
+          visibility: recipe.visibility || RecipeVisibility.PRIVATE,
           ingredients: recipe.ingredients.map(ing => ({
             ingredientId: ing.ingredientId,
             ingredientLabel: ing.ingredient?.label || '',
             quantity: ing.quantity?.toString() || '',
             unit: ing.unit || '',
             note: ing.note || '',
+            scalable: ing.scalable !== undefined ? ing.scalable : true,
             availableUnits: ing.ingredient?.units || []
           })),
           steps: recipe.steps
@@ -88,6 +91,7 @@
           prepMinutes: 0,
           servings: 1,
           imageUrl: '',
+          visibility: RecipeVisibility.PRIVATE,
           ingredients: [],
           steps: []
         };
@@ -185,6 +189,7 @@
       quantity: '',
       unit: ingredient.units[0] || '',
       note: '',
+      scalable: true, // Par défaut, la quantité est ajustable
       availableUnits: ingredient.units // Stocker les unités disponibles
     });
     formData.ingredients = [...formData.ingredients];
@@ -252,11 +257,13 @@
         restMinutes: 0,
         servings: formData.servings,
         difficulty: formData.difficulty,
+        visibility: formData.visibility,
         ingredients: formData.ingredients.map(ing => ({
           ingredientId: ing.ingredientId,
           quantity: ing.quantity ? parseFloat(ing.quantity) : undefined,
           unit: ing.unit || undefined,
-          note: ing.note || undefined
+          note: ing.note || undefined,
+          scalable: ing.scalable
         })),
         steps: formData.steps.map((step, index) => ({
           stepNumber: index + 1,
@@ -367,6 +374,17 @@
         required
       >
         {#each Object.entries(RecipeDifficultyLabels) as [key, label]}
+          <option value={key}>{label}</option>
+        {/each}
+      </Select>
+
+      <Select
+        id="visibility"
+        label="Visibilité de la recette"
+        bind:value={formData.visibility}
+        required
+      >
+        {#each Object.entries(RecipeVisibilityLabels) as [key, label]}
           <option value={key}>{label}</option>
         {/each}
       </Select>
@@ -510,6 +528,16 @@
                 bind:value={ingredient.note}
                 placeholder="Ex: coupé en dés"
               />
+              <div class="ingredient-scalable">
+                <input
+                  type="checkbox"
+                  id={`scalable-${index}`}
+                  bind:checked={ingredient.scalable}
+                />
+                <label for={`scalable-${index}`}>
+                  Quantité ajustable selon le nombre de personnes
+                </label>
+              </div>
             </div>
           {/each}
         </div>
@@ -779,6 +807,31 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: $spacing-base;
+  }
+
+  .ingredient-scalable {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 8px;
+    margin-top: 0.5rem;
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: $primary-color;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: $text-dark;
+      cursor: pointer;
+      user-select: none;
+    }
   }
 
   // Étape 3 : Steps
