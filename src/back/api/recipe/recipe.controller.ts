@@ -4,7 +4,7 @@ import { RecipeService } from './recipe.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { RecipeDto } from './dto/recipe.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard, OwnerOrAdminGuard } from '../auth/guards';
 
 @ApiTags('recipes')
 @ApiCookieAuth()
@@ -75,6 +75,7 @@ export class RecipeController {
   }
 
   @Patch(':id')
+  @UseGuards(OwnerOrAdminGuard)
   @ApiOperation({ summary: 'Mettre à jour une recette' })
   @ApiParam({ name: 'id', description: 'ID de la recette' })
   @ApiResponse({
@@ -83,15 +84,18 @@ export class RecipeController {
     type: RecipeDto
   })
   @ApiResponse({ status: 404, description: 'Recette non trouvée' })
+  @ApiResponse({ status: 403, description: 'Accès interdit - vous ne pouvez modifier que vos propres recettes' })
   update(@Param('id') id: string, @Body() updateRecipeDto: UpdateRecipeDto) {
     return this.recipeService.update(id, updateRecipeDto);
   }
 
   @Delete(':id')
+  @UseGuards(OwnerOrAdminGuard)
   @ApiOperation({ summary: 'Supprimer une recette' })
   @ApiParam({ name: 'id', description: 'ID de la recette' })
   @ApiResponse({ status: 200, description: 'Recette supprimée' })
   @ApiResponse({ status: 404, description: 'Recette non trouvée' })
+  @ApiResponse({ status: 403, description: 'Accès interdit - vous ne pouvez supprimer que vos propres recettes' })
   remove(@Param('id') id: string) {
     return this.recipeService.remove(id);
   }

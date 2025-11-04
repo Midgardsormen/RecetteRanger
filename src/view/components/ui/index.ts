@@ -7,6 +7,7 @@
 // Layout Components
 export { default as Drawer } from './Drawer.svelte';
 export { default as Modal } from './Modal.svelte';
+export { default as ConfirmModal } from './ConfirmModal.svelte';
 export { default as Card } from './Card.svelte';
 export { default as Tile } from './Tile.svelte';
 export { default as ListItem } from './ListItem.svelte';

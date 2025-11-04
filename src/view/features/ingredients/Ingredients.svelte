@@ -2,10 +2,11 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
-  import { SearchBar, ListItem, Button, Title, Filter } from '../../components/ui';
+  import { SearchBar, ListItem, Button, Title, Filter, ConfirmModal } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, SearchIngredientsDto } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, UnitLabels } from '../../types/ingredient.types';
+  import { UserRole } from '../../types/user.types';
 
   // Recevoir les données du SSR
   let { ingredients: initialIngredients = [], user = null }: { ingredients?: Ingredient[], user?: any } = $props();
@@ -28,6 +29,10 @@
   // Drawer
   let isDrawerOpen = $state(false);
   let editingIngredient = $state<Ingredient | null>(null);
+
+  // Modal de confirmation de suppression
+  let isConfirmModalOpen = $state(false);
+  let ingredientToDelete = $state<string | null>(null);
 
   // Debounce pour la recherche
   let searchTimeout: ReturnType<typeof setTimeout>;
@@ -92,14 +97,24 @@
     await loadIngredients();
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet ingrédient ?')) {
-      return;
-    }
+  function openDeleteConfirmation(id: string) {
+    ingredientToDelete = id;
+    isConfirmModalOpen = true;
+  }
+
+  function cancelDelete() {
+    ingredientToDelete = null;
+    isConfirmModalOpen = false;
+  }
+
+  async function confirmDelete() {
+    if (!ingredientToDelete) return;
 
     try {
-      await apiService.deleteIngredient(id);
+      await apiService.deleteIngredient(ingredientToDelete);
       await loadIngredients();
+      isConfirmModalOpen = false;
+      ingredientToDelete = null;
     } catch (err: any) {
       alert('Erreur lors de la suppression : ' + err.message);
     }
@@ -122,6 +137,10 @@
   function goToPage(page: number) {
     currentPage = page;
     loadIngredients();
+  }
+
+  function isAdmin(): boolean {
+    return user?.role === UserRole.ADMIN;
   }
 </script>
 
@@ -206,8 +225,8 @@
           imagePlaceholder="🍽️"
           title={ingredient.label}
           subtitle={StoreAisleLabels[ingredient.aisle]}
-          onEdit={() => openDrawer(ingredient)}
-          onDelete={() => handleDelete(ingredient.id)}
+          onEdit={isAdmin() ? () => openDrawer(ingredient) : undefined}
+          onDelete={isAdmin() ? () => openDeleteConfirmation(ingredient.id) : undefined}
         />
       {/each}
     </div>

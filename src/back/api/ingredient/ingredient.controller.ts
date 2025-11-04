@@ -6,7 +6,7 @@ import { UpdateIngredientDto } from './dto/update-ingredient.dto';
 import { IngredientDto } from './dto/ingredient.dto';
 import { SearchIngredientsDto } from './dto/search-ingredients.dto';
 import { CheckDuplicatesDto, CheckDuplicatesResponseDto } from './dto/check-duplicates.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard, AdminGuard } from '../auth/guards';
 
 @ApiTags('ingredients')
 @ApiCookieAuth()
@@ -75,7 +75,8 @@ export class IngredientController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Mettre à jour un ingrédient' })
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Mettre à jour un ingrédient (admin uniquement)' })
   @ApiParam({ name: 'id', description: 'ID de l\'ingrédient' })
   @ApiResponse({
     status: 200,
@@ -83,16 +84,19 @@ export class IngredientController {
     type: IngredientDto
   })
   @ApiResponse({ status: 404, description: 'Ingrédient non trouvé' })
+  @ApiResponse({ status: 403, description: 'Accès interdit - droits admin requis' })
   @ApiResponse({ status: 409, description: 'Conflit avec un ingrédient existant' })
   update(@Param('id') id: string, @Body() updateIngredientDto: UpdateIngredientDto) {
     return this.ingredientService.update(id, updateIngredientDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Supprimer un ingrédient' })
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Supprimer un ingrédient (admin uniquement)' })
   @ApiParam({ name: 'id', description: 'ID de l\'ingrédient' })
   @ApiResponse({ status: 200, description: 'Ingrédient supprimé' })
   @ApiResponse({ status: 404, description: 'Ingrédient non trouvé' })
+  @ApiResponse({ status: 403, description: 'Accès interdit - droits admin requis' })
   remove(@Param('id') id: string) {
     return this.ingredientService.remove(id);
   }

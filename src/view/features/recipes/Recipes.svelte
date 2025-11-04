@@ -2,10 +2,11 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { RecipeDrawer } from '../recipe-drawer';
-  import { SearchBar, Card, Button, Title, Filter } from '../../components/ui';
+  import { SearchBar, Card, Button, Title, Filter, ConfirmModal } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Recipe } from '../../types/recipe.types';
   import { RecipeCategory, RecipeCategoryLabels } from '../../types/recipe.types';
+  import { UserRole } from '../../types/user.types';
 
   // Recevoir les données du SSR
   let { recipes: initialRecipes = [], user = null }: { recipes?: Recipe[], user?: any } = $props();
@@ -28,6 +29,10 @@
   // Drawer
   let isDrawerOpen = $state(false);
   let editingRecipe = $state<Recipe | null>(null);
+
+  // Modal de confirmation de suppression
+  let isConfirmModalOpen = $state(false);
+  let recipeToDelete = $state<string | null>(null);
 
   // Debounce pour la recherche
   let searchTimeout: ReturnType<typeof setTimeout>;
@@ -93,14 +98,24 @@
     await loadRecipes();
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette recette ?')) {
-      return;
-    }
+  function openDeleteConfirmation(id: string) {
+    recipeToDelete = id;
+    isConfirmModalOpen = true;
+  }
+
+  function cancelDelete() {
+    recipeToDelete = null;
+    isConfirmModalOpen = false;
+  }
+
+  async function confirmDelete() {
+    if (!recipeToDelete) return;
 
     try {
-      await apiService.deleteRecipe(id);
+      await apiService.deleteRecipe(recipeToDelete);
       await loadRecipes();
+      isConfirmModalOpen = false;
+      recipeToDelete = null;
     } catch (err: any) {
       alert('Erreur lors de la suppression : ' + err.message);
     }
@@ -131,6 +146,14 @@
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return mins > 0 ? `${hours}h${mins}min` : `${hours}h`;
+  }
+
+  function canModifyRecipe(recipe: Recipe): boolean {
+    if (!user) return false;
+    // Admin peut tout modifier
+    if (user.role === UserRole.ADMIN) return true;
+    // Utilisateur peut modifier ses propres recettes
+    return recipe.ownerId === user.id;
   }
 </script>
 
@@ -251,28 +274,30 @@
                   </span>
                 {/if}
               </div>
-              <div class="recipe-card-actions">
-                <button
-                  class="recipe-card-action"
-                  onclick={(e) => {
-                    e.stopPropagation();
-                    openDrawer(recipe);
-                  }}
-                  title="Modifier"
-                >
-                  ✏️
-                </button>
-                <button
-                  class="recipe-card-action recipe-card-action--delete"
-                  onclick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(recipe.id);
-                  }}
-                  title="Supprimer"
-                >
-                  🗑️
-                </button>
-              </div>
+              {#if canModifyRecipe(recipe)}
+                <div class="recipe-card-actions">
+                  <button
+                    class="recipe-card-action"
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      openDrawer(recipe);
+                    }}
+                    title="Modifier"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    class="recipe-card-action recipe-card-action--delete"
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      openDeleteConfirmation(recipe.id);
+                    }}
+                    title="Supprimer"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              {/if}
             </div>
           {/snippet}
         </Card>
@@ -317,6 +342,17 @@
     {/if}
   {/if}
 </div>
+
+<!-- Modal de confirmation de suppression -->
+<ConfirmModal
+  isOpen={isConfirmModalOpen}
+  title="Supprimer la recette"
+  message="Êtes-vous sûr de vouloir supprimer cette recette ? Cette action est irréversible."
+  confirmLabel="Supprimer"
+  cancelLabel="Annuler"
+  onConfirm={confirmDelete}
+  onCancel={cancelDelete}
+/>
 
 <!-- Drawer -->
 <RecipeDrawer
