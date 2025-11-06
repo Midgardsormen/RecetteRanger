@@ -50,6 +50,12 @@ export class RecipeDto {
   @ApiProperty()
   restMinutes: number;
 
+  @ApiProperty({ type: [String], default: [] })
+  materiel: string[];
+
+  @ApiProperty({ type: [String], default: [] })
+  appareils: string[];
+
   @ApiProperty()
   ownerId: string;
 

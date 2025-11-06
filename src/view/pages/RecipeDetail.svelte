@@ -112,6 +112,33 @@
       </div>
     </div>
 
+    <!-- Section Matériel et Appareils -->
+    {#if (recipe.materiel && recipe.materiel.length > 0) || (recipe.appareils && recipe.appareils.length > 0)}
+      <div class="equipment-section">
+        {#if recipe.materiel && recipe.materiel.length > 0}
+          <div class="equipment-card">
+            <h3>🔪 Matériel</h3>
+            <ul class="equipment-list">
+              {#each recipe.materiel as item}
+                <li class="equipment-item">{item}</li>
+              {/each}
+            </ul>
+          </div>
+        {/if}
+
+        {#if recipe.appareils && recipe.appareils.length > 0}
+          <div class="equipment-card">
+            <h3>⚡ Appareils</h3>
+            <ul class="equipment-list">
+              {#each recipe.appareils as item}
+                <li class="equipment-item">{item}</li>
+              {/each}
+            </ul>
+          </div>
+        {/if}
+      </div>
+    {/if}
+
     <div class="recipe-content">
       <!-- Section Ingrédients -->
       <div class="section ingredients-section">
@@ -352,6 +379,54 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--primary-color);
+  }
+
+  .equipment-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .equipment-card {
+    background: var(--surface-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    h3 {
+      font-size: 1.2rem;
+      margin: 0 0 1rem 0;
+      color: var(--text-color);
+      font-weight: 600;
+    }
+  }
+
+  .equipment-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .equipment-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--background-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 0.95rem;
+
+    &::before {
+      content: '•';
+      color: var(--primary-color);
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
   }
 
   .recipe-content {

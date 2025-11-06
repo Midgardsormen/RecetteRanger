@@ -157,6 +157,8 @@ model Recipe {
   restMinutes Int              @default(0)
   servings    Int              @default(1) // Recettes créées pour 1 personne par défaut
   difficulty  RecipeDifficulty @default(MEDIUM)
+  materiel    String[]         @default([])
+  appareils   String[]         @default([])
 
   owner      User?            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId    String?

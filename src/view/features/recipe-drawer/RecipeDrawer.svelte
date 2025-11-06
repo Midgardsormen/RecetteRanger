@@ -35,6 +35,8 @@
     servings: 1,
     imageUrl: '',
     visibility: RecipeVisibility.PRIVATE,
+    materiel: [],
+    appareils: [],
     ingredients: [],
     steps: []
   });
@@ -65,6 +67,8 @@
           servings: recipe.servings,
           imageUrl: recipe.imageUrl || '',
           visibility: recipe.visibility || RecipeVisibility.PRIVATE,
+          materiel: recipe.materiel || [],
+          appareils: recipe.appareils || [],
           ingredients: recipe.ingredients.map(ing => ({
             ingredientId: ing.ingredientId,
             ingredientLabel: ing.ingredient?.label || '',
@@ -92,6 +96,8 @@
           servings: 1,
           imageUrl: '',
           visibility: RecipeVisibility.PRIVATE,
+          materiel: [],
+          appareils: [],
           ingredients: [],
           steps: []
         };
@@ -209,6 +215,40 @@
     loadIngredients(); // Recharger la liste
   }
 
+  // Gestion du matériel
+  let newMateriel = $state('');
+
+  function addMateriel() {
+    const trimmed = newMateriel.trim();
+    if (trimmed && !formData.materiel.includes(trimmed)) {
+      formData.materiel.push(trimmed);
+      formData.materiel = [...formData.materiel];
+      newMateriel = '';
+    }
+  }
+
+  function removeMateriel(index: number) {
+    formData.materiel.splice(index, 1);
+    formData.materiel = [...formData.materiel];
+  }
+
+  // Gestion des appareils
+  let newAppareil = $state('');
+
+  function addAppareil() {
+    const trimmed = newAppareil.trim();
+    if (trimmed && !formData.appareils.includes(trimmed)) {
+      formData.appareils.push(trimmed);
+      formData.appareils = [...formData.appareils];
+      newAppareil = '';
+    }
+  }
+
+  function removeAppareil(index: number) {
+    formData.appareils.splice(index, 1);
+    formData.appareils = [...formData.appareils];
+  }
+
   // Gestion des étapes de préparation
   function addStep() {
     formData.steps.push({
@@ -257,6 +297,8 @@
         restMinutes: 0,
         servings: formData.servings,
         difficulty: formData.difficulty,
+        materiel: formData.materiel.length > 0 ? formData.materiel : undefined,
+        appareils: formData.appareils.length > 0 ? formData.appareils : undefined,
         visibility: formData.visibility,
         ingredients: formData.ingredients.map(ing => ({
           ingredientId: ing.ingredientId,
@@ -421,6 +463,88 @@
       />
 
       <p class="help-text">💡 Créez la recette pour 1 personne. Les quantités seront ajustées automatiquement lors de la consultation.</p>
+
+      <!-- Matériel -->
+      <div class="form-field">
+        <label class="form-label">Matériel (optionnel)</label>
+        <div class="list-input-container">
+          <Input
+            id="materiel-input"
+            bind:value={newMateriel}
+            placeholder="Ex: Fouet, saladier..."
+            onkeydown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addMateriel();
+              }
+            }}
+          />
+          <Button
+            variant="secondary"
+            onclick={addMateriel}
+            disabled={!newMateriel.trim()}
+          >
+            + Ajouter
+          </Button>
+        </div>
+        {#if formData.materiel.length > 0}
+          <div class="tags-container">
+            {#each formData.materiel as item, index}
+              <span class="tag">
+                {item}
+                <button
+                  class="tag-remove"
+                  onclick={() => removeMateriel(index)}
+                  type="button"
+                >
+                  ✕
+                </button>
+              </span>
+            {/each}
+          </div>
+        {/if}
+      </div>
+
+      <!-- Appareils -->
+      <div class="form-field">
+        <label class="form-label">Appareils (optionnel)</label>
+        <div class="list-input-container">
+          <Input
+            id="appareils-input"
+            bind:value={newAppareil}
+            placeholder="Ex: Four, mixeur..."
+            onkeydown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addAppareil();
+              }
+            }}
+          />
+          <Button
+            variant="secondary"
+            onclick={addAppareil}
+            disabled={!newAppareil.trim()}
+          >
+            + Ajouter
+          </Button>
+        </div>
+        {#if formData.appareils.length > 0}
+          <div class="tags-container">
+            {#each formData.appareils as item, index}
+              <span class="tag">
+                {item}
+                <button
+                  class="tag-remove"
+                  onclick={() => removeAppareil(index)}
+                  type="button"
+                >
+                  ✕
+                </button>
+              </span>
+            {/each}
+          </div>
+        {/if}
+      </div>
 
       <div class="form-field">
         <label class="form-label">Photo de la recette (optionnel)</label>
@@ -679,6 +803,52 @@
     font-size: 0.9rem;
     color: $text-gray;
     line-height: 1.5;
+  }
+
+  .list-input-container {
+    display: flex;
+    gap: $spacing-base * 0.5;
+    align-items: flex-end;
+  }
+
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-base * 0.5;
+    margin-top: $spacing-base * 0.5;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-base * 0.5;
+    padding: $spacing-base * 0.5 $spacing-base * 0.75;
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: $text-dark;
+    font-weight: 500;
+  }
+
+  .tag-remove {
+    background: none;
+    border: none;
+    color: $danger-color;
+    cursor: pointer;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    font-size: 1rem;
+
+    &:hover {
+      background: rgba(245, 101, 101, 0.2);
+    }
   }
 
   // Étape 2 : Ingrédients

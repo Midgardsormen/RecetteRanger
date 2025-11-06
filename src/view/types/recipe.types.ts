@@ -10,6 +10,8 @@ export interface Recipe {
   restMinutes: number;
   servings: number;
   difficulty: RecipeDifficulty;
+  materiel: string[];
+  appareils: string[];
   ownerId: string | null;
   visibility: RecipeVisibility;
   steps: Step[];
@@ -92,6 +94,8 @@ export interface CreateRecipeDto {
   restMinutes: number;
   servings: number;
   difficulty: RecipeDifficulty;
+  materiel?: string[];
+  appareils?: string[];
   category?: RecipeCategory;
   visibility?: RecipeVisibility;
   ingredients: CreateRecipeIngredientDto[];
@@ -122,6 +126,8 @@ export interface RecipeFormData {
   servings: number;
   imageUrl: string;
   visibility: RecipeVisibility;
+  materiel: string[];
+  appareils: string[];
 
   // Étape 2
   ingredients: RecipeIngredientInput[];

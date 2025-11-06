@@ -86,6 +86,18 @@ export class CreateRecipeDto {
   @IsEnum(['VERY_EASY', 'EASY', 'MEDIUM', 'HARD'])
   difficulty?: 'VERY_EASY' | 'EASY' | 'MEDIUM' | 'HARD';
 
+  @ApiProperty({ description: 'Liste du matériel nécessaire', type: [String], example: ['Fouet', 'Saladier'], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  materiel?: string[];
+
+  @ApiProperty({ description: 'Liste des appareils nécessaires', type: [String], example: ['Four', 'Mixeur'], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  appareils?: string[];
+
   @ApiProperty({ description: 'ID du propriétaire (utilisateur)', required: false })
   @IsOptional()
   @IsString()

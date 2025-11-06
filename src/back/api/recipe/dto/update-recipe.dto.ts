@@ -87,6 +87,18 @@ export class UpdateRecipeDto {
   @IsEnum(['VERY_EASY', 'EASY', 'MEDIUM', 'HARD'])
   difficulty?: 'VERY_EASY' | 'EASY' | 'MEDIUM' | 'HARD';
 
+  @ApiProperty({ description: 'Liste du matériel nécessaire', type: [String], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  materiel?: string[];
+
+  @ApiProperty({ description: 'Liste des appareils nécessaires', type: [String], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  appareils?: string[];
+
   @ApiProperty({
     description: 'Visibilité de la recette',
     enum: ['PRIVATE', 'SHARED', 'PUBLIC'],
