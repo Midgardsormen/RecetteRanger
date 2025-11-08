@@ -1,118 +1,324 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
+  import { Button } from '../../components/ui';
+  import { GenerateShoppingListDrawer } from './components';
+  import { apiService } from '../../services/api.service';
+  import type { ShoppingList } from '../../types/shopping-list.types';
 
-  let { listes = [], user = null }: { listes?: any[], user?: any } = $props();
+  let { user }: { user: any } = $props();
+
+  // État
+  let shoppingLists = $state<ShoppingList[]>([]);
+  let loading = $state(true);
+  let showGenerateDrawer = $state(false);
+
+  // Charger les listes
+  async function loadShoppingLists() {
+    if (!user) return;
+
+    loading = true;
+    try {
+      const lists = await apiService.getShoppingLists();
+      shoppingLists = lists;
+    } catch (err) {
+      console.error('Erreur lors du chargement des listes:', err);
+    } finally {
+      loading = false;
+    }
+  }
+
+  function handleGenerateClick() {
+    showGenerateDrawer = true;
+  }
+
+  function handleListClick(listId: string) {
+    window.location.href = `/shopping-lists/${listId}`;
+  }
+
+  async function handleDeleteList(event: Event, listId: string) {
+    event.stopPropagation(); // Empêcher la navigation vers le détail
+
+    if (!confirm('Supprimer cette liste de courses ?')) return;
+
+    try {
+      await apiService.deleteShoppingList(listId);
+      // Retirer la liste de l'état local
+      shoppingLists = shoppingLists.filter(list => list.id !== listId);
+    } catch (err: any) {
+      alert('Erreur lors de la suppression : ' + err.message);
+    }
+  }
+
+  function getStatusLabel(status: string): string {
+    const labels = {
+      DRAFT: 'Brouillon',
+      IN_PROGRESS: 'En cours',
+      COMPLETED: 'Terminée',
+      ARCHIVED: 'Archivée'
+    };
+    return labels[status] || status;
+  }
+
+  function getStatusClass(status: string): string {
+    return `status-${status.toLowerCase()}`;
+  }
+
+  // Charger les données au montage
+  $effect(() => {
+    if (user) {
+      loadShoppingLists();
+    }
+  });
 </script>
 
-<Layout title="Shopping Lists" currentPage="/shopping-lists" {user}>
-<div id="shopping-lists" class="shopping-lists">
-  <header class="shopping-lists__header">
-    <h1 class="shopping-lists__title">🛒 Shopping Lists</h1>
-    <button class="shopping-lists__btn">+ New List</button>
-  </header>
+<Layout title="Listes de courses" currentPage="/shopping-lists" {user}>
+  <div class="shopping-lists">
+    <div class="shopping-lists__header">
+      <div class="header-content">
+        <h1>🛒 Mes listes de courses</h1>
+        <p class="subtitle">Gérez vos courses facilement</p>
+      </div>
+      <Button onclick={handleGenerateClick}>
+        ✨ Générer depuis le planning
+      </Button>
+    </div>
 
-  {#if listes.length === 0}
-    <div class="shopping-lists__empty">
-      <div class="shopping-lists__empty-icon">🛒</div>
-      <h2 class="shopping-lists__empty-title">No shopping lists</h2>
-      <p class="shopping-lists__empty-text">Create your shopping lists to never forget anything when shopping!</p>
-      <button class="shopping-lists__btn">Create my first list</button>
-    </div>
-  {:else}
-    <div class="shopping-lists__grid">
-      {#each listes as liste}
-        <div class="shopping-lists__card">
-          <h3>{liste.nom}</h3>
-          <p>{liste.description}</p>
-        </div>
-      {/each}
-    </div>
-  {/if}
-</div>
+    {#if loading}
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Chargement des listes...</p>
+      </div>
+    {:else if shoppingLists.length === 0}
+      <div class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <h2>Aucune liste de courses</h2>
+        <p>Générez une liste depuis votre planning de repas pour commencer !</p>
+        <Button onclick={handleGenerateClick}>Générer ma première liste</Button>
+      </div>
+    {:else}
+      <div class="lists-grid">
+        {#each shoppingLists as list}
+          <div class="list-card" onclick={() => handleListClick(list.id)}>
+            <div class="list-header">
+              <h3>{list.name}</h3>
+              <div class="list-header-actions">
+                <span class="status {getStatusClass(list.status)}">
+                  {getStatusLabel(list.status)}
+                </span>
+                <button
+                  class="delete-list-btn"
+                  onclick={(e) => handleDeleteList(e, list.id)}
+                  title="Supprimer cette liste"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+            <div class="list-info">
+              {#if list.fromDate && list.toDate}
+                <p class="date-range">
+                  📅 {new Date(list.fromDate).toLocaleDateString('fr-FR')} - {new Date(list.toDate).toLocaleDateString('fr-FR')}
+                </p>
+              {/if}
+              <p class="item-count">
+                {list.items.length} article{list.items.length > 1 ? 's' : ''}
+                {#if list.items.filter(i => i.checked).length > 0}
+                  · {list.items.filter(i => i.checked).length} coché{list.items.filter(i => i.checked).length > 1 ? 's' : ''}
+                {/if}
+              </p>
+            </div>
+          </div>
+        {/each}
+      </div>
+    {/if}
+  </div>
 </Layout>
 
-<style lang="scss">
-  // Variables
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $shadow-primary: rgba(102, 126, 234, 0.3);
-  $shadow-light: rgba(0, 0, 0, 0.08);
-  $spacing-base: 1rem;
-  $breakpoint-mobile: 768px;
-  $transition-duration: 0.3s;
+<GenerateShoppingListDrawer
+  isOpen={showGenerateDrawer}
+  onClose={() => { showGenerateDrawer = false; }}
+  onGenerate={loadShoppingLists}
+/>
 
-  // Block: shopping-lists
+<style lang="scss">
   .shopping-lists {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 2;
+    gap: 2rem;
+  }
 
-    // Element: header
-    &__header {
+  .shopping-lists__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .header-content {
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: var(--text-color);
+    }
+
+    .subtitle {
+      margin: 0.5rem 0 0 0;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1.5rem;
+
+    p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+  }
+
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      margin: 0 0 0.5rem 0;
+      color: var(--text-color);
+    }
+
+    p {
+      margin: 0 0 2rem 0;
+      color: var(--text-secondary);
+    }
+  }
+
+  .lists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .list-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+    }
+
+    .list-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: $spacing-base;
-    }
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      gap: 1rem;
 
-    // Element: title
-    &__title {
-      margin: 0;
-      color: $text-dark;
-      font-size: 2rem;
+      h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: var(--text-color);
+        flex: 1;
+      }
 
-      @media (max-width: $breakpoint-mobile) {
-        font-size: 1.5rem;
+      .list-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+
+        &.status-draft {
+          background: #f3f4f6;
+          color: #6b7280;
+        }
+
+        &.status-in_progress {
+          background: #dbeafe;
+          color: #1e40af;
+        }
+
+        &.status-completed {
+          background: #d1fae5;
+          color: #065f46;
+        }
+
+        &.status-archived {
+          background: #f3f4f6;
+          color: #9ca3af;
+        }
+      }
+
+      .delete-list-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        padding: 0.25rem;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+
+        &:hover {
+          opacity: 1;
+        }
       }
     }
 
-    // Element: btn
-    &__btn {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-      color: $white;
-      border: none;
-      padding: $spacing-base * 0.75 $spacing-base * 1.5;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all $transition-duration ease;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px $shadow-primary;
+    .list-info {
+      p {
+        margin: 0.5rem 0 0 0;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
       }
-    }
 
-    // Element: empty
-    &__empty {
-      text-align: center;
-      padding: $spacing-base * 4 $spacing-base * 2;
-      background: $white;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px $shadow-light;
-    }
+      .date-range {
+        font-weight: 500;
+      }
 
-    // Element: empty-icon
-    &__empty-icon {
-      font-size: 4rem;
-      margin-bottom: $spacing-base;
-    }
-
-    // Element: empty-title
-    &__empty-title {
-      color: $text-dark;
-      margin: 0 0 $spacing-base * 0.5 0;
-    }
-
-    // Element: empty-text
-    &__empty-text {
-      color: $text-gray;
-      margin: 0 0 $spacing-base * 2 0;
+      .item-count {
+        color: var(--text-tertiary);
+        font-size: 0.9rem;
+      }
     }
   }
 </style>

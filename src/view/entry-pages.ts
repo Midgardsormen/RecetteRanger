@@ -9,6 +9,7 @@ export const pages = {
   MealPlanning: () => import('./features/plannings/MealPlanning.svelte'),
   MealPlanningSettings: () => import('./features/plannings/MealPlanningSettings.svelte'),
   ShoppingLists: () => import('./features/shopping-lists/ShoppingLists.svelte'),
+  ShoppingListDetail: () => import('./features/shopping-lists/ShoppingListDetail.svelte'),
   Login: () => import('./features/auth/Login.svelte'),
   Register: () => import('./features/auth/Register.svelte')
 };
@@ -22,5 +23,6 @@ export { default as Ingredients } from './features/ingredients/Ingredients.svelt
 export { default as MealPlanning } from './features/plannings/MealPlanning.svelte';
 export { default as MealPlanningSettings } from './features/plannings/MealPlanningSettings.svelte';
 export { default as ShoppingLists } from './features/shopping-lists/ShoppingLists.svelte';
+export { default as ShoppingListDetail } from './features/shopping-lists/ShoppingListDetail.svelte';
 export { default as Login } from './features/auth/Login.svelte';
 export { default as Register } from './features/auth/Register.svelte';

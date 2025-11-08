@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiCookieAuth } from '@nestjs/swagger';
 import { ShoppingListService } from './shopping-list.service';
-import { CreateShoppingListDto, CreateShoppingListItemDto } from './dto/create-shopping-list.dto';
+import { CreateShoppingListDto, CreateShoppingListItemDto, GenerateShoppingListDto } from './dto/create-shopping-list.dto';
 import { UpdateShoppingListDto, UpdateShoppingListItemDto } from './dto/update-shopping-list.dto';
 import { ShoppingListDto, ShoppingListItemDto } from './dto/shopping-list.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -22,21 +22,32 @@ export class ShoppingListController {
     type: ShoppingListDto
   })
   @ApiResponse({ status: 400, description: 'Données invalides' })
-  create(@Body() createShoppingListDto: CreateShoppingListDto) {
-    return this.shoppingListService.create(createShoppingListDto);
+  create(@Request() req, @Body() createShoppingListDto: CreateShoppingListDto) {
+    return this.shoppingListService.create(req.user.id, createShoppingListDto);
+  }
+
+  @Post('generate')
+  @ApiOperation({ summary: 'Générer une liste de courses depuis le planning' })
+  @ApiResponse({
+    status: 201,
+    description: 'Liste de courses générée avec succès',
+    type: ShoppingListDto
+  })
+  @ApiResponse({ status: 400, description: 'Données invalides' })
+  generateFromMealPlan(@Request() req, @Body() generateDto: GenerateShoppingListDto) {
+    return this.shoppingListService.generateFromMealPlan(req.user.id, generateDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Récupérer les listes de courses' })
-  @ApiQuery({ name: 'userId', required: false, description: 'Filtrer par utilisateur' })
-  @ApiQuery({ name: 'status', required: false, description: 'Filtrer par statut (OPEN, LOCKED, ARCHIVED)' })
+  @ApiQuery({ name: 'status', required: false, description: 'Filtrer par statut (DRAFT, IN_PROGRESS, COMPLETED, ARCHIVED)' })
   @ApiResponse({
     status: 200,
     description: 'Liste des listes de courses',
     type: [ShoppingListDto]
   })
-  findAll(@Query('userId') userId?: string, @Query('status') status?: string) {
-    return this.shoppingListService.findAll(userId, status);
+  findAll(@Request() req, @Query('status') status?: string) {
+    return this.shoppingListService.findAll(req.user.id, status);
   }
 
   @Get(':id')

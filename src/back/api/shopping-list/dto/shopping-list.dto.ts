@@ -29,8 +29,17 @@ export class ShoppingListItemDto {
   @ApiProperty({ description: 'Note optionnelle', nullable: true })
   note: string | null;
 
-  @ApiProperty({ description: 'Provient de la planification', default: false })
-  fromPlan: boolean;
+  @ApiProperty({ description: 'Est un item manuel (non généré)', default: false })
+  isManual: boolean;
+
+  @ApiProperty({ description: 'IDs des MealPlanItems sources', type: [String] })
+  mealPlanItemIds: string[];
+
+  @ApiProperty({ description: 'Date de création' })
+  createdAt: Date;
+
+  @ApiProperty({ description: 'Date de mise à jour' })
+  updatedAt: Date;
 }
 
 export class ShoppingListDto {
@@ -40,8 +49,8 @@ export class ShoppingListDto {
   @ApiProperty({ description: 'ID de l\'utilisateur' })
   userId: string;
 
-  @ApiProperty({ description: 'Titre de la liste' })
-  title: string;
+  @ApiProperty({ description: 'Nom de la liste' })
+  name: string;
 
   @ApiProperty({ description: 'Date de début (optionnel)', nullable: true })
   fromDate: Date | null;

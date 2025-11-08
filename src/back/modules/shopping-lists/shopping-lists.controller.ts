@@ -1,4 +1,4 @@
-import { Controller, Get, Res, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Res, UseGuards, Request, Param } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
 import { ShoppingListsService } from './shopping-lists.service';
@@ -14,12 +14,20 @@ export class ShoppingListsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async getShoppingListsPage(@Request() req, @Res() res: Response) {
-    // Récupérer les listes de courses pour l'utilisateur connecté
-    const listes = await this.shoppingListsService.getShoppingListsForUser(req.user.id);
-
-    // Rendre la page avec les données en SSR
+    // Rendre la page liste des listes de courses
     const html = await this.svelteRenderService.render('ShoppingLists', {
-      listes,
+      user: req.user
+    });
+
+    res.send(html);
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async getShoppingListDetailPage(@Param('id') id: string, @Request() req, @Res() res: Response) {
+    // Rendre la page de détail d'une liste
+    const html = await this.svelteRenderService.render('ShoppingListDetail', {
+      listId: id,
       user: req.user
     });
 

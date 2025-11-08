@@ -85,8 +85,9 @@ enum MealSlot {
 }
 
 enum ShoppingListStatus {
-  OPEN
-  LOCKED
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
   ARCHIVED
 }
 
@@ -139,9 +140,9 @@ model User {
   avatarUrl    String?  @db.VarChar(2048)
   role         UserRole @default(USER)
 
-  recipes       Recipe[]
-  mealDays      MealPlanDay[]
-  shoppingLists ShoppingList[]
+  recipes         Recipe[]
+  mealDays        MealPlanDay[]
+  shoppingLists   ShoppingList[]
   mealSlotConfigs MealSlotConfig[]
 
   createdAt DateTime @default(now())
@@ -235,17 +236,17 @@ model MealPlanDay {
 }
 
 model MealPlanItem {
-  id            String      @id @default(cuid())
-  day           MealPlanDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
-  dayId         String
-  slot          MealSlot
-  customSlotName String?    // Nom personnalisé pour les repas exceptionnels
-  isExceptional Boolean     @default(false) // Indique si c'est un repas exceptionnel
-  recipe        Recipe?     @relation(fields: [recipeId], references: [id])
-  recipeId      String?
-  servings      Int         @default(1)
-  note          String?
-  order         Int         @default(0) // Ordre d'affichage pour plusieurs recettes dans le même slot
+  id             String      @id @default(cuid())
+  day            MealPlanDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  dayId          String
+  slot           MealSlot
+  customSlotName String? // Nom personnalisé pour les repas exceptionnels
+  isExceptional  Boolean     @default(false) // Indique si c'est un repas exceptionnel
+  recipe         Recipe?     @relation(fields: [recipeId], references: [id])
+  recipeId       String?
+  servings       Int         @default(1)
+  note           String?
+  order          Int         @default(0) // Ordre d'affichage pour plusieurs recettes dans le même slot
 
   @@index([dayId, slot])
 }
@@ -255,8 +256,8 @@ model MealSlotConfig {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   slot      MealSlot
-  label     String   // Nom personnalisé (ex: "Déjeuner" vs "Dîner")
-  order     Int      // Ordre d'affichage dans la journée
+  label     String // Nom personnalisé (ex: "Déjeuner" vs "Dîner")
+  order     Int // Ordre d'affichage dans la journée
   isEnabled Boolean  @default(true) // Permet de désactiver un slot
 
   createdAt DateTime @default(now())
@@ -270,16 +271,17 @@ model ShoppingList {
   id       String             @id @default(cuid())
   user     User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String
-  title    String
+  name     String
   fromDate DateTime?
   toDate   DateTime?
-  status   ShoppingListStatus @default(OPEN)
+  status   ShoppingListStatus @default(DRAFT)
   items    ShoppingListItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@index([status])
 }
 
 model ShoppingListItem {
@@ -287,15 +289,22 @@ model ShoppingListItem {
   list   ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
   listId String
 
-  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id])
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
   ingredientId String?
-  label        String // texte libre si pas d’ingredientId
+  label        String // texte libre si pas d'ingredientId
 
   aisle    StoreAisle?
   quantity Decimal?    @db.Decimal(10, 3)
   unit     String?
   checked  Boolean     @default(false)
 
-  note     String?
-  fromPlan Boolean @default(false)
+  note            String?
+  isManual        Boolean  @default(false) // true si ajouté manuellement
+  mealPlanItemIds String[] @default([]) // IDs des MealPlanItems d'origine (pour traçabilité)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([listId])
+  @@index([ingredientId])
 }

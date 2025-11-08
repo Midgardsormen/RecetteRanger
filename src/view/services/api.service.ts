@@ -295,6 +295,66 @@ class ApiService {
       method: 'POST',
     });
   }
+
+  // ==================== Shopping Lists ====================
+
+  // ShoppingList
+  async createShoppingList(data: any) {
+    return this.authenticatedFetch('/api/shopping-lists', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async generateShoppingList(data: any) {
+    return this.authenticatedFetch('/api/shopping-lists/generate', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getShoppingLists(status?: string) {
+    const query = status ? `?status=${status}` : '';
+    return this.authenticatedFetch(`/api/shopping-lists${query}`);
+  }
+
+  async getShoppingList(id: string) {
+    return this.authenticatedFetch(`/api/shopping-lists/${id}`);
+  }
+
+  async updateShoppingList(id: string, data: any) {
+    return this.authenticatedFetch(`/api/shopping-lists/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteShoppingList(id: string) {
+    return this.authenticatedFetch(`/api/shopping-lists/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // ShoppingListItem
+  async createShoppingListItem(listId: string, data: any) {
+    return this.authenticatedFetch(`/api/shopping-lists/${listId}/items`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateShoppingListItem(id: string, data: any) {
+    return this.authenticatedFetch(`/api/shopping-lists/items/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteShoppingListItem(id: string) {
+    return this.authenticatedFetch(`/api/shopping-lists/items/${id}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 export const apiService = new ApiService();
