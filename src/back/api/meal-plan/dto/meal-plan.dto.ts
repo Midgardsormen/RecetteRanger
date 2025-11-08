@@ -13,6 +13,12 @@ export class MealPlanItemDto {
   })
   slot: string;
 
+  @ApiProperty({ description: 'Nom personnalisé pour le repas exceptionnel', nullable: true })
+  customSlotName: string | null;
+
+  @ApiProperty({ description: 'Indique si c\'est un repas exceptionnel', default: false })
+  isExceptional: boolean;
+
   @ApiProperty({ description: 'ID de la recette', nullable: true })
   recipeId: string | null;
 
@@ -21,6 +27,9 @@ export class MealPlanItemDto {
 
   @ApiProperty({ description: 'Note optionnelle', nullable: true })
   note: string | null;
+
+  @ApiProperty({ description: 'Ordre d\'affichage', default: 0 })
+  order: number;
 }
 
 export class MealPlanDayDto {

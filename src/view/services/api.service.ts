@@ -203,6 +203,98 @@ class ApiService {
       body: JSON.stringify(searchParams),
     });
   }
+
+  // ==================== Meal Planning ====================
+
+  // MealPlanDay
+  async createMealPlanDay(data: any) {
+    return this.authenticatedFetch('/api/meal-plans/days', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getMealPlanDays(params: { userId?: string; fromDate?: string; toDate?: string }) {
+    const queryParams = new URLSearchParams();
+    if (params.userId) queryParams.append('userId', params.userId);
+    if (params.fromDate) queryParams.append('fromDate', params.fromDate);
+    if (params.toDate) queryParams.append('toDate', params.toDate);
+
+    return this.authenticatedFetch(`/api/meal-plans/days?${queryParams.toString()}`);
+  }
+
+  async getMealPlanDay(id: string) {
+    return this.authenticatedFetch(`/api/meal-plans/days/${id}`);
+  }
+
+  async updateMealPlanDay(id: string, data: any) {
+    return this.authenticatedFetch(`/api/meal-plans/days/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteMealPlanDay(id: string) {
+    return this.authenticatedFetch(`/api/meal-plans/days/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // MealPlanItem
+  async createMealPlanItem(dayId: string, data: any) {
+    return this.authenticatedFetch(`/api/meal-plans/days/${dayId}/items`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateMealPlanItem(id: string, data: any) {
+    return this.authenticatedFetch(`/api/meal-plans/items/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteMealPlanItem(id: string) {
+    return this.authenticatedFetch(`/api/meal-plans/items/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // MealSlotConfig
+  async createMealSlotConfig(userId: string, data: any) {
+    return this.authenticatedFetch(`/api/meal-plans/slot-configs?userId=${userId}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getMealSlotConfigs(userId: string) {
+    return this.authenticatedFetch(`/api/meal-plans/slot-configs?userId=${userId}`);
+  }
+
+  async getMealSlotConfig(id: string) {
+    return this.authenticatedFetch(`/api/meal-plans/slot-configs/${id}`);
+  }
+
+  async updateMealSlotConfig(id: string, data: any) {
+    return this.authenticatedFetch(`/api/meal-plans/slot-configs/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteMealSlotConfig(id: string) {
+    return this.authenticatedFetch(`/api/meal-plans/slot-configs/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async initializeDefaultMealSlotConfigs(userId: string) {
+    return this.authenticatedFetch(`/api/meal-plans/slot-configs/initialize?userId=${userId}`, {
+      method: 'POST',
+    });
+  }
 }
 
 export const apiService = new ApiService();

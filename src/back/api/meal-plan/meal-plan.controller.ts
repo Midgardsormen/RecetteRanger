@@ -4,6 +4,7 @@ import { MealPlanService } from './meal-plan.service';
 import { CreateMealPlanDayDto, CreateMealPlanItemDto } from './dto/create-meal-plan.dto';
 import { UpdateMealPlanDayDto, UpdateMealPlanItemDto } from './dto/update-meal-plan.dto';
 import { MealPlanDayDto, MealPlanItemDto } from './dto/meal-plan.dto';
+import { CreateMealSlotConfigDto, UpdateMealSlotConfigDto, MealSlotConfigDto } from './dto/meal-slot-config.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('meal-plans')
@@ -119,5 +120,74 @@ export class MealPlanController {
   @ApiResponse({ status: 404, description: 'Item non trouvé' })
   removeItem(@Param('id') id: string) {
     return this.mealPlanService.removeItem(id);
+  }
+
+  // MealSlotConfig endpoints
+  @Post('slot-configs')
+  @ApiOperation({ summary: 'Créer une configuration de créneau' })
+  @ApiQuery({ name: 'userId', description: 'ID de l\'utilisateur' })
+  @ApiResponse({
+    status: 201,
+    description: 'Configuration créée avec succès',
+    type: MealSlotConfigDto
+  })
+  @ApiResponse({ status: 409, description: 'Configuration déjà existante pour ce créneau' })
+  createSlotConfig(@Query('userId') userId: string, @Body() createMealSlotConfigDto: CreateMealSlotConfigDto) {
+    return this.mealPlanService.createSlotConfig(userId, createMealSlotConfigDto);
+  }
+
+  @Get('slot-configs')
+  @ApiOperation({ summary: 'Récupérer les configurations de créneaux d\'un utilisateur' })
+  @ApiQuery({ name: 'userId', description: 'ID de l\'utilisateur' })
+  @ApiResponse({
+    status: 200,
+    description: 'Liste des configurations',
+    type: [MealSlotConfigDto]
+  })
+  findAllSlotConfigs(@Query('userId') userId: string) {
+    return this.mealPlanService.findAllSlotConfigs(userId);
+  }
+
+  @Get('slot-configs/:id')
+  @ApiOperation({ summary: 'Récupérer une configuration par ID' })
+  @ApiParam({ name: 'id', description: 'ID de la configuration' })
+  @ApiResponse({
+    status: 200,
+    description: 'Configuration trouvée',
+    type: MealSlotConfigDto
+  })
+  @ApiResponse({ status: 404, description: 'Configuration non trouvée' })
+  findOneSlotConfig(@Param('id') id: string) {
+    return this.mealPlanService.findOneSlotConfig(id);
+  }
+
+  @Patch('slot-configs/:id')
+  @ApiOperation({ summary: 'Mettre à jour une configuration' })
+  @ApiParam({ name: 'id', description: 'ID de la configuration' })
+  @ApiResponse({
+    status: 200,
+    description: 'Configuration mise à jour',
+    type: MealSlotConfigDto
+  })
+  @ApiResponse({ status: 404, description: 'Configuration non trouvée' })
+  updateSlotConfig(@Param('id') id: string, @Body() updateMealSlotConfigDto: UpdateMealSlotConfigDto) {
+    return this.mealPlanService.updateSlotConfig(id, updateMealSlotConfigDto);
+  }
+
+  @Delete('slot-configs/:id')
+  @ApiOperation({ summary: 'Supprimer une configuration' })
+  @ApiParam({ name: 'id', description: 'ID de la configuration' })
+  @ApiResponse({ status: 200, description: 'Configuration supprimée' })
+  @ApiResponse({ status: 404, description: 'Configuration non trouvée' })
+  removeSlotConfig(@Param('id') id: string) {
+    return this.mealPlanService.removeSlotConfig(id);
+  }
+
+  @Post('slot-configs/initialize')
+  @ApiOperation({ summary: 'Initialiser les configurations par défaut pour un utilisateur' })
+  @ApiQuery({ name: 'userId', description: 'ID de l\'utilisateur' })
+  @ApiResponse({ status: 201, description: 'Configurations initialisées' })
+  initializeDefaultSlotConfigs(@Query('userId') userId: string) {
+    return this.mealPlanService.initializeDefaultSlotConfigs(userId);
   }
 }

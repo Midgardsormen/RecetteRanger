@@ -142,6 +142,7 @@ model User {
   recipes       Recipe[]
   mealDays      MealPlanDay[]
   shoppingLists ShoppingList[]
+  mealSlotConfigs MealSlotConfig[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -234,16 +235,35 @@ model MealPlanDay {
 }
 
 model MealPlanItem {
-  id       String      @id @default(cuid())
-  day      MealPlanDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
-  dayId    String
-  slot     MealSlot
-  recipe   Recipe?     @relation(fields: [recipeId], references: [id])
-  recipeId String?
-  servings Int         @default(1)
-  note     String?
+  id            String      @id @default(cuid())
+  day           MealPlanDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  dayId         String
+  slot          MealSlot
+  customSlotName String?    // Nom personnalisé pour les repas exceptionnels
+  isExceptional Boolean     @default(false) // Indique si c'est un repas exceptionnel
+  recipe        Recipe?     @relation(fields: [recipeId], references: [id])
+  recipeId      String?
+  servings      Int         @default(1)
+  note          String?
+  order         Int         @default(0) // Ordre d'affichage pour plusieurs recettes dans le même slot
 
-  @@unique([dayId, slot]) // autorise 1 recette/slot; supprime si tu veux plusieurs
+  @@index([dayId, slot])
+}
+
+model MealSlotConfig {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  slot      MealSlot
+  label     String   // Nom personnalisé (ex: "Déjeuner" vs "Dîner")
+  order     Int      // Ordre d'affichage dans la journée
+  isEnabled Boolean  @default(true) // Permet de désactiver un slot
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, slot])
+  @@index([userId])
 }
 
 model ShoppingList {

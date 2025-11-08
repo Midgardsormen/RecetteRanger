@@ -14,12 +14,19 @@ export class PlanningsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async getPlanningsPage(@Request() req, @Res() res: Response) {
-    // Récupérer les plannings pour l'utilisateur connecté
-    const plannings = await this.planningsService.getPlanningsForUser(req.user.id);
+    // Rendre la nouvelle page de planning avec calendrier
+    const html = await this.svelteRenderService.render('MealPlanning', {
+      user: req.user
+    });
 
-    // Rendre la page avec les données en SSR
-    const html = await this.svelteRenderService.render('Plannings', {
-      plannings,
+    res.send(html);
+  }
+
+  @Get('settings')
+  @UseGuards(JwtAuthGuard)
+  async getSettingsPage(@Request() req, @Res() res: Response) {
+    // Rendre la page de configuration des slots
+    const html = await this.svelteRenderService.render('MealPlanningSettings', {
       user: req.user
     });
 
