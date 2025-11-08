@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../types/meal-plan.types';
-  import { Button } from '../ui';
+  import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../../../types/meal-plan.types';
+  import { Button } from '../../../../components/ui';
 
   interface Props {
     view?: CalendarView;

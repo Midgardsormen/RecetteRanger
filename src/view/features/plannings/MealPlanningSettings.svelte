@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Layout from '../layouts/Layout.svelte';
-  import { Button, Input, Select } from '../components/ui';
-  import { apiService } from '../services/api.service';
-  import type { MealSlotConfig, MealSlot } from '../types/meal-plan.types';
-  import { MealSlot as MealSlotEnum, MealSlotLabels } from '../types/meal-plan.types';
+  import Layout from '../../layouts/Layout.svelte';
+  import { Button, Input, Select } from '../../components/ui';
+  import { apiService } from '../../services/api.service';
+  import type { MealSlotConfig, MealSlot } from '../../types/meal-plan.types';
+  import { MealSlot as MealSlotEnum, MealSlotLabels } from '../../types/meal-plan.types';
 
   let { user }: { user: any } = $props();
 

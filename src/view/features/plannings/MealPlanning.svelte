@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Layout from '../layouts/Layout.svelte';
-  import { Calendar } from '../components/calendar';
-  import { MealPlanDrawer } from '../components/meal-plan-drawer';
-  import { Button } from '../components/ui';
-  import { apiService } from '../services/api.service';
-  import type { CalendarView, MealPlanDay, MealSlotConfig } from '../types/meal-plan.types';
+  import Layout from '../../layouts/Layout.svelte';
+  import { Calendar } from './components/calendar';
+  import { MealPlanDrawer } from './components/meal-plan-drawer';
+  import { Button } from '../../components/ui';
+  import { apiService } from '../../services/api.service';
+  import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../types/meal-plan.types';
 
   let { user }: { user: any } = $props();
 

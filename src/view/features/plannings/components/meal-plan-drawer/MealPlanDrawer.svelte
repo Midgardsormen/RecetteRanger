@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { Drawer, Input, Select, Button } from '../ui';
-  import { RecipeDrawer } from '../../features/recipe-drawer';
-  import { apiService } from '../../services/api.service';
-  import type { MealSlot, MealSlotConfig, MealPlanDay, MealPlanItem, CreateMealPlanItemDto } from '../../types/meal-plan.types';
-  import type { Recipe } from '../../types/recipe.types';
+  import { Drawer, Input, Select, Button } from '../../../../components/ui';
+  import { RecipeDrawer } from '../../../recipe-drawer';
+  import { apiService } from '../../../../services/api.service';
+  import type { MealSlot, MealSlotConfig, MealPlanDay, MealPlanItem, CreateMealPlanItemDto } from '../../../../types/meal-plan.types';
+  import type { Recipe } from '../../../../types/recipe.types';
 
   interface Props {
     isOpen?: boolean;
