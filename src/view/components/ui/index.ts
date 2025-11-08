@@ -18,6 +18,7 @@ export { default as Dropdown } from './Dropdown.svelte';
 export { default as ImageUpload } from './ImageUpload.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
 export { default as Filter } from './Filter.svelte';
+export { default as ArticleAutocomplete } from './ArticleAutocomplete.svelte';
 
 // Form Components
 export { Input, Select, Checkbox, FormField } from './form';

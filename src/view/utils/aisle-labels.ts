@@ -54,10 +54,10 @@ export const AISLE_LABELS: Record<string, string> = {
   FLEURS: 'Fleurs',
   JEUX_JOUETS: 'Jeux & jouets',
   SAISONNIER: 'Saisonnier',
-  AUTRES: 'Autres',
+  NON_CLASSE: 'Non classé',
 };
 
 export function getAisleLabel(aisle: string | null | undefined): string {
-  if (!aisle) return 'Autres';
+  if (!aisle) return 'Non classé';
   return AISLE_LABELS[aisle] || aisle;
 }

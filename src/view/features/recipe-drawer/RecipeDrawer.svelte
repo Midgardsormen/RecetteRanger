@@ -115,7 +115,8 @@
     try {
       const result = await apiService.searchIngredients({
         search: ingredientSearchQuery,
-        limit: 50
+        limit: 50,
+        isFood: true // Filtrer uniquement les articles alimentaires
       });
       availableIngredients = result.items || result.data || [];
     } catch (err) {

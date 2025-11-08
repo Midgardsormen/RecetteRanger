@@ -8,7 +8,7 @@ export class IngredientsService {
   async getIngredientsForUser(userId: string) {
     // Les ingrédients sont globaux (pas de userId dans le modèle)
     // On récupère tous les ingrédients disponibles
-    return this.prisma.ingredient.findMany({
+    return this.prisma.article.findMany({
       orderBy: {
         label: 'asc'
       }

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, IsInt, Min } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsInt, Min, IsBoolean } from 'class-validator';
 import { StoreAisle, Unit } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 
 export class SearchIngredientsDto {
   @ApiProperty({
@@ -64,4 +64,18 @@ export class SearchIngredientsDto {
   @IsInt()
   @Min(0)
   page?: number;
+
+  @ApiProperty({
+    description: 'Filtre par type: alimentaire (true) ou non-alimentaire (false)',
+    required: false,
+    type: Boolean,
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean()
+  isFood?: boolean;
 }

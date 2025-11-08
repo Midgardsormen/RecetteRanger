@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { StoreAisle, Unit } from '@prisma/client';
-import { IsString, MinLength, IsEnum, IsArray, IsOptional, IsUrl, ArrayMinSize, IsInt, Min, Max } from 'class-validator';
+import { IsString, MinLength, IsEnum, IsArray, IsOptional, IsUrl, ArrayMinSize, IsInt, Min, Max, IsBoolean } from 'class-validator';
 
 export class CreateIngredientDto {
   @ApiProperty({
@@ -53,4 +53,14 @@ export class CreateIngredientDto {
   @Min(1, { each: true, message: 'Les mois doivent être entre 1 et 12' })
   @Max(12, { each: true, message: 'Les mois doivent être entre 1 et 12' })
   seasonMonths?: number[];
+
+  @ApiProperty({
+    description: 'Indique si l\'article est alimentaire (true) ou non-alimentaire (false)',
+    required: false,
+    example: true,
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isFood?: boolean;
 }

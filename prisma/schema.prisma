@@ -125,6 +125,12 @@ enum Unit {
   PAQUET           @map("paquet")
   POT              @map("pot")
   BARQUETTE        @map("barquette")
+  ROULEAU          @map("rouleau")
+  BARIL            @map("baril")
+  BOUTEILLE        @map("bouteille")
+  TUBE             @map("tube")
+  BIDON            @map("bidon")
+  FLACON           @map("flacon")
 }
 
 /**
@@ -189,7 +195,7 @@ model Step {
   @@index([recipeId])
 }
 
-model Ingredient {
+model Article {
   id           String     @id @default(cuid())
   label        String
   aisle        StoreAisle
@@ -197,6 +203,7 @@ model Ingredient {
   imageUrl     String?    @db.VarChar(2048)
   seasonMonths Int[]      @default([])
   usageCount   Int        @default(0)
+  isFood       Boolean    @default(true) // true = alimentaire, false = non-alimentaire
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
@@ -206,13 +213,15 @@ model Ingredient {
   @@unique([label, aisle])
   @@index([aisle, label])
   @@index([usageCount])
+  @@index([isFood])
+  @@map("Ingredient") // Garde le nom de table existant pour éviter migration complexe
 }
 
 model RecipeIngredient {
-  id           String     @id @default(cuid())
-  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  id           String  @id @default(cuid())
+  recipe       Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId     String
-  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredient   Article @relation(fields: [ingredientId], references: [id])
   ingredientId String
 
   quantity Decimal? @db.Decimal(10, 3) // ex: 125.500
@@ -289,7 +298,7 @@ model ShoppingListItem {
   list   ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
   listId String
 
-  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
+  ingredient   Article? @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
   ingredientId String?
   label        String // texte libre si pas d'ingredientId
 
@@ -308,3 +317,4 @@ model ShoppingListItem {
   @@index([listId])
   @@index([ingredientId])
 }
+

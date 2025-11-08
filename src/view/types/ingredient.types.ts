@@ -80,6 +80,12 @@ export enum Unit {
   PAQUET = 'PAQUET',
   POT = 'POT',
   BARQUETTE = 'BARQUETTE',
+  ROULEAU = 'ROULEAU',
+  BARIL = 'BARIL',
+  BOUTEILLE = 'BOUTEILLE',
+  TUBE = 'TUBE',
+  BIDON = 'BIDON',
+  FLACON = 'FLACON',
 }
 
 export interface Ingredient {
@@ -206,6 +212,12 @@ export const UnitLabels: Record<Unit, string> = {
   [Unit.PAQUET]: 'paquet',
   [Unit.POT]: 'pot',
   [Unit.BARQUETTE]: 'barquette',
+  [Unit.ROULEAU]: 'rouleau',
+  [Unit.BARIL]: 'baril',
+  [Unit.BOUTEILLE]: 'bouteille',
+  [Unit.TUBE]: 'tube',
+  [Unit.BIDON]: 'bidon',
+  [Unit.FLACON]: 'flacon',
 };
 
 export const MONTHS = [

@@ -1,7 +1,7 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
   import { Button, Input, ArticleAutocomplete } from '../../components/ui';
-  import { SelectArticleDrawer } from './components';
+  import { AddArticleDrawer } from './components';
   import { apiService } from '../../services/api.service';
   import type { ShoppingList, ShoppingListItem } from '../../types/shopping-list.types';
   import { getAisleLabel } from '../../utils/aisle-labels';
@@ -17,13 +17,15 @@
   let shoppingList = $state<ShoppingList | null>(null);
   let loading = $state(true);
   let error = $state('');
+  let addingItem = $state(false);
   let newItemLabel = $state('');
   let selectedArticleId = $state<string | null>(null);
   let selectedArticleAisle = $state<string | null>(null);
   let editingItemId = $state<string | null>(null);
   let editQuantity = $state('');
   let editUnit = $state('');
-  let showSelectArticleDrawer = $state(false);
+  let showAddArticleDrawer = $state(false);
+  let newArticleName = $state('');
 
   // Charger la liste
   async function loadShoppingList() {
@@ -75,21 +77,39 @@
     }
   }
 
-  // Gérer la sélection d'un article depuis le drawer
-  async function handleArticleSelected(article: any) {
+  // Gérer la sélection d'un article dans l'autocomplete
+  function handleArticleSelect(article: any) {
+    if (article) {
+      selectedArticleId = article.id;
+      selectedArticleAisle = article.aisle;
+      newItemLabel = article.label;
+    } else {
+      selectedArticleId = null;
+      selectedArticleAisle = null;
+    }
+  }
+
+  // Ouvrir le drawer pour créer un nouvel article
+  async function handleCreateArticle(label: string, isFood: boolean) {
+    newArticleName = label;
+    showAddArticleDrawer = true;
+  }
+
+  // Gérer la création réussie d'un article depuis le drawer
+  function handleArticleCreated(article: any) {
     selectedArticleId = article.id;
     selectedArticleAisle = article.aisle;
     newItemLabel = article.label;
 
     // Ajouter automatiquement l'article à la liste
-    await addManualItem();
+    addManualItem();
   }
 
   // Ajouter un item à la liste
   async function addManualItem() {
     if (!newItemLabel.trim() || !shoppingList) return;
 
-    
+    addingItem = true;
     try {
       const newItem = await apiService.createShoppingListItem(shoppingList.id, {
         label: newItemLabel.trim(),
@@ -106,7 +126,7 @@
     } catch (err: any) {
       alert('Erreur : ' + err.message);
     } finally {
-      
+      addingItem = false;
     }
   }
 
@@ -230,9 +250,19 @@
       </div>
 
       <div class="add-item-section">
-        <Button onclick={() => { showSelectArticleDrawer = true; }}>
-          + Ajouter un article
-        </Button>
+        <form class="add-item-form" onsubmit={(e) => { e.preventDefault(); addManualItem(); }}>
+          <ArticleAutocomplete
+            id="newItem"
+            placeholder="Ajouter un article..."
+            bind:value={newItemLabel}
+            onSelect={handleArticleSelect}
+            onCreate={handleCreateArticle}
+            allowCreate={true}
+          />
+          <Button type="submit" disabled={!newItemLabel.trim() || addingItem}>
+            + Ajouter
+          </Button>
+        </form>
       </div>
 
       <div class="items-container">
@@ -315,14 +345,15 @@
       </div>
     {/if}
   </div>
-
-  <!-- Drawer pour créer un nouvel article -->
-  <SelectArticleDrawer
-    isOpen={showSelectArticleDrawer}
-    onClose={() => { showSelectArticleDrawer = false; }}
-    onArticleSelected={handleArticleSelected}
-  />
 </Layout>
+
+<AddArticleDrawer
+  isOpen={showAddArticleDrawer}
+  initialLabel={newArticleName}
+  onClose={() => { showAddArticleDrawer = false; }}
+  onArticleCreated={handleArticleCreated}
+/>
+
 <style lang="scss">
   .shopping-list-detail {
     max-width: 800px;

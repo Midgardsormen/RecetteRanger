@@ -7,11 +7,12 @@
   interface Props {
     isOpen?: boolean;
     ingredient?: Ingredient | null;
+    showFoodTypeSelector?: boolean; // Afficher le choix alimentaire/non-alimentaire
     onSave: () => void;
     onClose: () => void;
   }
 
-  let { isOpen = false, ingredient = null, onSave, onClose }: Props = $props();
+  let { isOpen = false, ingredient = null, showFoodTypeSelector = false, onSave, onClose }: Props = $props();
 
   // Formulaire
   let label = $state(ingredient?.label || '');
@@ -19,6 +20,7 @@
   let selectedUnits = $state<Set<Unit>>(new Set(ingredient?.units || []));
   let imageUrl = $state(ingredient?.imageUrl || '');
   let selectedMonths = $state<Set<number>>(new Set(ingredient?.seasonMonths || []));
+  let isFood = $state(true); // Par défaut alimentaire
 
   // Détection de doublons
   let similarIngredients = $state<SimilarIngredient[]>([]);
@@ -47,6 +49,17 @@
       }
       errors = {};
       similarIngredients = [];
+    }
+  });
+
+  // Changer le rayon par défaut quand isFood change
+  $effect(() => {
+    if (!isOpen || ingredient) return; // Ne s'applique que lors de la création
+
+    if (isFood && aisle === 'ENTRETIEN_MAISON') {
+      aisle = StoreAisle.FRUITS_ET_LEGUMES;
+    } else if (!isFood && aisle === 'FRUITS_ET_LEGUMES') {
+      aisle = 'ENTRETIEN_MAISON' as StoreAisle;
     }
   });
 
@@ -146,6 +159,7 @@
         units: Array.from(selectedUnits),
         imageUrl: imageUrl.trim() || undefined,
         seasonMonths: Array.from(selectedMonths),
+        isFood: showFoodTypeSelector ? isFood : true, // Si le sélecteur est affiché, utiliser isFood, sinon toujours alimentaire
       };
 
       if (ingredient) {
@@ -182,13 +196,40 @@
     <!-- Nom de l'ingrédient -->
     <Input
       id="label"
-      label="Nom de l'ingrédient"
+      label={showFoodTypeSelector ? "Nom de l'article" : "Nom de l'ingrédient"}
       bind:value={label}
       oninput={handleLabelInput}
-      placeholder="Ex: Tomate"
+      placeholder={isFood ? "Ex: Tomate" : "Ex: Lessive"}
       required
       error={errors.label}
     />
+
+    <!-- Type d'article (alimentaire/non-alimentaire) - optionnel -->
+    {#if showFoodTypeSelector}
+      <div class="form-field">
+        <label class="form-label">Type d'article</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input
+              type="radio"
+              name="isFood"
+              checked={isFood}
+              onchange={() => { isFood = true; }}
+            />
+            <span>Alimentaire</span>
+          </label>
+          <label class="radio-label">
+            <input
+              type="radio"
+              name="isFood"
+              checked={!isFood}
+              onchange={() => { isFood = false; }}
+            />
+            <span>Non-alimentaire</span>
+          </label>
+        </div>
+      </div>
+    {/if}
 
     <!-- Détection de doublons -->
     {#if checkingDuplicates}
@@ -266,27 +307,29 @@
       {/if}
     </div>
 
-    <!-- Mois de saison -->
-    <div class="form-field">
-      <label class="form-label">
-        Mois de disponibilité (optionnel)
-      </label>
-      <p class="form-hint">
-        Sélectionnez les mois où cet ingrédient est de saison
-      </p>
-      <div class="months-grid">
-        {#each MONTHS as { value, label }}
-          <label class="month-btn">
-            <input
-              type="checkbox"
-              checked={selectedMonths.has(value)}
-              onchange={() => toggleMonth(value)}
-            />
-            <span>{label}</span>
-          </label>
-        {/each}
+    <!-- Mois de saison (uniquement pour les articles alimentaires) -->
+    {#if !showFoodTypeSelector || isFood}
+      <div class="form-field">
+        <label class="form-label">
+          Mois de disponibilité (optionnel)
+        </label>
+        <p class="form-hint">
+          Sélectionnez les mois où cet ingrédient est de saison
+        </p>
+        <div class="months-grid">
+          {#each MONTHS as { value, label }}
+            <label class="month-btn">
+              <input
+                type="checkbox"
+                checked={selectedMonths.has(value)}
+                onchange={() => toggleMonth(value)}
+              />
+              <span>{label}</span>
+            </label>
+          {/each}
+        </div>
       </div>
-    </div>
+    {/if}
   </form>
 </Drawer>
 
@@ -317,6 +360,24 @@
     color: $text-dark;
     font-weight: 600;
     font-size: 0.95rem;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: $spacing-base * 1.5;
+  }
+
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: $spacing-base * 0.5;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: $text-dark;
+
+    input[type="radio"] {
+      cursor: pointer;
+    }
   }
 
   .required {

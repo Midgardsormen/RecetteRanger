@@ -13,27 +13,31 @@ export class IngredientService {
 
   async create(createIngredientDto: CreateIngredientDto) {
     try {
-      const data: Prisma.IngredientCreateInput = {
+      const data: Prisma.ArticleCreateInput = {
         label: createIngredientDto.label,
         aisle: createIngredientDto.aisle,
         units: createIngredientDto.units,
         imageUrl: createIngredientDto.imageUrl,
         seasonMonths: createIngredientDto.seasonMonths || [],
         usageCount: 0,
+        isFood: createIngredientDto.isFood !== undefined ? createIngredientDto.isFood : true,
       };
 
-      return await this.prisma.ingredient.create({ data });
+      return await this.prisma.article.create({ data });
     } catch (error) {
       if (error.code === 'P2002') {
-        throw new ConflictException('Un ingrédient avec ce nom existe déjà dans ce rayon');
+        throw new ConflictException('Un article avec ce nom existe déjà dans ce rayon');
       }
       throw error;
     }
   }
 
-  async findAll(aisle?: string) {
-    return this.prisma.ingredient.findMany({
-      where: aisle ? { aisle: aisle as any } : undefined,
+  async findAll(aisle?: string, isFood?: boolean) {
+    return this.prisma.article.findMany({
+      where: {
+        ...(aisle ? { aisle: aisle as any } : {}),
+        ...(isFood !== undefined ? { isFood } : {}),
+      },
       orderBy: [{ aisle: 'asc' }, { label: 'asc' }],
     });
   }
@@ -46,9 +50,10 @@ export class IngredientService {
       sortBy = 'alpha',
       limit = 20,
       page = 0,
+      isFood,
     } = searchDto;
 
-    const where: Prisma.IngredientWhereInput = {};
+    const where: Prisma.ArticleWhereInput = {};
 
     // Filtre par recherche textuelle
     if (search) {
@@ -70,8 +75,13 @@ export class IngredientService {
       };
     }
 
+    // Filtre par type (alimentaire / non-alimentaire)
+    if (isFood !== undefined) {
+      where.isFood = isFood;
+    }
+
     // Configuration du tri
-    let orderBy: Prisma.IngredientOrderByWithRelationInput = {};
+    let orderBy: Prisma.ArticleOrderByWithRelationInput = {};
     switch (sortBy) {
       case 'date':
         orderBy = { createdAt: 'desc' };
@@ -87,8 +97,8 @@ export class IngredientService {
 
     // Récupération des résultats avec pagination
     const [total, ingredients] = await Promise.all([
-      this.prisma.ingredient.count({ where }),
-      this.prisma.ingredient.findMany({
+      this.prisma.article.count({ where }),
+      this.prisma.article.findMany({
         where,
         orderBy,
         skip: page * limit,
@@ -112,7 +122,7 @@ export class IngredientService {
     const normalizedLabel = normalizeString(label);
 
     // Récupération de tous les ingrédients pour comparaison
-    const allIngredients = await this.prisma.ingredient.findMany({
+    const allIngredients = await this.prisma.article.findMany({
       select: {
         id: true,
         label: true,
@@ -149,7 +159,7 @@ export class IngredientService {
   }
 
   async findOne(id: string) {
-    const ingredient = await this.prisma.ingredient.findUnique({
+    const ingredient = await this.prisma.article.findUnique({
       where: { id },
     });
 
@@ -162,7 +172,7 @@ export class IngredientService {
 
   async update(id: string, updateIngredientDto: UpdateIngredientDto) {
     try {
-      return await this.prisma.ingredient.update({
+      return await this.prisma.article.update({
         where: { id },
         data: updateIngredientDto,
       });
@@ -179,7 +189,7 @@ export class IngredientService {
 
   async remove(id: string) {
     try {
-      return await this.prisma.ingredient.delete({
+      return await this.prisma.article.delete({
         where: { id },
       });
     } catch (error) {
@@ -191,7 +201,7 @@ export class IngredientService {
   }
 
   async incrementUsageCount(id: string) {
-    return await this.prisma.ingredient.update({
+    return await this.prisma.article.update({
       where: { id },
       data: {
         usageCount: {
