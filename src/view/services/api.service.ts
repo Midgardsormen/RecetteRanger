@@ -355,6 +355,21 @@ class ApiService {
       method: 'DELETE',
     });
   }
+
+  // User profile methods
+  async updateUser(userId: string, data: any) {
+    return this.authenticatedFetch(`/api/users/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async changePassword(data: { currentPassword: string; newPassword: string; confirmPassword: string }) {
+    return this.authenticatedFetch('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const apiService = new ApiService();

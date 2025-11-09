@@ -90,6 +90,10 @@
           </div>
         </div>
         <div class="user-menu__dropdown-divider"></div>
+        <a href="/profile" class="user-menu__dropdown-item">
+          <span class="user-menu__dropdown-icon">⚙️</span>
+          Mon profil
+        </a>
         <button class="user-menu__dropdown-item" onclick={handleLogout} type="button">
           <span class="user-menu__dropdown-icon">🚪</span>
           Se déconnecter
@@ -251,6 +255,7 @@
       gap: 0.5rem;
       color: #333;
       font-size: 0.95rem;
+      text-decoration: none;
 
       &:hover {
         background: #f5f5f5;

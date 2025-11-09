@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Drawer } from '../../../components/ui';
-  import { Input, Select, Checkbox } from '../../../components/ui/form';
+  import { Input, Select, Checkbox, RadioGroup } from '../../../components/ui/form';
   import { apiService } from '../../../services/api.service';
   import { StoreAisle, Unit } from '../../../types/enums';
 
@@ -18,7 +18,7 @@
     label: initialLabel,
     aisle: 'EPICERIE_SALEE' as StoreAisle,
     units: ['UNITE'] as Unit[],
-    isFood: true,
+    articleType: 'food' as 'food' | 'non-food',
     imageUrl: '',
     seasonMonths: [] as number[],
   });
@@ -33,7 +33,7 @@
         label: initialLabel,
         aisle: 'EPICERIE_SALEE',
         units: ['UNITE'],
-        isFood: true,
+        articleType: 'food',
         imageUrl: '',
         seasonMonths: [],
       };
@@ -41,13 +41,13 @@
     }
   });
 
-  // Mettre à jour le rayon par défaut quand isFood change
+  // Mettre à jour le rayon par défaut quand articleType change
   $effect(() => {
     if (!isOpen) return;
 
-    if (formData.isFood && formData.aisle === 'ENTRETIEN_MAISON') {
+    if (formData.articleType === 'food' && formData.aisle === 'ENTRETIEN_MAISON') {
       formData.aisle = 'EPICERIE_SALEE';
-    } else if (!formData.isFood && formData.aisle === 'EPICERIE_SALEE') {
+    } else if (formData.articleType === 'non-food' && formData.aisle === 'EPICERIE_SALEE') {
       formData.aisle = 'ENTRETIEN_MAISON';
     }
   });
@@ -175,7 +175,7 @@
         label: formData.label.trim(),
         aisle: formData.aisle,
         units: formData.units,
-        isFood: formData.isFood,
+        isFood: formData.articleType === 'food',
         imageUrl: formData.imageUrl || undefined,
         seasonMonths: formData.seasonMonths.length > 0 ? formData.seasonMonths : undefined,
       });
@@ -206,29 +206,23 @@
 >
   <div class="add-article-drawer">
     <!-- Type d'article -->
-    <div class="form-field">
-      <label class="form-label">Type d'article</label>
-      <div class="radio-group">
-        <label class="radio-label">
-          <input
-            type="radio"
-            name="isFood"
-            checked={formData.isFood}
-            onchange={() => { formData.isFood = true; }}
-          />
-          <span>Alimentaire</span>
-        </label>
-        <label class="radio-label">
-          <input
-            type="radio"
-            name="isFood"
-            checked={!formData.isFood}
-            onchange={() => { formData.isFood = false; }}
-          />
-          <span>Non-alimentaire</span>
-        </label>
-      </div>
-    </div>
+    <RadioGroup
+      label="Type d'article"
+      name="articleType"
+      bind:value={formData.articleType}
+      options={[
+        {
+          value: 'food',
+          label: 'Alimentaire',
+          description: 'Produits alimentaires et ingrédients de cuisine'
+        },
+        {
+          value: 'non-food',
+          label: 'Non-alimentaire',
+          description: 'Articles ménagers, hygiène, etc.'
+        }
+      ]}
+    />
 
     <!-- Nom -->
     <div class="form-field">
@@ -306,24 +300,6 @@
     margin: 0;
     font-size: 0.85rem;
     color: #f56565;
-  }
-
-  .radio-group {
-    display: flex;
-    gap: 1.5rem;
-  }
-
-  .radio-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    font-size: 0.95rem;
-    color: var(--text-color);
-
-    input[type="radio"] {
-      cursor: pointer;
-    }
   }
 
   .units-grid {

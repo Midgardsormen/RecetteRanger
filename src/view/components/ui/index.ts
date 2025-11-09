@@ -21,7 +21,7 @@ export { default as Filter } from './Filter.svelte';
 export { default as ArticleAutocomplete } from './ArticleAutocomplete.svelte';
 
 // Form Components
-export { Input, Select, Checkbox, FormField } from './form';
+export { Input, Select, Checkbox, FormField, PasswordInput, RadioGroup } from './form';
 
 // Action Components
 export { default as Button } from './Button.svelte';

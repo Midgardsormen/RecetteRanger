@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Drawer, ImageUpload, Input, Select, Checkbox } from '../../components/ui';
+  import { Drawer, ImageUpload, Input, Select, Checkbox, RadioGroup } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, CreateIngredientDto, SimilarIngredient } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, UnitLabels, MONTHS } from '../../types/ingredient.types';
@@ -20,7 +20,7 @@
   let selectedUnits = $state<Set<Unit>>(new Set(ingredient?.units || []));
   let imageUrl = $state(ingredient?.imageUrl || '');
   let selectedMonths = $state<Set<number>>(new Set(ingredient?.seasonMonths || []));
-  let isFood = $state(true); // Par défaut alimentaire
+  let articleType = $state('food'); // 'food' ou 'non-food'
 
   // Détection de doublons
   let similarIngredients = $state<SimilarIngredient[]>([]);
@@ -52,13 +52,13 @@
     }
   });
 
-  // Changer le rayon par défaut quand isFood change
+  // Changer le rayon par défaut quand articleType change
   $effect(() => {
     if (!isOpen || ingredient) return; // Ne s'applique que lors de la création
 
-    if (isFood && aisle === 'ENTRETIEN_MAISON') {
+    if (articleType === 'food' && aisle === 'ENTRETIEN_MAISON') {
       aisle = StoreAisle.FRUITS_ET_LEGUMES;
-    } else if (!isFood && aisle === 'FRUITS_ET_LEGUMES') {
+    } else if (articleType === 'non-food' && aisle === 'FRUITS_ET_LEGUMES') {
       aisle = 'ENTRETIEN_MAISON' as StoreAisle;
     }
   });
@@ -159,7 +159,7 @@
         units: Array.from(selectedUnits),
         imageUrl: imageUrl.trim() || undefined,
         seasonMonths: Array.from(selectedMonths),
-        isFood: showFoodTypeSelector ? isFood : true, // Si le sélecteur est affiché, utiliser isFood, sinon toujours alimentaire
+        isFood: showFoodTypeSelector ? articleType === 'food' : true, // Si le sélecteur est affiché, utiliser articleType, sinon toujours alimentaire
       };
 
       if (ingredient) {
@@ -199,36 +199,30 @@
       label={showFoodTypeSelector ? "Nom de l'article" : "Nom de l'ingrédient"}
       bind:value={label}
       oninput={handleLabelInput}
-      placeholder={isFood ? "Ex: Tomate" : "Ex: Lessive"}
+      placeholder={articleType === 'food' ? "Ex: Tomate" : "Ex: Lessive"}
       required
       error={errors.label}
     />
 
     <!-- Type d'article (alimentaire/non-alimentaire) - optionnel -->
     {#if showFoodTypeSelector}
-      <div class="form-field">
-        <label class="form-label">Type d'article</label>
-        <div class="radio-group">
-          <label class="radio-label">
-            <input
-              type="radio"
-              name="isFood"
-              checked={isFood}
-              onchange={() => { isFood = true; }}
-            />
-            <span>Alimentaire</span>
-          </label>
-          <label class="radio-label">
-            <input
-              type="radio"
-              name="isFood"
-              checked={!isFood}
-              onchange={() => { isFood = false; }}
-            />
-            <span>Non-alimentaire</span>
-          </label>
-        </div>
-      </div>
+      <RadioGroup
+        label="Type d'article"
+        name="articleType"
+        bind:value={articleType}
+        options={[
+          {
+            value: 'food',
+            label: 'Alimentaire',
+            description: 'Produits alimentaires et ingrédients de cuisine'
+          },
+          {
+            value: 'non-food',
+            label: 'Non-alimentaire',
+            description: 'Articles ménagers, hygiène, etc.'
+          }
+        ]}
+      />
     {/if}
 
     <!-- Détection de doublons -->
@@ -308,7 +302,7 @@
     </div>
 
     <!-- Mois de saison (uniquement pour les articles alimentaires) -->
-    {#if !showFoodTypeSelector || isFood}
+    {#if !showFoodTypeSelector || articleType === 'food'}
       <div class="form-field">
         <label class="form-label">
           Mois de disponibilité (optionnel)
@@ -360,24 +354,6 @@
     color: $text-dark;
     font-weight: 600;
     font-size: 0.95rem;
-  }
-
-  .radio-group {
-    display: flex;
-    gap: $spacing-base * 1.5;
-  }
-
-  .radio-label {
-    display: flex;
-    align-items: center;
-    gap: $spacing-base * 0.5;
-    cursor: pointer;
-    font-size: 0.95rem;
-    color: $text-dark;
-
-    input[type="radio"] {
-      cursor: pointer;
-    }
   }
 
   .required {
