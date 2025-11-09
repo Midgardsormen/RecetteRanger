@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Layout from '../layouts/Layout.svelte';
-  import { Button } from '../components/ui';
-  import type { Recipe } from '../types/recipe.types';
-  import { UnitLabels } from '../types/ingredient.types';
+  import Layout from '../../layouts/Layout.svelte';
+  import { Button } from '../../components/ui';
+  import type { Recipe } from '../../types/recipe.types';
+  import { UnitLabels } from '../../types/ingredient.types';
 
   // Recevoir les données du SSR
   let { recipe, user = null }: { recipe: Recipe, user?: any } = $props();
