@@ -21,7 +21,9 @@
 
     <!-- Logo -->
     <a href="/" class="header__brand">
-      <img src={IMAGES.logo.main} alt="RecetteRanger" class="header__logo" />
+      <div class="header__logo-wrapper">
+        <img src={IMAGES.logo.main} alt="RecetteRanger" class="header__logo" />
+      </div>
       <span class="header__brand-text">RecetteRanger</span>
     </a>
 
@@ -63,20 +65,66 @@
       }
     }
 
+    &__logo-wrapper {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      background: $color-white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.2),
+        0 4px 8px rgba(0, 0, 0, 0.15);
+      z-index: 100;
+      margin: -28px 0; // Déborde du header (haut et bas)
+
+      // Sur desktop, déborde aussi sur la sidebar
+      @media (min-width: $breakpoint-lg) {
+        position: absolute;
+        left: 190px;
+        top: 0;
+        transform: none;
+        width: 150px;
+        height: 150px;
+        margin-top: 0;
+      }
+
+      @media (max-width: $breakpoint-sm) {
+        width: 70px;
+        height: 70px;
+        margin: -3px 0;
+      }
+    }
+
     &__logo {
-      height: 40px;
-      width: auto;
-      display: block;
+      width: 85px;
+      height: 85px;
+      object-fit: contain;
+
+      @media (min-width: $breakpoint-lg) {
+        width: 100px;
+        height: 100px;
+      }
+
+      @media (max-width: $breakpoint-sm) {
+        width: 50px;
+        height: 50px;
+      }
     }
 
     &__brand-text {
-      color: $color-white;
-      font-size: $font-size-2xl;
-      font-weight: $font-weight-bold;
-
-      @media (max-width: $breakpoint-sm) {
-        display: none;
-      }
+      // Masqué visuellement mais accessible aux lecteurs d'écran
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
     }
 
     &__user {
