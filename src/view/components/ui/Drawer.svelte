@@ -1,11 +1,14 @@
 <script lang="ts">
   import { createFocusTrap, type FocusTrap } from '../../utils';
   import Button from './Button.svelte';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     isOpen?: boolean;
     title?: string;
     showBackButton?: boolean;
+    position?: 'left' | 'right';
+    variant?: 'default' | 'navigation';
     onClose: () => void;
     onBack?: () => void;
     primaryAction?: {
@@ -19,16 +22,20 @@
       onClick: () => void;
       disabled?: boolean;
     };
+    children?: Snippet;
   }
 
   let {
     isOpen = false,
     title = '',
     showBackButton = false,
+    position = 'right',
+    variant = 'default',
     onClose,
     onBack,
     primaryAction,
-    secondaryAction
+    secondaryAction,
+    children
   }: Props = $props();
 
   let drawerElement: HTMLDivElement;
@@ -81,49 +88,54 @@
 {#if isOpen}
   <div
     class="drawer-overlay"
+    class:drawer-overlay--left={position === 'left'}
     onclick={handleOverlayClick}
     role="presentation"
   >
     <div
-      class="drawer"
+      class="drawer drawer--{position} drawer--{variant}"
       class:drawer--open={isOpen}
       bind:this={drawerElement}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="drawer-title"
+      aria-labelledby={title ? "drawer-title" : undefined}
     >
-      <!-- Header -->
-      <div class="drawer__header">
-        {#if showBackButton && onBack}
+      <!-- Header (only for default variant) -->
+      {#if variant === 'default'}
+        <div class="drawer__header">
+          {#if showBackButton && onBack}
+            <button
+              class="drawer__back"
+              onclick={onBack}
+              type="button"
+              aria-label="Retour"
+            >
+              ←
+            </button>
+          {/if}
+
+          {#if title}
+            <h2 id="drawer-title" class="drawer__title">{title}</h2>
+          {/if}
+
           <button
-            class="drawer__back"
-            onclick={onBack}
+            class="drawer__close"
+            onclick={onClose}
             type="button"
-            aria-label="Retour"
+            aria-label="Fermer"
           >
-            ←
+            ✕
           </button>
-        {/if}
+        </div>
+      {/if}
 
-        <h2 id="drawer-title" class="drawer__title">{title}</h2>
-
-        <button
-          class="drawer__close"
-          onclick={onClose}
-          type="button"
-          aria-label="Fermer"
-        >
-          ✕
-        </button>
+      <!-- Body -->
+      <div class="drawer__body" class:drawer__body--full={variant === 'navigation'}>
+        {@render children?.()}
       </div>
 
-      <!-- Body avec slot -->
-      <div class="drawer__body">
-        <slot />
-      </div>
-
-      <!-- Footer avec actions -->
-      {#if primaryAction || secondaryAction}
+      <!-- Footer avec actions (only for default variant) -->
+      {#if variant === 'default' && (primaryAction || secondaryAction)}
         <div class="drawer__footer">
           {#if secondaryAction}
             <Button
@@ -153,16 +165,7 @@
 {/if}
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $danger-color: #f56565;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
-  $shadow-light: rgba(0, 0, 0, 0.1);
-  $spacing-base: 1rem;
-  $transition-duration: 0.3s;
+  @import '../../styles/variables';
 
   .drawer-overlay {
     position: fixed;
@@ -170,12 +173,16 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: $color-background-overlay;
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-    z-index: 1000;
-    animation: fadeIn $transition-duration ease;
+    z-index: $z-index-modal;
+    animation: fadeIn $transition-slow ease;
+
+    &--left {
+      justify-content: flex-start;
+    }
   }
 
   @keyframes fadeIn {
@@ -188,24 +195,54 @@
   }
 
   .drawer {
-    background: $white;
+    background: $color-white;
     width: 100%;
     max-width: 600px;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    box-shadow: -4px 0 24px $shadow-light;
-    transform: translateX(100%);
-    animation: slideIn $transition-duration ease forwards;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
 
-    &--open {
+    // Position variants
+    &--right {
+      transform: translateX(100%);
+      animation: slideInRight $transition-slow ease forwards;
+
+      &.drawer--open {
+        transform: translateX(0);
+      }
+    }
+
+    &--left {
+      transform: translateX(-100%);
+      animation: slideInLeft $transition-slow ease forwards;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+      max-width: 280px; // Plus étroit pour la navigation
+
+      &.drawer--open {
+        transform: translateX(0);
+      }
+    }
+
+    // Variant navigation
+    &--navigation {
+      background: linear-gradient(135deg, $brand-primary 0%, $brand-secondary 100%);
+      padding: 0;
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+    }
+    to {
       transform: translateX(0);
     }
   }
 
-  @keyframes slideIn {
+  @keyframes slideInLeft {
     from {
-      transform: translateX(100%);
+      transform: translateX(-100%);
     }
     to {
       transform: translateX(0);
@@ -216,9 +253,9 @@
     display: flex;
     align-items: center;
     gap: $spacing-base;
-    padding: $spacing-base * 1.5;
-    border-bottom: 1px solid $border-color;
-    background: $white;
+    padding: $spacing-lg;
+    border-bottom: 1px solid $color-border-primary;
+    background: $color-white;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -228,25 +265,25 @@
   .drawer__back {
     background: none;
     border: none;
-    font-size: 1.5rem;
-    color: $text-gray;
+    font-size: $font-size-2xl;
+    color: $color-text-secondary;
     cursor: pointer;
-    padding: $spacing-base * 0.5;
+    padding: $spacing-sm;
     width: 40px;
     height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s;
+    border-radius: $radius-full;
+    transition: all $transition-base;
 
     &:hover {
       background: rgba(102, 126, 234, 0.1);
-      color: $primary-color;
+      color: $brand-primary;
     }
 
     &:focus {
-      outline: 2px solid $primary-color;
+      outline: 2px solid $brand-primary;
       outline-offset: 2px;
     }
   }
@@ -254,16 +291,16 @@
   .drawer__title {
     flex: 1;
     margin: 0;
-    color: $text-dark;
-    font-size: 1.5rem;
-    font-weight: 600;
+    color: $color-text-primary;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
   }
 
   .drawer__close {
     background: none;
     border: none;
     font-size: 2rem;
-    color: $text-gray;
+    color: $color-text-secondary;
     cursor: pointer;
     padding: 0;
     width: 40px;
@@ -271,16 +308,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s;
+    border-radius: $radius-full;
+    transition: all $transition-base;
 
     &:hover {
       background: rgba(245, 101, 101, 0.2);
-      color: $danger-color;
+      color: $color-danger;
     }
 
     &:focus {
-      outline: 2px solid $danger-color;
+      outline: 2px solid $color-danger;
       outline-offset: 2px;
     }
   }
@@ -288,7 +325,14 @@
   .drawer__body {
     flex: 1;
     overflow-y: auto;
-    padding: $spacing-base * 1.5;
+    padding: $spacing-lg;
+
+    // Full body variant (for navigation)
+    &--full {
+      padding: 0;
+      height: 100%;
+      overflow-y: auto; // Scroll uniquement si nécessaire
+    }
 
     // Custom scrollbar
     &::-webkit-scrollbar {
@@ -296,12 +340,12 @@
     }
 
     &::-webkit-scrollbar-track {
-      background: #f1f1f1;
+      background: $color-gray-100;
     }
 
     &::-webkit-scrollbar-thumb {
       background: #c1c1c1;
-      border-radius: 4px;
+      border-radius: $radius-sm;
 
       &:hover {
         background: #a8a8a8;
@@ -310,15 +354,15 @@
 
     // Firefox scrollbar
     scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #f1f1f1;
+    scrollbar-color: #c1c1c1 $color-gray-100;
   }
 
   .drawer__footer {
     display: flex;
     gap: $spacing-base;
-    padding: $spacing-base * 1.5;
-    border-top: 1px solid $border-color;
-    background: $white;
+    padding: $spacing-lg;
+    border-top: 1px solid $color-border-primary;
+    background: $color-white;
     position: sticky;
     bottom: 0;
   }

@@ -334,14 +334,7 @@
 </div>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $danger-color: #f56565;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
-  $spacing-base: 1rem;
+  @import '../../styles/variables';
 
   .image-upload {
     width: 100%;
@@ -359,54 +352,54 @@
       width: 200px;
       height: 200px;
       object-fit: cover;
-      border-radius: 8px;
-      border: 2px solid $border-color;
+      border-radius: $radius-lg;
+      border: 2px solid $color-border-primary;
       display: block;
 
       &--circle {
-        border-radius: 50%;
+        border-radius: $radius-full;
       }
     }
 
     &__preview-actions {
       display: flex;
-      gap: $spacing-base * 0.5;
+      gap: $spacing-sm;
       margin-top: $spacing-base;
     }
 
     &__dropzone {
       width: 100%;
       min-height: 200px;
-      border: 2px dashed $border-color;
-      border-radius: 8px;
+      border: 2px dashed $color-border-primary;
+      border-radius: $radius-lg;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: $spacing-base * 0.5;
-      background: rgba(102, 126, 234, 0.02);
+      gap: $spacing-sm;
+      background: rgba($brand-primary, 0.02);
       cursor: pointer;
-      transition: all 0.3s ease;
-      padding: $spacing-base * 2;
+      transition: all $transition-base $transition-ease;
+      padding: $spacing-xl;
 
       &:hover {
-        border-color: $primary-color;
-        background: rgba(102, 126, 234, 0.05);
+        border-color: $brand-primary;
+        background: rgba($brand-primary, 0.05);
         transform: translateY(-2px);
       }
 
       &--dragging {
-        border-color: $primary-color;
+        border-color: $brand-primary;
         border-width: 3px;
-        background: rgba(102, 126, 234, 0.1);
+        background: rgba($brand-primary, 0.1);
         transform: scale(1.02);
-        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+        box-shadow: 0 8px 24px rgba($brand-primary, 0.2);
       }
     }
 
     &__dropzone-icon {
-      font-size: 3rem;
-      transition: transform 0.3s ease;
+      font-size: $font-size-3xl;
+      transition: transform $transition-base $transition-ease;
 
       .image-upload__dropzone--dragging & {
         transform: scale(1.2);
@@ -424,14 +417,14 @@
     }
 
     &__dropzone-text {
-      font-size: 1rem;
-      font-weight: 600;
-      color: $text-dark;
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      color: $color-text-primary;
     }
 
     &__dropzone-hint {
-      font-size: 0.85rem;
-      color: $text-gray;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
     }
 
     &__cropper {
@@ -441,8 +434,8 @@
     &__cropper-container {
       max-height: 400px;
       overflow: hidden;
-      border-radius: 8px;
-      border: 2px solid $border-color;
+      border-radius: $radius-lg;
+      border: 2px solid $color-border-primary;
       margin-bottom: $spacing-base;
     }
 
@@ -458,58 +451,58 @@
     }
 
     &__btn {
-      padding: $spacing-base * 0.75 $spacing-base * 1.5;
+      padding: $spacing-md $spacing-lg;
       border: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      border-radius: $radius-lg;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all $transition-fast;
 
       &--change,
       &--secondary {
-        background: rgba(102, 102, 102, 0.1);
-        color: $text-gray;
+        background: rgba($color-gray-600, 0.1);
+        color: $color-text-secondary;
 
         &:hover:not(:disabled) {
-          background: rgba(102, 102, 102, 0.2);
+          background: rgba($color-gray-600, 0.2);
         }
       }
 
       &--remove {
-        background: rgba(245, 101, 101, 0.1);
-        color: $danger-color;
+        background: $color-background-danger;
+        color: $color-danger;
 
         &:hover:not(:disabled) {
-          background: rgba(245, 101, 101, 0.2);
+          background: rgba($color-danger, 0.2);
         }
       }
 
       &--primary {
-        background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-        color: $white;
+        @include brand-gradient;
+        color: $color-white;
 
         &:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+          box-shadow: 0 4px 12px rgba($brand-primary, 0.3);
         }
       }
 
       &:disabled {
-        opacity: 0.6;
+        opacity: $opacity-60;
         cursor: not-allowed;
         transform: none;
       }
     }
 
     &__error {
-      margin-top: $spacing-base * 0.5;
-      padding: $spacing-base * 0.75;
-      background: rgba(245, 101, 101, 0.1);
-      border: 1px solid rgba(245, 101, 101, 0.3);
-      border-radius: 6px;
-      color: $danger-color;
-      font-size: 0.9rem;
+      margin-top: $spacing-sm;
+      padding: $spacing-md;
+      background: $color-background-danger;
+      border: 1px solid rgba($color-danger, 0.3);
+      border-radius: $radius-md;
+      color: $color-danger;
+      font-size: $font-size-sm;
     }
   }
 </style>

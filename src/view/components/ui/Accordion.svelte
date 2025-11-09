@@ -50,18 +50,12 @@
 </div>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
-  $spacing-base: 1rem;
-  $transition-duration: 0.3s;
+  @import '../../styles/variables';
 
   .accordion {
-    border: 2px solid $border-color;
-    border-radius: 8px;
-    background: $white;
+    border: 2px solid $color-border-primary;
+    border-radius: $radius-lg;
+    background: $color-white;
     overflow: hidden;
   }
 
@@ -71,36 +65,36 @@
     justify-content: space-between;
     align-items: center;
     padding: $spacing-base;
-    background: $white;
+    background: $color-white;
     border: none;
     cursor: pointer;
-    transition: all $transition-duration ease;
+    transition: all $transition-base $transition-ease;
     text-align: left;
 
     &:hover {
-      background: rgba(102, 126, 234, 0.05);
+      background: rgba($brand-primary, 0.05);
     }
 
     &:focus-visible {
-      outline: 2px solid $primary-color;
+      outline: 2px solid $brand-primary;
       outline-offset: -2px;
     }
 
     &--open {
-      border-bottom: 1px solid $border-color;
+      border-bottom: 1px solid $color-border-primary;
     }
   }
 
   .accordion__title {
-    font-weight: 600;
-    color: $text-dark;
-    font-size: 0.95rem;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    font-size: $font-size-sm;
   }
 
   .accordion__icon {
-    color: $text-gray;
-    font-size: 0.75rem;
-    transition: transform $transition-duration ease;
+    color: $color-text-secondary;
+    font-size: $font-size-xs;
+    transition: transform $transition-base $transition-ease;
 
     &--open {
       transform: rotate(180deg);
@@ -109,7 +103,7 @@
 
   .accordion__content {
     padding: $spacing-base;
-    animation: slideDown $transition-duration ease;
+    animation: slideDown $transition-base $transition-ease;
   }
 
   @keyframes slideDown {

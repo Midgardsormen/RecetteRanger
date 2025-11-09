@@ -126,47 +126,36 @@
 </Layout>
 
 <style lang="scss">
-  // Variables
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $white: #fff;
-  $text-gray: #666;
-  $shadow-primary: rgba(102, 126, 234, 0.3);
-  $shadow-light: rgba(0, 0, 0, 0.08);
-  $shadow-hover: rgba(102, 126, 234, 0.2);
-  $spacing-base: 1rem;
-  $breakpoint-mobile: 768px;
-  $transition-duration: 0.3s;
+  @import '../../styles/variables';
 
   // Block: home
   .home {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 3;
+    gap: $spacing-2xl;
 
     // Element: welcome
     &__welcome {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-      color: $white;
-      padding: $spacing-base * 3;
-      border-radius: 16px;
+      @include brand-gradient;
+      color: $color-white;
+      padding: $spacing-2xl;
+      border-radius: $radius-2xl;
       text-align: center;
-      box-shadow: 0 4px 20px $shadow-primary;
+      box-shadow: 0 4px 20px rgba($brand-primary, 0.3);
 
-      @media (max-width: $breakpoint-mobile) {
-        padding: $spacing-base * 2;
+      @media (max-width: $breakpoint-md) {
+        padding: $spacing-xl;
       }
     }
 
-
     // Element: welcome-subtitle
     &__welcome-subtitle {
-      font-size: 1.2rem;
-      opacity: 0.95;
+      font-size: $font-size-xl;
+      opacity: $opacity-90;
       margin: 0;
 
-      @media (max-width: $breakpoint-mobile) {
-        font-size: 1rem;
+      @media (max-width: $breakpoint-md) {
+        font-size: $font-size-base;
       }
     }
 
@@ -174,9 +163,9 @@
     &__dashboard {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: $spacing-base * 1.5;
+      gap: $spacing-lg;
 
-      @media (max-width: $breakpoint-mobile) {
+      @media (max-width: $breakpoint-md) {
         grid-template-columns: 1fr;
       }
     }
@@ -189,37 +178,36 @@
 
     // Element: card-icon
     &__card-icon {
-      font-size: 3rem;
-      margin-bottom: $spacing-base * 0.5;
+      font-size: $font-size-3xl;
+      margin-bottom: $spacing-sm;
     }
-
 
     // Element: card-text
     &__card-text {
       margin: 0;
-      color: $text-gray;
+      color: $color-text-secondary;
       flex: 1;
     }
 
     // Element: card-arrow
     &__card-arrow {
       align-self: flex-end;
-      font-size: 1.5rem;
-      color: $primary-color;
-      transition: transform $transition-duration ease;
+      font-size: $font-size-2xl;
+      color: $brand-primary;
+      transition: transform $transition-base $transition-ease;
     }
 
     // Element: hero
     &__hero {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-      color: $white;
-      padding: $spacing-base * 5 $spacing-base * 3;
-      border-radius: 16px;
+      @include brand-gradient;
+      color: $color-white;
+      padding: $spacing-3xl $spacing-2xl;
+      border-radius: $radius-2xl;
       text-align: center;
-      box-shadow: 0 4px 20px $shadow-primary;
+      box-shadow: 0 4px 20px rgba($brand-primary, 0.3);
 
-      @media (max-width: $breakpoint-mobile) {
-        padding: $spacing-base * 3 $spacing-base * 2;
+      @media (max-width: $breakpoint-md) {
+        padding: $spacing-2xl $spacing-xl;
       }
     }
 
@@ -229,19 +217,18 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: $spacing-base * 1.5;
+      gap: $spacing-lg;
     }
-
 
     // Element: hero-subtitle
     &__hero-subtitle {
-      font-size: 1.3rem;
-      opacity: 0.95;
+      font-size: $font-size-xl;
+      opacity: $opacity-90;
       margin: 0;
-      line-height: 1.6;
+      line-height: $line-height-relaxed;
 
-      @media (max-width: $breakpoint-mobile) {
-        font-size: 1.1rem;
+      @media (max-width: $breakpoint-md) {
+        font-size: $font-size-lg;
       }
     }
 
@@ -252,20 +239,19 @@
       justify-content: center;
       margin-top: $spacing-base;
 
-      @media (max-width: $breakpoint-mobile) {
+      @media (max-width: $breakpoint-md) {
         flex-direction: column;
       }
     }
-
 
     // Element: features
     &__features {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: $spacing-base * 2;
-      padding: $spacing-base * 2 0;
+      gap: $spacing-xl;
+      padding: $spacing-xl 0;
 
-      @media (max-width: $breakpoint-mobile) {
+      @media (max-width: $breakpoint-md) {
         grid-template-columns: 1fr;
       }
     }
@@ -277,16 +263,15 @@
 
     // Element: feature-icon
     &__feature-icon {
-      font-size: 4rem;
+      font-size: $font-size-4xl;
       margin-bottom: $spacing-base;
     }
-
 
     // Element: feature-text
     &__feature-text {
       margin: 0;
-      color: $text-gray;
-      line-height: 1.6;
+      color: $color-text-secondary;
+      line-height: $line-height-relaxed;
     }
   }
 </style>

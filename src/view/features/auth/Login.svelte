@@ -1,6 +1,8 @@
 <script lang="ts">
   import { authStore } from '../../stores/auth.store';
   import { apiService } from '../../services/api.service';
+  import { Input, Button } from '../../components/ui';
+  import PasswordInput from '../../components/ui/form/PasswordInput.svelte';
 
   let identifier = '';
   let password = '';
@@ -46,41 +48,36 @@
       </div>
     {/if}
 
-    <form on:submit|preventDefault={handleLogin}>
-      <div class="form-group">
-        <label for="identifier">Email ou Pseudo</label>
-        <input
-          id="identifier"
-          type="text"
-          bind:value={identifier}
-          placeholder="john.doe@example.com"
-          disabled={isLoading}
-          autocomplete="username"
-        />
-      </div>
+    <form on:submit|preventDefault={handleLogin} class="login-form">
+      <Input
+        id="identifier"
+        type="text"
+        label="Email ou Pseudo"
+        bind:value={identifier}
+        placeholder="john.doe@example.com"
+        disabled={isLoading}
+        required
+      />
 
-      <div class="form-group">
-        <label for="password">Mot de passe</label>
-        <input
-          id="password"
-          type="password"
-          bind:value={password}
-          placeholder="••••••••"
-          disabled={isLoading}
-          autocomplete="current-password"
-        />
-      </div>
+      <PasswordInput
+        id="password"
+        label="Mot de passe"
+        bind:value={password}
+        placeholder="••••••••"
+        disabled={isLoading}
+        required
+      />
 
-      <button type="submit" class="btn-primary" disabled={isLoading}>
+      <Button type="submit" fullWidth disabled={isLoading}>
         {isLoading ? 'Connexion...' : 'Se connecter'}
-      </button>
+      </Button>
     </form>
 
     <div class="footer">
       <p>Pas encore de compte ?</p>
-      <button type="button" class="btn-secondary" on:click={goToRegister}>
+      <Button variant="secondary" fullWidth onclick={goToRegister}>
         Créer un compte
-      </button>
+      </Button>
     </div>
   </div>
 </div>
@@ -126,78 +123,10 @@
     font-size: 0.9rem;
   }
 
-  form {
+  .login-form {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  label {
-    font-weight: 500;
-    color: #333;
-    font-size: 0.9rem;
-  }
-
-  input {
-    padding: 0.75rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.2s;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #667eea;
-  }
-
-  input:disabled {
-    background: #f5f5f5;
-    cursor: not-allowed;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    padding: 0.875rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    margin-top: 0.5rem;
-  }
-
-  .btn-primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-  }
-
-  .btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .btn-secondary {
-    background: transparent;
-    color: #667eea;
-    border: 2px solid #667eea;
-  }
-
-  .btn-secondary:hover {
-    background: #667eea;
-    color: white;
   }
 
   .footer {

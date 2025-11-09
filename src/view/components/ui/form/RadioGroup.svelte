@@ -64,24 +64,26 @@
 </div>
 
 <style lang="scss">
+  @import '../../../styles/variables';
+
   .radio-group {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: $spacing-md;
 
     &__label {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #333;
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-sm;
+      color: $color-label-text;
     }
 
     &__required {
-      color: #f56565;
+      color: $color-label-required;
     }
 
     &__options {
       display: flex;
-      gap: 1rem;
+      gap: $spacing-base;
 
       &--vertical {
         flex-direction: column;
@@ -91,17 +93,17 @@
     &__option {
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
-      padding: 1rem;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
+      gap: $spacing-md;
+      padding: $spacing-base;
+      border: 2px solid $color-border-primary;
+      border-radius: $radius-lg;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all $transition-base $transition-ease;
       position: relative;
 
       &:hover:not(&--disabled) {
-        border-color: #667eea;
-        background: rgba(102, 126, 234, 0.05);
+        border-color: $brand-primary;
+        background: rgba($brand-primary, 0.05);
       }
 
       &--disabled {
@@ -117,8 +119,8 @@
       height: 0;
 
       &:checked + .radio-group__circle {
-        border-color: #667eea;
-        background: #667eea;
+        border-color: $brand-primary;
+        background: $brand-primary;
 
         &::after {
           opacity: 1;
@@ -127,7 +129,7 @@
       }
 
       &:focus + .radio-group__circle {
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        box-shadow: 0 0 0 3px rgba($brand-primary, 0.2);
       }
     }
 
@@ -135,11 +137,11 @@
       width: 20px;
       height: 20px;
       min-width: 20px;
-      border: 2px solid #e0e0e0;
-      border-radius: 50%;
+      border: 2px solid $color-border-primary;
+      border-radius: $radius-full;
       position: relative;
-      transition: all 0.2s;
-      background: white;
+      transition: all $transition-base $transition-ease;
+      background: $color-white;
 
       &::after {
         content: '';
@@ -149,30 +151,30 @@
         transform: translate(-50%, -50%) scale(0);
         width: 8px;
         height: 8px;
-        border-radius: 50%;
-        background: white;
+        border-radius: $radius-full;
+        background: $color-white;
         opacity: 0;
-        transition: all 0.2s;
+        transition: all $transition-base $transition-ease;
       }
     }
 
     &__content {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: $spacing-xs;
       flex: 1;
     }
 
     &__option-label {
-      font-weight: 500;
-      color: #333;
-      font-size: 0.95rem;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
+      font-size: $font-size-sm;
     }
 
     &__description {
-      font-size: 0.85rem;
-      color: #666;
-      line-height: 1.4;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      line-height: $line-height-normal;
     }
   }
 </style>

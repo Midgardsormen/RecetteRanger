@@ -40,10 +40,12 @@
 </Modal>
 
 <style lang="scss">
+  @import '../../styles/variables';
+
   .confirm-message {
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #333;
+    font-size: $font-size-base;
+    line-height: $line-height-normal;
+    color: $color-text-primary;
     margin: 0;
   }
 </style>

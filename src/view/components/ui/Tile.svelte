@@ -65,35 +65,25 @@
 </div>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $text-light: #999;
-  $border-color: #e0e0e0;
-  $shadow-light: rgba(0, 0, 0, 0.08);
-  $shadow-primary: rgba(102, 126, 234, 0.3);
-  $spacing-base: 1rem;
-  $transition-duration: 0.3s;
+  @import '../../styles/variables';
 
   .tile {
     display: flex;
     align-items: center;
     gap: $spacing-base;
-    padding: $spacing-base * 1.25;
-    background: $white;
-    border: 2px solid $border-color;
-    border-radius: 12px;
-    transition: all $transition-duration ease;
+    padding: $spacing-lg;
+    background: $color-white;
+    border: 2px solid $color-border-primary;
+    border-radius: $radius-xl;
+    transition: all $transition-base $transition-ease;
 
     &--clickable {
       cursor: pointer;
 
       &:hover:not(&--disabled) {
-        border-color: $primary-color;
+        border-color: $brand-primary;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px $shadow-light;
+        box-shadow: 0 4px 12px $shadow-md;
       }
 
       &:active:not(&--disabled) {
@@ -101,23 +91,23 @@
       }
 
       &:focus-visible {
-        outline: 2px solid $primary-color;
+        outline: 2px solid $brand-primary;
         outline-offset: 2px;
       }
     }
 
     &--selected {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-      border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      background: linear-gradient(135deg, rgba($brand-primary, 0.1) 0%, rgba($brand-secondary, 0.1) 100%);
+      border-color: $brand-primary;
+      box-shadow: $shadow-focus-primary;
 
       &:hover:not(&--disabled) {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+        background: linear-gradient(135deg, rgba($brand-primary, 0.15) 0%, rgba($brand-secondary, 0.15) 100%);
       }
     }
 
     &--disabled {
-      opacity: 0.5;
+      opacity: $opacity-50;
       cursor: not-allowed;
       pointer-events: none;
     }
@@ -130,7 +120,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: $font-size-2xl;
     line-height: 1;
   }
 
@@ -140,17 +130,17 @@
   }
 
   .tile__title {
-    margin: 0 0 $spacing-base * 0.25 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: $text-dark;
-    line-height: 1.3;
+    margin: 0 0 $spacing-xs 0;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    line-height: $line-height-tight;
   }
 
   .tile__subtitle {
     margin: 0;
-    font-size: 0.875rem;
-    color: $text-gray;
-    line-height: 1.4;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    line-height: $line-height-normal;
   }
 </style>

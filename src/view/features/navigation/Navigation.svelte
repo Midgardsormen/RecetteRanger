@@ -1,7 +1,7 @@
 <script lang="ts">
-  import UserMenu from '../../components/UserMenu.svelte';
+  import { Drawer } from '../../components/ui';
 
-  let { currentPage = '' }: { currentPage?: string } = $props();
+  let { currentPage = '', isOpen = false, onClose }: { currentPage?: string; isOpen?: boolean; onClose?: () => void } = $props();
 
   const navItems = [
     { href: '/', label: 'Home', icon: '🏠' },
@@ -12,163 +12,184 @@
     { href: '/plannings', label: 'Meal Plans', icon: '📅' },
     { href: '/shopping-lists', label: 'Shopping Lists', icon: '🛒' }
   ];
+
+  function handleNavClick() {
+    // Close drawer on mobile when clicking a link
+    if (onClose) {
+      onClose();
+    }
+  }
 </script>
 
-<nav id="navigation" class="navigation">
-  <div class="navigation__container">
-    <div class="navigation__brand">
-      <h1 class="navigation__brand-title">RecetteRanger</h1>
-    </div>
-    <ul class="navigation__list">
+<!-- Desktop sidebar (visible >= 1024px) -->
+<nav class="sidebar">
+  <ul class="sidebar__list">
+    {#each navItems as item}
+      <li class="sidebar__item">
+        <a
+          href={item.href}
+          class="sidebar__link"
+          class:sidebar__link--active={currentPage === item.href}
+          aria-current={currentPage === item.href ? 'page' : undefined}
+        >
+          <span class="sidebar__icon">{item.icon}</span>
+          <span class="sidebar__label">{item.label}</span>
+        </a>
+      </li>
+    {/each}
+  </ul>
+</nav>
+
+<!-- Mobile/Tablet drawer (visible < 1024px) -->
+<Drawer
+  {isOpen}
+  position="left"
+  variant="navigation"
+  onClose={onClose || (() => {})}
+>
+  <nav class="mobile-nav">
+    <ul class="mobile-nav__list">
       {#each navItems as item}
-        <li class="navigation__item">
+        <li class="mobile-nav__item">
           <a
             href={item.href}
-            class="navigation__link"
-            class:navigation__link--active={currentPage === item.href}
+            class="mobile-nav__link"
+            class:mobile-nav__link--active={currentPage === item.href}
             aria-current={currentPage === item.href ? 'page' : undefined}
+            onclick={handleNavClick}
           >
-            <span class="navigation__icon">{item.icon}</span>
-            <span class="navigation__label">{item.label}</span>
+            <span class="mobile-nav__icon">{item.icon}</span>
+            <span class="mobile-nav__label">{item.label}</span>
           </a>
         </li>
       {/each}
     </ul>
-    <div class="navigation__user">
-      <UserMenu />
-    </div>
-  </div>
-</nav>
+  </nav>
+</Drawer>
 
 <style lang="scss">
-  // Variables
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $white: #fff;
-  $white-transparent-90: rgba(255, 255, 255, 0.9);
-  $white-transparent-20: rgba(255, 255, 255, 0.2);
-  $white-transparent-10: rgba(255, 255, 255, 0.1);
-  $shadow-color: rgba(0, 0, 0, 0.1);
-  $max-width: 1200px;
-  $spacing-base: 1rem;
-  $breakpoint-mobile: 768px;
-  $transition-duration: 0.3s;
+  @import '../../styles/_variables';
 
-  // Block: navigation
-  .navigation {
-    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-    box-shadow: 0 2px 8px $shadow-color;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+  // Desktop Sidebar - Vertical navigation on the left
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 64px; // Below header
+    bottom: 0;
+    width: 250px;
+    background: linear-gradient(135deg, $brand-primary 0%, $brand-secondary 100%);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: $spacing-lg 0;
+    z-index: $z-index-sidebar;
 
-    // Element: container
-    &__container {
-      max-width: $max-width;
-      margin: 0 auto;
-      padding: $spacing-base $spacing-base * 2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: $spacing-base * 2;
-
-      @media (max-width: $breakpoint-mobile) {
-        flex-wrap: wrap;
-        gap: $spacing-base;
-        padding: $spacing-base;
-      }
+    // Hide on mobile/tablet
+    @media (max-width: $breakpoint-lg) {
+      display: none;
     }
 
-    // Element: user
-    &__user {
-      margin-left: auto;
-
-      @media (max-width: $breakpoint-mobile) {
-        margin-left: 0;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-      }
-    }
-
-    // Element: brand
-    &__brand {
-      // No specific styles
-    }
-
-    // Element: brand-title
-    &__brand-title {
-      color: $white;
-      font-size: 1.5rem;
-      margin: 0;
-      font-weight: 700;
-    }
-
-    // Element: list
     &__list {
-      display: flex;
       list-style: none;
       margin: 0;
       padding: 0;
-      gap: $spacing-base * 0.5;
-
-      @media (max-width: $breakpoint-mobile) {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xs;
+      flex: 1;
     }
 
-    // Element: item
     &__item {
-      // No specific styles needed for li
+      padding: 0 $spacing-base;
     }
 
-    // Element: link
     &__link {
       display: flex;
       align-items: center;
-      gap: $spacing-base * 0.5;
-      padding: $spacing-base * 0.75 $spacing-base * 1.25;
-      color: $white-transparent-90;
+      gap: $spacing-base;
+      padding: $spacing-base;
+      color: rgba(255, 255, 255, 0.9);
       text-decoration: none;
-      border-radius: 8px;
-      transition: all $transition-duration ease;
-      font-weight: 500;
-      background: $white-transparent-10;
+      border-radius: $radius-md;
+      transition: all $transition-base;
+      font-weight: $font-weight-medium;
+      background: rgba(255, 255, 255, 0.1);
 
       &:hover {
-        background: $white-transparent-20;
-        color: $white;
-        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.2);
+        color: $color-white;
+        transform: translateX(4px);
       }
 
-      // Modifier: active
       &--active {
-        background: $white;
-        color: $primary-color;
-        font-weight: 600;
-      }
-
-      @media (max-width: $breakpoint-mobile) {
-        padding: $spacing-base * 0.5 $spacing-base;
-        font-size: 0.9rem;
+        background: $color-white;
+        color: $brand-primary;
+        font-weight: $font-weight-semibold;
       }
     }
 
-    // Element: icon
     &__icon {
-      font-size: 1.2rem;
+      font-size: $font-size-xl;
+      flex-shrink: 0;
+    }
 
-      @media (max-width: $breakpoint-mobile) {
-        font-size: 1.5rem;
+    &__label {
+      font-size: $font-size-base;
+    }
+  }
+
+  // Mobile Navigation (inside Drawer with navigation variant)
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+
+    &__list {
+      list-style: none;
+      margin: 0;
+      padding: $spacing-lg 0;
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xs;
+      flex: 1;
+    }
+
+    &__item {
+      padding: 0 $spacing-base;
+    }
+
+    &__link {
+      display: flex;
+      align-items: center;
+      gap: $spacing-base;
+      padding: $spacing-base;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      border-radius: $radius-md;
+      transition: all $transition-base;
+      font-weight: $font-weight-medium;
+      background: rgba(255, 255, 255, 0.1);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: $color-white;
+        transform: translateX(4px);
+      }
+
+      &--active {
+        background: $color-white;
+        color: $brand-primary;
+        font-weight: $font-weight-semibold;
       }
     }
 
-    // Element: label
+    &__icon {
+      font-size: $font-size-xl;
+      flex-shrink: 0;
+    }
+
     &__label {
-      @media (max-width: $breakpoint-mobile) {
-        display: none;
-      }
+      font-size: $font-size-base;
     }
   }
 </style>

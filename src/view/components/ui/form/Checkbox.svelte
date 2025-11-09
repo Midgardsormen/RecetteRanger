@@ -32,26 +32,21 @@
 </label>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $white: #fff;
-  $text-dark: #333;
-  $border-color: #e0e0e0;
-  $spacing-base: 1rem;
+  @import '../../../styles/variables';
 
   .checkbox {
     display: inline-flex;
     align-items: center;
-    gap: $spacing-base * 0.5;
+    gap: $spacing-sm;
     cursor: pointer;
     user-select: none;
     position: relative;
-    padding: $spacing-base * 0.5;
-    border-radius: 6px;
-    transition: background-color 0.2s;
+    padding: $spacing-sm;
+    border-radius: $radius-md;
+    transition: background-color $transition-base $transition-ease;
 
     &:hover {
-      background-color: rgba(102, 126, 234, 0.05);
+      background-color: rgba($brand-primary, 0.05);
     }
 
     &--disabled {
@@ -72,8 +67,8 @@
     width: 0;
 
     &:checked ~ .checkbox__checkmark {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-      border-color: $primary-color;
+      @include brand-gradient;
+      border-color: $brand-primary;
 
       &::after {
         display: block;
@@ -81,7 +76,7 @@
     }
 
     &:focus ~ .checkbox__checkmark {
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+      box-shadow: 0 0 0 3px rgba($brand-primary, 0.2);
     }
   }
 
@@ -90,10 +85,10 @@
     height: 20px;
     width: 20px;
     min-width: 20px;
-    background-color: $white;
-    border: 2px solid $border-color;
-    border-radius: 4px;
-    transition: all 0.2s;
+    background-color: $color-white;
+    border: 2px solid $color-border-primary;
+    border-radius: $radius-sm;
+    transition: all $transition-base $transition-ease;
 
     &::after {
       content: '';
@@ -103,15 +98,15 @@
       top: 2px;
       width: 5px;
       height: 10px;
-      border: solid $white;
+      border: solid $color-white;
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);
     }
   }
 
   .checkbox__label {
-    font-size: 0.95rem;
-    color: $text-dark;
-    line-height: 1.4;
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+    line-height: $line-height-normal;
   }
 </style>

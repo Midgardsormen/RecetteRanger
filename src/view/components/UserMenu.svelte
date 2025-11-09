@@ -114,42 +114,44 @@
 </div>
 
 <style lang="scss">
+  @import '../styles/variables';
+
   .user-menu {
     position: relative;
 
     &__loading {
-      padding: 0.5rem;
+      padding: $spacing-sm;
     }
 
     &__spinner {
-      font-size: 1.5rem;
+      font-size: $font-size-2xl;
       animation: spin 1s linear infinite;
     }
 
     &__button {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      background: rgba(255, 255, 255, 0.1);
+      gap: $spacing-sm;
+      padding: $spacing-sm $spacing-md;
+      background: rgba($color-white, 0.1);
       border: none;
-      border-radius: 8px;
-      color: white;
+      border-radius: $radius-lg;
+      color: $color-white;
       cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.95rem;
+      transition: all $transition-fast $transition-ease;
+      font-size: $font-size-sm;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba($color-white, 0.2);
       }
     }
 
     &__avatar {
       width: 32px;
       height: 32px;
-      border-radius: 50%;
+      border-radius: $radius-full;
       overflow: hidden;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba($color-white, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -162,23 +164,23 @@
     }
 
     &__avatar-fallback {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: white;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $color-white;
       text-transform: uppercase;
     }
 
     &__name {
-      font-weight: 500;
+      font-weight: $font-weight-medium;
 
-      @media (max-width: 768px) {
+      @media (max-width: $breakpoint-md) {
         display: none;
       }
     }
 
     &__chevron {
-      font-size: 0.7rem;
-      transition: transform 0.2s ease;
+      font-size: $font-size-xs;
+      transition: transform $transition-fast $transition-ease;
 
       &--open {
         transform: rotate(180deg);
@@ -187,115 +189,115 @@
 
     &__dropdown {
       position: absolute;
-      top: calc(100% + 0.5rem);
+      top: calc(100% + $spacing-sm);
       right: 0;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      background: $color-white;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-lg;
       min-width: 220px;
       overflow: hidden;
-      z-index: 1000;
-      animation: slideDown 0.2s ease;
+      z-index: $z-index-dropdown;
+      animation: slideDown $transition-fast $transition-ease;
     }
 
     &__dropdown-header {
-      padding: 1rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      padding: $spacing-base;
+      @include brand-gradient;
+      color: $color-white;
     }
 
     &__dropdown-name {
-      font-weight: 600;
-      font-size: 0.95rem;
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-sm;
     }
 
     &__dropdown-email {
-      font-size: 0.85rem;
-      opacity: 0.9;
-      margin-top: 0.25rem;
+      font-size: $font-size-sm;
+      opacity: $opacity-90;
+      margin-top: $spacing-xs;
     }
 
     &__dropdown-role {
-      margin-top: 0.5rem;
+      margin-top: $spacing-sm;
     }
 
     &__role-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.25rem;
-      padding: 0.25rem 0.5rem;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 600;
+      gap: $spacing-xs;
+      padding: $spacing-xs $spacing-sm;
+      background: rgba($color-white, 0.2);
+      border-radius: $radius-sm;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
       text-transform: uppercase;
       letter-spacing: 0.5px;
 
       &--admin {
-        background: rgba(255, 215, 0, 0.3);
-        color: #ffd700;
+        background: rgba($color-warning, 0.3);
+        color: $color-warning;
       }
     }
 
     &__dropdown-divider {
       height: 1px;
-      background: #e0e0e0;
+      background: $color-border-primary;
     }
 
     &__dropdown-item {
       width: 100%;
-      padding: 0.75rem 1rem;
+      padding: $spacing-md $spacing-base;
       background: none;
       border: none;
       text-align: left;
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: background $transition-fast $transition-ease;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      color: #333;
-      font-size: 0.95rem;
+      gap: $spacing-sm;
+      color: $color-text-primary;
+      font-size: $font-size-sm;
       text-decoration: none;
 
       &:hover {
-        background: #f5f5f5;
+        background: $color-background-tertiary;
       }
     }
 
     &__dropdown-icon {
-      font-size: 1.1rem;
+      font-size: $font-size-lg;
     }
 
     &__auth-buttons {
       display: flex;
-      gap: 0.5rem;
+      gap: $spacing-sm;
     }
 
     &__btn {
-      padding: 0.5rem 1rem;
+      padding: $spacing-sm $spacing-base;
       border: none;
-      border-radius: 6px;
+      border-radius: $radius-md;
       cursor: pointer;
-      font-weight: 500;
-      font-size: 0.9rem;
-      transition: all 0.2s ease;
+      font-weight: $font-weight-medium;
+      font-size: $font-size-sm;
+      transition: all $transition-fast $transition-ease;
 
       &--secondary {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
+        background: rgba($color-white, 0.1);
+        color: $color-white;
 
         &:hover {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba($color-white, 0.2);
         }
       }
 
       &--primary {
-        background: white;
-        color: #667eea;
+        background: $color-white;
+        color: $brand-primary;
 
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 4px 12px rgba($color-black, 0.2);
         }
       }
     }

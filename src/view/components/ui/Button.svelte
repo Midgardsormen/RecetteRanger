@@ -35,29 +35,19 @@
 </button>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $success-color: #48bb78;
-  $danger-color: #f56565;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
-  $shadow-primary: rgba(102, 126, 234, 0.3);
-  $spacing-base: 1rem;
-  $transition-duration: 0.3s;
+  @import '../../styles/variables';
 
   .button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: $spacing-base * 0.5;
+    gap: $spacing-sm;
     border: none;
-    border-radius: 8px;
+    border-radius: $radius-lg;
     font-family: inherit;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
     cursor: pointer;
-    transition: all $transition-duration ease;
+    transition: all $transition-slow $transition-ease;
     line-height: 1;
 
     &:disabled {
@@ -67,34 +57,34 @@
     }
 
     &:focus-visible {
-      outline: 2px solid $primary-color;
+      outline: 2px solid $brand-primary;
       outline-offset: 2px;
     }
 
     // Sizes
     &--small {
-      padding: $spacing-base * 0.5 $spacing-base;
-      font-size: 0.875rem;
+      padding: $spacing-sm $spacing-base;
+      font-size: $font-size-sm;
     }
 
     &--medium {
-      padding: $spacing-base * 0.75 $spacing-base * 1.5;
-      font-size: 1rem;
+      padding: $spacing-md $spacing-lg;
+      font-size: $font-size-base;
     }
 
     &--large {
-      padding: $spacing-base $spacing-base * 2;
-      font-size: 1.125rem;
+      padding: $spacing-base $spacing-xl;
+      font-size: $font-size-lg;
     }
 
     // Variants
     &--primary {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-      color: $white;
+      background: $color-button-primary-background;
+      color: $color-button-primary-text;
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px $shadow-primary;
+        box-shadow: 0 4px 12px $color-button-primary-shadow;
       }
 
       &:active:not(:disabled) {
@@ -103,12 +93,12 @@
     }
 
     &--secondary {
-      background: $white;
-      color: $primary-color;
-      border: 2px solid $primary-color;
+      background: $color-button-secondary-background;
+      color: $color-button-secondary-text;
+      border: 2px solid $color-button-secondary-border;
 
       &:hover:not(:disabled) {
-        background: rgba(102, 126, 234, 0.1);
+        background: $color-button-secondary-hover-background;
         transform: translateY(-2px);
       }
 
@@ -118,13 +108,13 @@
     }
 
     &--danger {
-      background: $danger-color;
-      color: $white;
+      background: $color-button-danger-background;
+      color: $color-button-danger-text;
 
       &:hover:not(:disabled) {
-        background: darken($danger-color, 5%);
+        background: $color-button-danger-hover-background;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+        box-shadow: 0 4px 12px $color-button-danger-shadow;
       }
 
       &:active:not(:disabled) {
@@ -133,13 +123,13 @@
     }
 
     &--success {
-      background: $success-color;
-      color: $white;
+      background: $color-button-success-background;
+      color: $color-button-success-text;
 
       &:hover:not(:disabled) {
-        background: darken($success-color, 5%);
+        background: $color-button-success-hover-background;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+        box-shadow: 0 4px 12px $color-button-success-shadow;
       }
 
       &:active:not(:disabled) {
@@ -148,11 +138,11 @@
     }
 
     &--ghost {
-      background: transparent;
-      color: $text-gray;
+      background: $color-button-ghost-background;
+      color: $color-button-ghost-text;
 
       &:hover:not(:disabled) {
-        background: rgba(0, 0, 0, 0.05);
+        background: $color-button-ghost-hover-background;
       }
 
       &:active:not(:disabled) {

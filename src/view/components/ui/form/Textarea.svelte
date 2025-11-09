@@ -1,14 +1,15 @@
 <script lang="ts">
   interface Props {
     id?: string;
-    type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
-    value?: string | number;
+    value?: string;
     placeholder?: string;
     label?: string;
     required?: boolean;
     disabled?: boolean;
     error?: string;
     hint?: string;
+    rows?: number;
+    maxlength?: number;
     oninput?: (e: Event) => void;
     onchange?: (e: Event) => void;
     onblur?: (e: Event) => void;
@@ -16,7 +17,6 @@
 
   let {
     id,
-    type = 'text',
     value = $bindable(''),
     placeholder = '',
     label,
@@ -24,15 +24,17 @@
     disabled = false,
     error = '',
     hint = '',
+    rows = 4,
+    maxlength,
     oninput,
     onchange,
     onblur
   }: Props = $props();
 </script>
 
-<div class="input-wrapper">
+<div class="textarea-wrapper">
   {#if label}
-    <label class="input-label" for={id}>
+    <label class="textarea-label" for={id}>
       {label}
       {#if required}
         <span class="required">*</span>
@@ -40,38 +42,39 @@
     </label>
   {/if}
 
-  <input
+  <textarea
     {id}
-    {type}
     {placeholder}
     {disabled}
-    class="input"
-    class:input--error={error}
+    {rows}
+    {maxlength}
+    class="textarea"
+    class:textarea--error={error}
     bind:value
     {oninput}
     {onchange}
     {onblur}
-  />
+  ></textarea>
 
   {#if error}
-    <span class="input-error">{error}</span>
+    <span class="textarea-error">{error}</span>
   {/if}
 
   {#if hint && !error}
-    <span class="input-hint">{hint}</span>
+    <span class="textarea-hint">{hint}</span>
   {/if}
 </div>
 
 <style lang="scss">
   @import '../../../styles/variables';
 
-  .input-wrapper {
+  .textarea-wrapper {
     display: flex;
     flex-direction: column;
     gap: $spacing-sm;
   }
 
-  .input-label {
+  .textarea-label {
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
     color: $color-label-text;
@@ -83,7 +86,7 @@
     margin-left: $spacing-xs;
   }
 
-  .input {
+  .textarea {
     padding: $spacing-md $spacing-base;
     border: 2px solid $color-input-border;
     border-radius: $radius-lg;
@@ -91,6 +94,8 @@
     font-family: inherit;
     transition: all $transition-base $transition-ease;
     background: $color-input-background;
+    resize: vertical;
+    min-height: 100px;
 
     &:focus {
       outline: none;
@@ -117,13 +122,13 @@
     }
   }
 
-  .input-error {
+  .textarea-error {
     font-size: $font-size-sm;
     color: $color-text-error;
     margin-top: -$spacing-xs;
   }
 
-  .input-hint {
+  .textarea-hint {
     font-size: $font-size-sm;
     color: $color-text-secondary;
     margin-top: -$spacing-xs;

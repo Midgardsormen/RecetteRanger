@@ -37,51 +37,46 @@
 </div>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $white: #fff;
-  $text-dark: #333;
-  $text-light: #999;
-  $border-color: #e0e0e0;
-  $spacing-base: 1rem;
+  @import '../../styles/variables';
 
   .search-bar {
     position: relative;
     display: flex;
     align-items: center;
     width: 100%;
-    background: $white;
-    border: 2px solid $border-color;
-    border-radius: 12px;
-    transition: all 0.2s;
+    background: $color-white;
+    border: 2px solid $color-border-primary;
+    border-radius: $radius-xl;
+    transition: all $transition-base $transition-ease;
 
     &:focus-within {
-      border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: $brand-primary;
+      box-shadow: $shadow-focus-primary;
     }
   }
 
   .search-bar__icon {
     padding-left: $spacing-base;
     font-size: 1.2rem;
-    color: $text-light;
+    color: $color-text-tertiary;
     pointer-events: none;
   }
 
   .search-bar__input {
     flex: 1;
-    padding: $spacing-base * 0.75 $spacing-base;
+    padding: $spacing-md $spacing-base;
     border: none;
     background: transparent;
-    font-size: 1rem;
+    font-size: $font-size-base;
     font-family: inherit;
-    color: $text-dark;
+    color: $color-text-primary;
 
     &:focus {
       outline: none;
     }
 
     &::placeholder {
-      color: $text-light;
+      color: $color-input-placeholder;
     }
 
     &:disabled {
@@ -91,24 +86,24 @@
   }
 
   .search-bar__clear {
-    padding: $spacing-base * 0.5;
-    margin-right: $spacing-base * 0.5;
+    padding: $spacing-sm;
+    margin-right: $spacing-sm;
     border: none;
-    background: rgba(102, 126, 234, 0.1);
-    color: $primary-color;
-    border-radius: 50%;
+    background: rgba($brand-primary, 0.1);
+    color: $brand-primary;
+    border-radius: $radius-full;
     width: 32px;
     height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all $transition-base $transition-ease;
     font-size: 1.2rem;
     line-height: 1;
 
     &:hover {
-      background: rgba(102, 126, 234, 0.2);
+      background: rgba($brand-primary, 0.2);
     }
   }
 </style>

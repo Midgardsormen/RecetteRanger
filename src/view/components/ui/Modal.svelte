@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { createFocusTrap, type FocusTrap } from '../../utils';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     isOpen?: boolean;
@@ -24,6 +25,7 @@
       onClick: () => void;
       disabled?: boolean;
     };
+    children?: Snippet;
   }
 
   let {
@@ -34,7 +36,8 @@
     onClose,
     primaryAction,
     secondaryAction,
-    dangerAction
+    dangerAction,
+    children
   }: Props = $props();
 
   let modalElement: HTMLDivElement;
@@ -120,7 +123,7 @@
 
       <!-- Body avec slot -->
       <div class="modal__body">
-        <slot />
+        {@render children?.()}
       </div>
 
       <!-- Footer avec actions -->
@@ -165,16 +168,7 @@
 {/if}
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $danger-color: #f56565;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
-  $shadow-dark: rgba(0, 0, 0, 0.3);
-  $spacing-base: 1rem;
-  $transition-duration: 0.3s;
+  @import '../../styles/variables';
 
   .modal-overlay {
     position: fixed;
@@ -182,13 +176,13 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: $color-background-overlay;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: $z-index-modal;
     padding: $spacing-base;
-    animation: fadeIn $transition-duration ease;
+    animation: fadeIn $transition-slow ease;
   }
 
   @keyframes fadeIn {
@@ -201,15 +195,15 @@
   }
 
   .modal {
-    background: $white;
-    border-radius: 12px;
+    background: $color-white;
+    border-radius: $radius-xl;
     display: flex;
     flex-direction: column;
     max-height: 90vh;
-    box-shadow: 0 10px 40px $shadow-dark;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     opacity: 0;
     transform: scale(0.9) translateY(-20px);
-    animation: scaleIn $transition-duration ease forwards;
+    animation: scaleIn $transition-slow ease forwards;
 
     &--open {
       opacity: 1;
@@ -248,24 +242,24 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: $spacing-base * 1.5;
-    border-bottom: 1px solid $border-color;
+    padding: $spacing-lg;
+    border-bottom: 1px solid $color-border-primary;
     gap: $spacing-base;
   }
 
   .modal__title {
     flex: 1;
     margin: 0;
-    color: $text-dark;
-    font-size: 1.5rem;
-    font-weight: 600;
+    color: $color-text-primary;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
   }
 
   .modal__close {
     background: none;
     border: none;
     font-size: 2rem;
-    color: $text-gray;
+    color: $color-text-secondary;
     cursor: pointer;
     padding: 0;
     width: 40px;
@@ -273,17 +267,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s;
+    border-radius: $radius-full;
+    transition: all $transition-base;
     flex-shrink: 0;
 
     &:hover {
       background: rgba(245, 101, 101, 0.2);
-      color: $danger-color;
+      color: $color-danger;
     }
 
     &:focus {
-      outline: 2px solid $danger-color;
+      outline: 2px solid $color-danger;
       outline-offset: 2px;
     }
   }
@@ -291,7 +285,7 @@
   .modal__body {
     flex: 1;
     overflow-y: auto;
-    padding: $spacing-base * 1.5;
+    padding: $spacing-lg;
 
     // Custom scrollbar
     &::-webkit-scrollbar {
@@ -320,7 +314,7 @@
     display: flex;
     gap: $spacing-base;
     padding: $spacing-base * 1.5;
-    border-top: 1px solid $border-color;
+    border-top: 1px solid $color-border-primary;
     justify-content: flex-end;
   }
 
@@ -335,13 +329,13 @@
     min-width: 100px;
 
     &:focus {
-      outline: 2px solid $primary-color;
+      outline: 2px solid $brand-primary;
       outline-offset: 2px;
     }
 
     &--secondary {
       background: rgba(102, 102, 102, 0.1);
-      color: $text-gray;
+      color: $color-text-secondary;
 
       &:hover:not(:disabled) {
         background: rgba(102, 102, 102, 0.2);
@@ -354,8 +348,8 @@
     }
 
     &--primary {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-      color: $white;
+      @include brand-gradient;
+      color: $color-white;
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
@@ -370,8 +364,8 @@
     }
 
     &--danger {
-      background: $danger-color;
-      color: $white;
+      background: $color-danger;
+      color: $color-white;
 
       &:hover:not(:disabled) {
         background: #e03e3e;

@@ -545,25 +545,27 @@
 
       <!-- Filtres et options d'affichage -->
       <div class="filters-section">
-        <div class="filter-group">
-          <label for="groupBy">Grouper par:</label>
-          <select id="groupBy" bind:value={groupBy} class="filter-select">
-            <option value="store">🏪 Enseigne</option>
-            <option value="aisle">📦 Rayon</option>
-          </select>
-        </div>
+        <Select
+          id="groupBy"
+          label="Grouper par:"
+          bind:value={groupBy}
+          options={[
+            { value: 'store', label: '🏪 Enseigne' },
+            { value: 'aisle', label: '📦 Rayon' }
+          ]}
+        />
 
         {#if groupBy === 'store'}
-          <div class="filter-group">
-            <label for="storeFilter">Filtrer par enseigne:</label>
-            <select id="storeFilter" bind:value={selectedStoreFilter} class="filter-select">
-              <option value="all">Toutes les enseignes</option>
-              <option value="none">Sans enseigne</option>
-              {#each availableStores() as store}
-                <option value={store.id}>{store.name}</option>
-              {/each}
-            </select>
-          </div>
+          <Select
+            id="storeFilter"
+            label="Filtrer par enseigne:"
+            bind:value={selectedStoreFilter}
+            options={[
+              { value: 'all', label: 'Toutes les enseignes' },
+              { value: 'none', label: 'Sans enseigne' },
+              ...availableStores().map(store => ({ value: store.id, label: store.name }))
+            ]}
+          />
         {/if}
       </div>
 

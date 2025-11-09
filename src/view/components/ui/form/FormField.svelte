@@ -42,45 +42,42 @@
 </div>
 
 <style lang="scss">
-  $danger-color: #f56565;
-  $text-dark: #333;
-  $text-gray: #666;
-  $spacing-base: 1rem;
+  @import '../../../styles/variables';
 
   .form-field {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 0.5;
-    margin-bottom: $spacing-base * 1.5;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-lg;
   }
 
   .form-label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: $text-dark;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-label-text;
     display: block;
   }
 
   .required {
-    color: $danger-color;
-    margin-left: 0.25rem;
+    color: $color-label-required;
+    margin-left: $spacing-xs;
   }
 
   .form-field__content {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 0.5;
+    gap: $spacing-sm;
   }
 
   .form-error {
-    font-size: 0.85rem;
-    color: $danger-color;
-    margin-top: -0.25rem;
+    font-size: $font-size-sm;
+    color: $color-text-error;
+    margin-top: -$spacing-xs;
   }
 
   .form-hint {
-    font-size: 0.85rem;
-    color: $text-gray;
-    margin-top: -0.25rem;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-top: -$spacing-xs;
   }
 </style>

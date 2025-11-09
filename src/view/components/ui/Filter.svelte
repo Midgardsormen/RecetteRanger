@@ -221,21 +221,12 @@
 </div>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $danger-color: #f56565;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $text-light: #999;
-  $border-color: #e0e0e0;
-  $spacing-base: 1rem;
-  $transition-duration: 0.3s;
+  @import '../../styles/variables';
 
   .filter {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 0.75;
+    gap: $spacing-md;
   }
 
   .filter__header {
@@ -245,28 +236,28 @@
   }
 
   .filter__label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: $text-dark;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
   }
 
   .filter__clear {
-    padding: $spacing-base * 0.25 $spacing-base * 0.5;
+    padding: $spacing-xs $spacing-sm;
     background: transparent;
     border: none;
-    color: $primary-color;
-    font-size: 0.875rem;
-    font-weight: 500;
+    color: $brand-primary;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
     cursor: pointer;
-    transition: color $transition-duration ease;
+    transition: color $transition-base $transition-ease;
 
     &:hover {
-      color: $secondary-color;
+      color: $brand-secondary;
       text-decoration: underline;
     }
 
     &--accordion {
-      margin-bottom: $spacing-base * 0.75;
+      margin-bottom: $spacing-md;
       display: block;
       width: 100%;
       text-align: left;
@@ -275,55 +266,55 @@
 
   .filter__select {
     width: 100%;
-    padding: $spacing-base * 0.75;
-    border: 2px solid $border-color;
-    border-radius: 8px;
-    background: $white;
-    font-size: 0.95rem;
+    padding: $spacing-md;
+    border: 2px solid $color-border-primary;
+    border-radius: $radius-lg;
+    background: $color-white;
+    font-size: $font-size-sm;
     font-family: inherit;
-    color: $text-dark;
+    color: $color-text-primary;
     cursor: pointer;
-    transition: all $transition-duration ease;
+    transition: all $transition-base $transition-ease;
 
     &:hover {
-      border-color: $primary-color;
+      border-color: $brand-primary;
     }
 
     &:focus {
       outline: none;
-      border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: $brand-primary;
+      box-shadow: $shadow-focus-primary;
     }
   }
 
   .filter__count {
-    color: $primary-color;
-    font-weight: 600;
-    font-size: 0.875rem;
+    color: $brand-primary;
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-sm;
   }
 
   .filter__dropdown-content {
-    padding: $spacing-base * 0.5;
+    padding: $spacing-sm;
     max-width: 400px;
     min-width: 250px;
   }
 
   .filter__clear-dropdown {
     width: 100%;
-    padding: $spacing-base * 0.5;
-    margin-bottom: $spacing-base * 0.5;
-    background: rgba(245, 101, 101, 0.1);
+    padding: $spacing-sm;
+    margin-bottom: $spacing-sm;
+    background: $color-background-danger;
     border: none;
-    border-radius: 6px;
-    color: $danger-color;
-    font-size: 0.875rem;
-    font-weight: 500;
+    border-radius: $radius-md;
+    color: $color-danger;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
     cursor: pointer;
-    transition: all $transition-duration ease;
+    transition: all $transition-base $transition-ease;
     text-align: left;
 
     &:hover {
-      background: rgba(245, 101, 101, 0.2);
+      background: rgba($color-danger, 0.2);
     }
   }
 
@@ -332,66 +323,66 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: $spacing-base * 0.5;
-    padding: $spacing-base * 0.75;
+    gap: $spacing-sm;
+    padding: $spacing-md;
     background: transparent;
     border: none;
-    border-radius: 6px;
-    color: $text-dark;
-    font-size: 0.95rem;
+    border-radius: $radius-md;
+    color: $color-text-primary;
+    font-size: $font-size-sm;
     text-align: left;
     cursor: pointer;
-    transition: all $transition-duration ease;
+    transition: all $transition-base $transition-ease;
 
     &:hover {
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba($brand-primary, 0.1);
     }
 
     &--selected {
-      background: rgba(102, 126, 234, 0.15);
-      font-weight: 500;
+      background: rgba($brand-primary, 0.15);
+      font-weight: $font-weight-medium;
     }
   }
 
   .filter__check {
-    color: $primary-color;
-    font-weight: 700;
+    color: $brand-primary;
+    font-weight: $font-weight-bold;
   }
 
   .filter__options {
     display: flex;
     flex-wrap: wrap;
-    gap: $spacing-base * 0.5;
+    gap: $spacing-sm;
   }
 
   .filter__option {
     display: inline-flex;
     align-items: center;
-    gap: $spacing-base * 0.25;
-    padding: $spacing-base * 0.5 $spacing-base * 0.75;
-    background: $white;
-    border: 2px solid $border-color;
-    border-radius: 8px;
-    color: $text-gray;
-    font-size: 0.875rem;
-    font-weight: 500;
+    gap: $spacing-xs;
+    padding: $spacing-sm $spacing-md;
+    background: $color-white;
+    border: 2px solid $color-border-primary;
+    border-radius: $radius-lg;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
     cursor: pointer;
-    transition: all $transition-duration ease;
+    transition: all $transition-base $transition-ease;
 
     &:hover {
-      border-color: $primary-color;
-      color: $primary-color;
+      border-color: $brand-primary;
+      color: $brand-primary;
       transform: translateY(-2px);
     }
 
     &--selected {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+      @include brand-gradient;
       border-color: transparent;
-      color: $white;
+      color: $color-white;
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 12px rgba($brand-primary, 0.3);
       }
     }
   }
@@ -401,8 +392,8 @@
   }
 
   .filter__option-count {
-    opacity: 0.8;
-    font-size: 0.75rem;
+    opacity: $opacity-80;
+    font-size: $font-size-xs;
     line-height: 1;
   }
 </style>

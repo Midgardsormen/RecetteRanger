@@ -79,14 +79,7 @@
 </div>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
-  $shadow-light: rgba(0, 0, 0, 0.1);
-  $spacing-base: 1rem;
-  $transition-duration: 0.3s;
+  @import '../../styles/variables';
 
   .dropdown {
     position: relative;
@@ -97,38 +90,38 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: $spacing-base * 0.5;
-    padding: $spacing-base * 0.75;
-    background: $white;
-    border: 2px solid $border-color;
-    border-radius: 8px;
+    gap: $spacing-sm;
+    padding: $spacing-md;
+    background: $color-white;
+    border: 2px solid $color-border-primary;
+    border-radius: $radius-lg;
     font-family: inherit;
-    font-size: 0.95rem;
-    color: $text-dark;
+    font-size: $font-size-sm;
+    color: $color-text-primary;
     cursor: pointer;
-    transition: all $transition-duration ease;
+    transition: all $transition-base $transition-ease;
     min-width: 200px;
 
     &:hover {
-      border-color: $primary-color;
+      border-color: $brand-primary;
     }
 
     &:focus-visible {
       outline: none;
-      border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: $brand-primary;
+      box-shadow: $shadow-focus-primary;
     }
 
     &--open {
-      border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: $brand-primary;
+      box-shadow: $shadow-focus-primary;
     }
   }
 
   .dropdown__arrow {
-    font-size: 0.75rem;
-    color: $text-gray;
-    transition: transform $transition-duration ease;
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    transition: transform $transition-base $transition-ease;
 
     &--open {
       transform: rotate(180deg);
@@ -138,15 +131,15 @@
   .dropdown__content {
     position: absolute;
     top: calc(100% + 4px);
-    z-index: 1000;
+    z-index: $z-index-dropdown;
     min-width: 100%;
     max-height: 400px;
     overflow-y: auto;
-    background: $white;
-    border: 2px solid $border-color;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px $shadow-light;
-    animation: dropdownSlide $transition-duration ease;
+    background: $color-white;
+    border: 2px solid $color-border-primary;
+    border-radius: $radius-lg;
+    box-shadow: 0 4px 20px $shadow-md;
+    animation: dropdownSlide $transition-base $transition-ease;
 
     &--left {
       left: 0;
@@ -162,22 +155,22 @@
     }
 
     &::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 4px;
+      background: $color-gray-100;
+      border-radius: $radius-sm;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 4px;
+      background: $color-gray-400;
+      border-radius: $radius-sm;
 
       &:hover {
-        background: #a8a8a8;
+        background: $color-gray-500;
       }
     }
 
     // Firefox scrollbar
     scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #f1f1f1;
+    scrollbar-color: $color-gray-400 $color-gray-100;
   }
 
   @keyframes dropdownSlide {

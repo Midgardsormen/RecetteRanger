@@ -65,19 +65,21 @@
 </div>
 
 <style lang="scss">
+  @import '../../../styles/variables';
+
   .password-input {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: $spacing-sm;
 
     &__label {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #333;
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-sm;
+      color: $color-label-text;
     }
 
     &__required {
-      color: #f56565;
+      color: $color-label-required;
     }
 
     &__wrapper {
@@ -88,55 +90,55 @@
 
     &__input {
       width: 100%;
-      padding: 0.75rem;
+      padding: $spacing-md;
       padding-right: 3rem;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.2s;
+      border: 2px solid $color-input-border;
+      border-radius: $radius-lg;
+      font-size: $font-size-base;
+      transition: border-color $transition-base $transition-ease;
 
       &:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: $color-input-border-focus;
       }
 
       &:disabled {
-        background: #f5f5f5;
+        background: $color-input-disabled-background;
         cursor: not-allowed;
       }
 
       &--error {
-        border-color: #f56565;
+        border-color: $color-input-error-border;
       }
     }
 
     &__toggle {
       position: absolute;
-      right: 0.5rem;
+      right: $spacing-sm;
       background: none;
       border: none;
       cursor: pointer;
-      padding: 0.5rem;
+      padding: $spacing-sm;
       font-size: 1.2rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 4px;
-      transition: background 0.2s;
+      border-radius: $radius-sm;
+      transition: background $transition-base $transition-ease;
 
       &:hover {
         background: rgba(0, 0, 0, 0.05);
       }
 
       &:focus {
-        outline: 2px solid #667eea;
+        outline: 2px solid $brand-primary;
         outline-offset: 2px;
       }
     }
 
     &__error {
-      color: #f56565;
-      font-size: 0.875rem;
+      color: $color-text-error;
+      font-size: $font-size-sm;
     }
   }
 </style>

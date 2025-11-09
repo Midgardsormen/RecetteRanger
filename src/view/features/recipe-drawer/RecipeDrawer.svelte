@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Drawer, ImageUpload, Input, Select, Button } from '../../components/ui';
+  import Textarea from '../../components/ui/form/Textarea.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
   import { apiService } from '../../services/api.service';
   import type {
@@ -713,17 +714,13 @@
             </div>
           </div>
 
-          <textarea
-            class="step-description"
-            class:error={errors[`step-${index}`]}
+          <Textarea
+            id={`step-description-${index}`}
             bind:value={step.description}
             placeholder="Décrivez l'étape de préparation..."
-            rows="3"
-          ></textarea>
-
-          {#if errors[`step-${index}`]}
-            <span class="form-error">{errors[`step-${index}`]}</span>
-          {/if}
+            rows={3}
+            error={errors[`step-${index}`]}
+          />
 
           <Input
             id={`step-duration-${index}`}

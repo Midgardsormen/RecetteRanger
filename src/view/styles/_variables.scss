@@ -1,0 +1,311 @@
+/**
+ * Design Tokens - RecetteRanger
+ * Centralized SCSS variables for the entire application
+ */
+
+// ============================================
+// BASE COLORS (Brand Colors)
+// ============================================
+$brand-primary: #244428;
+$brand-secondary: #CC8C25;
+
+// ============================================
+// COLOR PALETTE
+// ============================================
+
+// Semantic colors
+$color-success: #48bb78;
+$color-success-light: #9ae6b4;
+$color-success-dark: #2f855a;
+
+$color-danger: #f56565;
+$color-danger-light: #fc8181;
+$color-danger-dark: #c53030;
+
+$color-warning: #ed8936;
+$color-warning-light: #fbd38d;
+$color-warning-dark: #c05621;
+
+$color-info: #4299e1;
+$color-info-light: #90cdf4;
+$color-info-dark: #2c5282;
+
+// Gray shades
+$color-white: #ffffff;
+$color-black: #000000;
+$color-gray-50: #f9fafb;
+$color-gray-100: #f5f5f5;
+$color-gray-200: #e0e0e0;
+$color-gray-300: #d1d5db;
+$color-gray-400: #9ca3af;
+$color-gray-500: #6b7280;
+$color-gray-600: #666666;
+$color-gray-700: #4b5563;
+$color-gray-800: #333333;
+$color-gray-900: #1f2937;
+
+// ============================================
+// TEXT (Text Colors)
+// ============================================
+$color-text-primary: $color-gray-800;
+$color-text-secondary: $color-gray-600;
+$color-text-tertiary: $color-gray-500;
+$color-text-disabled: $color-gray-400;
+$color-text-inverse: $color-white;
+$color-text-link: $brand-primary;
+$color-text-link-hover: $brand-secondary;
+$color-text-error: $color-danger;
+$color-text-success: $color-success-dark;
+$color-text-warning: $color-warning-dark;
+
+// ============================================
+// BACKGROUNDS (Background Colors)
+// ============================================
+$color-background-primary: $color-white;
+$color-background-secondary: $color-gray-50;
+$color-background-tertiary: $color-gray-100;
+$color-background-dark: $color-gray-900;
+$color-background-overlay: rgba(0, 0, 0, 0.5);
+$color-background-disabled: $color-gray-100;
+
+// State backgrounds
+$color-background-success: #f0fff4;
+$color-background-danger: #fff5f5;
+$color-background-warning: #fffaf0;
+$color-background-info: #ebf8ff;
+
+// ============================================
+// BORDERS (Border Colors)
+// ============================================
+$color-border-primary: $color-gray-200;
+$color-border-secondary: $color-gray-300;
+$color-border-focus: $brand-primary;
+$color-border-error: $color-danger;
+$color-border-success: $color-success;
+$color-border-disabled: $color-gray-200;
+
+// ============================================
+// BUTTONS (Button Colors)
+// ============================================
+
+// Primary Button
+$color-button-primary-text: $color-white;
+$color-button-primary-background: $brand-primary;
+$color-button-primary-border: transparent;
+$color-button-primary-hover-background: $brand-secondary;
+$color-button-primary-active-background: darken($brand-secondary, 5%);
+$color-button-primary-shadow: rgba(102, 126, 234, 0.3);
+
+// Secondary Button
+$color-button-secondary-text: $brand-primary;
+$color-button-secondary-background: $color-white;
+$color-button-secondary-border: $brand-primary;
+$color-button-secondary-hover-background: rgba(102, 126, 234, 0.1);
+$color-button-secondary-hover-text: $brand-primary;
+
+// Danger Button
+$color-button-danger-text: $color-white;
+$color-button-danger-background: $color-danger;
+$color-button-danger-border: transparent;
+$color-button-danger-hover-background: $color-danger-dark;
+$color-button-danger-shadow: rgba(245, 101, 101, 0.3);
+
+// Success Button
+$color-button-success-text: $color-white;
+$color-button-success-background: $color-success;
+$color-button-success-border: transparent;
+$color-button-success-hover-background: $color-success-dark;
+$color-button-success-shadow: rgba(72, 187, 120, 0.3);
+
+// Ghost Button
+$color-button-ghost-text: $color-gray-600;
+$color-button-ghost-background: transparent;
+$color-button-ghost-border: transparent;
+$color-button-ghost-hover-background: rgba(0, 0, 0, 0.05);
+
+// Disabled Button
+$color-button-disabled-text: $color-gray-400;
+$color-button-disabled-background: $color-gray-100;
+$color-button-disabled-border: $color-gray-200;
+
+// ============================================
+// INPUTS & FORMS (Form Colors)
+// ============================================
+$color-input-text: $color-text-primary;
+$color-input-background: $color-white;
+$color-input-border: $color-border-primary;
+$color-input-border-hover: $color-gray-300;
+$color-input-border-focus: $brand-primary;
+$color-input-placeholder: $color-gray-400;
+$color-input-disabled-background: $color-gray-100;
+$color-input-disabled-text: $color-gray-500;
+$color-input-error-border: $color-danger;
+$color-input-success-border: $color-success;
+
+// Label
+$color-label-text: $color-text-primary;
+$color-label-required: $color-danger;
+
+// ============================================
+// NAVIGATION
+// ============================================
+$color-nav-background: $brand-primary;
+$color-nav-text: rgba(255, 255, 255, 0.9);
+$color-nav-text-hover: $color-white;
+$color-nav-active-background: $color-white;
+$color-nav-active-text: $brand-primary;
+$color-nav-icon: rgba(255, 255, 255, 0.9);
+
+// ============================================
+// CARDS & CONTAINERS
+// ============================================
+$color-card-background: $color-white;
+$color-card-border: $color-border-primary;
+$color-card-shadow: rgba(0, 0, 0, 0.1);
+$color-card-hover-shadow: rgba(0, 0, 0, 0.15);
+
+// ============================================
+// SHADOWS
+// ============================================
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+$shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+// Focus shadows
+$shadow-focus-primary: 0 0 0 3px rgba(102, 126, 234, 0.1);
+$shadow-focus-danger: 0 0 0 3px rgba(245, 101, 101, 0.1);
+$shadow-focus-success: 0 0 0 3px rgba(72, 187, 120, 0.1);
+
+// ============================================
+// SPACING
+// ============================================
+$spacing-base: 1rem; // 16px
+$spacing-xs: $spacing-base * 0.25;  // 4px
+$spacing-sm: $spacing-base * 0.5;   // 8px
+$spacing-md: $spacing-base * 0.75;  // 12px
+$spacing-lg: $spacing-base * 1.5;   // 24px
+$spacing-xl: $spacing-base * 2;     // 32px
+$spacing-2xl: $spacing-base * 3;    // 48px
+$spacing-3xl: $spacing-base * 4;    // 64px
+
+// ============================================
+// BORDER RADIUS
+// ============================================
+$radius-none: 0;
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 8px;
+$radius-xl: 12px;
+$radius-2xl: 16px;
+$radius-full: 9999px;
+
+// ============================================
+// TRANSITIONS
+// ============================================
+$transition-fast: 0.15s;
+$transition-base: 0.2s;
+$transition-slow: 0.3s;
+$transition-slower: 0.5s;
+
+$transition-ease: ease;
+$transition-ease-in: ease-in;
+$transition-ease-out: ease-out;
+$transition-ease-in-out: ease-in-out;
+
+// ============================================
+// TYPOGRAPHY
+// ============================================
+$font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+$font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+
+// Font sizes
+$font-size-xs: 0.75rem;    // 12px
+$font-size-sm: 0.875rem;   // 14px
+$font-size-base: 1rem;     // 16px
+$font-size-lg: 1.125rem;   // 18px
+$font-size-xl: 1.25rem;    // 20px
+$font-size-2xl: 1.5rem;    // 24px
+$font-size-3xl: 1.875rem;  // 30px
+$font-size-4xl: 2.25rem;   // 36px
+
+// Font weights
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// Line heights
+$line-height-tight: 1.25;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+// ============================================
+// BREAKPOINTS (Responsive)
+// ============================================
+$breakpoint-xs: 480px;
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;
+
+// ============================================
+// Z-INDEX
+// ============================================
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-sidebar: 1035;
+$z-index-header: 1040;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;
+
+// ============================================
+// MAX WIDTHS
+// ============================================
+$max-width-xs: 320px;
+$max-width-sm: 384px;
+$max-width-md: 448px;
+$max-width-lg: 512px;
+$max-width-xl: 576px;
+$max-width-2xl: 672px;
+$max-width-3xl: 768px;
+$max-width-4xl: 896px;
+$max-width-5xl: 1024px;
+$max-width-6xl: 1152px;
+$max-width-7xl: 1280px;
+$max-width-container: 1200px;
+
+// ============================================
+// OPACITIES
+// ============================================
+$opacity-0: 0;
+$opacity-10: 0.1;
+$opacity-20: 0.2;
+$opacity-30: 0.3;
+$opacity-40: 0.4;
+$opacity-50: 0.5;
+$opacity-60: 0.6;
+$opacity-70: 0.7;
+$opacity-80: 0.8;
+$opacity-90: 0.9;
+$opacity-100: 1;
+
+// ============================================
+// MIXINS
+// ============================================
+
+// Brand gradient mixin
+@mixin brand-gradient {
+  background: linear-gradient(135deg, $brand-primary 0%, $brand-secondary 100%);
+}
+
+// Usage example:
+// .my-element {
+//   @include brand-gradient;
+// }

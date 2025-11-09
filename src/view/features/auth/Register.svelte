@@ -1,6 +1,8 @@
 <script lang="ts">
   import { authStore } from '../../stores/auth.store';
   import { apiService } from '../../services/api.service';
+  import { Input, Button } from '../../components/ui';
+  import PasswordInput from '../../components/ui/form/PasswordInput.svelte';
 
   let pseudo = '';
   let firstName = '';
@@ -68,92 +70,78 @@
       </div>
     {/if}
 
-    <form on:submit|preventDefault={handleRegister}>
+    <form on:submit|preventDefault={handleRegister} class="register-form">
       <div class="form-row">
-        <div class="form-group">
-          <label for="firstName">Prénom</label>
-          <input
-            id="firstName"
-            type="text"
-            bind:value={firstName}
-            placeholder="John"
-            disabled={isLoading}
-            autocomplete="given-name"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="lastName">Nom</label>
-          <input
-            id="lastName"
-            type="text"
-            bind:value={lastName}
-            placeholder="Doe"
-            disabled={isLoading}
-            autocomplete="family-name"
-          />
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="pseudo">Pseudo</label>
-        <input
-          id="pseudo"
+        <Input
+          id="firstName"
           type="text"
-          bind:value={pseudo}
-          placeholder="john_doe"
+          label="Prénom"
+          bind:value={firstName}
+          placeholder="John"
           disabled={isLoading}
-          autocomplete="username"
+          required
+        />
+
+        <Input
+          id="lastName"
+          type="text"
+          label="Nom"
+          bind:value={lastName}
+          placeholder="Doe"
+          disabled={isLoading}
+          required
         />
       </div>
 
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          bind:value={email}
-          placeholder="john.doe@example.com"
-          disabled={isLoading}
-          autocomplete="email"
-        />
-      </div>
+      <Input
+        id="pseudo"
+        type="text"
+        label="Pseudo"
+        bind:value={pseudo}
+        placeholder="john_doe"
+        disabled={isLoading}
+        required
+      />
 
-      <div class="form-group">
-        <label for="password">Mot de passe</label>
-        <input
-          id="password"
-          type="password"
-          bind:value={password}
-          placeholder="••••••••"
-          disabled={isLoading}
-          autocomplete="new-password"
-        />
-        <small>Minimum 8 caractères</small>
-      </div>
+      <Input
+        id="email"
+        type="email"
+        label="Email"
+        bind:value={email}
+        placeholder="john.doe@example.com"
+        disabled={isLoading}
+        required
+      />
 
-      <div class="form-group">
-        <label for="confirmPassword">Confirmer le mot de passe</label>
-        <input
-          id="confirmPassword"
-          type="password"
-          bind:value={confirmPassword}
-          placeholder="••••••••"
-          disabled={isLoading}
-          autocomplete="new-password"
-        />
-      </div>
+      <PasswordInput
+        id="password"
+        label="Mot de passe"
+        bind:value={password}
+        placeholder="••••••••"
+        disabled={isLoading}
+        hint="Minimum 8 caractères"
+        required
+      />
 
-      <button type="submit" class="btn-primary" disabled={isLoading}>
+      <PasswordInput
+        id="confirmPassword"
+        label="Confirmer le mot de passe"
+        bind:value={confirmPassword}
+        placeholder="••••••••"
+        disabled={isLoading}
+        required
+      />
+
+      <Button type="submit" fullWidth disabled={isLoading}>
         {isLoading ? 'Création...' : 'Créer mon compte'}
-      </button>
+      </Button>
     </form>
 
     <div class="footer">
       <p>Vous avez déjà un compte ?</p>
-      <button type="button" class="btn-secondary" on:click={goToLogin}>
+      <Button variant="secondary" fullWidth onclick={goToLogin}>
         Se connecter
-      </button>
+      </Button>
     </div>
   </div>
 </div>
@@ -199,7 +187,7 @@
     font-size: 0.9rem;
   }
 
-  form {
+  .register-form {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
@@ -209,79 +197,6 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  label {
-    font-weight: 500;
-    color: #333;
-    font-size: 0.9rem;
-  }
-
-  input {
-    padding: 0.75rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.2s;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #667eea;
-  }
-
-  input:disabled {
-    background: #f5f5f5;
-    cursor: not-allowed;
-  }
-
-  small {
-    color: #888;
-    font-size: 0.85rem;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    padding: 0.875rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    margin-top: 0.5rem;
-  }
-
-  .btn-primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-  }
-
-  .btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .btn-secondary {
-    background: transparent;
-    color: #667eea;
-    border: 2px solid #667eea;
-  }
-
-  .btn-secondary:hover {
-    background: #667eea;
-    color: white;
   }
 
   .footer {

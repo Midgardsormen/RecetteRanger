@@ -32,16 +32,13 @@
 </svelte:element>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $text-dark: #333;
-  $text-gray: #666;
+  @import '../../styles/variables';
 
   .title {
     margin: 0;
-    font-weight: 700;
-    line-height: 1.2;
-    color: $text-dark;
+    font-weight: $font-weight-bold;
+    line-height: $line-height-tight;
+    color: $color-text-primary;
 
     // Levels (sizes)
     &--level-1 {
@@ -104,7 +101,7 @@
 
     // Gradient
     &--gradient {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+      @include brand-gradient;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;

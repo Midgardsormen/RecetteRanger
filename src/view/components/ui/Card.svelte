@@ -79,27 +79,22 @@
 </div>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
-  $spacing-base: 1rem;
+  @import '../../styles/variables';
 
   .card {
-    background: $white;
-    border: 2px solid $border-color;
-    border-radius: 12px;
+    background: $color-card-background;
+    border: 2px solid $color-card-border;
+    border-radius: $radius-xl;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all $transition-base $transition-ease;
 
     &--clickable {
       cursor: pointer;
 
       &:hover {
         transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-        border-color: $primary-color;
+        box-shadow: 0 8px 24px $color-card-hover-shadow;
+        border-color: $brand-primary;
       }
 
       &:active {
@@ -113,7 +108,7 @@
     width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+    background: linear-gradient(135deg, $color-gray-50 0%, $color-gray-100 100%);
   }
 
   .card__image {
@@ -128,31 +123,31 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 4rem;
+    font-size: $font-size-4xl;
   }
 
   .card__body {
-    padding: $spacing-base * 1.25;
+    padding: $spacing-lg;
   }
 
   .card__title {
-    margin: 0 0 $spacing-base * 0.5 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: $text-dark;
-    line-height: 1.3;
+    margin: 0 0 $spacing-sm 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    line-height: $line-height-tight;
   }
 
   .card__subtitle {
     margin: 0;
-    font-size: 0.9rem;
-    color: $text-gray;
-    line-height: 1.4;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    line-height: $line-height-normal;
   }
 
   .card__footer {
     padding: $spacing-base;
-    border-top: 1px solid $border-color;
-    background: rgba(102, 126, 234, 0.02);
+    border-top: 1px solid $color-border-primary;
+    background: rgba($brand-primary, 0.02);
   }
 </style>
