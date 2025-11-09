@@ -276,6 +276,21 @@ model MealSlotConfig {
   @@index([userId])
 }
 
+model Store {
+  id       String   @id @default(cuid())
+  name     String   @unique
+  logoUrl  String?  @db.VarChar(2048)
+  color    String?  @default("#667eea") // Couleur pour l'UI
+
+  shoppingListItems ShoppingListItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@map("Store")
+}
+
 model ShoppingList {
   id       String             @id @default(cuid())
   user     User               @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -302,6 +317,9 @@ model ShoppingListItem {
   ingredientId String?
   label        String // texte libre si pas d'ingredientId
 
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  storeId String?
+
   aisle    StoreAisle?
   quantity Decimal?    @db.Decimal(10, 3)
   unit     String?
@@ -316,5 +334,6 @@ model ShoppingListItem {
 
   @@index([listId])
   @@index([ingredientId])
+  @@index([storeId])
 }
 

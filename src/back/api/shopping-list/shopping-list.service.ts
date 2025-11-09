@@ -51,7 +51,13 @@ export class ShoppingListService {
   async findOne(id: string) {
     const list = await this.prisma.shoppingList.findUnique({
       where: { id },
-      include: { items: true },
+      include: {
+        items: {
+          include: {
+            store: true, // Inclure les données de l'enseigne
+          },
+        },
+      },
     });
 
     if (!list) {
@@ -101,6 +107,7 @@ export class ShoppingListService {
           listId,
           ingredientId: createShoppingListItemDto.ingredientId,
           label: createShoppingListItemDto.label,
+          storeId: createShoppingListItemDto.storeId,
           aisle: createShoppingListItemDto.aisle,
           quantity: createShoppingListItemDto.quantity ? new Decimal(createShoppingListItemDto.quantity) : null,
           unit: createShoppingListItemDto.unit,
@@ -109,10 +116,13 @@ export class ShoppingListService {
           isManual: createShoppingListItemDto.isManual !== undefined ? createShoppingListItemDto.isManual : true,
           mealPlanItemIds: createShoppingListItemDto.mealPlanItemIds || [],
         },
+        include: {
+          store: true, // Inclure les données de l'enseigne
+        },
       });
     } catch (error) {
       if (error.code === 'P2003') {
-        throw new NotFoundException('Liste de courses ou ingrédient non trouvé');
+        throw new NotFoundException('Liste de courses, ingrédient ou enseigne non trouvé(e)');
       }
       throw error;
     }
@@ -123,6 +133,9 @@ export class ShoppingListService {
       return await this.prisma.shoppingListItem.update({
         where: { id },
         data: updateShoppingListItemDto,
+        include: {
+          store: true, // Inclure les données de l'enseigne
+        },
       });
     } catch (error) {
       if (error.code === 'P2025') {

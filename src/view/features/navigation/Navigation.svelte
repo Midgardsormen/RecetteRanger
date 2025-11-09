@@ -8,6 +8,7 @@
     { href: '/recettes', label: 'Recipes', icon: '📖' },
     { href: '/ingredients', label: 'Ingredients', icon: '🥗' },
     { href: '/articles', label: 'Articles', icon: '🧴' },
+    { href: '/stores', label: 'Stores', icon: '🏪' },
     { href: '/plannings', label: 'Meal Plans', icon: '📅' },
     { href: '/shopping-lists', label: 'Shopping Lists', icon: '🛒' }
   ];

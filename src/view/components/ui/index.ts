@@ -19,6 +19,7 @@ export { default as ImageUpload } from './ImageUpload.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
 export { default as Filter } from './Filter.svelte';
 export { default as ArticleAutocomplete } from './ArticleAutocomplete.svelte';
+export { default as StoreAutocomplete } from './StoreAutocomplete.svelte';
 
 // Form Components
 export { Input, Select, Checkbox, FormField, PasswordInput, RadioGroup } from './form';

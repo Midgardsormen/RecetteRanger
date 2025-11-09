@@ -10,6 +10,7 @@ import { IngredientModule } from './api/ingredient/ingredient.module';
 import { MealPlanModule } from './api/meal-plan/meal-plan.module';
 import { ShoppingListModule } from './api/shopping-list/shopping-list.module';
 import { UploadModule } from './api/upload/upload.module';
+import { StoreModule } from './api/store/store.module';
 
 // Modules SSR pour les pages
 import { HomeModule } from './modules/home/home.module';
@@ -19,6 +20,7 @@ import { RecettesModule } from './modules/recettes/recettes.module';
 import { PlanningsModule } from './modules/plannings/plannings.module';
 import { ShoppingListsModule } from './modules/shopping-lists/shopping-lists.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { StoresModule } from './modules/stores/stores.module';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { ProfileModule } from './modules/profile/profile.module';
     MealPlanModule,
     ShoppingListModule,
     UploadModule,
+    StoreModule,
     // Modules SSR
     HomeModule,
     IngredientsModule,
@@ -39,6 +42,7 @@ import { ProfileModule } from './modules/profile/profile.module';
     PlanningsModule,
     ShoppingListsModule,
     ProfileModule,
+    StoresModule,
   ],
   controllers: [AppController],
   providers: [SvelteRenderService],

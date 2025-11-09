@@ -13,6 +13,11 @@ export class CreateShoppingListItemDto {
   @IsString()
   label: string;
 
+  @ApiProperty({ description: 'ID de l\'enseigne', required: false })
+  @IsOptional()
+  @IsString()
+  storeId?: string;
+
   @ApiProperty({ description: 'Rayon du magasin', enum: StoreAisle, required: false })
   @IsOptional()
   @IsEnum(StoreAisle)

@@ -54,11 +54,20 @@ export type StoreAisle =
   | 'JEUX_JOUETS'
   | 'SAISONNIER';
 
+export interface Store {
+  id: string;
+  name: string;
+  logoUrl?: string | null;
+  color?: string | null;
+}
+
 export interface ShoppingListItem {
   id: string;
   listId: string;
   ingredientId: string | null;
   label: string;
+  storeId: string | null;
+  store: Store | null;
   aisle: StoreAisle | null;
   quantity: number | null;
   unit: string | null;
@@ -85,6 +94,7 @@ export interface ShoppingList {
 export interface CreateShoppingListItemDto {
   ingredientId?: string;
   label: string;
+  storeId?: string;
   aisle?: StoreAisle;
   quantity?: number;
   unit?: string;
@@ -109,6 +119,7 @@ export interface GenerateShoppingListDto {
 
 export interface UpdateShoppingListItemDto {
   label?: string;
+  storeId?: string | null;
   aisle?: StoreAisle;
   quantity?: number;
   unit?: string;

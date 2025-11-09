@@ -370,6 +370,45 @@ class ApiService {
       body: JSON.stringify(data),
     });
   }
+
+  // ==================== Stores ====================
+
+  async searchStores(searchParams: any) {
+    const query = new URLSearchParams();
+    if (searchParams.search) query.append('search', searchParams.search);
+    if (searchParams.limit) query.append('limit', searchParams.limit.toString());
+    if (searchParams.page) query.append('page', searchParams.page.toString());
+
+    return this.authenticatedFetch(`/api/stores?${query.toString()}`);
+  }
+
+  async checkStoreDuplicates(name: string) {
+    return this.authenticatedFetch(`/api/stores/check-duplicates?name=${encodeURIComponent(name)}`);
+  }
+
+  async createStore(data: any) {
+    return this.authenticatedFetch('/api/stores', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateStore(id: string, data: any) {
+    return this.authenticatedFetch(`/api/stores/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteStore(id: string) {
+    return this.authenticatedFetch(`/api/stores/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getStore(id: string) {
+    return this.authenticatedFetch(`/api/stores/${id}`);
+  }
 }
 
 export const apiService = new ApiService();

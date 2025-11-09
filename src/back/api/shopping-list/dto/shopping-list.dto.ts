@@ -1,6 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { StoreAisle, ShoppingListStatus } from '@prisma/client';
 
+export class StoreInfoDto {
+  @ApiProperty({ description: 'ID de l\'enseigne' })
+  id: string;
+
+  @ApiProperty({ description: 'Nom de l\'enseigne' })
+  name: string;
+
+  @ApiProperty({ description: 'Logo URL', nullable: true })
+  logoUrl: string | null;
+
+  @ApiProperty({ description: 'Couleur', nullable: true })
+  color: string | null;
+}
+
 export class ShoppingListItemDto {
   @ApiProperty({ description: 'ID de l\'item' })
   id: string;
@@ -13,6 +27,12 @@ export class ShoppingListItemDto {
 
   @ApiProperty({ description: 'Label de l\'item (texte libre si pas d\'ingrédient)' })
   label: string;
+
+  @ApiProperty({ description: 'ID de l\'enseigne', nullable: true })
+  storeId: string | null;
+
+  @ApiProperty({ description: 'Données de l\'enseigne', type: StoreInfoDto, nullable: true })
+  store: StoreInfoDto | null;
 
   @ApiProperty({ description: 'Rayon du magasin', enum: StoreAisle, nullable: true })
   aisle: StoreAisle | null;

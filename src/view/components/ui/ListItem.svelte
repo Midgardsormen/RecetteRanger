@@ -155,20 +155,23 @@
 
   .list-item__thumbnail {
     flex-shrink: 0;
-    width: 64px;
-    height: 64px;
+    max-width: 150px;
+    max-height: 65px;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible;
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0.5rem;
   }
 
   .list-item__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    max-width: 150px;
+    max-height: 50px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
   }
 
   .list-item__placeholder {
@@ -273,8 +276,13 @@
     }
 
     .list-item__thumbnail {
-      width: 48px;
-      height: 48px;
+      max-width: 120px;
+      max-height: 50px;
+    }
+
+    .list-item__image {
+      max-width: 120px;
+      max-height: 40px;
     }
 
     .list-item__placeholder {
