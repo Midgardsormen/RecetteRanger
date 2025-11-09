@@ -83,6 +83,11 @@
         <div class="user-menu__dropdown-header">
           <div class="user-menu__dropdown-name">{user.firstName} {user.lastName}</div>
           <div class="user-menu__dropdown-email">{user.email}</div>
+          <div class="user-menu__dropdown-role">
+            <span class="user-menu__role-badge" class:user-menu__role-badge--admin={user.role === 'ADMIN'}>
+              {user.role === 'ADMIN' ? '👑 Admin' : '👤 Utilisateur'}
+            </span>
+          </div>
         </div>
         <div class="user-menu__dropdown-divider"></div>
         <button class="user-menu__dropdown-item" onclick={handleLogout} type="button">
@@ -204,6 +209,28 @@
       font-size: 0.85rem;
       opacity: 0.9;
       margin-top: 0.25rem;
+    }
+
+    &__dropdown-role {
+      margin-top: 0.5rem;
+    }
+
+    &__role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &--admin {
+        background: rgba(255, 215, 0, 0.3);
+        color: #ffd700;
+      }
     }
 
     &__dropdown-divider {

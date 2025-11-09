@@ -6,6 +6,7 @@ export const pages = {
   Recettes: () => import('./features/recettes/Recettes.svelte'),
   RecipeDetail: () => import('./pages/RecipeDetail.svelte'),
   Ingredients: () => import('./features/ingredients/Ingredients.svelte'),
+  Articles: () => import('./features/articles/Articles.svelte'),
   MealPlanning: () => import('./features/plannings/MealPlanning.svelte'),
   MealPlanningSettings: () => import('./features/plannings/MealPlanningSettings.svelte'),
   ShoppingLists: () => import('./features/shopping-lists/ShoppingLists.svelte'),
@@ -20,6 +21,7 @@ export { default as Recipes } from './features/recipes/Recipes.svelte';
 export { default as Recettes } from './features/recettes/Recettes.svelte';
 export { default as RecipeDetail } from './pages/RecipeDetail.svelte';
 export { default as Ingredients } from './features/ingredients/Ingredients.svelte';
+export { default as Articles } from './features/articles/Articles.svelte';
 export { default as MealPlanning } from './features/plannings/MealPlanning.svelte';
 export { default as MealPlanningSettings } from './features/plannings/MealPlanningSettings.svelte';
 export { default as ShoppingLists } from './features/shopping-lists/ShoppingLists.svelte';

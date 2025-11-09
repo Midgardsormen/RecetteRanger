@@ -2,16 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 
 @Injectable()
-export class IngredientsService {
+export class ArticlesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getIngredientsForUser(userId: string) {
-    // Les ingrédients sont globaux (pas de userId dans le modèle)
-    // On récupère uniquement les articles alimentaires
+  async getArticlesForUser(userId: string) {
+    // Les articles sont globaux (pas de userId dans le modèle)
+    // On récupère tous les articles disponibles (alimentaires et non-alimentaires)
     return this.prisma.article.findMany({
-      where: {
-        isFood: true
-      },
       orderBy: {
         label: 'asc'
       }

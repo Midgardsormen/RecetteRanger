@@ -14,6 +14,7 @@ import { UploadModule } from './api/upload/upload.module';
 // Modules SSR pour les pages
 import { HomeModule } from './modules/home/home.module';
 import { IngredientsModule } from './modules/ingredients/ingredients.module';
+import { ArticlesModule } from './modules/articles/articles.module';
 import { RecettesModule } from './modules/recettes/recettes.module';
 import { PlanningsModule } from './modules/plannings/plannings.module';
 import { ShoppingListsModule } from './modules/shopping-lists/shopping-lists.module';
@@ -32,6 +33,7 @@ import { ShoppingListsModule } from './modules/shopping-lists/shopping-lists.mod
     // Modules SSR
     HomeModule,
     IngredientsModule,
+    ArticlesModule,
     RecettesModule,
     PlanningsModule,
     ShoppingListsModule,

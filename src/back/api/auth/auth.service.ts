@@ -49,6 +49,7 @@ export class AuthService {
         firstName: true,
         lastName: true,
         email: true,
+        role: true,
         avatarUrl: true,
       },
     });
@@ -97,6 +98,7 @@ export class AuthService {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        role: user.role,
         avatarUrl: user.avatarUrl,
       },
     };
@@ -111,6 +113,7 @@ export class AuthService {
         firstName: true,
         lastName: true,
         email: true,
+        role: true,
         avatarUrl: true,
       },
     });

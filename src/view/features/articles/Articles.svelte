@@ -9,16 +9,16 @@
   import { UserRole } from '../../types/user.types';
 
   // Recevoir les données du SSR
-  let { ingredients: initialIngredients = [], user = null }: { ingredients?: Ingredient[], user?: any } = $props();
+  let { articles: initialArticles = [], user = null }: { articles?: Ingredient[], user?: any } = $props();
 
-  let ingredients: Ingredient[] = $state(initialIngredients);
+  let articles: Ingredient[] = $state(initialArticles);
   let loading = $state(false);
   let error = $state('');
 
   // Pagination
   let currentPage = $state(0);
   let totalPages = $state(0);
-  let totalIngredients = $state(initialIngredients.length);
+  let totalArticles = $state(initialArticles.length);
 
   // Filtres et recherche
   let searchQuery = $state('');
@@ -28,23 +28,23 @@
 
   // Drawer
   let isDrawerOpen = $state(false);
-  let editingIngredient = $state<Ingredient | null>(null);
+  let editingArticle = $state<Ingredient | null>(null);
 
   // Modal de confirmation de suppression
   let isConfirmModalOpen = $state(false);
-  let ingredientToDelete = $state<string | null>(null);
+  let articleToDelete = $state<string | null>(null);
 
   // Debounce pour la recherche
   let searchTimeout: ReturnType<typeof setTimeout>;
 
   onMount(() => {
-    // Si pas de données SSR, charger les ingrédients
-    if (ingredients.length === 0) {
-      loadIngredients();
+    // Si pas de données SSR, charger les articles
+    if (articles.length === 0) {
+      loadArticles();
     }
   });
 
-  async function loadIngredients() {
+  async function loadArticles() {
     loading = true;
     error = '';
 
@@ -53,18 +53,18 @@
         search: searchQuery || undefined,
         aisle: selectedAisle || undefined,
         unit: selectedUnit || undefined,
-        isFood: true, // Afficher uniquement les articles alimentaires
+        // Pas de filtre isFood - afficher tous les articles
         sortBy,
         limit: 20,
         page: currentPage,
       };
 
       const result = await apiService.searchIngredients(searchParams);
-      ingredients = result.data;
-      totalIngredients = result.pagination.total;
+      articles = result.data;
+      totalArticles = result.pagination.total;
       totalPages = result.pagination.totalPages;
     } catch (err: any) {
-      error = err.message || 'Erreur lors du chargement des ingrédients';
+      error = err.message || 'Erreur lors du chargement des articles';
     } finally {
       loading = false;
     }
@@ -74,48 +74,48 @@
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
       currentPage = 0;
-      loadIngredients();
+      loadArticles();
     }, 300);
   }
 
   function handleFilterChange() {
     currentPage = 0;
-    loadIngredients();
+    loadArticles();
   }
 
-  function openDrawer(ingredient: Ingredient | null = null) {
-    editingIngredient = ingredient;
+  function openDrawer(article: Ingredient | null = null) {
+    editingArticle = article;
     isDrawerOpen = true;
   }
 
   function closeDrawer() {
     isDrawerOpen = false;
-    editingIngredient = null;
+    editingArticle = null;
   }
 
-  async function handleIngredientSaved() {
+  async function handleArticleSaved() {
     closeDrawer();
-    await loadIngredients();
+    await loadArticles();
   }
 
   function openDeleteConfirmation(id: string) {
-    ingredientToDelete = id;
+    articleToDelete = id;
     isConfirmModalOpen = true;
   }
 
   function cancelDelete() {
-    ingredientToDelete = null;
+    articleToDelete = null;
     isConfirmModalOpen = false;
   }
 
   async function confirmDelete() {
-    if (!ingredientToDelete) return;
+    if (!articleToDelete) return;
 
     try {
-      await apiService.deleteIngredient(ingredientToDelete);
-      await loadIngredients();
+      await apiService.deleteIngredient(articleToDelete);
+      await loadArticles();
       isConfirmModalOpen = false;
-      ingredientToDelete = null;
+      articleToDelete = null;
     } catch (err: any) {
       alert('Erreur lors de la suppression : ' + err.message);
     }
@@ -124,20 +124,20 @@
   function nextPage() {
     if (currentPage < totalPages - 1) {
       currentPage++;
-      loadIngredients();
+      loadArticles();
     }
   }
 
   function previousPage() {
     if (currentPage > 0) {
       currentPage--;
-      loadIngredients();
+      loadArticles();
     }
   }
 
   function goToPage(page: number) {
     currentPage = page;
-    loadIngredients();
+    loadArticles();
   }
 
   function isAdmin(): boolean {
@@ -145,26 +145,26 @@
   }
 </script>
 
-<Layout title="Ingrédients" currentPage="/ingredients" {user}>
-<div id="ingredients" class="ingredients">
-  <header class="ingredients__header">
-    <Title level={1}>🥗 Mes ingrédients</Title>
+<Layout title="Articles" currentPage="/articles" {user}>
+<div id="articles" class="articles">
+  <header class="articles__header">
+    <Title level={1}>🛒 Mes articles</Title>
     <Button onclick={() => openDrawer()}>
-      + Ajouter un ingrédient
+      + Ajouter un article
     </Button>
   </header>
 
   <!-- Recherche et filtres -->
-  <div class="ingredients__search">
+  <div class="articles__search">
     <SearchBar
       bind:value={searchQuery}
-      placeholder="Rechercher un ingrédient..."
+      placeholder="Rechercher un article..."
       oninput={handleSearchInput}
     />
 
-    <div class="ingredients__filters">
-      <div class="ingredients__filter-group">
-        <span class="ingredients__filter-label">Filtrer par</span>
+    <div class="articles__filters">
+      <div class="articles__filter-group">
+        <span class="articles__filter-label">Filtrer par</span>
         <Filter
           label="Catégorie"
           mode="dropdown"
@@ -180,8 +180,8 @@
         />
       </div>
 
-      <div class="ingredients__filter-group">
-        <span class="ingredients__filter-label">Trier par</span>
+      <div class="articles__filter-group">
+        <span class="articles__filter-label">Trier par</span>
         <Filter
           label="Ordre"
           mode="dropdown"
@@ -198,43 +198,43 @@
   </div>
 
   {#if error}
-    <div class="ingredients__error">{error}</div>
+    <div class="articles__error">{error}</div>
   {/if}
 
   {#if loading}
-    <div class="ingredients__loading">Chargement...</div>
-  {:else if ingredients.length === 0}
-    <div class="ingredients__empty">
-      <div class="ingredients__empty-icon">🥗</div>
-      <h2 class="ingredients__empty-title">Aucun ingrédient trouvé</h2>
-      <p class="ingredients__empty-text">
+    <div class="articles__loading">Chargement...</div>
+  {:else if articles.length === 0}
+    <div class="articles__empty">
+      <div class="articles__empty-icon">🛒</div>
+      <h2 class="articles__empty-title">Aucun article trouvé</h2>
+      <p class="articles__empty-text">
         {searchQuery || selectedAisle || selectedUnit
           ? 'Essayez de modifier vos filtres de recherche'
-          : 'Commencez par ajouter votre premier ingrédient!'}
+          : 'Commencez par ajouter votre premier article!'}
       </p>
       {#if !searchQuery && !selectedAisle && !selectedUnit}
         <Button onclick={() => openDrawer()}>
-          Ajouter un ingrédient
+          Ajouter un article
         </Button>
       {/if}
     </div>
   {:else}
-    <div class="ingredients__list">
-      {#each ingredients as ingredient (ingredient.id)}
+    <div class="articles__list">
+      {#each articles as article (article.id)}
         <ListItem
-          imageUrl={ingredient.imageUrl}
-          imagePlaceholder="🍽️"
-          title={ingredient.label}
-          subtitle={StoreAisleLabels[ingredient.aisle]}
-          onEdit={isAdmin() ? () => openDrawer(ingredient) : undefined}
-          onDelete={isAdmin() ? () => openDeleteConfirmation(ingredient.id) : undefined}
+          imageUrl={article.imageUrl}
+          imagePlaceholder={article.isFood ? "🍽️" : "🧴"}
+          title={article.label}
+          subtitle={StoreAisleLabels[article.aisle]}
+          onEdit={isAdmin() ? () => openDrawer(article) : undefined}
+          onDelete={isAdmin() ? () => openDeleteConfirmation(article.id) : undefined}
         />
       {/each}
     </div>
 
     <!-- Pagination -->
     {#if totalPages > 1}
-      <div class="ingredients__pagination">
+      <div class="articles__pagination">
         <Button
           variant="secondary"
           onclick={previousPage}
@@ -243,11 +243,11 @@
           ← Précédent
         </Button>
 
-        <div class="ingredients__pagination-pages">
+        <div class="articles__pagination-pages">
           {#each Array(totalPages) as _, i}
             <button
-              class="ingredients__pagination-page"
-              class:ingredients__pagination-page--active={i === currentPage}
+              class="articles__pagination-page"
+              class:articles__pagination-page--active={i === currentPage}
               onclick={() => goToPage(i)}
             >
               {i + 1}
@@ -264,8 +264,8 @@
         </Button>
       </div>
 
-      <p class="ingredients__pagination-info">
-        Page {currentPage + 1} sur {totalPages} • {totalIngredients} ingrédient{totalIngredients > 1 ? 's' : ''}
+      <p class="articles__pagination-info">
+        Page {currentPage + 1} sur {totalPages} • {totalArticles} article{totalArticles > 1 ? 's' : ''}
       </p>
     {/if}
   {/if}
@@ -274,8 +274,9 @@
 <!-- Drawer -->
 <IngredientDrawer
   isOpen={isDrawerOpen}
-  ingredient={editingIngredient}
-  onSave={handleIngredientSaved}
+  ingredient={editingArticle}
+  showFoodTypeSelector={true}
+  onSave={handleArticleSaved}
   onClose={closeDrawer}
 />
 </Layout>
@@ -296,7 +297,7 @@
   $breakpoint-mobile: 768px;
   $transition-duration: 0.3s;
 
-  .ingredients {
+  .articles {
     display: flex;
     flex-direction: column;
     gap: $spacing-base * 2;
