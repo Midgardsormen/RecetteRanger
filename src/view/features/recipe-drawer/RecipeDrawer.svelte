@@ -190,7 +190,7 @@
       return;
     }
 
-    formData.ingredients.push({
+    formData.ingredients.unshift({
       ingredientId: ingredient.id,
       ingredientLabel: ingredient.label,
       quantity: '',

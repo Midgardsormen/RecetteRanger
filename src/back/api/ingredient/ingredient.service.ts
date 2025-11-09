@@ -83,15 +83,16 @@ export class IngredientService {
     // Configuration du tri
     let orderBy: Prisma.ArticleOrderByWithRelationInput = {};
     switch (sortBy) {
-      case 'date':
-        orderBy = { createdAt: 'desc' };
+      case 'alpha':
+        orderBy = { label: 'asc' };
         break;
       case 'popularity':
         orderBy = { usageCount: 'desc' };
         break;
-      case 'alpha':
+      case 'date':
       default:
-        orderBy = { label: 'asc' };
+        // Par défaut, trier par date de création décroissante (plus récent en premier)
+        orderBy = { createdAt: 'desc' };
         break;
     }
 

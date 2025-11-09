@@ -76,13 +76,24 @@
   }
 
   // Gérer la sélection d'un article depuis le drawer
-  async function handleArticleSelected(article: any) {
-    selectedArticleId = article.id;
-    selectedArticleAisle = article.aisle;
-    newItemLabel = article.label;
+  async function handleArticleSelected(article: any, quantity?: number | null, unit?: string | null) {
+    if (!shoppingList) return;
 
-    // Ajouter automatiquement l'article à la liste
-    await addManualItem();
+    try {
+      const newItem = await apiService.createShoppingListItem(shoppingList.id, {
+        label: article.label,
+        ingredientId: article.id,
+        aisle: article.aisle,
+        quantity: quantity,
+        unit: unit,
+        isManual: true,
+        checked: false
+      });
+
+      shoppingList.items.push(newItem);
+    } catch (err: any) {
+      alert('Erreur : ' + err.message);
+    }
   }
 
   // Ajouter un item à la liste
