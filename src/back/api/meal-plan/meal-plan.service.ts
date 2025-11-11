@@ -8,13 +8,24 @@ import { CreateMealSlotConfigDto, UpdateMealSlotConfigDto } from './dto/meal-slo
 export class MealPlanService {
   constructor(private prisma: PrismaService) {}
 
+  // Normaliser une date à minuit UTC
+  private normalizeToMidnightUTC(date: Date | string): Date {
+    const d = new Date(date);
+    d.setUTCHours(0, 0, 0, 0);
+    return d;
+  }
+
   // MealPlanDay CRUD
   async createDay(createMealPlanDayDto: CreateMealPlanDayDto) {
     try {
+      const normalizedDate = this.normalizeToMidnightUTC(createMealPlanDayDto.date);
+      console.log('🔍 createDay - Original date:', createMealPlanDayDto.date);
+      console.log('🔍 createDay - Normalized date:', normalizedDate, normalizedDate.toISOString());
+
       return await this.prisma.mealPlanDay.create({
         data: {
           userId: createMealPlanDayDto.userId,
-          date: new Date(createMealPlanDayDto.date),
+          date: normalizedDate,
           items: createMealPlanDayDto.items
             ? {
                 create: createMealPlanDayDto.items.map(item => ({
@@ -37,12 +48,25 @@ export class MealPlanService {
   }
 
   async findAllDays(userId?: string, fromDate?: Date, toDate?: Date) {
-    return this.prisma.mealPlanDay.findMany({
+    // Normaliser la date de début à 00:00:00 UTC
+    const normalizedFromDate = fromDate ? this.normalizeToMidnightUTC(fromDate) : undefined;
+
+    // Normaliser la date de fin à 23:59:59.999 UTC pour inclure toute la journée
+    let normalizedToDate: Date | undefined = undefined;
+    if (toDate) {
+      normalizedToDate = this.normalizeToMidnightUTC(toDate);
+      normalizedToDate.setUTCHours(23, 59, 59, 999);
+    }
+
+    console.log('🔍 findAllDays - Params:', { userId, fromDate, toDate });
+    console.log('🔍 findAllDays - Normalized:', { normalizedFromDate, normalizedToDate });
+
+    const results = await this.prisma.mealPlanDay.findMany({
       where: {
         userId,
         date: {
-          gte: fromDate,
-          lte: toDate,
+          gte: normalizedFromDate,
+          lte: normalizedToDate,
         },
       },
       include: {
@@ -63,6 +87,10 @@ export class MealPlanService {
       },
       orderBy: { date: 'asc' },
     });
+
+    console.log('🔍 findAllDays - Results:', results.map(r => ({ id: r.id, date: r.date, itemsCount: r.items.length })));
+
+    return results;
   }
 
   async findOneDay(id: string) {
@@ -83,7 +111,7 @@ export class MealPlanService {
       return await this.prisma.mealPlanDay.update({
         where: { id },
         data: {
-          date: updateMealPlanDayDto.date ? new Date(updateMealPlanDayDto.date) : undefined,
+          date: updateMealPlanDayDto.date ? this.normalizeToMidnightUTC(updateMealPlanDayDto.date) : undefined,
         },
         include: { items: true },
       });

@@ -16,6 +16,7 @@
   let loading = $state(true);
   let showMealDrawer = $state(false);
   let selectedDate = $state(new Date());
+  let editingMealItem = $state<any>(null);
 
   // Charger les données
   async function loadData() {
@@ -79,7 +80,31 @@
 
   function handleDateClick(date: Date) {
     selectedDate = date;
+    editingMealItem = null;
     showMealDrawer = true;
+  }
+
+  function handleMealEdit(item: any) {
+    editingMealItem = item;
+    // Trouver le mealPlanDay correspondant pour avoir la date
+    const mealDay = mealPlanDays.find(d => d.items.some(i => i.id === item.id));
+    if (mealDay) {
+      selectedDate = new Date(mealDay.date);
+    }
+    showMealDrawer = true;
+  }
+
+  async function handleMealDelete(item: any) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer ce repas ?`)) {
+      return;
+    }
+
+    try {
+      await apiService.deleteMealPlanItem(item.id);
+      await loadData(); // Recharger les données
+    } catch (err: any) {
+      alert('Erreur lors de la suppression : ' + err.message);
+    }
   }
 
   function handleViewChange(newView: CalendarView) {
@@ -94,6 +119,7 @@
 
   function handleMealSaved() {
     showMealDrawer = false;
+    editingMealItem = null;
     loadData(); // Recharger les données
   }
 
@@ -135,6 +161,8 @@
         onDateClick={handleDateClick}
         onViewChange={handleViewChange}
         onDateNavigate={handleDateNavigate}
+        onMealEdit={handleMealEdit}
+        onMealDelete={handleMealDelete}
       />
     {/if}
   </div>
@@ -146,7 +174,8 @@
   mealPlanDay={mealPlanDays.find(d => new Date(d.date).toDateString() === selectedDate.toDateString())}
   {slotConfigs}
   userId={user?.id}
-  onClose={() => { showMealDrawer = false; }}
+  editingItem={editingMealItem}
+  onClose={() => { showMealDrawer = false; editingMealItem = null; }}
   onSave={handleMealSaved}
 />
 

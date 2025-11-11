@@ -11,6 +11,7 @@
     mealPlanDay?: MealPlanDay | null;
     slotConfigs: MealSlotConfig[];
     userId: string;
+    editingItem?: any | null;
     onClose: () => void;
     onSave: () => void;
   }
@@ -21,6 +22,7 @@
     mealPlanDay = null,
     slotConfigs,
     userId,
+    editingItem = null,
     onClose,
     onSave
   }: Props = $props();
@@ -45,12 +47,23 @@
 
   // Réinitialiser le formulaire
   function resetForm() {
-    selectedSlot = 'LUNCH' as MealSlot;
-    selectedRecipe = null;
-    servings = 1;
-    note = '';
-    isExceptional = false;
-    customSlotName = '';
+    if (editingItem) {
+      // Mode édition : remplir avec les données existantes
+      selectedSlot = editingItem.slot;
+      selectedRecipe = editingItem.recipe || null;
+      servings = editingItem.servings;
+      note = editingItem.note || '';
+      isExceptional = editingItem.isExceptional;
+      customSlotName = editingItem.customSlotName || '';
+    } else {
+      // Mode ajout : valeurs par défaut
+      selectedSlot = 'LUNCH' as MealSlot;
+      selectedRecipe = null;
+      servings = 1;
+      note = '';
+      isExceptional = false;
+      customSlotName = '';
+    }
     recipeSearchQuery = '';
     errors = {};
   }
@@ -115,33 +128,50 @@
     saving = true;
 
     try {
-      // S'assurer qu'on a un mealPlanDay
-      let dayId = mealPlanDay?.id;
+      if (editingItem) {
+        // Mode édition : mettre à jour l'item existant
+        const updateData = {
+          slot: selectedSlot,
+          customSlotName: isExceptional ? customSlotName : undefined,
+          isExceptional,
+          recipeId: selectedRecipe?.id,
+          servings,
+          note: note || undefined
+        };
 
-      if (!dayId) {
-        // Créer le jour s'il n'existe pas
-        const createdDay = await apiService.createMealPlanDay({
-          userId,
-          date: selectedDate.toISOString(),
-          items: []
-        });
-        dayId = createdDay.id;
+        await apiService.updateMealPlanItem(editingItem.id, updateData);
+        resetForm();
+        onSave();
+      } else {
+        // Mode ajout : créer un nouvel item
+        // S'assurer qu'on a un mealPlanDay
+        let dayId = mealPlanDay?.id;
+
+        if (!dayId) {
+          // Créer le jour s'il n'existe pas
+          const createdDay = await apiService.createMealPlanDay({
+            userId,
+            date: selectedDate.toISOString(),
+            items: []
+          });
+          dayId = createdDay.id;
+        }
+
+        // Créer l'item
+        const itemData: CreateMealPlanItemDto = {
+          slot: selectedSlot,
+          customSlotName: isExceptional ? customSlotName : undefined,
+          isExceptional,
+          recipeId: selectedRecipe?.id,
+          servings,
+          note: note || undefined,
+          order: mealPlanDay?.items.filter(i => i.slot === selectedSlot).length || 0
+        };
+
+        await apiService.createMealPlanItem(dayId, itemData);
+        resetForm();
+        onSave();
       }
-
-      // Créer l'item
-      const itemData: CreateMealPlanItemDto = {
-        slot: selectedSlot,
-        customSlotName: isExceptional ? customSlotName : undefined,
-        isExceptional,
-        recipeId: selectedRecipe?.id,
-        servings,
-        note: note || undefined,
-        order: mealPlanDay?.items.filter(i => i.slot === selectedSlot).length || 0
-      };
-
-      await apiService.createMealPlanItem(dayId, itemData);
-      resetForm();
-      onSave();
     } catch (err: any) {
       alert('Erreur : ' + err.message);
     } finally {
@@ -167,10 +197,10 @@
 
 <Drawer
   {isOpen}
-  title="Ajouter un repas"
+  title={editingItem ? 'Éditer le repas' : 'Ajouter un repas'}
   onClose={onClose}
   primaryAction={{
-    label: 'Ajouter le repas',
+    label: editingItem ? 'Modifier le repas' : 'Ajouter le repas',
     onClick: handleSubmit,
     disabled: saving,
     loading: saving

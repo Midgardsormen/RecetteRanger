@@ -10,6 +10,8 @@
     onDateClick?: (date: Date) => void;
     onViewChange?: (view: CalendarView) => void;
     onDateNavigate?: (date: Date) => void;
+    onMealEdit?: (item: any) => void;
+    onMealDelete?: (item: any) => void;
   }
 
   let {
@@ -19,7 +21,9 @@
     slotConfigs = [],
     onDateClick,
     onViewChange,
-    onDateNavigate
+    onDateNavigate,
+    onMealEdit,
+    onMealDelete
   }: Props = $props();
 
   // Fonctions utilitaires de date
@@ -226,14 +230,34 @@
           <div class="meals-preview">
             {#each mealPlan.items.slice(0, 3) as item}
               <div class="meal-preview-item">
-                {#if item.isExceptional && item.customSlotName}
-                  <span class="meal-badge exceptional">{item.customSlotName}</span>
-                {:else}
-                  <span class="meal-badge">{slotConfigs.find(c => c.slot === item.slot)?.label || item.slot}</span>
-                {/if}
-                {#if item.recipe}
-                  <span class="recipe-name">{item.recipe.label}</span>
-                {/if}
+                <div class="meal-info">
+                  {#if item.isExceptional && item.customSlotName}
+                    <span class="meal-badge exceptional">{item.customSlotName}</span>
+                  {:else}
+                    <span class="meal-badge">{slotConfigs.find(c => c.slot === item.slot)?.label || item.slot}</span>
+                  {/if}
+                  {#if item.recipe}
+                    <span class="recipe-name">{item.recipe.label}</span>
+                  {/if}
+                </div>
+                <div class="meal-actions">
+                  <button
+                    class="meal-action-btn edit"
+                    onclick={(e) => { e.stopPropagation(); onMealEdit?.(item); }}
+                    title="Éditer"
+                    type="button"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    class="meal-action-btn delete"
+                    onclick={(e) => { e.stopPropagation(); onMealDelete?.(item); }}
+                    title="Supprimer"
+                    type="button"
+                  >
+                    🗑️
+                  </button>
+                </div>
               </div>
             {/each}
             {#if mealPlan.items.length > 3}
@@ -406,12 +430,65 @@
 
   .meal-preview-item {
     display: flex;
-    flex-direction: column;
-    gap: $spacing-base * 0.25;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-base * 0.5;
     padding: $spacing-base * 0.5;
     background: rgba(102, 126, 234, 0.08);
     border-radius: 6px;
     font-size: 0.85rem;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(102, 126, 234, 0.12);
+    }
+  }
+
+  .meal-info {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-base * 0.25;
+    flex: 1;
+    min-width: 0; // Pour permettre le text-overflow
+  }
+
+  .meal-actions {
+    display: flex;
+    gap: $spacing-base * 0.25;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .meal-preview-item:hover .meal-actions {
+    opacity: 1;
+  }
+
+  .meal-action-btn {
+    background: none;
+    border: none;
+    padding: $spacing-base * 0.25;
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    border-radius: 4px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    &.edit {
+      &:hover {
+        background: rgba(102, 126, 234, 0.2);
+      }
+    }
+
+    &.delete {
+      &:hover {
+        background: rgba(245, 101, 101, 0.2);
+      }
+    }
   }
 
   .meal-badge {

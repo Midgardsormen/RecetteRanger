@@ -25,6 +25,7 @@ export class MealPlanController {
   @ApiResponse({ status: 400, description: 'Données invalides' })
   @ApiResponse({ status: 409, description: 'Jour déjà existant pour cet utilisateur et cette date' })
   createDay(@Body() createMealPlanDayDto: CreateMealPlanDayDto) {
+    console.log('🔍 Controller createDay - Received DTO:', createMealPlanDayDto);
     return this.mealPlanService.createDay(createMealPlanDayDto);
   }
 

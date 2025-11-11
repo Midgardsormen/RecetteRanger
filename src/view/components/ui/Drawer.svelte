@@ -199,10 +199,19 @@
   .drawer {
     background: $color-white;
     width: 100%;
+    max-width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
     box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+
+    @media (min-width: $breakpoint-md) {
+      max-width: 600px;
+    }
+
+    @media (min-width: $breakpoint-lg) {
+      max-width: 700px;
+    }
 
     // Position variants
     &--right {
@@ -218,7 +227,7 @@
       transform: translateX(-100%);
       animation: slideInLeft $transition-slow ease forwards;
       box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
-    
+
       &.drawer--open {
         transform: translateX(0);
       }
@@ -379,9 +388,4 @@
     bottom: 0;
   }
 
-  @media (max-width: 768px) {
-    .drawer--right {
-      max-width: 100%;
-    }
-  }
 </style>
