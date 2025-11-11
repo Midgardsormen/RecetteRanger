@@ -139,74 +139,106 @@
 
     <div class="footer">
       <p>Vous avez déjà un compte ?</p>
-      <Button variant="secondary" fullWidth onclick={goToLogin}>
+      <Button variant="outlined" fullWidth onclick={goToLogin}>
         Se connecter
       </Button>
     </div>
   </div>
 </div>
 
-<style>
+<style lang="scss">
+  @import '../../styles/variables';
+
   .register-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #667eea;
-    padding: 1rem;
+    padding: $spacing-base;
+    @include retro-grain(0.3);
+    background: $brand-quaternary;
+    background-image: url('/assets/images/ChatGPT Image 11 nov. 2025, 00_10_06.png');
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: overlay;
+    position: relative;
+
+    // Overlay pour contrôler l'opacité de l'image
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: $brand-quaternary;
+      opacity: 0.85;
+      z-index: 0;
+    }
   }
 
   .register-card {
-    background: white;
-    border-radius: 12px;
-    padding: 2.5rem;
+    position: relative;
+    z-index: 1;
+    background: $color-dutch-white;
+    border-radius: $radius-2xl;
+    padding: $spacing-2xl;
     width: 100%;
     max-width: 500px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 20px rgba($brand-primary, 0.3);
+
+    @media (min-width: $breakpoint-md) {
+      padding: $spacing-3xl;
+    }
   }
 
   h1 {
-    font-size: 2rem;
-    margin: 0 0 0.5rem 0;
-    color: #333;
+    text-transform: uppercase;
+    font-family: $font-family-heading;
+    font-weight: $font-weight-bold;
+    color: $brand-primary;
+    font-size: $title-size-1;
+    margin: 0 0 $spacing-sm 0;
+    text-align: center;
   }
 
   .subtitle {
-    color: #666;
-    margin: 0 0 2rem 0;
-    font-size: 0.95rem;
+    color: $color-text-secondary;
+    margin: 0 0 $spacing-2xl 0;
+    font-size: $font-size-base;
+    text-align: center;
   }
 
   .error-message {
-    background: #fee;
-    border: 1px solid #fcc;
-    color: #c33;
-    padding: 0.75rem;
-    border-radius: 6px;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
+    background: $color-background-danger;
+    border: 1px solid $color-danger-light;
+    color: $color-danger-dark;
+    padding: $spacing-md;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-lg;
+    font-size: $font-size-sm;
   }
 
   .register-form {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: $spacing-lg;
   }
 
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: $spacing-base;
   }
 
   .footer {
-    margin-top: 2rem;
+    margin-top: $spacing-2xl;
     text-align: center;
   }
 
   .footer p {
-    color: #666;
-    margin: 0 0 1rem 0;
-    font-size: 0.9rem;
+    color: $color-text-secondary;
+    margin: 0 0 $spacing-base 0;
+    font-size: $font-size-sm;
   }
 </style>

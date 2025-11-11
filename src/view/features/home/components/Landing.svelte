@@ -18,10 +18,10 @@
         Votre assistant personnel pour gérer vos recettes, planifier vos repas et optimiser vos courses
       </p>
       <div class="landing__hero-buttons">
-        <Button variant="secondary" size="large" onclick={goToRegister}>
+        <Button variant="primary-inverse" size="large" onclick={goToRegister}>
           Commencer gratuitement
         </Button>
-        <Button variant="outlined-reverse" size="large" onclick={goToLogin}>
+        <Button variant="outlined-inverse" size="large" onclick={goToLogin}>
           Se connecter
         </Button>
       </div>

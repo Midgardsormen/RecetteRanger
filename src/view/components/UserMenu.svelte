@@ -1,6 +1,7 @@
 <script lang="ts">
   import { authStore } from '../stores/auth.store';
   import { apiService } from '../services/api.service';
+  import { Button } from './ui';
   import { onMount } from 'svelte';
 
   let showDropdown = $state(false);
@@ -103,12 +104,12 @@
   {:else}
     <!-- Utilisateur non connecté -->
     <div class="user-menu__auth-buttons">
-      <button class="user-menu__btn user-menu__btn--secondary" onclick={goToRegister} type="button">
+      <Button variant="primary-inverse" size="small" onclick={goToRegister}>
         S'inscrire
-      </button>
-      <button class="user-menu__btn user-menu__btn--outlined-reverse" onclick={goToLogin} type="button">
+      </Button>
+      <Button variant="outlined-inverse" size="small" onclick={goToLogin}>
         Connexion
-      </button>
+      </Button>
     </div>
   {/if}
 </div>
@@ -283,38 +284,40 @@
       font-size: $font-size-sm;
       transition: all $transition-fast $transition-ease;
 
-      &--secondary {
-        background: $color-white;
-        color: $brand-primary;
-        border-color: $brand-primary;
+      &--primary-inverse {
+        background: $color-button-primary-inverse-background;
+        color: $color-button-primary-inverse-text;
 
         &:hover {
-          background: $brand-primary;
-          color: $color-white;
-          border-color: $brand-primary;
+          background: $color-button-primary-inverse-hover-background;
+          color: $color-button-primary-inverse-hover-text;
           transform: translateY(-2px);
         }
 
         &:active {
           transform: translateY(0);
-          background: $brand-tertiary;
-          color: $color-white;
-          border-color: $brand-tertiary;
+          background: $color-button-primary-inverse-active-background;
+          color: $color-button-primary-inverse-hover-text;
         }
       }
 
-      &--outlined-reverse {
-        background: transparent;
-        color: $color-dutch-white;
-        border-color: $color-dutch-white;
+      &--secondary-inverse {
+        background: $color-button-secondary-inverse-background;
+        color: $color-button-secondary-inverse-text;
+        border-color: $color-button-secondary-inverse-border;
 
         &:hover {
-          background: rgba($color-dutch-white, 0.1);
+          background: $color-button-secondary-inverse-hover-background;
+          color: $color-button-secondary-inverse-hover-text;
+          border-color: $color-button-secondary-inverse-hover-border;
           transform: translateY(-2px);
         }
 
         &:active {
           transform: translateY(0);
+          background: $color-button-secondary-inverse-active-background;
+          color: $color-button-secondary-inverse-active-text;
+          border-color: $color-button-secondary-inverse-active-border;
         }
       }
     }

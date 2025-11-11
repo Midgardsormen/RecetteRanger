@@ -96,40 +96,99 @@ $color-border-disabled: $color-gray-200;
 // BUTTONS (Button Colors)
 // ============================================
 
-// Primary Button
+// Primary Button (pour fonds clairs)
 $color-button-primary-text: $color-white;
 $color-button-primary-background: $brand-primary;
-$color-button-primary-border: transparent;
-$color-button-primary-hover-background: $brand-secondary;
-$color-button-primary-active-background: darken($brand-secondary, 5%);
-$color-button-primary-shadow: rgba(102, 126, 234, 0.3);
+$color-button-primary-border: $brand-primary;
+$color-button-primary-hover-background: $brand-quaternary;
+$color-button-primary-hover-border: $brand-quaternary;
+$color-button-primary-hover-text:  $color-white;
+$color-button-primary-active-background: darken($brand-quaternary, 5%);
 
-// Secondary Button
+// Primary Inverse Button (pour fonds foncés)
+$color-button-primary-inverse-text: $brand-primary;
+$color-button-primary-inverse-background: $color-white;
+$color-button-primary-inverse-border: $color-white;
+$color-button-primary-inverse-hover-background: $color-dutch-white;
+$color-button-primary-inverse-hover-border: $color-dutch-white;
+$color-button-primary-inverse-hover-text: $brand-tertiary;
+$color-button-primary-inverse-active-background: darken($color-dutch-white, 5%);
+
+// Secondary Button (pour fonds clairs)
 $color-button-secondary-text: $brand-primary;
 $color-button-secondary-background: $color-white;
 $color-button-secondary-border: $brand-primary;
-$color-button-secondary-hover-background: rgba(102, 126, 234, 0.1);
-$color-button-secondary-hover-text: $brand-primary;
+$color-button-secondary-hover-background: $brand-primary;
+$color-button-secondary-hover-text: $color-white;
+$color-button-secondary-hover-border: $brand-primary;
+$color-button-secondary-active-background: $brand-tertiary;
+$color-button-secondary-active-text: $color-white;
+$color-button-secondary-active-border: $brand-tertiary;
 
-// Danger Button
-$color-button-danger-text: $color-white;
-$color-button-danger-background: $color-danger;
-$color-button-danger-border: transparent;
-$color-button-danger-hover-background: $color-danger-dark;
-$color-button-danger-shadow: rgba(245, 101, 101, 0.3);
+// Secondary Inverse Button (pour fonds foncés)
+$color-button-secondary-inverse-text: $color-dutch-white;
+$color-button-secondary-inverse-background: transparent;
+$color-button-secondary-inverse-border: $color-dutch-white;
+$color-button-secondary-inverse-hover-background: $brand-primary;
+$color-button-secondary-inverse-hover-text: $color-white;
+$color-button-secondary-inverse-hover-border: $color-white;
+$color-button-secondary-inverse-active-background: darken($color-dutch-white, 5%);
+$color-button-secondary-inverse-active-text: $brand-tertiary;
+$color-button-secondary-inverse-active-border: darken($color-dutch-white, 5%);
 
-// Success Button
-$color-button-success-text: $color-white;
-$color-button-success-background: $color-success;
-$color-button-success-border: transparent;
-$color-button-success-hover-background: $color-success-dark;
-$color-button-success-shadow: rgba(72, 187, 120, 0.3);
+// Outlined Button (pour fonds clairs)
+$color-button-outlined-text: $brand-primary;
+$color-button-outlined-background: $color-white;
+$color-button-outlined-border: $brand-primary;
+$color-button-outlined-hover-background: $color-gray-200;
+$color-button-outlined-hover-text:  $brand-quaternary;
+$color-button-outlined-hover-border: $brand-quaternary;
+$color-button-outlined-active-background: darken($color-gray-200, 5%);
+$color-button-outlined-active-text: $brand-quaternary;
 
-// Ghost Button
+// Outlined Inverse Button (pour fonds foncés)
+$color-button-outlined-inverse-text: $color-dutch-white;
+$color-button-outlined-inverse-background: transparent;
+$color-button-outlined-inverse-border: $color-dutch-white;
+$color-button-outlined-inverse-hover-background: rgba($color-dutch-white, 0.1);
+
+// Ghost Button (pour fonds clairs)
 $color-button-ghost-text: $color-gray-600;
 $color-button-ghost-background: transparent;
-$color-button-ghost-border: transparent;
 $color-button-ghost-hover-background: rgba(0, 0, 0, 0.05);
+$color-button-ghost-active-background: rgba(0, 0, 0, 0.1);
+
+// Ghost Inverse Button (pour fonds foncés)
+$color-button-ghost-inverse-text: $color-dutch-white;
+$color-button-ghost-inverse-background: transparent;
+$color-button-ghost-inverse-hover-background: rgba(255, 255, 255, 0.1);
+$color-button-ghost-inverse-active-background: rgba(255, 255, 255, 0.15);
+
+// Danger Button (pour fonds clairs)
+$color-button-danger-text: $color-white;
+$color-button-danger-background: $color-danger;
+$color-button-danger-hover-background: $color-danger-dark;
+
+// Danger Inverse Button (pour fonds foncés)
+$color-button-danger-inverse-text: $color-danger-light;
+$color-button-danger-inverse-background: transparent;
+$color-button-danger-inverse-border: $color-danger-light;
+$color-button-danger-inverse-hover-background: $color-danger-light;
+$color-button-danger-inverse-hover-text: $color-danger-dark;
+$color-button-danger-inverse-hover-border: $color-danger-light;
+
+// Success Button (pour fonds clairs)
+$color-button-success-text: $color-white;
+$color-button-success-background: $color-success;
+$color-button-success-hover-background: $color-success-dark;
+
+// Success Inverse Button (pour fonds foncés)
+$color-button-success-inverse-text: $color-success-light;
+$color-button-success-inverse-background: transparent;
+$color-button-success-inverse-border: $color-success-light;
+$color-button-success-inverse-hover-background: $color-success-light;
+$color-button-success-inverse-hover-text: $color-success-dark;
+$color-button-success-inverse-hover-border: $color-success-light;
 
 // Disabled Button
 $color-button-disabled-text: $color-gray-400;
