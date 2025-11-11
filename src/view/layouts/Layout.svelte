@@ -38,9 +38,9 @@
 </svelte:head>
 
 <div class="layout">
-  <Header onMenuToggle={toggleMobileMenu} />
+  <Header onMenuToggle={toggleMobileMenu} {user} />
 
-  <Navigation {currentPage} isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
+  <Navigation {currentPage} {user} isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
 
   <main class="layout__main">
     {@render children?.()}
@@ -52,6 +52,7 @@
 </div>
 
 <style lang="scss">
+  @import '../styles/fonts.css';
   @import '../styles/_variables';
 
   // Global styles
@@ -65,6 +66,8 @@
 
   // Block: layout
   .layout {
+
+    background-color: $color-background-light;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -72,19 +75,7 @@
     // Element: main
     &__main {
       flex: 1;
-      padding: $spacing-xl;
-      margin-top: 64px; // Height of header
-
-      // On desktop, offset by sidebar width
-      @media (min-width: $breakpoint-lg) {
-        margin-left: 250px; // Width of sidebar
-      }
-
-      @media (max-width: $breakpoint-md) {
-        padding: $spacing-base;
-      }
     }
-
     // Element: footer
     &__footer {
       background: $color-gray-800;
@@ -92,10 +83,14 @@
       text-align: center;
       padding: $spacing-lg;
       margin-top: auto;
-
-      // On desktop, offset by sidebar width
+    }
+    &__main, &__footer{
+      padding: $spacing-sm;
+      @media (min-width: $breakpoint-md) {
+        padding: $spacing-md;
+      }
       @media (min-width: $breakpoint-lg) {
-        margin-left: 250px; // Width of sidebar
+        padding: $spacing-lg;
       }
     }
 
@@ -103,6 +98,7 @@
     &__footer-text {
       margin: 0;
       opacity: $opacity-80;
+      
     }
   }
 </style>

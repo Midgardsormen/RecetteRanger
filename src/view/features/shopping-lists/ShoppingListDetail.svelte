@@ -932,7 +932,7 @@
 
       .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        background: #667eea;
         transition: width 0.3s ease;
       }
     }

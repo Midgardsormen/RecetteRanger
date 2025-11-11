@@ -3,24 +3,28 @@
   import { IconButton } from './ui';
   import UserMenu from './UserMenu.svelte';
 
-  let { onMenuToggle }: { onMenuToggle: () => void } = $props();
+  let { onMenuToggle, user = null }: { onMenuToggle: () => void; user?: any } = $props();
+
+  const isAuthenticated = $derived(user !== null);
 </script>
 
 <header class="header">
   <div class="header__container">
-    <!-- Burger menu button (visible only on mobile/tablet) -->
-    <div class="header__burger">
-      <IconButton
-        variant="ghost"
-        onclick={onMenuToggle}
-        ariaLabel="Toggle menu"
-      >
-        <span class="burger-icon">☰</span>
-      </IconButton>
-    </div>
+    <!-- Burger menu button (visible only on mobile/tablet and if authenticated) -->
+    {#if isAuthenticated}
+      <div class="header__burger">
+        <IconButton
+          variant="ghost"
+          onclick={onMenuToggle}
+          ariaLabel="Toggle menu"
+        >
+          <span class="burger-icon">☰</span>
+        </IconButton>
+      </div>
+    {/if}
 
-    <!-- Logo -->
-    <a href="/" class="header__brand">
+    <!-- Logo (always visible) -->
+    <a href="/" class="header__brand" class:header__brand--landing={!isAuthenticated}>
       <div class="header__logo-wrapper">
         <img src={IMAGES.logo.main} alt="RecetteRanger" class="header__logo" />
       </div>
@@ -38,7 +42,7 @@
   @import '../styles/_variables';
 
   .header {
-    background: linear-gradient(135deg, $brand-primary 0%, $brand-secondary 100%);
+    
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
@@ -46,72 +50,120 @@
     height: 64px;
 
     &__container {
+      background: $brand-tertiary;
       height: 100%;
-      padding: 0 $spacing-lg;
+      padding: 0 $spacing-sm;
       display: flex;
       align-items: center;
-      gap: $spacing-base;
+      gap:$spacing-sm;
+      @media (min-width: $breakpoint-md) {
+        padding: 0 $spacing-md;
+        gap: $spacing-base;
+      }
+      @media (min-width: $breakpoint-lg) {
+        padding: 0 $spacing-lg;
+        gap: $spacing-base;
+      }
     }
 
     &__brand {
       display: flex;
-      align-items: center;
-      gap: $spacing-base;
+      align-items: flex-start;
       text-decoration: none;
       transition: opacity $transition-base;
 
-      &:hover {
-        opacity: 0.9;
-      }
-    }
+      width: 80px;
+      height: 80px;
 
-    &__logo-wrapper {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      background: $color-white;
+      background: $color-dutch-white;
       border-radius: 50%;
-      display: flex;
       align-items: center;
       justify-content: center;
       box-shadow:
         0 8px 24px rgba(0, 0, 0, 0.2),
         0 4px 8px rgba(0, 0, 0, 0.15);
       z-index: 100;
-      margin: -28px 0; // Déborde du header (haut et bas)
 
-      // Sur desktop, déborde aussi sur la sidebar
+      top: 0;
+
+      @media (min-width: $breakpoint-md) {
+        left: 50%;
+        transform: translateX(-50%);
+        position: absolute;
+        width: 120px;
+        height: 120px;
+
+      }
       @media (min-width: $breakpoint-lg) {
         position: absolute;
-        left: 190px;
-        top: 0;
-        transform: none;
-        width: 150px;
-        height: 150px;
+        width: 200px;
+        height: 200px;
         margin-top: 0;
       }
+      &:hover {
+        opacity: 0.9;
+      }
 
-      @media (max-width: $breakpoint-sm) {
-        width: 70px;
-        height: 70px;
-        margin: -3px 0;
+      // Style spécial pour la landing page (non connecté)
+      &--landing {
+        width: 140px;
+        height: 140px;
+        box-shadow:
+          4px 4px 0 $color-permanent-geranium-lake,
+          8px 8px 0 $color-permanent-geranium-lake,
+          0 8px 24px rgba(0, 0, 0, 0.2),
+          0 4px 8px rgba(0, 0, 0, 0.15);
+        position: absolute;
+        left: 0;
+        @media (min-width: $breakpoint-sm) {
+          left: 50%;
+          transform: translateX(-50%);
+          width: 150px;
+          height: 150px;
+        }
+
+        @media (min-width: $breakpoint-md) {
+          left: 50%;
+          transform: translateX(-50%);
+          width: 200px;
+          height: 200px;
+        }
+
+        @media (min-width: $breakpoint-lg) {
+          width: 220px;
+          height: 220px;
+        }
+
+        .header__logo {
+          width: 120px;
+          height: 120px;
+
+          @media (min-width: $breakpoint-md) {
+            width: 160px;
+            height: 160px;
+          }
+
+          @media (min-width: $breakpoint-lg) {
+            width: 180px;
+            height: 180px;
+          }
+        }
       }
     }
 
     &__logo {
-      width: 85px;
-      height: 85px;
+      width: 75px;
+      height: 75px;
       object-fit: contain;
-
+      @media (min-width: $breakpoint-md) {
+        width: 85px;
+        height: 85px;
+      }
       @media (min-width: $breakpoint-lg) {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
       }
 
-      @media (max-width: $breakpoint-sm) {
-        width: 50px;
-        height: 50px;
-      }
     }
 
     &__brand-text {

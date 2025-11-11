@@ -479,7 +479,7 @@
       }
 
       &--primary {
-        @include brand-gradient;
+        @include brand-gradient-primary;
         color: $color-white;
 
         &:hover:not(:disabled) {

@@ -103,11 +103,11 @@
   {:else}
     <!-- Utilisateur non connecté -->
     <div class="user-menu__auth-buttons">
-      <button class="user-menu__btn user-menu__btn--secondary" onclick={goToLogin} type="button">
-        Connexion
-      </button>
-      <button class="user-menu__btn user-menu__btn--primary" onclick={goToRegister} type="button">
+      <button class="user-menu__btn user-menu__btn--secondary" onclick={goToRegister} type="button">
         S'inscrire
+      </button>
+      <button class="user-menu__btn user-menu__btn--outlined-reverse" onclick={goToLogin} type="button">
+        Connexion
       </button>
     </div>
   {/if}
@@ -118,6 +118,7 @@
 
   .user-menu {
     position: relative;
+
 
     &__loading {
       padding: $spacing-sm;
@@ -202,7 +203,7 @@
 
     &__dropdown-header {
       padding: $spacing-base;
-      @include brand-gradient;
+      @include brand-gradient-primary;
       color: $color-white;
     }
 
@@ -275,7 +276,7 @@
 
     &__btn {
       padding: $spacing-sm $spacing-base;
-      border: none;
+      border: 2px solid transparent;
       border-radius: $radius-md;
       cursor: pointer;
       font-weight: $font-weight-medium;
@@ -283,21 +284,37 @@
       transition: all $transition-fast $transition-ease;
 
       &--secondary {
-        background: rgba($color-white, 0.1);
-        color: $color-white;
+        background: $color-white;
+        color: $brand-primary;
+        border-color: $brand-primary;
 
         &:hover {
-          background: rgba($color-white, 0.2);
+          background: $brand-primary;
+          color: $color-white;
+          border-color: $brand-primary;
+          transform: translateY(-2px);
+        }
+
+        &:active {
+          transform: translateY(0);
+          background: $brand-tertiary;
+          color: $color-white;
+          border-color: $brand-tertiary;
         }
       }
 
-      &--primary {
-        background: $color-white;
-        color: $brand-primary;
+      &--outlined-reverse {
+        background: transparent;
+        color: $color-dutch-white;
+        border-color: $color-dutch-white;
 
         &:hover {
+          background: rgba($color-dutch-white, 0.1);
           transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba($color-black, 0.2);
+        }
+
+        &:active {
+          transform: translateY(0);
         }
       }
     }

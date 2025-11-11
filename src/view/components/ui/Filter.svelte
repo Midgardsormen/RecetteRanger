@@ -376,7 +376,7 @@
     }
 
     &--selected {
-      @include brand-gradient;
+      @include brand-gradient-primary;
       border-color: transparent;
       color: $color-white;
 

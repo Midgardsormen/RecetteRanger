@@ -336,7 +336,7 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
     width: 56px;
     height: 56px;
     border-radius: 8px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #667eea;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -422,7 +422,7 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #667eea;
     display: flex;
     align-items: center;
     justify-content: center;

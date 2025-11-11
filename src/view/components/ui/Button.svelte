@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
 
   interface Props {
-    variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'ghost';
+    variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'ghost' | 'outlined' | 'outlined-reverse';
     size?: 'small' | 'medium' | 'large';
     disabled?: boolean;
     fullWidth?: boolean;
@@ -50,6 +50,14 @@
     transition: all $transition-slow $transition-ease;
     line-height: 1;
 
+    // Par défaut 100% sur mobile, largeur max au-delà de sm
+    width: 100%;
+    max-width: 300px;
+
+    @media (min-width: $breakpoint-sm) {
+      width: auto;
+    }
+
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;
@@ -83,12 +91,16 @@
       color: $color-button-primary-text;
 
       &:hover:not(:disabled) {
+        background: $color-button-primary-hover-background;
+        color: $brand-tertiary;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px $color-button-primary-shadow;
       }
 
       &:active:not(:disabled) {
         transform: translateY(0);
+        background: $color-button-primary-active-background;
+        color: $brand-tertiary;
       }
     }
 
@@ -98,12 +110,17 @@
       border: 2px solid $color-button-secondary-border;
 
       &:hover:not(:disabled) {
-        background: $color-button-secondary-hover-background;
+        background: $brand-primary;
+        color: $color-white;
+        border-color: $brand-primary;
         transform: translateY(-2px);
       }
 
       &:active:not(:disabled) {
         transform: translateY(0);
+        background: $brand-tertiary;
+        color: $color-white;
+        border-color: $brand-tertiary;
       }
     }
 
@@ -150,8 +167,39 @@
       }
     }
 
+    &--outlined {
+      background: transparent;
+      color: $brand-primary;
+      border: 2px solid $brand-primary;
+
+      &:hover:not(:disabled) {
+        background: rgba($brand-primary, 0.1);
+        transform: translateY(-2px);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+    }
+
+    &--outlined-reverse {
+      background: transparent;
+      color: $color-dutch-white;
+      border: 2px solid $color-dutch-white;
+
+      &:hover:not(:disabled) {
+        background: rgba($color-dutch-white, 0.1);
+        transform: translateY(-2px);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+    }
+
     &--full-width {
       width: 100%;
+      max-width: none;
     }
   }
 </style>

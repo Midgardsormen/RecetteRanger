@@ -108,7 +108,7 @@
     width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    background: linear-gradient(135deg, $color-gray-50 0%, $color-gray-100 100%);
+    background: $color-gray-100;
   }
 
   .card__image {

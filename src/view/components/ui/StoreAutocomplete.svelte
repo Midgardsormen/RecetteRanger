@@ -345,7 +345,7 @@
   .create-button {
     width: 100%;
     padding: 0.75rem 1rem;
-    background: linear-gradient(135deg, $primary-color 0%, #764ba2 100%);
+    background: $primary-color;
     color: $white;
     border: none;
     border-radius: 6px;

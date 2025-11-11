@@ -101,7 +101,7 @@
 
     // Gradient
     &--gradient {
-      @include brand-gradient;
+      @include brand-gradient-primary;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;

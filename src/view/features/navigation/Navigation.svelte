@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Drawer } from '../../components/ui';
 
-  let { currentPage = '', isOpen = false, onClose }: { currentPage?: string; isOpen?: boolean; onClose?: () => void } = $props();
+  let { currentPage = '', isOpen = false, onClose, user = null }: { currentPage?: string; isOpen?: boolean; onClose?: () => void; user?: any } = $props();
 
   const navItems = [
     { href: '/', label: 'Home', icon: '🏠' },
@@ -13,6 +13,12 @@
     { href: '/shopping-lists', label: 'Shopping Lists', icon: '🛒' }
   ];
 
+  // Navigation items for desktop (without Home)
+  const desktopNavItems = navItems.filter(item => item.href !== '/');
+
+  // Check if user is authenticated
+  const isAuthenticated = $derived(user !== null);
+
   function handleNavClick() {
     // Close drawer on mobile when clicking a link
     if (onClose) {
@@ -21,68 +27,64 @@
   }
 </script>
 
-<!-- Desktop sidebar (visible >= 1024px) -->
-<nav class="sidebar">
-  <ul class="sidebar__list">
-    {#each navItems as item}
-      <li class="sidebar__item">
-        <a
-          href={item.href}
-          class="sidebar__link"
-          class:sidebar__link--active={currentPage === item.href}
-          aria-current={currentPage === item.href ? 'page' : undefined}
-        >
-          <span class="sidebar__icon">{item.icon}</span>
-          <span class="sidebar__label">{item.label}</span>
-        </a>
-      </li>
-    {/each}
-  </ul>
-</nav>
-
-<!-- Mobile/Tablet drawer (visible < 1024px) -->
-<Drawer
-  {isOpen}
-  position="left"
-  variant="navigation"
-  onClose={onClose || (() => {})}
->
-  <nav class="mobile-nav">
-    <ul class="mobile-nav__list">
-      {#each navItems as item}
-        <li class="mobile-nav__item">
+{#if isAuthenticated}
+  <!-- Desktop horizontal navigation (visible >= 1024px) -->
+  <nav class="nav-horizontal">
+    <ul class="nav-horizontal__list">
+      {#each desktopNavItems as item, index}
+        <li class="nav-horizontal__item" class:nav-horizontal__item--gap={index === 2}>
           <a
             href={item.href}
-            class="mobile-nav__link"
-            class:mobile-nav__link--active={currentPage === item.href}
+            class="nav-horizontal__link"
+            class:nav-horizontal__link--active={currentPage === item.href}
             aria-current={currentPage === item.href ? 'page' : undefined}
-            onclick={handleNavClick}
           >
-            <span class="mobile-nav__icon">{item.icon}</span>
-            <span class="mobile-nav__label">{item.label}</span>
+            <span class="nav-horizontal__label">{item.label}</span>
           </a>
         </li>
       {/each}
     </ul>
   </nav>
-</Drawer>
+
+  <!-- Mobile/Tablet drawer (visible < 1024px) -->
+  <Drawer
+    {isOpen}
+    position="left"
+    variant="navigation"
+    onClose={onClose || (() => {})}
+  >
+    <nav class="mobile-nav">
+      <ul class="mobile-nav__list">
+        {#each navItems as item}
+          <li class="mobile-nav__item">
+            <a
+              href={item.href}
+              class="mobile-nav__link"
+              class:mobile-nav__link--active={currentPage === item.href}
+              aria-current={currentPage === item.href ? 'page' : undefined}
+              onclick={handleNavClick}
+            >
+              <span class="mobile-nav__icon">{item.icon}</span>
+              <span class="mobile-nav__label">{item.label}</span>
+            </a>
+          </li>
+        {/each}
+      </ul>
+    </nav>
+  </Drawer>
+{/if}
 
 <style lang="scss">
   @import '../../styles/_variables';
 
-  // Desktop Sidebar - Vertical navigation on the left
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 64px; // Below header
-    bottom: 0;
-    width: 250px;
-    background: linear-gradient(135deg, $brand-primary 0%, $brand-secondary 100%);
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    padding: $spacing-lg 0;
-    z-index: $z-index-sidebar;
+  // Desktop Horizontal Navigation
+  .nav-horizontal {
+    position: sticky;
+    top: 64px; // Stick below header
+    background: $brand-secondary;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: $z-index-sticky;
+    padding: 0 $spacing-lg;
 
     // Hide on mobile/tablet
     @media (max-width: $breakpoint-lg) {
@@ -94,43 +96,41 @@
       margin: 0;
       padding: 0;
       display: flex;
-      flex-direction: column;
-      gap: $spacing-xs;
-      flex: 1;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-lg;
+      max-width: $max-width-container;
+      margin: 0 auto;
     }
 
     &__item {
-      padding: 0 $spacing-base;
+      // Gap after the 3rd item (Articles)
+      &--gap {
+        margin-right: 200px;
+      }
     }
 
     &__link {
       display: flex;
       align-items: center;
-      gap: $spacing-base;
-      padding: $spacing-base;
-      color: rgba(255, 255, 255, 0.9);
+      padding: $spacing-base $spacing-lg;
+      color: $color-text-secondary;
       text-decoration: none;
       border-radius: $radius-md;
       transition: all $transition-base;
       font-weight: $font-weight-medium;
-      background: rgba(255, 255, 255, 0.1);
+      white-space: nowrap;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.2);
-        color: $color-white;
-        transform: translateX(4px);
+        background: rgba($brand-primary, 0.1);
+        color: $brand-primary;
       }
 
       &--active {
-        background: $color-white;
-        color: $brand-primary;
+        background: $brand-primary;
+        color: $color-white;
         font-weight: $font-weight-semibold;
       }
-    }
-
-    &__icon {
-      font-size: $font-size-xl;
-      flex-shrink: 0;
     }
 
     &__label {

@@ -97,12 +97,12 @@
     }
 
     &--selected {
-      background: linear-gradient(135deg, rgba($brand-primary, 0.1) 0%, rgba($brand-secondary, 0.1) 100%);
+      background: rgba($brand-primary, 0.1);
       border-color: $brand-primary;
       box-shadow: $shadow-focus-primary;
 
       &:hover:not(&--disabled) {
-        background: linear-gradient(135deg, rgba($brand-primary, 0.15) 0%, rgba($brand-secondary, 0.15) 100%);
+        background: rgba($brand-primary, 0.15);
       }
     }
 

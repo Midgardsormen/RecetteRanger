@@ -87,7 +87,7 @@
 
     // Element: btn
     &__btn {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+      background: $primary-color;
       color: $white;
       border: none;
       padding: $spacing-base * 0.75 $spacing-base * 1.5;

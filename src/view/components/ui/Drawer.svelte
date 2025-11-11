@@ -101,8 +101,10 @@
       aria-labelledby={title ? "drawer-title" : undefined}
     >
       <!-- Header (only for default variant) -->
-      {#if variant === 'default'}
-        <div class="drawer__header">
+
+        <div
+        class:drawer__header--navigation={variant=='navigation'} 
+        class="drawer__header">
           {#if showBackButton && onBack}
             <button
               class="drawer__back"
@@ -127,7 +129,7 @@
             ✕
           </button>
         </div>
-      {/if}
+      
 
       <!-- Body -->
       <div class="drawer__body" class:drawer__body--full={variant === 'navigation'}>
@@ -197,7 +199,6 @@
   .drawer {
     background: $color-white;
     width: 100%;
-    max-width: 600px;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -217,16 +218,16 @@
       transform: translateX(-100%);
       animation: slideInLeft $transition-slow ease forwards;
       box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
-      max-width: 280px; // Plus étroit pour la navigation
-
+    
       &.drawer--open {
         transform: translateX(0);
       }
+
     }
 
     // Variant navigation
     &--navigation {
-      background: linear-gradient(135deg, $brand-primary 0%, $brand-secondary 100%);
+      background: $brand-primary;
       padding: 0;
     }
   }
@@ -260,6 +261,16 @@
     top: 0;
     z-index: 10;
     min-height: 72px;
+    &--navigation{
+      padding: $spacing-sm;
+      justify-content: flex-end;
+      min-height: auto;
+      background: none;
+      border-bottom: none;
+      .drawer__close{
+        color:$brand-secondary
+      }
+    }
   }
 
   .drawer__back {
@@ -322,6 +333,7 @@
     }
   }
 
+
   .drawer__body {
     flex: 1;
     overflow-y: auto;
@@ -368,7 +380,7 @@
   }
 
   @media (max-width: 768px) {
-    .drawer {
+    .drawer--right {
       max-width: 100%;
     }
   }

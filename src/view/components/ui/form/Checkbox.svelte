@@ -67,7 +67,7 @@
     width: 0;
 
     &:checked ~ .checkbox__checkmark {
-      @include brand-gradient;
+      @include brand-gradient-primary;
       border-color: $brand-primary;
 
       &::after {

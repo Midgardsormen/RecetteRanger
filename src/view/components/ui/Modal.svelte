@@ -348,10 +348,11 @@
     }
 
     &--primary {
-      @include brand-gradient;
+      background: $brand-primary;
       color: $color-white;
 
       &:hover:not(:disabled) {
+        background: $brand-secondary;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
       }

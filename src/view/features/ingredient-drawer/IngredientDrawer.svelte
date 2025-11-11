@@ -458,7 +458,7 @@
     }
 
     &:has(input:checked) {
-      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+      background: $primary-color;
       color: $white;
       border-color: transparent;
     }
