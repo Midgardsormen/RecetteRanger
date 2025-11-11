@@ -187,6 +187,24 @@ $shadow-decorative-title:
     3px 3px 0 $color-permanent-geranium-lake,
     4px 4px 0 $color-permanent-geranium-lake;
 
+// Text shadows
+$text-shadow-sharp-sm: 1px 1px 0 $color-black;
+$text-shadow-sharp-md:
+    1px 1px 0 $color-black,
+    2px 2px 0 $color-black;
+$text-shadow-sharp-lg:
+    1px 1px 0 $color-black,
+    2px 2px 0 $color-black,
+    3px 3px 0 $color-black;
+$text-shadow-sharp-primary:
+    1px 1px 0 $brand-primary,
+    2px 2px 0 $brand-primary;
+$text-shadow-sharp-secondary:
+    1px 1px 0 $brand-secondary,
+    2px 2px 0 $brand-secondary;
+$text-shadow-soft: 2px 2px 4px rgba(0, 0, 0, 0.3);
+$text-shadow-glow: 0 0 10px rgba(255, 255, 255, 0.5);
+
 // Focus shadows
 $shadow-focus-primary: 0 0 0 3px rgba(102, 126, 234, 0.1);
 $shadow-focus-danger: 0 0 0 3px rgba(245, 101, 101, 0.1);

@@ -35,7 +35,7 @@
       <div class="landing__feature-content">
         <Title level={3} align="center">Gestion des recettes</Title>
         <p class="landing__feature-text">
-          Créez et organisez toutes vos recettes préférées au même endroit
+          Créez et organisez<br/>toutes vos recettes préférées au même endroit
         </p>
       </div>
     </div>
@@ -45,7 +45,7 @@
       <div class="landing__feature-content">
         <Title level={3} align="center">Planification des repas</Title>
         <p class="landing__feature-text">
-          Planifiez vos menus pour la semaine et gagnez du temps
+          Planifiez vos menus pour la semaine<br/>et gagnez du temps
         </p>
       </div>
     </div>
@@ -55,7 +55,7 @@
       <div class="landing__feature-content">
         <Title level={3} align="center">Listes de courses intelligentes</Title>
         <p class="landing__feature-text">
-          Générez automatiquement vos listes de courses depuis vos plannings
+          Générez automatiquement<br/>vos listes de courses depuis vos plannings
         </p>
       </div>
     </div>
@@ -194,7 +194,7 @@
       height: 300px;
       display: block;
       object-fit: cover;
-      opacity: 0.4;
+      opacity: 0.3;
 
       @media (min-width: $breakpoint-md) {
         height: 400px;
@@ -236,8 +236,10 @@
     &__feature-text {
       margin: 0;
       color: $color-text-inverse;
-      line-height: $line-height-relaxed;
+      line-height: $line-height-tight;
       font-weight: $font-weight-bold;
+      text-shadow: $text-shadow-sharp-md;
+      font-size: $font-size-lg;
     }
   }
 </style>
