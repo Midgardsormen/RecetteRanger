@@ -3,6 +3,7 @@ import { PrismaService } from '../../shared/prisma/prisma.service';
 import { CreateShoppingListDto, CreateShoppingListItemDto, GenerateShoppingListDto } from './dto/create-shopping-list.dto';
 import { UpdateShoppingListDto, UpdateShoppingListItemDto } from './dto/update-shopping-list.dto';
 import { Decimal } from '@prisma/client/runtime/library';
+import { ShoppingListStatus } from '@prisma/client';
 
 @Injectable()
 export class ShoppingListService {
@@ -16,7 +17,7 @@ export class ShoppingListService {
         name: createShoppingListDto.name,
         fromDate: createShoppingListDto.fromDate ? new Date(createShoppingListDto.fromDate) : null,
         toDate: createShoppingListDto.toDate ? new Date(createShoppingListDto.toDate) : null,
-        status: 'DRAFT',
+        status: (createShoppingListDto.status as ShoppingListStatus) || ShoppingListStatus.IN_PROGRESS,
         items: createShoppingListDto.items
           ? {
               create: createShoppingListDto.items.map(item => ({
@@ -164,6 +165,8 @@ export class ShoppingListService {
     const toDate = new Date(generateDto.toDate);
     const now = new Date();
 
+    console.log('🔍 [Shopping List] Génération pour:', { userId, fromDate, toDate });
+
     // Récupérer tous les jours de planning dans la plage de dates (uniquement futures)
     const mealPlanDays = await this.prisma.mealPlanDay.findMany({
       where: {
@@ -193,8 +196,22 @@ export class ShoppingListService {
       },
     });
 
+    console.log('🔍 [Shopping List] Jours trouvés:', mealPlanDays.length);
+    console.log('🔍 [Shopping List] Items par jour:', mealPlanDays.map(d => ({
+      date: d.date,
+      itemsCount: d.items.length,
+      items: d.items.map(i => ({
+        id: i.id,
+        slot: i.slot,
+        recipeId: i.recipeId,
+        hasRecipe: !!i.recipe,
+        ingredientsCount: i.recipe?.ingredients?.length || 0
+      }))
+    })));
+
     // Filtrer pour ne garder que les repas futurs
     const futureMealPlanDays = mealPlanDays.filter(day => new Date(day.date) >= now);
+    console.log('🔍 [Shopping List] Jours futurs:', futureMealPlanDays.length);
 
     // Map pour regrouper les ingrédients scalables par unité
     const ingredientMap = new Map<string, {
@@ -275,6 +292,9 @@ export class ShoppingListService {
     // Créer les items de la liste de courses
     const shoppingListItems: CreateShoppingListItemDto[] = [];
 
+    console.log('🔍 [Shopping List] Ingrédients scalables:', ingredientMap.size);
+    console.log('🔍 [Shopping List] Ingrédients non-scalables:', nonScalableIngredients.size);
+
     // Ajouter les ingrédients scalables avec quantités
     for (const [_, ingredient] of ingredientMap) {
       for (const [unit, quantityData] of ingredient.quantities) {
@@ -304,6 +324,8 @@ export class ShoppingListService {
         mealPlanItemIds: ingredient.mealPlanItemIds,
       });
     }
+
+    console.log('🔍 [Shopping List] Total items à créer:', shoppingListItems.length);
 
     // Trier par rayon
     shoppingListItems.sort((a, b) => {

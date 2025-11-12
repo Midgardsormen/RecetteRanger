@@ -245,6 +245,14 @@ $shadow-decorative-title:
     2px 2px 0 $color-permanent-geranium-lake,
     3px 3px 0 $color-permanent-geranium-lake,
     4px 4px 0 $color-permanent-geranium-lake;
+$shadow-decorative-navigation:
+    0px 0px 0 $color-gray-600,
+    1px 1px 0 $color-gray-600,
+    2px 2px 0 $color-gray-600;
+$shadow-decorative-navigation-hover:
+    0px 0px 0  $color-permanent-geranium-lake,
+    1px 1px 0  $color-permanent-geranium-lake,
+    2px 2px 0  $color-permanent-geranium-lake;
 
 // Text shadows
 $text-shadow-sharp-sm: 1px 1px 0 $color-black;

@@ -58,9 +58,6 @@ export class MealPlanService {
       normalizedToDate.setUTCHours(23, 59, 59, 999);
     }
 
-    console.log('🔍 findAllDays - Params:', { userId, fromDate, toDate });
-    console.log('🔍 findAllDays - Normalized:', { normalizedFromDate, normalizedToDate });
-
     const results = await this.prisma.mealPlanDay.findMany({
       where: {
         userId,
@@ -88,7 +85,6 @@ export class MealPlanService {
       orderBy: { date: 'asc' },
     });
 
-    console.log('🔍 findAllDays - Results:', results.map(r => ({ id: r.id, date: r.date, itemsCount: r.items.length })));
 
     return results;
   }

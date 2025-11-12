@@ -27,6 +27,7 @@ export { Input, Select, Checkbox, FormField, PasswordInput, RadioGroup } from '.
 // Action Components
 export { default as Button } from './Button.svelte';
 export { default as IconButton } from './IconButton.svelte';
+export { default as Link } from './Link.svelte';
 
 // Typography Components
 export { default as Title } from './Title.svelte';

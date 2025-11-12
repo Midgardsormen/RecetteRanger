@@ -70,6 +70,11 @@ export class CreateShoppingListDto {
   @IsDateString()
   toDate?: string;
 
+  @ApiProperty({ description: 'Statut de la liste', required: false, example: 'IN_PROGRESS' })
+  @IsOptional()
+  @IsString()
+  status?: string;
+
   @ApiProperty({
     description: 'Items de la liste',
     type: [CreateShoppingListItemDto],

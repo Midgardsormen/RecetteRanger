@@ -30,14 +30,14 @@
   }
 </script>
 
-<div class="radio-group" class:radio-group--vertical={direction === 'vertical'}>
+<div class="radio-group" class:radio-group--vertical={direction === 'vertical'} role="radiogroup" aria-label={label}>
   {#if label}
-    <label class="radio-group__label">
+    <div class="radio-group__label">
       {label}
       {#if required}
         <span class="radio-group__required">*</span>
       {/if}
-    </label>
+    </div>
   {/if}
   <div class="radio-group__options" class:radio-group__options--vertical={direction === 'vertical'}>
     {#each options as option}

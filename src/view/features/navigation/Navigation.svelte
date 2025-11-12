@@ -4,17 +4,16 @@
   let { currentPage = '', isOpen = false, onClose, user = null }: { currentPage?: string; isOpen?: boolean; onClose?: () => void; user?: any } = $props();
 
   const navItems = [
-    { href: '/', label: 'Home', icon: '🏠' },
-    { href: '/recettes', label: 'Recipes', icon: '📖' },
-    { href: '/ingredients', label: 'Ingredients', icon: '🥗' },
+    { href: '/', label: 'Accueil', icon: '🏠' },
+    { href: '/recettes', label: 'Recettes', icon: '📖' },
+    { href: '/ingredients', label: 'Ingrédients', icon: '🥗' },
     { href: '/articles', label: 'Articles', icon: '🧴' },
-    { href: '/stores', label: 'Stores', icon: '🏪' },
-    { href: '/plannings', label: 'Meal Plans', icon: '📅' },
-    { href: '/shopping-lists', label: 'Shopping Lists', icon: '🛒' }
+    { href: '/stores', label: 'Enseignes', icon: '🏪' },
+    { href: '/plannings', label: 'Plannings', icon: '📅' },
+    { href: '/shopping-lists', label: 'Liste de course', icon: '🛒' }
   ];
 
-  // Navigation items for desktop (without Home)
-  const desktopNavItems = navItems.filter(item => item.href !== '/');
+
 
   // Check if user is authenticated
   const isAuthenticated = $derived(user !== null);
@@ -31,7 +30,7 @@
   <!-- Desktop horizontal navigation (visible >= 1024px) -->
   <nav class="nav-horizontal">
     <ul class="nav-horizontal__list">
-      {#each desktopNavItems as item, index}
+      {#each navItems as item, index}
         <li class="nav-horizontal__item" class:nav-horizontal__item--gap={index === 2}>
           <a
             href={item.href}
@@ -79,6 +78,7 @@
 
   // Desktop Horizontal Navigation
   .nav-horizontal {
+    @include retro-grain(0.3);
     position: sticky;
     top: 64px; // Stick below header
     background: $brand-secondary;
@@ -95,46 +95,47 @@
       list-style: none;
       margin: 0;
       padding: 0;
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) 200px repeat(3, 1fr);
       align-items: center;
       justify-content: center;
-      gap: $spacing-lg;
+      gap: $spacing-sm;
       max-width: $max-width-container;
       margin: 0 auto;
     }
 
-    &__item {
-      // Gap after the 3rd item (Articles)
-      &--gap {
-        margin-right: 200px;
-      }
-    }
-
     &__link {
-      display: flex;
+      display: block;
       align-items: center;
-      padding: $spacing-base $spacing-lg;
-      color: $color-text-secondary;
+      padding: $spacing-base $spacing-sm;
+      color: $color-text-inverse;
       text-decoration: none;
       border-radius: $radius-md;
       transition: all $transition-base;
       font-weight: $font-weight-medium;
+      text-transform: uppercase;
       white-space: nowrap;
-
+      text-align: center;
+      border: 5px solid transparent;
+      font-family: $font-family-heading;
+      text-shadow: $shadow-decorative-navigation;
+      
+      opacity: 0.9;
       &:hover {
-        background: rgba($brand-primary, 0.1);
-        color: $brand-primary;
+        border-bottom: 5px solid $color-permanent-geranium-lake;
+        color:$color-dutch-white;
+        text-shadow: $shadow-decorative-navigation-hover;
       }
 
       &--active {
-        background: $brand-primary;
-        color: $color-white;
-        font-weight: $font-weight-semibold;
+        border-bottom: 5px solid $color-permanent-geranium-lake;
+        color: $color-dutch-white;
+        text-shadow: $shadow-decorative-navigation-hover;
       }
     }
 
     &__label {
-      font-size: $font-size-base;
+      font-size: $font-size-lg;
     }
   }
 
