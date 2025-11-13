@@ -168,7 +168,7 @@
 {/if}
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .modal-overlay {
     position: fixed;
@@ -293,21 +293,21 @@
     }
 
     &::-webkit-scrollbar-track {
-      background: #f1f1f1;
+      background: $color-gray-100;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
+      background: $color-gray-200;
       border-radius: 4px;
 
       &:hover {
-        background: #a8a8a8;
+        background: $color-gray-400;
       }
     }
 
     // Firefox scrollbar
     scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #f1f1f1;
+    scrollbar-color: $color-gray-200 $color-gray-100;
   }
 
   .modal__footer {
@@ -354,7 +354,7 @@
       &:hover:not(:disabled) {
         background: $brand-secondary;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 12px rgba($brand-primary, 0.3);
       }
 
       &:disabled {
@@ -369,7 +369,7 @@
       color: $color-white;
 
       &:hover:not(:disabled) {
-        background: #e03e3e;
+        background: $color-danger-dark;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
       }

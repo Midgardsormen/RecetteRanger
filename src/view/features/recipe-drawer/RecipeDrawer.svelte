@@ -752,14 +752,15 @@
 />
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $danger-color: #f56565;
-  $success-color: #48bb78;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
+  @use '../../styles/variables' as *;
+  $primary-color: $brand-primary;
+  $secondary-color: $brand-secondary;
+  $danger-color: $color-danger;
+  $success-color: $color-success;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $border-color: $color-gray-200;
   $spacing-base: 1rem;
 
   .recipe-form {
@@ -795,7 +796,7 @@
   .help-text {
     margin: -0.5rem 0 0 0;
     padding: 0.75rem;
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba($brand-primary, 0.05);
     border-left: 3px solid $primary-color;
     border-radius: 4px;
     font-size: 0.9rem;
@@ -821,8 +822,8 @@
     align-items: center;
     gap: $spacing-base * 0.5;
     padding: $spacing-base * 0.5 $spacing-base * 0.75;
-    background: rgba(102, 126, 234, 0.1);
-    border: 1px solid rgba(102, 126, 234, 0.3);
+    background: rgba($brand-primary, 0.1);
+    border: 1px solid rgba($brand-primary, 0.3);
     border-radius: 20px;
     font-size: 0.9rem;
     color: $text-dark;
@@ -897,7 +898,7 @@
 
     &:hover:not(:disabled) {
       border-color: $primary-color;
-      background: rgba(102, 126, 234, 0.05);
+      background: rgba($brand-primary, 0.05);
     }
 
     &:disabled {
@@ -932,7 +933,7 @@
 
   .selected-ingredient {
     padding: $spacing-base;
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba($brand-primary, 0.05);
     border: 2px solid $border-color;
     border-radius: 8px;
     display: flex;
@@ -983,7 +984,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem;
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba($brand-primary, 0.05);
     border-radius: 8px;
     margin-top: 0.5rem;
 
@@ -1017,7 +1018,7 @@
 
   .step-item {
     padding: $spacing-base;
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba($brand-primary, 0.05);
     border: 2px solid $border-color;
     border-radius: 8px;
     display: flex;

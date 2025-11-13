@@ -31,3 +31,9 @@ export { default as Link } from './Link.svelte';
 
 // Typography Components
 export { default as Title } from './Title.svelte';
+
+// Feedback Components
+export { default as Loader } from './Loader.svelte';
+export { default as Badge } from './Badge.svelte';
+export { default as Tag } from './Tag.svelte';
+export { default as ProgressBar } from './ProgressBar.svelte';

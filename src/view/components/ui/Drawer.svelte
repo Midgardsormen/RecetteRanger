@@ -167,7 +167,7 @@
 {/if}
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .drawer-overlay {
     position: fixed;
@@ -298,7 +298,7 @@
     transition: all $transition-base;
 
     &:hover {
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba($brand-primary, 0.1);
       color: $brand-primary;
     }
 
@@ -365,17 +365,17 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
+      background: $color-gray-200;
       border-radius: $radius-sm;
 
       &:hover {
-        background: #a8a8a8;
+        background: $color-gray-400;
       }
     }
 
     // Firefox scrollbar
     scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 $color-gray-100;
+    scrollbar-color: $color-gray-200 $color-gray-100;
   }
 
   .drawer__footer {

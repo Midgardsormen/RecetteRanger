@@ -199,11 +199,12 @@
 </Layout>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
+  @use '../../styles/variables' as *;
+  $primary-color: $brand-primary;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $border-color: $color-gray-200;
   $spacing-base: 1rem;
 
   .settings-page {
@@ -270,7 +271,7 @@
 
   .info-box {
     padding: 1.5rem;
-    background: rgba(102, 126, 234, 0.08);
+    background: rgba($brand-primary, 0.08);
     border-left: 4px solid $primary-color;
     border-radius: 8px;
 
@@ -299,7 +300,7 @@
 
     &.disabled {
       opacity: 0.5;
-      background: #f9f9f9;
+      background: $color-gray-50;
     }
 
     &:hover {
@@ -364,7 +365,7 @@
     .slot-badge {
       display: inline-block;
       padding: 0.25rem 0.75rem;
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba($brand-primary, 0.1);
       color: $primary-color;
       border-radius: 12px;
       font-size: 0.75rem;

@@ -254,14 +254,17 @@
 </Layout>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $success-color: #48bb78;
-  $danger-color: #f56565;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
+  @use '../../styles/variables' as *;
+  @use 'sass:color';
+
+  $primary-color: $brand-primary;
+  $secondary-color: $brand-secondary;
+  $success-color: $color-success;
+  $danger-color: $color-danger;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $border-color: $color-gray-200;
   $shadow-light: rgba(0, 0, 0, 0.08);
   $spacing-base: 1rem;
 
@@ -303,7 +306,7 @@
 
     &__error {
       padding: $spacing-base;
-      background: #fee;
+      background: $color-background-danger;
       border: 1px solid $danger-color;
       border-radius: 8px;
       color: $danger-color;
@@ -312,10 +315,10 @@
 
     &__success {
       padding: $spacing-base;
-      background: #e6ffed;
+      background: $color-background-success;
       border: 1px solid $success-color;
       border-radius: 8px;
-      color: darken($success-color, 20%);
+      color: color.adjust($success-color, $lightness: -20%);
       margin-bottom: $spacing-base;
     }
 

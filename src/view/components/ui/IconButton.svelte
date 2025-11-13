@@ -36,7 +36,7 @@
 </button>
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .icon-button {
     display: inline-flex;

@@ -1,7 +1,8 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { Button } from '../../components/ui';
+  import { Button, IconButton, Tag } from '../../components/ui';
   import type { Recipe } from '../../types/recipe.types';
+  import { RecipeCategoryLabels, RecipeDifficultyLabels } from '../../types/recipe.types';
   import { UnitLabels } from '../../types/ingredient.types';
 
   // Recevoir les données du SSR
@@ -75,12 +76,21 @@
         <div class="recipe-title-section">
           <h1>{recipe.label}</h1>
 
+          <div class="recipe-tags">
+            <Tag variant="primary" size="small">
+              {RecipeCategoryLabels[recipe.category] || 'Non catégorisé'}
+            </Tag>
+            <Tag variant="info" size="small">
+              {RecipeDifficultyLabels[recipe.difficulty]}
+            </Tag>
+          </div>
+
           <div class="recipe-meta">
             <div class="meta-item servings-control">
               <span class="meta-icon">👥</span>
-              <button class="servings-btn" onclick={decrementServings} disabled={servings <= 1}>−</button>
+              <IconButton icon="−" onclick={decrementServings} disabled={servings <= 1} size="small" variant="ghost" />
               <span class="servings-value">{servings} {servings > 1 ? 'personnes' : 'personne'}</span>
-              <button class="servings-btn" onclick={incrementServings}>+</button>
+              <IconButton icon="+" onclick={incrementServings} size="small" variant="ghost" />
             </div>
             <div class="meta-item">
               <span class="meta-icon">⏱️</span>
@@ -279,6 +289,12 @@
     gap: 1.5rem;
   }
 
+  .recipe-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
   h1 {
     font-size: 2rem;
     margin: 0;
@@ -314,36 +330,6 @@
     border-radius: 12px;
   }
 
-  .servings-btn {
-    width: 32px;
-    height: 32px;
-    border: 2px solid var(--primary-color);
-    background: var(--surface-color);
-    color: var(--primary-color);
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover:not(:disabled) {
-      background: var(--primary-color);
-      color: white;
-      transform: scale(1.05);
-    }
-
-    &:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    &:active:not(:disabled) {
-      transform: scale(0.95);
-    }
-  }
 
   .servings-value {
     min-width: 100px;

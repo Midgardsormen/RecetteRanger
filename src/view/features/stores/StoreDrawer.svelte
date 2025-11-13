@@ -22,7 +22,7 @@
   // Formulaire
   let name = $state(store?.name || '');
   let logoUrl = $state(store?.logoUrl || '');
-  let color = $state(store?.color || '#667eea');
+  let color = $state(store?.color || '$brand-primary');
 
   // Détection de doublons
   let similarStores = $state<any[]>([]);
@@ -39,11 +39,11 @@
       if (store) {
         name = store.name;
         logoUrl = store.logoUrl || '';
-        color = store.color || '#667eea';
+        color = store.color || '$brand-primary';
       } else {
         name = initialName || '';
         logoUrl = '';
-        color = '#667eea';
+        color = '$brand-primary';
       }
       errors = {};
       similarStores = [];
@@ -117,7 +117,7 @@
       const data = {
         name: name.trim(),
         logoUrl: logoUrl.trim() || undefined,
-        color: color || '#667eea',
+        color: color || '$brand-primary',
       };
 
       if (store) {
@@ -207,7 +207,7 @@
         <Input
           id="color-text"
           bind:value={color}
-          placeholder="#667eea"
+          placeholder="$brand-primary"
           error={errors.color}
         />
       </div>
@@ -216,13 +216,14 @@
 </Drawer>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $warning-color: #ed8936;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
+  @use '../../styles/variables' as *;
+  $primary-color: $brand-primary;
+  $secondary-color: $brand-secondary;
+  $warning-color: $color-warning;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $border-color: $color-gray-200;
   $spacing-base: 1rem;
 
   .store-form {
@@ -268,7 +269,7 @@
 
   .duplicates-check {
     padding: $spacing-base;
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba($brand-primary, 0.1);
     border-radius: 8px;
     color: $primary-color;
     font-size: 0.9rem;

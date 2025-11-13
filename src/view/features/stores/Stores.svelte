@@ -239,13 +239,14 @@
 />
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $danger-color: #e53e3e;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
+  @use '../../styles/variables' as *;
+  $primary-color: $brand-primary;
+  $secondary-color: $brand-secondary;
+  $danger-color: $color-danger;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $border-color: $color-gray-200;
   $spacing-base: 1rem;
   $spacing-xs: $spacing-base * 0.5;
   $spacing-sm: $spacing-base * 0.75;

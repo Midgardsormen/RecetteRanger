@@ -40,7 +40,7 @@
     margin: 0;
     padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: #667eea;
+    background: $brand-primary;
     min-height: 100vh;
   }
 
@@ -61,7 +61,7 @@
   }
 
   h1 {
-    color: #667eea;
+    color: $brand-primary;
     font-size: 3rem;
     margin: 0 0 1rem 0;
     text-align: center;
@@ -70,12 +70,12 @@
   .message {
     text-align: center;
     font-size: 1.25rem;
-    color: #555;
+    color: $color-gray-500;
     margin-bottom: 2rem;
   }
 
   .counter {
-    background: #f7f7f7;
+    background: $color-gray-100;
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 2rem;
@@ -88,12 +88,12 @@
   }
 
   .counter strong {
-    color: #667eea;
+    color: $brand-primary;
     font-size: 1.5rem;
   }
 
   button {
-    background: #667eea;
+    background: $brand-primary;
     color: white;
     border: none;
     padding: 0.75rem 2rem;
@@ -104,9 +104,9 @@
   }
 
   button:hover {
-    background: #5568d3;
+    background: $brand-quaternary;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba($brand-primary, 0.4);
   }
 
   button:active {
@@ -114,12 +114,12 @@
   }
 
   .info {
-    border-top: 2px solid #f0f0f0;
+    border-top: 2px solid $color-gray-100;
     padding-top: 1.5rem;
   }
 
   .info h2 {
-    color: #333;
+    color: $color-gray-800;
     font-size: 1.5rem;
     margin: 0 0 1rem 0;
   }
@@ -133,6 +133,6 @@
   .info li {
     padding: 0.5rem 0;
     font-size: 1.1rem;
-    color: #666;
+    color: $color-gray-600;
   }
 </style>

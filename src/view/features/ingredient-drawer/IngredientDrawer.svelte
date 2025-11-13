@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Drawer, ImageUpload, Input, Select, Checkbox, RadioGroup } from '../../components/ui';
+  import { Drawer, ImageUpload, Input, Select, Checkbox, RadioGroup, Tag } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, CreateIngredientDto, SimilarIngredient } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, UnitLabels, MONTHS } from '../../types/ingredient.types';
@@ -312,14 +312,13 @@
         </p>
         <div class="months-grid">
           {#each MONTHS as { value, label }}
-            <label class="month-btn">
-              <input
-                type="checkbox"
-                checked={selectedMonths.has(value)}
-                onchange={() => toggleMonth(value)}
-              />
-              <span>{label}</span>
-            </label>
+            <Tag
+              variant={selectedMonths.has(value) ? 'success' : 'neutral'}
+              size="small"
+              onclick={() => toggleMonth(value)}
+            >
+              {label}
+            </Tag>
           {/each}
         </div>
       </div>
@@ -328,14 +327,15 @@
 </Drawer>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $danger-color: #f56565;
-  $warning-color: #ed8936;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
+  @use '../../styles/variables' as *;
+  $primary-color: $brand-primary;
+  $secondary-color: $brand-secondary;
+  $danger-color: $color-danger;
+  $warning-color: $color-warning;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $border-color: $color-gray-200;
   $spacing-base: 1rem;
 
   .ingredient-form {
@@ -421,7 +421,7 @@
 
     &:hover {
       border-color: $primary-color;
-      background: rgba(102, 126, 234, 0.05);
+      background: rgba($brand-primary, 0.05);
     }
 
     input {
@@ -470,7 +470,7 @@
 
   .duplicates-check {
     padding: $spacing-base;
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba($brand-primary, 0.1);
     border-radius: 8px;
     color: $primary-color;
     font-size: 0.9rem;

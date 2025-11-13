@@ -37,7 +37,7 @@
 </div>
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .search-bar {
     position: relative;

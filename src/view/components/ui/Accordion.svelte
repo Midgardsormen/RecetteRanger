@@ -50,7 +50,7 @@
 </div>
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .accordion {
     border: 2px solid $color-border-primary;

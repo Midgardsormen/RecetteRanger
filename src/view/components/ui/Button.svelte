@@ -35,7 +35,7 @@
 </button>
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .button {
     display: inline-flex;

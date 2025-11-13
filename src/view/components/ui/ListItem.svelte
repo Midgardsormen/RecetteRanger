@@ -114,14 +114,15 @@
 </div>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $danger-color: #f56565;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $text-light: #999;
-  $border-color: #e0e0e0;
+  @use '../../styles/variables' as *;
+  $primary-color: $brand-primary;
+  $secondary-color: $brand-secondary;
+  $danger-color: $color-danger;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $text-light: $color-gray-400;
+  $border-color: $color-gray-200;
   $shadow-light: rgba(0, 0, 0, 0.08);
   $spacing-base: 1rem;
   $transition-duration: 0.3s;
@@ -148,7 +149,7 @@
       &:focus-visible {
         outline: none;
         border-color: $primary-color;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        box-shadow: 0 0 0 3px rgba($brand-primary, 0.2);
       }
     }
   }
@@ -159,7 +160,7 @@
     max-height: 65px;
     border-radius: 8px;
     overflow: visible;
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba($brand-primary, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -217,7 +218,7 @@
 
   .list-item__badge {
     padding: $spacing-base * 0.2 $spacing-base * 0.4;
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba($brand-primary, 0.1);
     color: $primary-color;
     border-radius: 4px;
     font-size: 0.75rem;
@@ -251,13 +252,13 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+      box-shadow: 0 0 0 3px rgba($brand-primary, 0.2);
     }
 
     &--edit {
       &:hover {
         border-color: $primary-color;
-        background: rgba(102, 126, 234, 0.1);
+        background: rgba($brand-primary, 0.1);
       }
     }
 

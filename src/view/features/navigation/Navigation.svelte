@@ -74,7 +74,7 @@
 {/if}
 
 <style lang="scss">
-  @import '../../styles/_variables';
+  @use '../../styles/variables' as *;
 
   // Desktop Horizontal Navigation
   .nav-horizontal {

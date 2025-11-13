@@ -273,6 +273,8 @@
 </Drawer>
 
 <style lang="scss">
+  @use '../../../styles/variables' as *;
+
   .add-article-drawer {
     display: flex;
     flex-direction: column;
@@ -291,7 +293,7 @@
     color: var(--text-color);
 
     .required {
-      color: #f56565;
+      color: $color-danger;
       margin-left: 0.25rem;
     }
   }
@@ -299,7 +301,7 @@
   .error-message {
     margin: 0;
     font-size: 0.85rem;
-    color: #f56565;
+    color: $color-danger;
   }
 
   .units-grid {
@@ -311,7 +313,7 @@
     padding: 0.5rem;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    background: #f9fafb;
+    background: $color-gray-50;
   }
 
   .unit-checkbox {
@@ -326,8 +328,8 @@
     border: 1px solid transparent;
 
     &:hover {
-      border-color: #667eea;
-      background: rgba(102, 126, 234, 0.05);
+      border-color: $brand-primary;
+      background: rgba($brand-primary, 0.05);
     }
 
     input[type="checkbox"] {

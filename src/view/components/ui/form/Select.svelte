@@ -65,7 +65,7 @@
 </div>
 
 <style lang="scss">
-  @import '../../../styles/variables';
+  @use '../../../styles/variables' as *;
 
   .select-wrapper {
     display: flex;

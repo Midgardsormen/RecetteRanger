@@ -364,16 +364,17 @@
 </Layout>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $success-color: #48bb78;
-  $danger-color: #f56565;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $text-light: #999;
-  $border-color: #e0e0e0;
-  $shadow-primary: rgba(102, 126, 234, 0.3);
+  @use '../../styles/variables' as *;
+  $primary-color: $brand-primary;
+  $secondary-color: $brand-secondary;
+  $success-color: $color-success;
+  $danger-color: $color-danger;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $text-light: $color-gray-400;
+  $border-color: $color-gray-200;
+  $shadow-primary: rgba($brand-primary, 0.3);
   $shadow-light: rgba(0, 0, 0, 0.08);
   $spacing-base: 1rem;
   $breakpoint-mobile: 768px;
@@ -420,7 +421,7 @@
 
     &__error {
       padding: $spacing-base;
-      background: #fee;
+      background: $color-background-danger;
       border: 1px solid $danger-color;
       border-radius: 8px;
       color: $danger-color;
@@ -535,7 +536,7 @@
     display: inline-flex;
     align-items: center;
     padding: $spacing-base * 0.25 $spacing-base * 0.5;
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba($brand-primary, 0.1);
     color: $primary-color;
     border-radius: 6px;
     font-size: 0.8rem;
@@ -560,7 +561,7 @@
 
     &:hover {
       opacity: 1;
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba($brand-primary, 0.1);
     }
 
     &--delete {

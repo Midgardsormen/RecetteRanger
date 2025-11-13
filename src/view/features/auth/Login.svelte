@@ -83,7 +83,7 @@
 </div>
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .login-container {
     min-height: 100vh;

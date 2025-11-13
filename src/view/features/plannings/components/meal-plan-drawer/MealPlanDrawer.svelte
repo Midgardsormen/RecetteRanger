@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Drawer, Input, Select, Button } from '../../../../components/ui';
+  import { Drawer, Input, Select, Button, IconButton } from '../../../../components/ui';
   import { RecipeDrawer } from '../../../recipe-drawer';
   import { apiService } from '../../../../services/api.service';
   import type { MealSlot, MealSlotConfig, MealPlanDay, MealPlanItem, CreateMealPlanItemDto } from '../../../../types/meal-plan.types';
@@ -261,7 +261,7 @@
           {/if}
           <div class="recipe-info">
             <span class="recipe-name">{selectedRecipe.label}</span>
-            <button class="clear-btn" onclick={clearRecipe} type="button">✕ Changer</button>
+            <Button variant="ghost" size="small" onclick={clearRecipe}>✕ Changer</Button>
           </div>
         </div>
       {:else}
@@ -330,12 +330,14 @@
 />
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $danger-color: #f56565;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
+  @use '../../../../styles/variables' as *;
+
+  $primary-color: $brand-primary;
+  $danger-color: $color-danger;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $border-color: $color-gray-200;
   $spacing-base: 1rem;
 
   .meal-plan-form {
@@ -359,7 +361,7 @@
 
   .date-display {
     padding: $spacing-base;
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba($brand-primary, 0.1);
     border-radius: 8px;
     color: $primary-color;
     font-weight: 600;
@@ -372,7 +374,7 @@
     align-items: center;
     gap: $spacing-base * 0.5;
     padding: $spacing-base;
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba($brand-primary, 0.05);
     border-radius: 8px;
 
     input[type="checkbox"] {
@@ -400,7 +402,7 @@
     display: flex;
     gap: $spacing-base;
     padding: $spacing-base;
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba($brand-primary, 0.1);
     border-radius: 12px;
     align-items: center;
 
@@ -473,7 +475,7 @@
 
     &:hover {
       border-color: $primary-color;
-      background: rgba(102, 126, 234, 0.05);
+      background: rgba($brand-primary, 0.05);
     }
 
     .recipe-thumb {

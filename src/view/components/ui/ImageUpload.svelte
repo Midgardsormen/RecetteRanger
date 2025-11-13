@@ -161,7 +161,7 @@
       const canvas = cropper.getCroppedCanvas({
         maxWidth: 1200,
         maxHeight: 1200,
-        fillColor: '#fff',
+        fillColor: '$color-white',
       });
 
       if (!canvas) {
@@ -334,7 +334,7 @@
 </div>
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .image-upload {
     width: 100%;

@@ -147,7 +147,7 @@
 </div>
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .register-container {
     min-height: 100vh;

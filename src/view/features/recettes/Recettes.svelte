@@ -1,5 +1,6 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
+  import { Button } from '../../components/ui';
 
   let { recettes = [], user = null }: { recettes?: any[], user?: any } = $props();
 </script>
@@ -8,7 +9,7 @@
 <div id="recettes" class="recettes">
   <header class="recettes__header">
     <h1 class="recettes__title">📖 Mes recettes</h1>
-    <button class="recettes__btn">+ Ajouter une recette</button>
+    <Button variant="primary">+ Ajouter une recette</Button>
   </header>
 
   <div class="recettes__search">
@@ -18,10 +19,10 @@
       class="recettes__search-input"
     />
     <div class="recettes__filters">
-      <button class="recettes__filter-btn">Toutes</button>
-      <button class="recettes__filter-btn">Entrées</button>
-      <button class="recettes__filter-btn">Plats</button>
-      <button class="recettes__filter-btn">Desserts</button>
+      <Button variant="outlined" size="small">Toutes</Button>
+      <Button variant="outlined" size="small">Entrées</Button>
+      <Button variant="outlined" size="small">Plats</Button>
+      <Button variant="outlined" size="small">Desserts</Button>
     </div>
   </div>
 
@@ -30,7 +31,7 @@
       <div class="recettes__empty-icon">📖</div>
       <h2 class="recettes__empty-title">Aucune recette pour le moment</h2>
       <p class="recettes__empty-text">Commencez par ajouter votre première recette!</p>
-      <button class="recettes__btn">Ajouter une recette</button>
+      <Button variant="primary">Ajouter une recette</Button>
     </div>
   {:else}
     <div class="recettes__grid">
@@ -46,14 +47,15 @@
 </Layout>
 
 <style lang="scss">
+  @use '../../styles/variables' as *;
   // Variables
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
-  $shadow-primary: rgba(102, 126, 234, 0.3);
+  $primary-color: $brand-primary;
+  $secondary-color: $brand-secondary;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $border-color: $color-gray-200;
+  $shadow-primary: rgba($brand-primary, 0.3);
   $shadow-light: rgba(0, 0, 0, 0.08);
   $spacing-base: 1rem;
   $breakpoint-mobile: 768px;
@@ -85,23 +87,6 @@
       }
     }
 
-    // Element: btn
-    &__btn {
-      background: $primary-color;
-      color: $white;
-      border: none;
-      padding: $spacing-base * 0.75 $spacing-base * 1.5;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all $transition-duration ease;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px $shadow-primary;
-      }
-    }
 
     // Element: search
     &__search {
@@ -132,20 +117,6 @@
       flex-wrap: wrap;
     }
 
-    // Element: filter-btn
-    &__filter-btn {
-      padding: $spacing-base * 0.5 $spacing-base;
-      border: 2px solid $border-color;
-      background: $white;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all $transition-duration ease;
-
-      &:hover {
-        border-color: $primary-color;
-        color: $primary-color;
-      }
-    }
 
     // Element: empty
     &__empty {

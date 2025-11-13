@@ -79,7 +79,7 @@
 </div>
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .card {
     background: $color-card-background;

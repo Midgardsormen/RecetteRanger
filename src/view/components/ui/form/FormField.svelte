@@ -42,7 +42,7 @@
 </div>
 
 <style lang="scss">
-  @import '../../../styles/variables';
+  @use '../../../styles/variables' as *;
 
   .form-field {
     display: flex;

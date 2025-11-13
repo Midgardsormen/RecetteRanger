@@ -3,6 +3,8 @@
  * Centralized SCSS variables for the entire application
  */
 
+@use 'sass:color';
+
 // ============================================
 // BASE COLORS (Brand Colors)
 // ============================================
@@ -103,7 +105,7 @@ $color-button-primary-border: $brand-primary;
 $color-button-primary-hover-background: $brand-quaternary;
 $color-button-primary-hover-border: $brand-quaternary;
 $color-button-primary-hover-text:  $color-white;
-$color-button-primary-active-background: darken($brand-quaternary, 5%);
+$color-button-primary-active-background: color.adjust($brand-quaternary, $lightness: -5%);
 
 // Primary Inverse Button (pour fonds foncés)
 $color-button-primary-inverse-text: $brand-primary;
@@ -112,7 +114,7 @@ $color-button-primary-inverse-border: $color-white;
 $color-button-primary-inverse-hover-background: $color-dutch-white;
 $color-button-primary-inverse-hover-border: $color-dutch-white;
 $color-button-primary-inverse-hover-text: $brand-tertiary;
-$color-button-primary-inverse-active-background: darken($color-dutch-white, 5%);
+$color-button-primary-inverse-active-background: color.adjust($color-dutch-white, $lightness: -5%);
 
 // Secondary Button (pour fonds clairs)
 $color-button-secondary-text: $brand-primary;
@@ -132,9 +134,9 @@ $color-button-secondary-inverse-border: $color-dutch-white;
 $color-button-secondary-inverse-hover-background: $brand-primary;
 $color-button-secondary-inverse-hover-text: $color-white;
 $color-button-secondary-inverse-hover-border: $color-white;
-$color-button-secondary-inverse-active-background: darken($color-dutch-white, 5%);
+$color-button-secondary-inverse-active-background: color.adjust($color-dutch-white, $lightness: -5%);
 $color-button-secondary-inverse-active-text: $brand-tertiary;
-$color-button-secondary-inverse-active-border: darken($color-dutch-white, 5%);
+$color-button-secondary-inverse-active-border: color.adjust($color-dutch-white, $lightness: -5%);
 
 // Outlined Button (pour fonds clairs)
 $color-button-outlined-text: $brand-primary;
@@ -143,7 +145,7 @@ $color-button-outlined-border: $brand-primary;
 $color-button-outlined-hover-background: $color-gray-200;
 $color-button-outlined-hover-text:  $brand-quaternary;
 $color-button-outlined-hover-border: $brand-quaternary;
-$color-button-outlined-active-background: darken($color-gray-200, 5%);
+$color-button-outlined-active-background: color.adjust($color-gray-200, $lightness: -5%);
 $color-button-outlined-active-text: $brand-quaternary;
 
 // Outlined Inverse Button (pour fonds foncés)

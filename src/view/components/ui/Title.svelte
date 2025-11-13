@@ -32,7 +32,7 @@
 </svelte:element>
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .title {
     margin: 0;

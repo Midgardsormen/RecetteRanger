@@ -1,6 +1,6 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { Button } from '../../components/ui';
+  import { Button, IconButton, Badge } from '../../components/ui';
   import { GenerateShoppingListDrawer } from './components';
   import { apiService } from '../../services/api.service';
   import type { ShoppingList } from '../../types/shopping-list.types';
@@ -59,8 +59,14 @@
     return labels[status] || status;
   }
 
-  function getStatusClass(status: string): string {
-    return `status-${status.toLowerCase()}`;
+  function getStatusVariant(status: string): 'neutral' | 'info' | 'success' | 'warning' {
+    const variants = {
+      DRAFT: 'neutral' as const,
+      IN_PROGRESS: 'info' as const,
+      COMPLETED: 'success' as const,
+      ARCHIVED: 'warning' as const
+    };
+    return variants[status] || 'neutral';
   }
 
   // Charger les données au montage
@@ -102,16 +108,15 @@
             <div class="list-header">
               <h3>{list.name}</h3>
               <div class="list-header-actions">
-                <span class="status {getStatusClass(list.status)}">
+                <Badge variant={getStatusVariant(list.status)} size="small" pill>
                   {getStatusLabel(list.status)}
-                </span>
-                <button
-                  class="delete-list-btn"
+                </Badge>
+                <IconButton
+                  icon="🗑️"
                   onclick={(e) => handleDeleteList(e, list.id)}
-                  title="Supprimer cette liste"
-                >
-                  🗑️
-                </button>
+                  size="small"
+                  variant="danger"
+                />
               </div>
             </div>
             <div class="list-info">
@@ -141,6 +146,8 @@
 />
 
 <style lang="scss">
+  @use '../../styles/variables' as *;
+
   .shopping-lists {
     max-width: 1200px;
     margin: 0 auto;
@@ -238,7 +245,7 @@
 
     &:hover {
       transform: translateY(-4px);
-      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+      box-shadow: 0 4px 16px rgba($brand-primary, 0.2);
     }
 
     .list-header {
@@ -269,23 +276,23 @@
         white-space: nowrap;
 
         &.status-draft {
-          background: #f3f4f6;
-          color: #6b7280;
+          background: $color-gray-100;
+          color: $color-gray-500;
         }
 
         &.status-in_progress {
-          background: #dbeafe;
-          color: #1e40af;
+          background: $color-background-info;
+          color: $color-info-dark;
         }
 
         &.status-completed {
-          background: #d1fae5;
-          color: #065f46;
+          background: $color-success-light;
+          color: $color-success-dark;
         }
 
         &.status-archived {
-          background: #f3f4f6;
-          color: #9ca3af;
+          background: $color-gray-100;
+          color: $color-gray-400;
         }
       }
 

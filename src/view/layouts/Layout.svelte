@@ -52,8 +52,8 @@
 </div>
 
 <style lang="scss">
+  @use '../styles/variables' as *;
   @import '../styles/fonts.css';
-  @import '../styles/_variables';
 
   // Global styles
   :global(body) {

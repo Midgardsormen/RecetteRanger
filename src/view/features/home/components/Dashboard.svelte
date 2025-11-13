@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Title, Tile, Link } from '../../../components/ui';
+  import { Title, Tile, Link, Loader, ProgressBar } from '../../../components/ui';
   import { apiService } from '../../../services/api.service';
 
   let { user }: { user: any } = $props();
@@ -76,7 +76,7 @@
   </div>
 
   {#if isLoading}
-    <div class="dashboard__loading">Chargement...</div>
+    <Loader size="large" message="Chargement de votre tableau de bord..." />
   {:else}
     <!-- Dashboard Tiles -->
     <div class="dashboard__grid">
@@ -176,9 +176,7 @@
                   <p class="dashboard__shopping-list-name">{list.name}</p>
                   <div class="dashboard__shopping-list-stats">
                     <p class="dashboard__shopping-list-count">{checkedItems} article{checkedItems > 1 ? 's' : ''} acheté{checkedItems > 1 ? 's' : ''} sur {totalItems}</p>
-                    <div class="dashboard__shopping-progress">
-                      <div class="dashboard__shopping-progress-bar" style="width: {progress}%"></div>
-                    </div>
+                    <ProgressBar value={checkedItems} max={totalItems} size="small" variant="success" />
                   </div>
                 </a>
               {/each}
@@ -196,7 +194,7 @@
 </div>
 
 <style lang="scss">
-  @import '../../../styles/variables';
+  @use '../../../styles/variables' as *;
 
   // Block: dashboard
   .dashboard {
@@ -679,20 +677,6 @@
       font-size: $font-size-sm;
       font-weight: $font-weight-semibold;
       color: $color-text-secondary;
-    }
-
-    &__shopping-progress {
-      height: 8px;
-      background: rgba($color-text-secondary, 0.2);
-      border-radius: $radius-sm;
-      overflow: hidden;
-    }
-
-    &__shopping-progress-bar {
-      height: 100%;
-      background: $brand-primary;
-      border-radius: $radius-sm;
-      transition: width $transition-base;
     }
   }
 </style>

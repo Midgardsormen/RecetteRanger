@@ -39,7 +39,7 @@
 </header>
 
 <style lang="scss">
-  @import '../styles/_variables';
+  @use '../styles/variables' as *;
 
   .header {
     

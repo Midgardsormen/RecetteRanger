@@ -40,7 +40,7 @@
 </Modal>
 
 <style lang="scss">
-  @import '../../styles/variables';
+  @use '../../styles/variables' as *;
 
   .confirm-message {
     font-size: $font-size-base;

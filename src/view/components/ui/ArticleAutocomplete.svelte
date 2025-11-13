@@ -193,6 +193,8 @@
 </div>
 
 <style lang="scss">
+  @import '../../styles/variables';
+
   .article-autocomplete {
     position: relative;
     width: 100%;
@@ -216,7 +218,7 @@
     left: 0;
     right: 0;
     margin-top: 0.25rem;
-    background: white;
+    background: $color-white;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -229,7 +231,7 @@
     width: 100%;
     padding: 0.75rem 1rem;
     border: none;
-    background: white;
+    background: $color-white;
     text-align: left;
     cursor: pointer;
     display: flex;
@@ -239,7 +241,7 @@
 
     &:hover,
     &.selected {
-      background: #f3f4f6;
+      background: $color-gray-50;
     }
 
     &:first-child {

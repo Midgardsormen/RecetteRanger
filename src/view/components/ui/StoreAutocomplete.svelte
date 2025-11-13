@@ -145,7 +145,7 @@
                   {#if store.logoUrl}
                     <img src={store.logoUrl} alt={store.name} class="store-logo" />
                   {:else}
-                    <div class="store-placeholder" style="background: {store.color || '#667eea'}">
+                    <div class="store-placeholder" style="background: {store.color || '$brand-primary'}">
                       {store.name.charAt(0).toUpperCase()}
                     </div>
                   {/if}
@@ -174,10 +174,11 @@
 </div>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $border-color: #e0e0e0;
-  $white: #fff;
-  $text-dark: #333;
+  @use '../../styles/variables' as *;
+  $primary-color: $brand-primary;
+  $border-color: $color-gray-200;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
   $shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   .store-autocomplete {
@@ -205,7 +206,7 @@
     }
 
     &:disabled {
-      background: #f5f5f5;
+      background: $color-gray-100;
       cursor: not-allowed;
     }
   }
@@ -217,7 +218,7 @@
     border: none;
     cursor: pointer;
     font-size: 1.2rem;
-    color: #999;
+    color: $color-gray-400;
     padding: 0.25rem;
     transition: color 0.2s;
 
@@ -270,7 +271,7 @@
     transition: background 0.2s;
 
     &:hover {
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba($brand-primary, 0.1);
     }
   }
 
@@ -305,8 +306,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f5f5f5;
-    color: #dc2626;
+    background: $color-gray-100;
+    color: $color-danger;
     font-weight: bold;
     font-size: 1.2rem;
   }
@@ -321,7 +322,7 @@
     }
 
     .store-name {
-      color: #666;
+      color: $color-gray-600;
       font-style: italic;
     }
   }
@@ -338,7 +339,7 @@
 
   .no-results-text {
     margin: 0 0 0.75rem 0;
-    color: #666;
+    color: $color-gray-600;
     font-size: 0.9rem;
   }
 
@@ -356,7 +357,7 @@
 
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 4px 12px rgba($brand-primary, 0.3);
     }
 
     &:active {

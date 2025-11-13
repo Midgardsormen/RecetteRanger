@@ -223,6 +223,8 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
 />
 
 <style lang="scss">
+  @use '../../../styles/variables' as *;
+
   .select-article-drawer {
     display: flex;
     flex-direction: column;
@@ -301,7 +303,7 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
   .change-article-btn {
     background: none;
     border: none;
-    color: #667eea;
+    color: $brand-primary;
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
@@ -310,7 +312,7 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
     transition: all 0.2s;
 
     &:hover {
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba($brand-primary, 0.1);
       text-decoration: underline;
     }
   }
@@ -320,7 +322,7 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
     align-items: center;
     gap: 1rem;
     padding: 1rem;
-    background: #f9fafb;
+    background: $color-gray-50;
     border-radius: 8px;
     border: 1px solid var(--border-color);
   }
@@ -336,7 +338,7 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
     width: 56px;
     height: 56px;
     border-radius: 8px;
-    background: #667eea;
+    background: $brand-primary;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -400,8 +402,8 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
     text-align: left;
 
     &:hover {
-      border-color: #667eea;
-      background: rgba(102, 126, 234, 0.05);
+      border-color: $brand-primary;
+      background: rgba($brand-primary, 0.05);
       transform: translateX(4px);
     }
 
@@ -422,7 +424,7 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    background: #667eea;
+    background: $brand-primary;
     display: flex;
     align-items: center;
     justify-content: center;

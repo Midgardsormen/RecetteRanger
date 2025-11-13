@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../../../types/meal-plan.types';
-  import { Button } from '../../../../components/ui';
+  import { Button, IconButton, Badge } from '../../../../components/ui';
 
   interface Props {
     view?: CalendarView;
@@ -174,27 +174,27 @@
     </h2>
 
     <div class="view-switcher">
-      <button
-        class="view-btn"
-        class:active={view === 'day'}
+      <Button
+        variant={view === 'day' ? 'primary' : 'outlined'}
+        size="small"
         onclick={() => handleViewChange('day')}
       >
         Jour
-      </button>
-      <button
-        class="view-btn"
-        class:active={view === 'week'}
+      </Button>
+      <Button
+        variant={view === 'week' ? 'primary' : 'outlined'}
+        size="small"
         onclick={() => handleViewChange('week')}
       >
         Semaine
-      </button>
-      <button
-        class="view-btn"
-        class:active={view === 'month'}
+      </Button>
+      <Button
+        variant={view === 'month' ? 'primary' : 'outlined'}
+        size="small"
         onclick={() => handleViewChange('month')}
       >
         Mois
-      </button>
+      </Button>
     </div>
   </div>
 
@@ -232,31 +232,27 @@
               <div class="meal-preview-item">
                 <div class="meal-info">
                   {#if item.isExceptional && item.customSlotName}
-                    <span class="meal-badge exceptional">{item.customSlotName}</span>
+                    <Badge variant="warning" size="small">{item.customSlotName}</Badge>
                   {:else}
-                    <span class="meal-badge">{slotConfigs.find(c => c.slot === item.slot)?.label || item.slot}</span>
+                    <Badge variant="primary" size="small">{slotConfigs.find(c => c.slot === item.slot)?.label || item.slot}</Badge>
                   {/if}
                   {#if item.recipe}
                     <span class="recipe-name">{item.recipe.label}</span>
                   {/if}
                 </div>
                 <div class="meal-actions">
-                  <button
-                    class="meal-action-btn edit"
+                  <IconButton
+                    icon="✏️"
                     onclick={(e) => { e.stopPropagation(); onMealEdit?.(item); }}
-                    title="Éditer"
-                    type="button"
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    class="meal-action-btn delete"
+                    size="small"
+                    variant="ghost"
+                  />
+                  <IconButton
+                    icon="🗑️"
                     onclick={(e) => { e.stopPropagation(); onMealDelete?.(item); }}
-                    title="Supprimer"
-                    type="button"
-                  >
-                    🗑️
-                  </button>
+                    size="small"
+                    variant="danger"
+                  />
                 </div>
               </div>
             {/each}
@@ -271,14 +267,16 @@
 </div>
 
 <style lang="scss">
-  $primary-color: #667eea;
-  $secondary-color: #764ba2;
-  $success-color: #48bb78;
-  $white: #fff;
-  $text-dark: #333;
-  $text-gray: #666;
-  $border-color: #e0e0e0;
-  $today-color: #fbbf24;
+  @use '../../../../styles/variables' as *;
+
+  $primary-color: $brand-primary;
+  $secondary-color: $brand-secondary;
+  $success-color: $color-success;
+  $white: $color-white;
+  $text-dark: $color-gray-800;
+  $text-gray: $color-gray-600;
+  $border-color: $color-gray-200;
+  $today-color: $color-warning;
   $spacing-base: 1rem;
 
   .calendar {
@@ -315,7 +313,7 @@
   .view-switcher {
     display: flex;
     gap: $spacing-base * 0.25;
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba($brand-primary, 0.1);
     padding: $spacing-base * 0.25;
     border-radius: 8px;
   }
@@ -332,7 +330,7 @@
     transition: all 0.2s;
 
     &:hover {
-      background: rgba(102, 126, 234, 0.15);
+      background: rgba($brand-primary, 0.15);
       color: $primary-color;
     }
 
@@ -382,7 +380,7 @@
 
     &:hover {
       border-color: $primary-color;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      box-shadow: 0 4px 12px rgba($brand-primary, 0.15);
       transform: translateY(-2px);
     }
 
@@ -401,7 +399,7 @@
     }
 
     &.has-meals {
-      background: rgba(102, 126, 234, 0.03);
+      background: rgba($brand-primary, 0.03);
     }
   }
 
@@ -435,13 +433,13 @@
     justify-content: space-between;
     gap: $spacing-base * 0.5;
     padding: $spacing-base * 0.5;
-    background: rgba(102, 126, 234, 0.08);
+    background: rgba($brand-primary, 0.08);
     border-radius: 6px;
     font-size: 0.85rem;
     transition: background 0.2s;
 
     &:hover {
-      background: rgba(102, 126, 234, 0.12);
+      background: rgba($brand-primary, 0.12);
     }
   }
 
@@ -480,7 +478,7 @@
 
     &.edit {
       &:hover {
-        background: rgba(102, 126, 234, 0.2);
+        background: rgba($brand-primary, 0.2);
       }
     }
 
@@ -488,22 +486,6 @@
       &:hover {
         background: rgba(245, 101, 101, 0.2);
       }
-    }
-  }
-
-  .meal-badge {
-    display: inline-block;
-    padding: $spacing-base * 0.25 $spacing-base * 0.5;
-    background: $primary-color;
-    color: $white;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    align-self: flex-start;
-
-    &.exceptional {
-      background: $success-color;
     }
   }
 

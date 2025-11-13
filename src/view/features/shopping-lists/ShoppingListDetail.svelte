@@ -1,6 +1,6 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { Button, Input, ArticleAutocomplete, StoreAutocomplete, Select } from '../../components/ui';
+  import { Button, IconButton, Input, ArticleAutocomplete, StoreAutocomplete, Select, ProgressBar } from '../../components/ui';
   import { SelectArticleDrawer } from './components';
   import { StoreDrawer } from '../stores';
   import { apiService } from '../../services/api.service';
@@ -529,12 +529,14 @@
       </div>
 
       <div class="progress-section">
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: {stats().percentage}%"></div>
-        </div>
-        <p class="progress-text">
-          {stats().checked} / {stats().total} articles ({stats().percentage}%)
-        </p>
+        <ProgressBar
+          value={stats().checked}
+          max={stats().total}
+          size="medium"
+          variant="success"
+          showLabel={true}
+          label="{stats().checked} / {stats().total} articles"
+        />
       </div>
 
       <div class="add-item-section">
@@ -626,18 +628,18 @@
                             class="edit-unit-input"
                           />
                           <div class="edit-actions">
-                            <button
-                              class="save-btn"
+                            <IconButton
+                              icon="✓"
                               onclick={() => saveItemQuantity(item.id)}
-                            >
-                              ✓
-                            </button>
-                            <button
-                              class="cancel-btn"
+                              size="small"
+                              variant="success"
+                            />
+                            <IconButton
+                              icon="✕"
                               onclick={cancelEditingItem}
-                            >
-                              ✕
-                            </button>
+                              size="small"
+                              variant="ghost"
+                            />
                           </div>
                         </div>
                       {:else}
@@ -661,13 +663,12 @@
                             onCreateNew={(searchValue) => handleCreateNewStore(item.id, searchValue)}
                             placeholder="Choisir une enseigne..."
                           />
-                          <button
-                            class="cancel-btn-small"
+                          <IconButton
+                            icon="✕"
                             onclick={cancelEditingStore}
-                            title="Annuler"
-                          >
-                            ✕
-                          </button>
+                            size="small"
+                            variant="ghost"
+                          />
                         </div>
                       {:else}
                         <div class="item-store-display" onclick={() => startEditingStore(item)}>
@@ -684,13 +685,12 @@
                       {/if}
                     </div>
 
-                    <button
-                      class="delete-btn"
+                    <IconButton
+                      icon="🗑️"
                       onclick={() => deleteItem(item.id)}
-                      title="Supprimer"
-                    >
-                      🗑️
-                    </button>
+                      size="small"
+                      variant="danger"
+                    />
                   </div>
                 {/each}
               </div>
@@ -766,20 +766,18 @@
                           class="edit-unit-input"
                         />
                         <div class="edit-actions">
-                          <button
-                            class="save-btn"
+                          <IconButton
+                            icon="✓"
                             onclick={() => saveItemQuantity(item.id)}
-                            title="Enregistrer"
-                          >
-                            ✓
-                          </button>
-                          <button
-                            class="cancel-btn"
+                            size="small"
+                            variant="success"
+                          />
+                          <IconButton
+                            icon="✕"
                             onclick={cancelEditingItem}
-                            title="Annuler"
-                          >
-                            ✕
-                          </button>
+                            size="small"
+                            variant="ghost"
+                          />
                         </div>
                       </div>
                     {:else}
@@ -803,13 +801,12 @@
                           onCreateNew={(searchValue) => handleCreateNewStore(item.id, searchValue)}
                           placeholder="Choisir une enseigne..."
                         />
-                        <button
-                          class="cancel-btn-small"
+                        <IconButton
+                          icon="✕"
                           onclick={cancelEditingStore}
-                          title="Annuler"
-                        >
-                          ✕
-                        </button>
+                          size="small"
+                          variant="ghost"
+                        />
                       </div>
                     {:else}
                       <div class="item-store-display" onclick={() => startEditingStore(item)}>
@@ -825,13 +822,12 @@
                       <p class="item-note">{item.note}</p>
                     {/if}
                   </div>
-                  <button
-                    class="delete-btn"
+                  <IconButton
+                    icon="🗑️"
                     onclick={() => deleteItem(item.id)}
-                    title="Supprimer"
-                  >
-                    🗑️
-                  </button>
+                    size="small"
+                    variant="danger"
+                  />
                 </div>
                     {/each}
                   </div>
@@ -861,6 +857,8 @@
   />
 </Layout>
 <style lang="scss">
+  @use '../../styles/variables' as *;
+
   .shopping-list-detail {
     max-width: 800px;
     margin: 0 auto;
@@ -899,7 +897,7 @@
   }
 
   .error {
-    color: #c33;
+    color: $color-danger-dark;
   }
 
   .header {
@@ -923,26 +921,7 @@
   }
 
   .progress-section {
-    .progress-bar {
-      width: 100%;
-      height: 12px;
-      background: #e5e7eb;
-      border-radius: 6px;
-      overflow: hidden;
-
-      .progress-fill {
-        height: 100%;
-        background: #667eea;
-        transition: width 0.3s ease;
-      }
-    }
-
-    .progress-text {
-      margin: 0.5rem 0 0 0;
-      text-align: center;
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-    }
+    margin: 1rem 0;
   }
 
   .add-item-section {
@@ -968,7 +947,7 @@
     gap: 1rem;
     flex-wrap: wrap;
     padding: 1rem;
-    background: #f9fafb;
+    background: $color-gray-50;
     border-radius: 8px;
 
     .filter-group {
@@ -978,20 +957,20 @@
 
       label {
         font-weight: 600;
-        color: #333;
+        color: $color-gray-800;
         font-size: 0.95rem;
       }
 
       .filter-select {
         padding: 0.5rem 1rem;
-        border: 2px solid #e0e0e0;
+        border: 2px solid $color-gray-200;
         border-radius: 6px;
         font-size: 0.95rem;
         cursor: pointer;
 
         &:focus {
           outline: none;
-          border-color: #667eea;
+          border-color: $brand-primary;
         }
       }
     }
@@ -1019,8 +998,8 @@
 
       // Drop zone visual feedback
       &[data-drop-target="true"] {
-        background: rgba(102, 126, 234, 0.1);
-        border: 2px dashed #667eea;
+        background: rgba($brand-primary, 0.1);
+        border: 2px dashed $brand-primary;
         padding: 0.5rem;
       }
     }
@@ -1033,7 +1012,7 @@
 
     // Drop zone visual feedback
     &[data-drop-target="true"] {
-      background: rgba(102, 126, 234, 0.05);
+      background: rgba($brand-primary, 0.05);
       border-left-width: 6px;
       padding: 0.5rem;
       border-radius: 8px;
@@ -1082,8 +1061,8 @@
 
         // Drop zone visual feedback for aisle subgroups
         &[data-drop-target="true"] {
-          background: rgba(102, 126, 234, 0.1);
-          border: 2px dashed #667eea;
+          background: rgba($brand-primary, 0.1);
+          border: 2px dashed $brand-primary;
           padding: 0.5rem;
         }
       }
@@ -1141,14 +1120,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #9ca3af;
+      color: $color-gray-400;
       font-size: 1rem;
       cursor: grab;
       user-select: none;
       transition: all 0.2s ease;
 
       &:hover {
-        color: #667eea;
+        color: $brand-primary;
         transform: scale(1.1);
       }
 
@@ -1234,18 +1213,18 @@
           }
 
           .save-btn {
-            color: #059669;
+            color: $color-success-dark;
 
             &:hover {
-              background: #d1fae5;
+              background: $color-success-light;
             }
           }
 
           .cancel-btn {
-            color: #dc2626;
+            color: $color-danger;
 
             &:hover {
-              background: #fee2e2;
+              background: $color-danger-light;
             }
           }
         }
@@ -1263,7 +1242,7 @@
 
       .item-store {
         font-size: 0.85rem;
-        color: #667eea;
+        color: $brand-primary;
         font-weight: 600;
       }
 
@@ -1291,11 +1270,11 @@
           font-size: 1.2rem;
           padding: 0.25rem 0.5rem;
           border-radius: 4px;
-          color: #dc2626;
+          color: $color-danger;
           transition: background 0.2s;
 
           &:hover {
-            background: #fee2e2;
+            background: $color-danger-light;
           }
         }
       }
@@ -1327,13 +1306,13 @@
   // Animations pour le feedback de déplacement d'article
   @keyframes storeFlash {
     0% {
-      background: rgba(102, 126, 234, 0.15);
+      background: rgba($brand-primary, 0.15);
       transform: scale(1);
     }
     50% {
-      background: rgba(102, 126, 234, 0.25);
+      background: rgba($brand-primary, 0.25);
       transform: scale(1.01);
-      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 4px 20px rgba($brand-primary, 0.3);
     }
     100% {
       background: transparent;
@@ -1349,7 +1328,7 @@
     }
     50% {
       transform: scale(1.05);
-      color: #667eea;
+      color: $brand-primary;
     }
     100% {
       transform: scale(1);

@@ -145,6 +145,8 @@
 </Drawer>
 
 <style lang="scss">
+  @import '../../../styles/variables';
+
   .generate-form {
     display: flex;
     flex-direction: column;
@@ -183,10 +185,10 @@
 
   .error-message {
     padding: 1rem;
-    background: #fee;
-    border: 1px solid #fcc;
+    background: $color-background-danger;
+    border: 1px solid $color-danger-light;
     border-radius: 8px;
-    color: #c33;
+    color: $color-danger-dark;
     font-size: 0.95rem;
   }
 </style>
