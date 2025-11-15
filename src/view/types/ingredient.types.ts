@@ -130,6 +130,14 @@ export interface CheckDuplicatesResponse {
 }
 
 // Labels français pour les enums
+export type BadgeVariant =
+  // Semantic colors
+  | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'
+  // Extended palette
+  | 'red' | 'orange' | 'amber' | 'yellow' | 'lime' | 'green' | 'emerald'
+  | 'teal' | 'cyan' | 'sky' | 'blue' | 'indigo' | 'violet' | 'purple'
+  | 'fuchsia' | 'pink' | 'rose';
+
 export const StoreAisleLabels: Record<StoreAisle, string> = {
   [StoreAisle.FRUITS_ET_LEGUMES]: 'Fruits et légumes',
   [StoreAisle.BOUCHERIE]: 'Boucherie',
@@ -185,6 +193,61 @@ export const StoreAisleLabels: Record<StoreAisle, string> = {
   [StoreAisle.SAISONNIER]: 'Saisonnier',
 };
 
+export const StoreAisleColors: Record<StoreAisle, BadgeVariant> = {
+  [StoreAisle.FRUITS_ET_LEGUMES]: 'green',
+  [StoreAisle.BOUCHERIE]: 'red',
+  [StoreAisle.VOLAILLE]: 'orange',
+  [StoreAisle.CHARCUTERIE]: 'rose',
+  [StoreAisle.POISSONNERIE]: 'cyan',
+  [StoreAisle.ROTISSERIE]: 'amber',
+  [StoreAisle.BOULANGERIE]: 'yellow',
+  [StoreAisle.PATISSERIE]: 'pink',
+  [StoreAisle.FROMAGERIE]: 'lime',
+  [StoreAisle.TRAITEUR]: 'purple',
+  [StoreAisle.PRODUITS_LAITIERS]: 'sky',
+  [StoreAisle.OEUFS]: 'yellow',
+  [StoreAisle.SURGELES]: 'cyan',
+  [StoreAisle.EPICERIE_SALEE]: 'amber',
+  [StoreAisle.PATES_RIZ_CEREALES]: 'yellow',
+  [StoreAisle.CONSERVES]: 'orange',
+  [StoreAisle.SAUCES_CONDIMENTS]: 'red',
+  [StoreAisle.HUILES_VINAIGRES]: 'lime',
+  [StoreAisle.EPICES_AIDES_CULINAIRES]: 'orange',
+  [StoreAisle.PLATS_CUISINES]: 'violet',
+  [StoreAisle.SNACKING]: 'amber',
+  [StoreAisle.EPICERIE_SUCREE]: 'pink',
+  [StoreAisle.BISCUITS_GATEAUX]: 'rose',
+  [StoreAisle.CHOCOLATS_CONFISERIES]: 'fuchsia',
+  [StoreAisle.PETIT_DEJEUNER]: 'amber',
+  [StoreAisle.CAFE_THE]: 'emerald',
+  [StoreAisle.EAUX]: 'blue',
+  [StoreAisle.SODAS_JUS]: 'orange',
+  [StoreAisle.BIERES]: 'amber',
+  [StoreAisle.VINS_SPIRITUEUX]: 'purple',
+  [StoreAisle.PRODUITS_BIO]: 'green',
+  [StoreAisle.SANS_GLUTEN_DIETETIQUE]: 'lime',
+  [StoreAisle.BEBE]: 'pink',
+  [StoreAisle.ANIMALERIE]: 'orange',
+  [StoreAisle.ENTRETIEN_MAISON]: 'teal',
+  [StoreAisle.LESSIVE_SOIN_LINGE]: 'sky',
+  [StoreAisle.PAPIER_HYGIENE_MENAGERE]: 'cyan',
+  [StoreAisle.HYGIENE_BEAUTE]: 'rose',
+  [StoreAisle.PARAPHARMACIE]: 'emerald',
+  [StoreAisle.PAPETERIE_FOURNITURES]: 'indigo',
+  [StoreAisle.PRESSE_LIVRES]: 'violet',
+  [StoreAisle.MAISON_DECO]: 'purple',
+  [StoreAisle.ARTS_DE_LA_TABLE]: 'fuchsia',
+  [StoreAisle.TEXTILE]: 'pink',
+  [StoreAisle.ELECTROMENAGER]: 'neutral',
+  [StoreAisle.MULTIMEDIA_HIGH_TECH]: 'indigo',
+  [StoreAisle.BRICOLAGE]: 'orange',
+  [StoreAisle.AUTO_MOBILITE]: 'neutral',
+  [StoreAisle.JARDIN_PLANTES]: 'green',
+  [StoreAisle.FLEURS]: 'pink',
+  [StoreAisle.JEUX_JOUETS]: 'rose',
+  [StoreAisle.SAISONNIER]: 'violet',
+};
+
 export const UnitLabels: Record<Unit, string> = {
   [Unit.PINCEE]: 'pincée',
   [Unit.GRAMME]: 'g',
@@ -220,17 +283,55 @@ export const UnitLabels: Record<Unit, string> = {
   [Unit.FLACON]: 'flacon',
 };
 
+export type TagVariant =
+  // Semantic colors
+  | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'
+  // Extended palette
+  | 'red' | 'orange' | 'amber' | 'yellow' | 'lime' | 'green' | 'emerald'
+  | 'teal' | 'cyan' | 'sky' | 'blue' | 'indigo' | 'violet' | 'purple'
+  | 'fuchsia' | 'pink' | 'rose';
+
+export enum Season {
+  SPRING = 'SPRING',
+  SUMMER = 'SUMMER',
+  AUTUMN = 'AUTUMN',
+  WINTER = 'WINTER',
+}
+
+export const SeasonColors: Record<Season, TagVariant> = {
+  [Season.SPRING]: 'green',
+  [Season.SUMMER]: 'amber',
+  [Season.AUTUMN]: 'red',
+  [Season.WINTER]: 'blue',
+};
+
+// Mapping mois -> saison
+export const MonthToSeason: Record<number, Season> = {
+  1: Season.WINTER,
+  2: Season.WINTER,
+  3: Season.SPRING,
+  4: Season.SPRING,
+  5: Season.SPRING,
+  6: Season.SUMMER,
+  7: Season.SUMMER,
+  8: Season.SUMMER,
+  9: Season.AUTUMN,
+  10: Season.AUTUMN,
+  11: Season.AUTUMN,
+  12: Season.WINTER,
+};
+
 export const MONTHS = [
-  { value: 1, label: 'Janvier' },
-  { value: 2, label: 'Février' },
-  { value: 3, label: 'Mars' },
-  { value: 4, label: 'Avril' },
-  { value: 5, label: 'Mai' },
-  { value: 6, label: 'Juin' },
-  { value: 7, label: 'Juillet' },
-  { value: 8, label: 'Août' },
-  { value: 9, label: 'Septembre' },
-  { value: 10, label: 'Octobre' },
-  { value: 11, label: 'Novembre' },
-  { value: 12, label: 'Décembre' },
+  { value: 1, label: 'Janvier', abbr: 'JAN' },
+  { value: 2, label: 'Février', abbr: 'FEV' },
+  { value: 3, label: 'Mars', abbr: 'MAR' },
+  { value: 4, label: 'Avril', abbr: 'AVR' },
+  { value: 5, label: 'Mai', abbr: 'MAI' },
+  { value: 6, label: 'Juin', abbr: 'JUI' },
+  { value: 7, label: 'Juillet', abbr: 'JUL' },
+  { value: 8, label: 'Août', abbr: 'AOU' },
+  { value: 9, label: 'Septembre', abbr: 'SEP' },
+  { value: 10, label: 'Octobre', abbr: 'OCT' },
+  { value: 11, label: 'Novembre', abbr: 'NOV' },
+  { value: 12, label: 'Décembre', abbr: 'DEC' },
 ];

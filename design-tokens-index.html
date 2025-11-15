@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Tokens - RecetteRanger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f9fafb;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #244428 0%, #132315 100%);
+            color: white;
+            padding: 4rem 2rem;
+            margin-bottom: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .description {
+            font-size: 1rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .nav-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: #244428;
+        }
+
+        .nav-card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #244428;
+            margin-bottom: 0.5rem;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .nav-card-description {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .nav-card-count {
+            display: inline-block;
+            background: rgba(36, 68, 40, 0.1);
+            color: #244428;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            color: #244428;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #CA8F2F;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .info-box {
+            background: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box h3 {
+            color: #2c5282;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box p {
+            color: #2c5282;
+            line-height: 1.6;
+        }
+
+        .code-example {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #244428;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Design Tokens</h1>
+            <p class="subtitle">RecetteRanger - Système de design complet</p>
+            <p class="description">
+                Documentation centralisée de tous les tokens de design : couleurs, espacements, typographie, et plus encore.
+            </p>
+        </header>
+
+        <div class="nav-grid">
+            <a href="design-tokens-colors.html" class="nav-card">
+                <div class="nav-card-icon">🎨</div>
+                <div class="nav-card-title">Couleurs</div>
+                <div class="nav-card-description">
+                    Palette complète de couleurs : brand, sémantiques, gris, textes, backgrounds, bordures, et variantes avec opacité
+                </div>
+                <span class="nav-card-count">150+ variables</span>
+            </a>
+
+            <a href="design-tokens-spacing.html" class="nav-card">
+                <div class="nav-card-icon">📏</div>
+                <div class="nav-card-title">Spacing</div>
+                <div class="nav-card-description">
+                    Échelle d'espacement cohérente de 4px à 72px pour margins, paddings, et gaps
+                </div>
+                <span class="nav-card-count">9 variables</span>
+            </a>
+
+            <a href="design-tokens-typography.html" class="nav-card">
+                <div class="nav-card-icon">🔤</div>
+                <div class="nav-card-title">Typography</div>
+                <div class="nav-card-description">
+                    Font families, tailles, poids, line-heights et title sizes
+                </div>
+                <span class="nav-card-count">30+ variables</span>
+            </a>
+
+            <a href="design-tokens-effects.html" class="nav-card">
+                <div class="nav-card-icon">✨</div>
+                <div class="nav-card-title">Effects</div>
+                <div class="nav-card-description">
+                    Shadows, border-radius, transitions et effets visuels
+                </div>
+                <span class="nav-card-count">40+ variables</span>
+            </a>
+
+            <a href="design-tokens-layout.html" class="nav-card">
+                <div class="nav-card-icon">📐</div>
+                <div class="nav-card-title">Layout</div>
+                <div class="nav-card-description">
+                    Breakpoints, z-index, max-widths et opacités
+                </div>
+                <span class="nav-card-count">30+ variables</span>
+            </a>
+
+            <a href="design-tokens-buttons.html" class="nav-card">
+                <div class="nav-card-icon">🔘</div>
+                <div class="nav-card-title">Buttons</div>
+                <div class="nav-card-description">
+                    Toutes les variantes de boutons : primary, secondary, outlined, ghost, danger, success
+                </div>
+                <span class="nav-card-count">50+ variables</span>
+            </a>
+
+            <a href="design-tokens-tags.html" class="nav-card">
+                <div class="nav-card-icon">🏷️</div>
+                <div class="nav-card-title">Tags & Badges</div>
+                <div class="nav-card-description">
+                    Palette complète de 17 couleurs avec variantes pour tags, badges, saisons, rayons, catégories
+                </div>
+                <span class="nav-card-count">120+ variables</span>
+            </a>
+        </div>
+
+        <section class="section">
+            <h2 class="section-title">Comment utiliser</h2>
+
+            <div class="info-box">
+                <h3>📦 Import des variables</h3>
+                <p>Toutes les variables sont centralisées dans le fichier <code>src/view/styles/_variables.scss</code></p>
+            </div>
+
+            <p style="margin-bottom: 1rem;">Pour utiliser les variables dans vos fichiers Svelte :</p>
+
+            <div class="code-example">@use '../../styles/variables' as *;
+
+.my-component {
+  color: $color-text-primary;
+  background: $color-background-primary;
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+  box-shadow: $shadow-md;
+}</div>
+
+            <div style="background: #f0fff4; border-left: 4px solid #48bb78; padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem;">
+                <h3 style="color: #2f855a; margin-bottom: 0.5rem;">✓ Avantages</h3>
+                <ul style="color: #2f855a; line-height: 1.8; margin-left: 1.5rem;">
+                    <li>Cohérence visuelle dans toute l'application</li>
+                    <li>Facilité de maintenance et de modification</li>
+                    <li>Thématisation simplifiée</li>
+                    <li>Design system documenté</li>
+                    <li>Moins de code répétitif</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Statistiques</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">150+</div>
+                    <div class="stat-label">Couleurs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">9</div>
+                    <div class="stat-label">Espacements</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">30+</div>
+                    <div class="stat-label">Typographie</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">40+</div>
+                    <div class="stat-label">Effets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Couleurs hard-codées</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Centralisées</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Principes de design</h2>
+
+            <div style="display: grid; gap: 1rem;">
+                <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; border-left: 3px solid #244428;">
+                    <h3 style="color: #244428; margin-bottom: 0.5rem;">🎯 Cohérence</h3>
+                    <p style="color: #666;">Utiliser les mêmes variables dans tout le projet pour assurer une cohérence visuelle.</p>
+                </div>
+
+                <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; border-left: 3px solid #244428;">
+                    <h3 style="color: #244428; margin-bottom: 0.5rem;">♿ Accessibilité</h3>
+                    <p style="color: #666;">Respecter les contrastes WCAG pour les combinaisons texte/background.</p>
+                </div>
+
+                <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; border-left: 3px solid #244428;">
+                    <h3 style="color: #244428; margin-bottom: 0.5rem;">📱 Responsive</h3>
+                    <p style="color: #666;">Utiliser les breakpoints et rem pour un design adaptatif.</p>
+                </div>
+
+                <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; border-left: 3px solid #244428;">
+                    <h3 style="color: #244428; margin-bottom: 0.5rem;">🔧 Maintenabilité</h3>
+                    <p style="color: #666;">Centraliser toutes les valeurs pour faciliter les changements futurs.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

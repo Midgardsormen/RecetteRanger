@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Effects - Design Tokens RecetteRanger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f9fafb;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #244428 0%, #132315 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            color: #244428;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #CA8F2F;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .effect-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .effect-card:hover {
+            border-color: #244428;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .effect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .effect-name {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 1rem;
+            color: #244428;
+            font-weight: 600;
+        }
+
+        .effect-value {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.875rem;
+            color: #666;
+            background: #f5f5f5;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .effect-preview {
+            padding: 2rem;
+            background: #f9fafb;
+            border-radius: 6px;
+            margin: 1rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shadow-box {
+            width: 150px;
+            height: 100px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .radius-box {
+            width: 120px;
+            height: 80px;
+            background: #244428;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+        }
+
+        .copy-btn {
+            background: #244428;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #132315;
+        }
+
+        .copied {
+            background: #48bb78 !important;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="design-tokens-index.html" class="back-link">← Retour à l'index</a>
+            <h1>✨ Effects</h1>
+            <p class="subtitle">Shadows, Border Radius & Transitions - RecetteRanger</p>
+        </header>
+
+        <!-- BOX SHADOWS -->
+        <section class="section">
+            <h2 class="section-title">Box Shadows</h2>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-sm</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-sm')">Copier</button>
+                </div>
+                <div class="effect-value">0 1px 2px 0 rgba(0, 0, 0, 0.05)</div>
+                <div class="effect-preview">
+                    <div class="shadow-box" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">Small</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-md</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-md')">Copier</button>
+                </div>
+                <div class="effect-value">0 4px 6px -1px rgba(0, 0, 0, 0.1)</div>
+                <div class="effect-preview">
+                    <div class="shadow-box" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">Medium</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-lg</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-lg')">Copier</button>
+                </div>
+                <div class="effect-value">0 10px 15px -3px rgba(0, 0, 0, 0.1)</div>
+                <div class="effect-preview">
+                    <div class="shadow-box" style="box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">Large</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-xl</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-xl')">Copier</button>
+                </div>
+                <div class="effect-value">0 20px 25px -5px rgba(0, 0, 0, 0.1)</div>
+                <div class="effect-preview">
+                    <div class="shadow-box" style="box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">Extra Large</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-2xl</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-2xl')">Copier</button>
+                </div>
+                <div class="effect-value">0 25px 50px -12px rgba(0, 0, 0, 0.25)</div>
+                <div class="effect-preview">
+                    <div class="shadow-box" style="box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">2XL</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEXT SHADOWS -->
+        <section class="section">
+            <h2 class="section-title">Text Shadows</h2>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$text-shadow-sharp-sm</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$text-shadow-sharp-sm')">Copier</button>
+                </div>
+                <div class="effect-value">1px 1px 0 $color-black</div>
+                <div class="effect-preview" style="background: white;">
+                    <div style="font-size: 2rem; color: #F4E0C0; text-shadow: 1px 1px 0 #000;">Texte Sharp SM</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$text-shadow-sharp-md</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$text-shadow-sharp-md')">Copier</button>
+                </div>
+                <div class="effect-value">1px 1px 0, 2px 2px 0 $color-black</div>
+                <div class="effect-preview" style="background: white;">
+                    <div style="font-size: 2rem; color: #F4E0C0; text-shadow: 1px 1px 0 #000, 2px 2px 0 #000;">Texte Sharp MD</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$text-shadow-sharp-lg</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$text-shadow-sharp-lg')">Copier</button>
+                </div>
+                <div class="effect-value">1px 1px 0, 2px 2px 0, 3px 3px 0 $color-black</div>
+                <div class="effect-preview" style="background: white;">
+                    <div style="font-size: 2rem; color: #F4E0C0; text-shadow: 1px 1px 0 #000, 2px 2px 0 #000, 3px 3px 0 #000;">Texte Sharp LG</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$text-shadow-soft</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$text-shadow-soft')">Copier</button>
+                </div>
+                <div class="effect-value">2px 2px 4px rgba(0, 0, 0, 0.3)</div>
+                <div class="effect-preview" style="background: white;">
+                    <div style="font-size: 2rem; color: #244428; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Texte Soft</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$text-shadow-glow</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$text-shadow-glow')">Copier</button>
+                </div>
+                <div class="effect-value">0 0 10px rgba(255, 255, 255, 0.5)</div>
+                <div class="effect-preview" style="background: #244428;">
+                    <div style="font-size: 2rem; color: white; text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);">Texte Glow</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DECORATIVE SHADOWS -->
+        <section class="section">
+            <h2 class="section-title">Decorative Shadows</h2>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-decorative-title</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-decorative-title')">Copier</button>
+                </div>
+                <div class="effect-value">1-4px stepped shadow with $color-permanent-geranium-lake</div>
+                <div class="effect-preview" style="background: white;">
+                    <div style="font-size: 2.5rem; color: #F4E0C0; text-shadow: 1px 1px 0 #DC3428, 2px 2px 0 #DC3428, 3px 3px 0 #DC3428, 4px 4px 0 #DC3428; font-weight: 700;">TITRE</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-decorative-navigation</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-decorative-navigation')">Copier</button>
+                </div>
+                <div class="effect-value">0-2px stepped shadow with $color-gray-600</div>
+                <div class="effect-preview" style="background: #CA8F2F; padding: 1rem;">
+                    <div style="font-size: 1.5rem; color: white; text-shadow: 0px 0px 0 #666, 1px 1px 0 #666, 2px 2px 0 #666; font-weight: 600;">NAV ITEM</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-decorative-navigation-hover</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-decorative-navigation-hover')">Copier</button>
+                </div>
+                <div class="effect-value">0-2px stepped shadow with $color-permanent-geranium-lake</div>
+                <div class="effect-preview" style="background: #CA8F2F; padding: 1rem;">
+                    <div style="font-size: 1.5rem; color: #F4E0C0; text-shadow: 0px 0px 0 #DC3428, 1px 1px 0 #DC3428, 2px 2px 0 #DC3428; font-weight: 600;">NAV HOVER</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOCUS SHADOWS -->
+        <section class="section">
+            <h2 class="section-title">Focus Shadows (Focus Rings)</h2>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-focus-primary</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-focus-primary')">Copier</button>
+                </div>
+                <div class="effect-value">0 0 0 3px rgba(102, 126, 234, 0.1)</div>
+                <div class="effect-preview">
+                    <div class="shadow-box" style="box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);">Focus Primary</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-focus-danger</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-focus-danger')">Copier</button>
+                </div>
+                <div class="effect-value">0 0 0 3px rgba(245, 101, 101, 0.1)</div>
+                <div class="effect-preview">
+                    <div class="shadow-box" style="box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.1);">Focus Danger</div>
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <div class="effect-header">
+                    <div class="effect-name">$shadow-focus-success</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-focus-success')">Copier</button>
+                </div>
+                <div class="effect-value">0 0 0 3px rgba(72, 187, 120, 0.1)</div>
+                <div class="effect-preview">
+                    <div class="shadow-box" style="box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);">Focus Success</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BORDER RADIUS -->
+        <section class="section">
+            <h2 class="section-title">Border Radius</h2>
+
+            <div class="grid-2">
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$radius-none</div>
+                        <div class="effect-value">0</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$radius-none')">Copier</button>
+                    </div>
+                    <div class="effect-preview">
+                        <div class="radius-box" style="border-radius: 0;">None</div>
+                    </div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$radius-sm</div>
+                        <div class="effect-value">4px</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$radius-sm')">Copier</button>
+                    </div>
+                    <div class="effect-preview">
+                        <div class="radius-box" style="border-radius: 4px;">Small</div>
+                    </div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$radius-md</div>
+                        <div class="effect-value">6px</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$radius-md')">Copier</button>
+                    </div>
+                    <div class="effect-preview">
+                        <div class="radius-box" style="border-radius: 6px;">Medium</div>
+                    </div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$radius-lg</div>
+                        <div class="effect-value">8px</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$radius-lg')">Copier</button>
+                    </div>
+                    <div class="effect-preview">
+                        <div class="radius-box" style="border-radius: 8px;">Large</div>
+                    </div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$radius-xl</div>
+                        <div class="effect-value">12px</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$radius-xl')">Copier</button>
+                    </div>
+                    <div class="effect-preview">
+                        <div class="radius-box" style="border-radius: 12px;">XL</div>
+                    </div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$radius-2xl</div>
+                        <div class="effect-value">16px</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$radius-2xl')">Copier</button>
+                    </div>
+                    <div class="effect-preview">
+                        <div class="radius-box" style="border-radius: 16px;">2XL</div>
+                    </div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$radius-full</div>
+                        <div class="effect-value">9999px</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$radius-full')">Copier</button>
+                    </div>
+                    <div class="effect-preview">
+                        <div class="radius-box" style="border-radius: 9999px; width: 100px; height: 100px;">Full</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANSITIONS -->
+        <section class="section">
+            <h2 class="section-title">Transitions</h2>
+
+            <h3 style="margin: 1.5rem 0 1rem; color: #244428; font-size: 1.25rem;">Duration</h3>
+            <div class="grid-2">
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$transition-fast</div>
+                        <div class="effect-value">0.15s</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$transition-fast')">Copier</button>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #666;">Transitions rapides - hover états</div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$transition-base</div>
+                        <div class="effect-value">0.2s</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$transition-base')">Copier</button>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #666;">Durée par défaut</div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$transition-slow</div>
+                        <div class="effect-value">0.3s</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$transition-slow')">Copier</button>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #666;">Transitions lentes - grandes animations</div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$transition-slower</div>
+                        <div class="effect-value">0.5s</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$transition-slower')">Copier</button>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #666;">Transitions très lentes - effets dramatiques</div>
+                </div>
+            </div>
+
+            <h3 style="margin: 1.5rem 0 1rem; color: #244428; font-size: 1.25rem;">Timing Functions</h3>
+            <div class="grid-2">
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$transition-ease</div>
+                        <div class="effect-value">ease</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$transition-ease')">Copier</button>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #666;">Par défaut - début lent, rapide au milieu, fin lente</div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$transition-ease-in</div>
+                        <div class="effect-value">ease-in</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$transition-ease-in')">Copier</button>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #666;">Début lent puis accélération</div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$transition-ease-out</div>
+                        <div class="effect-value">ease-out</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$transition-ease-out')">Copier</button>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #666;">Début rapide puis décélération</div>
+                </div>
+
+                <div class="effect-card">
+                    <div class="effect-header">
+                        <div class="effect-name">$transition-ease-in-out</div>
+                        <div class="effect-value">ease-in-out</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$transition-ease-in-out')">Copier</button>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #666;">Symétrique - lent au début et à la fin</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXAMPLES -->
+        <section class="section">
+            <h2 class="section-title">Exemples d'utilisation</h2>
+
+            <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #244428; margin-bottom: 1rem;">Card avec shadow et radius</h3>
+                <pre style="background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>.card {
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  transition: all $transition-base $transition-ease;
+
+  &:hover {
+    box-shadow: $shadow-xl;
+    transform: translateY(-2px);
+  }
+}</code></pre>
+            </div>
+
+            <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #244428; margin-bottom: 1rem;">Button avec focus ring</h3>
+                <pre style="background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>.button {
+  border-radius: $radius-md;
+  transition: all $transition-fast $transition-ease;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: $shadow-focus-primary;
+  }
+}</code></pre>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                event.target.textContent = '✓ Copié !';
+                event.target.classList.add('copied');
+
+                setTimeout(() => {
+                    event.target.textContent = 'Copier';
+                    event.target.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Erreur lors de la copie:', err);
+                alert('Erreur lors de la copie');
+            });
+        }
+    </script>
+</body>
+</html>

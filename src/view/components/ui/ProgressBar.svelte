@@ -26,35 +26,44 @@
   let displayLabel = $derived(label || `${Math.round(percentage)}%`);
 </script>
 
-<div
-  class="progress-bar"
-  class:progress-bar--small={size === 'small'}
-  class:progress-bar--medium={size === 'medium'}
-  class:progress-bar--large={size === 'large'}
-  role="progressbar"
-  aria-valuenow={value}
-  aria-valuemin={0}
-  aria-valuemax={max}
-  aria-label={displayLabel}
->
-  <div
-    class="progress-bar__fill"
-    class:progress-bar__fill--primary={variant === 'primary'}
-    class:progress-bar__fill--secondary={variant === 'secondary'}
-    class:progress-bar__fill--success={variant === 'success'}
-    class:progress-bar__fill--danger={variant === 'danger'}
-    class:progress-bar__fill--warning={variant === 'warning'}
-    class:progress-bar__fill--info={variant === 'info'}
-    class:progress-bar__fill--animated={animated}
-    style="width: {percentage}%"
-  ></div>
+<div class="progress-bar-container">
   {#if showLabel}
     <span class="progress-bar__label">{displayLabel}</span>
   {/if}
+  <div
+    class="progress-bar"
+    class:progress-bar--small={size === 'small'}
+    class:progress-bar--medium={size === 'medium'}
+    class:progress-bar--large={size === 'large'}
+    role="progressbar"
+    aria-valuenow={value}
+    aria-valuemin={0}
+    aria-valuemax={max}
+    aria-label={displayLabel}
+  >
+    <div
+      class="progress-bar__fill"
+      class:progress-bar__fill--primary={variant === 'primary'}
+      class:progress-bar__fill--secondary={variant === 'secondary'}
+      class:progress-bar__fill--success={variant === 'success'}
+      class:progress-bar__fill--danger={variant === 'danger'}
+      class:progress-bar__fill--warning={variant === 'warning'}
+      class:progress-bar__fill--info={variant === 'info'}
+      class:progress-bar__fill--animated={animated}
+      style="width: {percentage}%"
+    ></div>
+  </div>
 </div>
 
 <style lang="scss">
   @use '../../styles/variables' as *;
+
+  .progress-bar-container {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    width: 100%;
+  }
 
   .progress-bar {
     position: relative;
@@ -62,32 +71,18 @@
     background: $color-gray-200;
     border-radius: $radius-full;
     overflow: hidden;
-    display: flex;
-    align-items: center;
 
     // Sizes
     &--small {
       height: 6px;
-
-      .progress-bar__label {
-        font-size: $font-size-xs;
-      }
     }
 
     &--medium {
       height: 8px;
-
-      .progress-bar__label {
-        font-size: $font-size-sm;
-      }
     }
 
     &--large {
       height: 12px;
-
-      .progress-bar__label {
-        font-size: $font-size-base;
-      }
     }
   }
 
@@ -154,14 +149,9 @@
   }
 
   .progress-bar__label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     font-weight: $font-weight-semibold;
     color: $color-text-primary;
-    pointer-events: none;
+    font-size: $font-size-sm;
     white-space: nowrap;
-    z-index: 1;
   }
 </style>

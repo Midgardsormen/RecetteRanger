@@ -127,7 +127,7 @@
       transition: background $transition-base $transition-ease;
 
       &:hover {
-        background: rgba(0, 0, 0, 0.05);
+        background: $color-black-alpha-05;
       }
 
       &:focus {

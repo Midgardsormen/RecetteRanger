@@ -417,7 +417,7 @@
       align-items: center;
       gap: $spacing-base;
       padding: $spacing-sm;
-      background: $color-dutch-white;
+      background: $brand-cream;
       border-radius: $radius-lg;
       text-decoration: none;
       color: inherit;
@@ -450,7 +450,7 @@
       flex-shrink: 0;
       border-radius: $radius-md;
       overflow: hidden;
-      background: $color-dutch-white;
+      background: $brand-cream;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -523,7 +523,7 @@
       align-items: center;
       gap: $spacing-base;
       padding: $spacing-sm;
-      background: $color-dutch-white;
+      background: $brand-cream;
       border-radius: $radius-lg;
       text-decoration: none;
       color: inherit;
@@ -561,7 +561,7 @@
       flex-shrink: 0;
       border-radius: $radius-md;
       overflow: hidden;
-      background: $color-dutch-white;
+      background: $brand-cream;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -627,7 +627,7 @@
       display: flex;
       flex-direction: column;
       gap: $spacing-xs;
-      background: $color-dutch-white;
+      background: $brand-cream;
       padding: $spacing-base;
       border-radius: $radius-lg;
       text-decoration: none;

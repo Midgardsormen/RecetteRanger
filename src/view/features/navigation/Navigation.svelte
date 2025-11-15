@@ -82,7 +82,7 @@
     position: sticky;
     top: 64px; // Stick below header
     background: $brand-secondary;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px $color-black-alpha-10;
     z-index: $z-index-sticky;
     padding: 0 $spacing-lg;
 
@@ -122,14 +122,14 @@
       
       opacity: 0.9;
       &:hover {
-        border-bottom: 5px solid $color-permanent-geranium-lake;
-        color:$color-dutch-white;
+        border-bottom: 5px solid $brand-red;
+        color:$brand-cream;
         text-shadow: $shadow-decorative-navigation-hover;
       }
 
       &--active {
-        border-bottom: 5px solid $color-permanent-geranium-lake;
-        color: $color-dutch-white;
+        border-bottom: 5px solid $brand-red;
+        color: $brand-cream;
         text-shadow: $shadow-decorative-navigation-hover;
       }
     }
@@ -164,15 +164,15 @@
       align-items: center;
       gap: $spacing-base;
       padding: $spacing-base;
-      color: rgba(255, 255, 255, 0.9);
+      color: $color-white-alpha-90;
       text-decoration: none;
       border-radius: $radius-md;
       transition: all $transition-base;
       font-weight: $font-weight-medium;
-      background: rgba(255, 255, 255, 0.1);
+      background: $color-white-alpha-10;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: $color-white-alpha-20;
         color: $color-white;
         transform: translateX(4px);
       }

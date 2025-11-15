@@ -200,7 +200,7 @@
     display: flex;
     flex-direction: column;
     max-height: 90vh;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 40px $color-black-alpha-30;
     opacity: 0;
     transform: scale(0.9) translateY(-20px);
     animation: scaleIn $transition-slow ease forwards;
@@ -272,7 +272,7 @@
     flex-shrink: 0;
 
     &:hover {
-      background: rgba(245, 101, 101, 0.2);
+      background: $color-danger-alpha-20;
       color: $color-danger;
     }
 
@@ -334,11 +334,11 @@
     }
 
     &--secondary {
-      background: rgba(102, 102, 102, 0.1);
+      background: $color-gray-600-alpha-10;
       color: $color-text-secondary;
 
       &:hover:not(:disabled) {
-        background: rgba(102, 102, 102, 0.2);
+        background: $color-gray-600-alpha-20;
       }
 
       &:disabled {
@@ -371,7 +371,7 @@
       &:hover:not(:disabled) {
         background: $color-danger-dark;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+        box-shadow: 0 4px 12px $color-danger-alpha-30;
       }
 
       &:disabled {

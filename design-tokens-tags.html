@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Tokens - Tags & Badges - RecetteRanger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f9fafb;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 3rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #244428 0%, #132315 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #244428;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #CA8F2F;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .color-swatch {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .color-swatch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-preview {
+            height: 80px;
+            position: relative;
+        }
+
+        .color-label {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-info {
+            padding: 0.75rem;
+            background: #fafafa;
+        }
+
+        .color-name {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.8rem;
+            color: #244428;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .color-value {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .tag-demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .tag-demo-card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+
+        .tag-demo-title {
+            font-weight: 600;
+            color: #244428;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.875rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+
+        .info-box {
+            background: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box p {
+            color: #2c5282;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .code-example {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .palette-showcase {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .palette-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .palette-color-name {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.85rem;
+            color: #666;
+            min-width: 140px;
+        }
+
+        .palette-swatches {
+            display: flex;
+            gap: 0.25rem;
+            flex: 1;
+        }
+
+        .palette-swatch {
+            height: 50px;
+            flex: 1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .palette-swatch:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .color-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .tag-demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="design-tokens-index.html" class="back-link">← Retour à l'index</a>
+            <h1>🏷️ Design Tokens - Tags & Badges</h1>
+            <p class="subtitle">Palette de couleurs complète pour tags, badges, et catégories</p>
+        </header>
+
+        <section class="section">
+            <h2 class="section-title">Introduction</h2>
+            <div class="info-box">
+                <p>Une palette de 17 couleurs avec leurs variantes (50, 100, 200, 500, 600, 700, 900) pour créer des tags et badges distinctifs. Parfait pour différencier les saisons, types de repas, rayons de magasin, et catégories.</p>
+            </div>
+        </section>
+
+        <!-- PALETTE COMPLÈTE -->
+        <section class="section">
+            <h2 class="section-title">Palette complète</h2>
+            <p style="margin-bottom: 1.5rem; color: #666;">Chaque couleur est disponible en 7 variantes : 50 (très clair), 100, 200, 500 (base), 600 (foncé), 700, 900 (très foncé)</p>
+
+            <div class="palette-showcase">
+                <!-- RED -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Red (rouge)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #fef2f2; color: #7f1d1d;">50</div>
+                        <div class="palette-swatch" style="background: #fee2e2; color: #7f1d1d;">100</div>
+                        <div class="palette-swatch" style="background: #fecaca; color: #7f1d1d;">200</div>
+                        <div class="palette-swatch" style="background: #ef4444;">500</div>
+                        <div class="palette-swatch" style="background: #dc2626;">600</div>
+                        <div class="palette-swatch" style="background: #b91c1c;">700</div>
+                        <div class="palette-swatch" style="background: #7f1d1d;">900</div>
+                    </div>
+                </div>
+
+                <!-- ORANGE -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Orange</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #fff7ed; color: #7c2d12;">50</div>
+                        <div class="palette-swatch" style="background: #ffedd5; color: #7c2d12;">100</div>
+                        <div class="palette-swatch" style="background: #fed7aa; color: #7c2d12;">200</div>
+                        <div class="palette-swatch" style="background: #f97316;">500</div>
+                        <div class="palette-swatch" style="background: #ea580c;">600</div>
+                        <div class="palette-swatch" style="background: #c2410c;">700</div>
+                        <div class="palette-swatch" style="background: #7c2d12;">900</div>
+                    </div>
+                </div>
+
+                <!-- AMBER -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Amber (ambre)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #fffbeb; color: #78350f;">50</div>
+                        <div class="palette-swatch" style="background: #fef3c7; color: #78350f;">100</div>
+                        <div class="palette-swatch" style="background: #fde68a; color: #78350f;">200</div>
+                        <div class="palette-swatch" style="background: #f59e0b;">500</div>
+                        <div class="palette-swatch" style="background: #d97706;">600</div>
+                        <div class="palette-swatch" style="background: #b45309;">700</div>
+                        <div class="palette-swatch" style="background: #78350f;">900</div>
+                    </div>
+                </div>
+
+                <!-- YELLOW -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Yellow (jaune)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #fefce8; color: #713f12;">50</div>
+                        <div class="palette-swatch" style="background: #fef9c3; color: #713f12;">100</div>
+                        <div class="palette-swatch" style="background: #fef08a; color: #713f12;">200</div>
+                        <div class="palette-swatch" style="background: #eab308;">500</div>
+                        <div class="palette-swatch" style="background: #ca8a04;">600</div>
+                        <div class="palette-swatch" style="background: #a16207;">700</div>
+                        <div class="palette-swatch" style="background: #713f12;">900</div>
+                    </div>
+                </div>
+
+                <!-- LIME -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Lime (vert citron)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #f7fee7; color: #365314;">50</div>
+                        <div class="palette-swatch" style="background: #ecfccb; color: #365314;">100</div>
+                        <div class="palette-swatch" style="background: #d9f99d; color: #365314;">200</div>
+                        <div class="palette-swatch" style="background: #84cc16;">500</div>
+                        <div class="palette-swatch" style="background: #65a30d;">600</div>
+                        <div class="palette-swatch" style="background: #4d7c0f;">700</div>
+                        <div class="palette-swatch" style="background: #365314;">900</div>
+                    </div>
+                </div>
+
+                <!-- GREEN -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Green (vert)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #f0fdf4; color: #14532d;">50</div>
+                        <div class="palette-swatch" style="background: #dcfce7; color: #14532d;">100</div>
+                        <div class="palette-swatch" style="background: #bbf7d0; color: #14532d;">200</div>
+                        <div class="palette-swatch" style="background: #22c55e;">500</div>
+                        <div class="palette-swatch" style="background: #16a34a;">600</div>
+                        <div class="palette-swatch" style="background: #15803d;">700</div>
+                        <div class="palette-swatch" style="background: #14532d;">900</div>
+                    </div>
+                </div>
+
+                <!-- EMERALD -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Emerald (émeraude)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #ecfdf5; color: #064e3b;">50</div>
+                        <div class="palette-swatch" style="background: #d1fae5; color: #064e3b;">100</div>
+                        <div class="palette-swatch" style="background: #a7f3d0; color: #064e3b;">200</div>
+                        <div class="palette-swatch" style="background: #10b981;">500</div>
+                        <div class="palette-swatch" style="background: #059669;">600</div>
+                        <div class="palette-swatch" style="background: #047857;">700</div>
+                        <div class="palette-swatch" style="background: #064e3b;">900</div>
+                    </div>
+                </div>
+
+                <!-- TEAL -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Teal (bleu-vert)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #f0fdfa; color: #134e4a;">50</div>
+                        <div class="palette-swatch" style="background: #ccfbf1; color: #134e4a;">100</div>
+                        <div class="palette-swatch" style="background: #99f6e4; color: #134e4a;">200</div>
+                        <div class="palette-swatch" style="background: #14b8a6;">500</div>
+                        <div class="palette-swatch" style="background: #0d9488;">600</div>
+                        <div class="palette-swatch" style="background: #0f766e;">700</div>
+                        <div class="palette-swatch" style="background: #134e4a;">900</div>
+                    </div>
+                </div>
+
+                <!-- CYAN -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Cyan</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #ecfeff; color: #164e63;">50</div>
+                        <div class="palette-swatch" style="background: #cffafe; color: #164e63;">100</div>
+                        <div class="palette-swatch" style="background: #a5f3fc; color: #164e63;">200</div>
+                        <div class="palette-swatch" style="background: #06b6d4;">500</div>
+                        <div class="palette-swatch" style="background: #0891b2;">600</div>
+                        <div class="palette-swatch" style="background: #0e7490;">700</div>
+                        <div class="palette-swatch" style="background: #164e63;">900</div>
+                    </div>
+                </div>
+
+                <!-- SKY -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Sky (bleu ciel)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #f0f9ff; color: #0c4a6e;">50</div>
+                        <div class="palette-swatch" style="background: #e0f2fe; color: #0c4a6e;">100</div>
+                        <div class="palette-swatch" style="background: #bae6fd; color: #0c4a6e;">200</div>
+                        <div class="palette-swatch" style="background: #0ea5e9;">500</div>
+                        <div class="palette-swatch" style="background: #0284c7;">600</div>
+                        <div class="palette-swatch" style="background: #0369a1;">700</div>
+                        <div class="palette-swatch" style="background: #0c4a6e;">900</div>
+                    </div>
+                </div>
+
+                <!-- BLUE -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Blue (bleu)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #eff6ff; color: #1e3a8a;">50</div>
+                        <div class="palette-swatch" style="background: #dbeafe; color: #1e3a8a;">100</div>
+                        <div class="palette-swatch" style="background: #bfdbfe; color: #1e3a8a;">200</div>
+                        <div class="palette-swatch" style="background: #3b82f6;">500</div>
+                        <div class="palette-swatch" style="background: #2563eb;">600</div>
+                        <div class="palette-swatch" style="background: #1d4ed8;">700</div>
+                        <div class="palette-swatch" style="background: #1e3a8a;">900</div>
+                    </div>
+                </div>
+
+                <!-- INDIGO -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Indigo</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #eef2ff; color: #312e81;">50</div>
+                        <div class="palette-swatch" style="background: #e0e7ff; color: #312e81;">100</div>
+                        <div class="palette-swatch" style="background: #c7d2fe; color: #312e81;">200</div>
+                        <div class="palette-swatch" style="background: #6366f1;">500</div>
+                        <div class="palette-swatch" style="background: #4f46e5;">600</div>
+                        <div class="palette-swatch" style="background: #4338ca;">700</div>
+                        <div class="palette-swatch" style="background: #312e81;">900</div>
+                    </div>
+                </div>
+
+                <!-- VIOLET -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Violet</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #f5f3ff; color: #4c1d95;">50</div>
+                        <div class="palette-swatch" style="background: #ede9fe; color: #4c1d95;">100</div>
+                        <div class="palette-swatch" style="background: #ddd6fe; color: #4c1d95;">200</div>
+                        <div class="palette-swatch" style="background: #8b5cf6;">500</div>
+                        <div class="palette-swatch" style="background: #7c3aed;">600</div>
+                        <div class="palette-swatch" style="background: #6d28d9;">700</div>
+                        <div class="palette-swatch" style="background: #4c1d95;">900</div>
+                    </div>
+                </div>
+
+                <!-- PURPLE -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Purple (pourpre)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #faf5ff; color: #581c87;">50</div>
+                        <div class="palette-swatch" style="background: #f3e8ff; color: #581c87;">100</div>
+                        <div class="palette-swatch" style="background: #e9d5ff; color: #581c87;">200</div>
+                        <div class="palette-swatch" style="background: #a855f7;">500</div>
+                        <div class="palette-swatch" style="background: #9333ea;">600</div>
+                        <div class="palette-swatch" style="background: #7e22ce;">700</div>
+                        <div class="palette-swatch" style="background: #581c87;">900</div>
+                    </div>
+                </div>
+
+                <!-- FUCHSIA -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Fuchsia</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #fdf4ff; color: #701a75;">50</div>
+                        <div class="palette-swatch" style="background: #fae8ff; color: #701a75;">100</div>
+                        <div class="palette-swatch" style="background: #f5d0fe; color: #701a75;">200</div>
+                        <div class="palette-swatch" style="background: #d946ef;">500</div>
+                        <div class="palette-swatch" style="background: #c026d3;">600</div>
+                        <div class="palette-swatch" style="background: #a21caf;">700</div>
+                        <div class="palette-swatch" style="background: #701a75;">900</div>
+                    </div>
+                </div>
+
+                <!-- PINK -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Pink (rose)</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #fdf2f8; color: #831843;">50</div>
+                        <div class="palette-swatch" style="background: #fce7f3; color: #831843;">100</div>
+                        <div class="palette-swatch" style="background: #fbcfe8; color: #831843;">200</div>
+                        <div class="palette-swatch" style="background: #ec4899;">500</div>
+                        <div class="palette-swatch" style="background: #db2777;">600</div>
+                        <div class="palette-swatch" style="background: #be185d;">700</div>
+                        <div class="palette-swatch" style="background: #831843;">900</div>
+                    </div>
+                </div>
+
+                <!-- ROSE -->
+                <div class="palette-row">
+                    <div class="palette-color-name">Rose</div>
+                    <div class="palette-swatches">
+                        <div class="palette-swatch" style="background: #fff1f2; color: #881337;">50</div>
+                        <div class="palette-swatch" style="background: #ffe4e6; color: #881337;">100</div>
+                        <div class="palette-swatch" style="background: #fecdd3; color: #881337;">200</div>
+                        <div class="palette-swatch" style="background: #f43f5e;">500</div>
+                        <div class="palette-swatch" style="background: #e11d48;">600</div>
+                        <div class="palette-swatch" style="background: #be123c;">700</div>
+                        <div class="palette-swatch" style="background: #881337;">900</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXEMPLES SÉMANTIQUES - SAISONS -->
+        <section class="section">
+            <h2 class="section-title">Exemples : Saisons</h2>
+            <div class="tag-demo-grid">
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Printemps</div>
+                    <span class="tag" style="background: #f0fdf4; color: #22c55e;">$tag-spring</span>
+                    <div class="code-example" style="margin-top: 1rem;">color: $tag-spring;
+background: $tag-spring-bg;</div>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Été</div>
+                    <span class="tag" style="background: #fffbeb; color: #f59e0b;">$tag-summer</span>
+                    <div class="code-example" style="margin-top: 1rem;">color: $tag-summer;
+background: $tag-summer-bg;</div>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Automne</div>
+                    <span class="tag" style="background: #fff7ed; color: #ea580c;">$tag-fall</span>
+                    <div class="code-example" style="margin-top: 1rem;">color: $tag-fall;
+background: $tag-fall-bg;</div>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Hiver</div>
+                    <span class="tag" style="background: #eff6ff; color: #3b82f6;">$tag-winter</span>
+                    <div class="code-example" style="margin-top: 1rem;">color: $tag-winter;
+background: $tag-winter-bg;</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXEMPLES SÉMANTIQUES - REPAS -->
+        <section class="section">
+            <h2 class="section-title">Exemples : Types de repas</h2>
+            <div class="tag-demo-grid">
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Petit-déjeuner</div>
+                    <span class="tag" style="background: #fffbeb; color: #d97706;">$tag-breakfast</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Déjeuner</div>
+                    <span class="tag" style="background: #ecfdf5; color: #059669;">$tag-lunch</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Dîner</div>
+                    <span class="tag" style="background: #eef2ff; color: #4f46e5;">$tag-dinner</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Collation</div>
+                    <span class="tag" style="background: #fdf2f8; color: #db2777;">$tag-snack</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXEMPLES SÉMANTIQUES - RAYONS -->
+        <section class="section">
+            <h2 class="section-title">Exemples : Rayons de magasin</h2>
+            <div class="tag-demo-grid">
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Fruits & Légumes</div>
+                    <span class="tag" style="background: #f0fdf4; color: #16a34a;">$tag-fruits-vegetables</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Viande</div>
+                    <span class="tag" style="background: #fef2f2; color: #dc2626;">$tag-meat</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Produits laitiers</div>
+                    <span class="tag" style="background: #f0f9ff; color: #0284c7;">$tag-dairy</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Boulangerie</div>
+                    <span class="tag" style="background: #fffbeb; color: #b45309;">$tag-bakery</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Surgelés</div>
+                    <span class="tag" style="background: #ecfeff; color: #0891b2;">$tag-frozen</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Boissons</div>
+                    <span class="tag" style="background: #faf5ff; color: #9333ea;">$tag-beverages</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Épicerie</div>
+                    <span class="tag" style="background: #fff7ed; color: #ea580c;">$tag-pantry</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXEMPLES SÉMANTIQUES - BADGES -->
+        <section class="section">
+            <h2 class="section-title">Exemples : Badges génériques</h2>
+            <div class="tag-demo-grid">
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Nouveau</div>
+                    <span class="tag" style="background: #ecfdf5; color: #059669;">$tag-new</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Populaire</div>
+                    <span class="tag" style="background: #fff1f2; color: #e11d48;">$tag-popular</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">De saison</div>
+                    <span class="tag" style="background: #fffbeb; color: #d97706;">$tag-seasonal</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Rapide</div>
+                    <span class="tag" style="background: #f0f9ff; color: #0284c7;">$tag-quick</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Sain</div>
+                    <span class="tag" style="background: #f0fdf4; color: #16a34a;">$tag-healthy</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Végétarien</div>
+                    <span class="tag" style="background: #f7fee7; color: #65a30d;">$tag-vegetarian</span>
+                </div>
+                <div class="tag-demo-card">
+                    <div class="tag-demo-title">Végan</div>
+                    <span class="tag" style="background: #ecfdf5; color: #047857;">$tag-vegan</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- USAGE -->
+        <section class="section">
+            <h2 class="section-title">Comment utiliser</h2>
+            <div class="info-box">
+                <p>Toutes les couleurs sont disponibles avec leurs variantes. Tu peux utiliser directement les couleurs (ex: $color-blue-500) ou les mappings sémantiques (ex: $tag-winter).</p>
+            </div>
+
+            <div class="code-example">.tag-winter {
+  background: $tag-winter-bg;  // Couleur de fond claire
+  color: $tag-winter;          // Couleur de texte vive
+  padding: 0.375rem 0.875rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+// Ou utilisation directe des couleurs
+.custom-tag {
+  background: $color-violet-50;
+  color: $color-violet-600;
+  border: 1px solid $color-violet-200;
+}</div>
+
+            <p style="margin-top: 1.5rem; color: #666; line-height: 1.8;">
+                <strong>Conventions de nommage :</strong><br>
+                • <code>$color-{nom}-50</code> : Très clair (pour backgrounds)<br>
+                • <code>$color-{nom}-100/200</code> : Clair (pour hovers, borders)<br>
+                • <code>$color-{nom}-500/600</code> : Base (pour texte, icônes)<br>
+                • <code>$color-{nom}-700/900</code> : Foncé (pour emphasis)<br>
+                • <code>$tag-{usage}</code> : Variable sémantique (recommandé)
+            </p>
+        </section>
+    </div>
+</body>
+</html>

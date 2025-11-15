@@ -277,7 +277,7 @@
 
     &__error {
       padding: $spacing-md;
-      background: rgba(229, 62, 62, 0.1);
+      background: $color-danger-alt-alpha-10;
       border: 2px solid $danger-color;
       border-radius: 8px;
       color: $danger-color;

@@ -77,7 +77,7 @@
       text-shadow: $text-shadow-sharp-md;
 
       &:hover {
-        color: $color-dutch-white;
+        color: $brand-cream;
         text-shadow: $text-shadow-sharp-lg;
         transform: translateX(4px);
       }

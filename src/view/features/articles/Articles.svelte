@@ -293,7 +293,7 @@
   $text-light: $color-gray-400;
   $border-color: $color-gray-200;
   $shadow-primary: rgba($brand-primary, 0.3);
-  $shadow-light: rgba(0, 0, 0, 0.08);
+  $shadow-light: $color-black-alpha-08;
   $spacing-base: 1rem;
   $breakpoint-mobile: 768px;
   $transition-duration: 0.3s;

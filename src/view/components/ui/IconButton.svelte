@@ -83,10 +83,10 @@
     // Variants
     &--default {
       color: $color-text-secondary;
-      background: rgba(0, 0, 0, 0.05);
+      background: $color-black-alpha-05;
 
       &:hover:not(:disabled) {
-        background: rgba(0, 0, 0, 0.1);
+        background: $color-black-alpha-10;
         transform: scale(1.05);
       }
 
@@ -143,11 +143,11 @@
 
       &:hover:not(:disabled) {
         color: $color-text-secondary;
-        background: rgba(0, 0, 0, 0.05);
+        background: $color-black-alpha-05;
       }
 
       &:active:not(:disabled) {
-        background: rgba(0, 0, 0, 0.1);
+        background: $color-black-alpha-10;
       }
     }
   }

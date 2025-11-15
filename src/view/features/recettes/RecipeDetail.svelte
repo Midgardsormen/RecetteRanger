@@ -208,6 +208,7 @@
 </Layout>
 
 <style lang="scss">
+   @use '../../styles/variables' as *;
   .recipe-detail {
     max-width: 1200px;
     margin: 0 auto;
@@ -257,7 +258,7 @@
     background: var(--surface-color);
     border-radius: 16px;
     padding: 2.5rem;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px $color-black-alpha-08;
 
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
@@ -378,7 +379,7 @@
     background: var(--surface-color);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px $color-black-alpha-06;
 
     h3 {
       font-size: 1.2rem;
@@ -430,7 +431,7 @@
     background: var(--surface-color);
     border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px $color-black-alpha-08;
   }
 
   h2 {

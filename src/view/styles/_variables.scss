@@ -12,6 +12,9 @@ $brand-primary: #244428;
 $brand-secondary: #CA8F2F;
 $brand-tertiary: #132315;
 $brand-quaternary: #252221;
+$brand-cream: #F4E0C0;
+$brand-red: #DC3428;
+
 // ============================================
 // COLOR PALETTE
 // ============================================
@@ -33,6 +36,164 @@ $color-info: #4299e1;
 $color-info-light: #90cdf4;
 $color-info-dark: #2c5282;
 
+// ============================================
+// TAG/BADGE COLORS (palette étendue)
+// ============================================
+// Pour différencier les saisons, types de repas, rayons, catégories, etc.
+
+// Red (rouge)
+$brand-red-50: #fef2f2;
+$brand-red-100: #fee2e2;
+$brand-red-200: #fecaca;
+$brand-red-500: #ef4444;
+$brand-red-600: #dc2626;
+$brand-red-700: #b91c1c;
+$brand-red-900: #7f1d1d;
+
+// Orange
+$color-orange-50: #fff7ed;
+$color-orange-100: #ffedd5;
+$color-orange-200: #fed7aa;
+$color-orange-500: #f97316;
+$color-orange-600: #ea580c;
+$color-orange-700: #c2410c;
+$color-orange-900: #7c2d12;
+
+// Amber (ambre/or)
+$color-amber-50: #fffbeb;
+$color-amber-100: #fef3c7;
+$color-amber-200: #fde68a;
+$color-amber-500: #f59e0b;
+$color-amber-600: #d97706;
+$color-amber-700: #b45309;
+$color-amber-900: #78350f;
+
+// Yellow (jaune)
+$color-yellow-50: #fefce8;
+$color-yellow-100: #fef9c3;
+$color-yellow-200: #fef08a;
+$color-yellow-500: #eab308;
+$color-yellow-600: #ca8a04;
+$color-yellow-700: #a16207;
+$color-yellow-900: #713f12;
+
+// Lime (vert citron)
+$color-lime-50: #f7fee7;
+$color-lime-100: #ecfccb;
+$color-lime-200: #d9f99d;
+$color-lime-500: #84cc16;
+$color-lime-600: #65a30d;
+$color-lime-700: #4d7c0f;
+$color-lime-900: #365314;
+
+// Green (vert)
+$color-green-50: #f0fdf4;
+$color-green-100: #dcfce7;
+$color-green-200: #bbf7d0;
+$color-green-500: #22c55e;
+$color-green-600: #16a34a;
+$color-green-700: #15803d;
+$color-green-900: #14532d;
+
+// Emerald (émeraude)
+$color-emerald-50: #ecfdf5;
+$color-emerald-100: #d1fae5;
+$color-emerald-200: #a7f3d0;
+$color-emerald-500: #10b981;
+$color-emerald-600: #059669;
+$color-emerald-700: #047857;
+$color-emerald-900: #064e3b;
+
+// Teal (bleu-vert)
+$color-teal-50: #f0fdfa;
+$color-teal-100: #ccfbf1;
+$color-teal-200: #99f6e4;
+$color-teal-500: #14b8a6;
+$color-teal-600: #0d9488;
+$color-teal-700: #0f766e;
+$color-teal-900: #134e4a;
+
+// Cyan
+$color-cyan-50: #ecfeff;
+$color-cyan-100: #cffafe;
+$color-cyan-200: #a5f3fc;
+$color-cyan-500: #06b6d4;
+$color-cyan-600: #0891b2;
+$color-cyan-700: #0e7490;
+$color-cyan-900: #164e63;
+
+// Sky (bleu ciel)
+$color-sky-50: #f0f9ff;
+$color-sky-100: #e0f2fe;
+$color-sky-200: #bae6fd;
+$color-sky-500: #0ea5e9;
+$color-sky-600: #0284c7;
+$color-sky-700: #0369a1;
+$color-sky-900: #0c4a6e;
+
+// Blue (bleu)
+$color-blue-50: #eff6ff;
+$color-blue-100: #dbeafe;
+$color-blue-200: #bfdbfe;
+$color-blue-500: #3b82f6;
+$color-blue-600: #2563eb;
+$color-blue-700: #1d4ed8;
+$color-blue-900: #1e3a8a;
+
+// Indigo
+$color-indigo-50: #eef2ff;
+$color-indigo-100: #e0e7ff;
+$color-indigo-200: #c7d2fe;
+$color-indigo-500: #6366f1;
+$color-indigo-600: #4f46e5;
+$color-indigo-700: #4338ca;
+$color-indigo-900: #312e81;
+
+// Violet
+$color-violet-50: #f5f3ff;
+$color-violet-100: #ede9fe;
+$color-violet-200: #ddd6fe;
+$color-violet-500: #8b5cf6;
+$color-violet-600: #7c3aed;
+$color-violet-700: #6d28d9;
+$color-violet-900: #4c1d95;
+
+// Purple (violet/pourpre)
+$color-purple-50: #faf5ff;
+$color-purple-100: #f3e8ff;
+$color-purple-200: #e9d5ff;
+$color-purple-500: #a855f7;
+$color-purple-600: #9333ea;
+$color-purple-700: #7e22ce;
+$color-purple-900: #581c87;
+
+// Fuchsia
+$color-fuchsia-50: #fdf4ff;
+$color-fuchsia-100: #fae8ff;
+$color-fuchsia-200: #f5d0fe;
+$color-fuchsia-500: #d946ef;
+$color-fuchsia-600: #c026d3;
+$color-fuchsia-700: #a21caf;
+$color-fuchsia-900: #701a75;
+
+// Pink (rose)
+$color-pink-50: #fdf2f8;
+$color-pink-100: #fce7f3;
+$color-pink-200: #fbcfe8;
+$color-pink-500: #ec4899;
+$color-pink-600: #db2777;
+$color-pink-700: #be185d;
+$color-pink-900: #831843;
+
+// Rose
+$color-rose-50: #fff1f2;
+$color-rose-100: #ffe4e6;
+$color-rose-200: #fecdd3;
+$color-rose-500: #f43f5e;
+$color-rose-600: #e11d48;
+$color-rose-700: #be123c;
+$color-rose-900: #881337;
+
 // Gray shades
 $color-white: #ffffff;
 $color-black: #000000;
@@ -46,9 +207,6 @@ $color-gray-600: #666666;
 $color-gray-700: #4b5563;
 $color-gray-800: #333333;
 $color-gray-900: #1f2937;
-
-$color-dutch-white: #F4E0C0;
-$color-permanent-geranium-lake: #DC3428;
 
 // ============================================
 // TEXT (Text Colors)
@@ -64,7 +222,7 @@ $color-text-error: $color-danger;
 $color-text-success: $color-success-dark;
 $color-text-warning: $color-warning-dark;
 
-$color-decorative-title: $color-dutch-white;
+$color-decorative-title: $brand-cream;
 
 
 // ============================================
@@ -74,7 +232,7 @@ $color-background-primary: $color-white;
 $color-background-secondary: $color-gray-50;
 $color-background-tertiary: $color-gray-100;
 $color-background-dark: $color-gray-900;
-$color-background-light: $color-dutch-white;
+$color-background-light: $brand-cream;
 $color-background-overlay: rgba(0, 0, 0, 0.5);
 $color-background-disabled: $color-gray-100;
 
@@ -83,6 +241,63 @@ $color-background-success: #f0fff4;
 $color-background-danger: #fff5f5;
 $color-background-warning: #fffaf0;
 $color-background-info: #ebf8ff;
+
+// ============================================
+// TAG/BADGE SEMANTIC MAPPINGS (exemples d'usage)
+// ============================================
+// Utilise les couleurs ci-dessus pour créer des mappings sémantiques
+
+// Saisons (exemples)
+$tag-spring: $color-green-500;        // Printemps - vert
+$tag-spring-bg: $color-green-50;
+$tag-summer: $color-amber-500;        // Été - jaune/ambre
+$tag-summer-bg: $color-amber-50;
+$tag-fall: $color-orange-600;         // Automne - orange
+$tag-fall-bg: $color-orange-50;
+$tag-winter: $color-blue-500;         // Hiver - bleu
+$tag-winter-bg: $color-blue-50;
+
+// Types de repas (exemples)
+$tag-breakfast: $color-amber-600;     // Petit-déjeuner - ambre
+$tag-breakfast-bg: $color-amber-50;
+$tag-lunch: $color-emerald-600;       // Déjeuner - émeraude
+$tag-lunch-bg: $color-emerald-50;
+$tag-dinner: $color-indigo-600;       // Dîner - indigo
+$tag-dinner-bg: $color-indigo-50;
+$tag-snack: $color-pink-600;          // Collation - rose
+$tag-snack-bg: $color-pink-50;
+
+// Rayons de magasin (exemples)
+$tag-fruits-vegetables: $color-green-600;    // Fruits & légumes
+$tag-fruits-vegetables-bg: $color-green-50;
+$tag-meat: $brand-red-600;                   // Viande
+$tag-meat-bg: $brand-red-50;
+$tag-dairy: $color-sky-600;                  // Produits laitiers
+$tag-dairy-bg: $color-sky-50;
+$tag-bakery: $color-amber-700;               // Boulangerie
+$tag-bakery-bg: $color-amber-50;
+$tag-frozen: $color-cyan-600;                // Surgelés
+$tag-frozen-bg: $color-cyan-50;
+$tag-beverages: $color-purple-600;           // Boissons
+$tag-beverages-bg: $color-purple-50;
+$tag-pantry: $color-orange-600;              // Épicerie
+$tag-pantry-bg: $color-orange-50;
+
+// Catégories génériques pour badges
+$tag-new: $color-emerald-600;
+$tag-new-bg: $color-emerald-50;
+$tag-popular: $color-rose-600;
+$tag-popular-bg: $color-rose-50;
+$tag-seasonal: $color-amber-600;
+$tag-seasonal-bg: $color-amber-50;
+$tag-quick: $color-sky-600;
+$tag-quick-bg: $color-sky-50;
+$tag-healthy: $color-green-600;
+$tag-healthy-bg: $color-green-50;
+$tag-vegetarian: $color-lime-600;
+$tag-vegetarian-bg: $color-lime-50;
+$tag-vegan: $color-emerald-700;
+$tag-vegan-bg: $color-emerald-50;
 
 // ============================================
 // BORDERS (Border Colors)
@@ -111,10 +326,10 @@ $color-button-primary-active-background: color.adjust($brand-quaternary, $lightn
 $color-button-primary-inverse-text: $brand-primary;
 $color-button-primary-inverse-background: $color-white;
 $color-button-primary-inverse-border: $color-white;
-$color-button-primary-inverse-hover-background: $color-dutch-white;
-$color-button-primary-inverse-hover-border: $color-dutch-white;
+$color-button-primary-inverse-hover-background: $brand-cream;
+$color-button-primary-inverse-hover-border: $brand-cream;
 $color-button-primary-inverse-hover-text: $brand-tertiary;
-$color-button-primary-inverse-active-background: color.adjust($color-dutch-white, $lightness: -5%);
+$color-button-primary-inverse-active-background: color.adjust($brand-cream, $lightness: -5%);
 
 // Secondary Button (pour fonds clairs)
 $color-button-secondary-text: $brand-primary;
@@ -128,15 +343,15 @@ $color-button-secondary-active-text: $color-white;
 $color-button-secondary-active-border: $brand-tertiary;
 
 // Secondary Inverse Button (pour fonds foncés)
-$color-button-secondary-inverse-text: $color-dutch-white;
+$color-button-secondary-inverse-text: $brand-cream;
 $color-button-secondary-inverse-background: transparent;
-$color-button-secondary-inverse-border: $color-dutch-white;
+$color-button-secondary-inverse-border: $brand-cream;
 $color-button-secondary-inverse-hover-background: $brand-primary;
 $color-button-secondary-inverse-hover-text: $color-white;
 $color-button-secondary-inverse-hover-border: $color-white;
-$color-button-secondary-inverse-active-background: color.adjust($color-dutch-white, $lightness: -5%);
+$color-button-secondary-inverse-active-background: color.adjust($brand-cream, $lightness: -5%);
 $color-button-secondary-inverse-active-text: $brand-tertiary;
-$color-button-secondary-inverse-active-border: color.adjust($color-dutch-white, $lightness: -5%);
+$color-button-secondary-inverse-active-border: color.adjust($brand-cream, $lightness: -5%);
 
 // Outlined Button (pour fonds clairs)
 $color-button-outlined-text: $brand-primary;
@@ -149,10 +364,10 @@ $color-button-outlined-active-background: color.adjust($color-gray-200, $lightne
 $color-button-outlined-active-text: $brand-quaternary;
 
 // Outlined Inverse Button (pour fonds foncés)
-$color-button-outlined-inverse-text: $color-dutch-white;
+$color-button-outlined-inverse-text: $brand-cream;
 $color-button-outlined-inverse-background: transparent;
-$color-button-outlined-inverse-border: $color-dutch-white;
-$color-button-outlined-inverse-hover-background: rgba($color-dutch-white, 0.1);
+$color-button-outlined-inverse-border: $brand-cream;
+$color-button-outlined-inverse-hover-background: rgba($brand-cream, 0.1);
 
 // Ghost Button (pour fonds clairs)
 $color-button-ghost-text: $color-gray-600;
@@ -161,7 +376,7 @@ $color-button-ghost-hover-background: rgba(0, 0, 0, 0.05);
 $color-button-ghost-active-background: rgba(0, 0, 0, 0.1);
 
 // Ghost Inverse Button (pour fonds foncés)
-$color-button-ghost-inverse-text: $color-dutch-white;
+$color-button-ghost-inverse-text: $brand-cream;
 $color-button-ghost-inverse-background: transparent;
 $color-button-ghost-inverse-hover-background: rgba(255, 255, 255, 0.1);
 $color-button-ghost-inverse-active-background: rgba(255, 255, 255, 0.15);
@@ -243,18 +458,18 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 $shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
 $shadow-decorative-title:
-    1px 1px 0 $color-permanent-geranium-lake,
-    2px 2px 0 $color-permanent-geranium-lake,
-    3px 3px 0 $color-permanent-geranium-lake,
-    4px 4px 0 $color-permanent-geranium-lake;
+    1px 1px 0 $brand-red,
+    2px 2px 0 $brand-red,
+    3px 3px 0 $brand-red,
+    4px 4px 0 $brand-red;
 $shadow-decorative-navigation:
     0px 0px 0 $color-gray-600,
     1px 1px 0 $color-gray-600,
     2px 2px 0 $color-gray-600;
 $shadow-decorative-navigation-hover:
-    0px 0px 0  $color-permanent-geranium-lake,
-    1px 1px 0  $color-permanent-geranium-lake,
-    2px 2px 0  $color-permanent-geranium-lake;
+    0px 0px 0  $brand-red,
+    1px 1px 0  $brand-red,
+    2px 2px 0  $brand-red;
 
 // Text shadows
 $text-shadow-sharp-sm: 1px 1px 0 $color-black;
@@ -278,6 +493,73 @@ $text-shadow-glow: 0 0 10px rgba(255, 255, 255, 0.5);
 $shadow-focus-primary: 0 0 0 3px rgba(102, 126, 234, 0.1);
 $shadow-focus-danger: 0 0 0 3px rgba(245, 101, 101, 0.1);
 $shadow-focus-success: 0 0 0 3px rgba(72, 187, 120, 0.1);
+
+// ============================================
+// RGBA COLORS (avec opacités communes)
+// ============================================
+// Whites avec opacités
+$color-white-alpha-10: rgba(255, 255, 255, 0.1);
+$color-white-alpha-15: rgba(255, 255, 255, 0.15);
+$color-white-alpha-20: rgba(255, 255, 255, 0.2);
+$color-white-alpha-90: rgba(255, 255, 255, 0.9);
+
+// Blacks avec opacités (pour shadows et overlays)
+$color-black-alpha-03: rgba(0, 0, 0, 0.03);
+$color-black-alpha-05: rgba(0, 0, 0, 0.05);
+$color-black-alpha-06: rgba(0, 0, 0, 0.06);
+$color-black-alpha-08: rgba(0, 0, 0, 0.08);
+$color-black-alpha-10: rgba(0, 0, 0, 0.1);
+$color-black-alpha-15: rgba(0, 0, 0, 0.15);
+$color-black-alpha-20: rgba(0, 0, 0, 0.2);
+$color-black-alpha-30: rgba(0, 0, 0, 0.3);
+
+// Brand colors avec opacités
+$color-primary-alpha-03: rgba($brand-primary, 0.03);
+$color-primary-alpha-05: rgba($brand-primary, 0.05);
+$color-primary-alpha-08: rgba($brand-primary, 0.08);
+$color-primary-alpha-10: rgba($brand-primary, 0.1);
+$color-primary-alpha-12: rgba($brand-primary, 0.12);
+$color-primary-alpha-15: rgba($brand-primary, 0.15);
+$color-primary-alpha-20: rgba($brand-primary, 0.2);
+$color-primary-alpha-25: rgba($brand-primary, 0.25);
+$color-primary-alpha-30: rgba($brand-primary, 0.3);
+$color-primary-alpha-40: rgba($brand-primary, 0.4);
+
+// Semantic colors avec opacités
+$color-danger-alpha-10: rgba($color-danger, 0.1);
+$color-danger-alpha-20: rgba($color-danger, 0.2);
+$color-danger-alpha-30: rgba($color-danger, 0.3);
+
+// Couleur danger alternative (229, 62, 62 = #e53e3e) avec opacité
+$color-danger-alt: #e53e3e;
+$color-danger-alt-alpha-10: rgba(229, 62, 62, 0.1);
+
+// Couleur danger-dark-alt (220, 38, 38 = #dc2626) avec opacité
+$color-danger-dark-alt: #dc2626;
+$color-danger-dark-alt-alpha-05: rgba(220, 38, 38, 0.05);
+
+$color-success-alpha-10: rgba($color-success, 0.1);
+$color-success-alpha-20: rgba($color-success, 0.2);
+
+$color-warning-alpha-05: rgba($color-warning, 0.05);
+$color-warning-alpha-10: rgba($color-warning, 0.1);
+$color-warning-alpha-30: rgba($color-warning, 0.3);
+
+// Couleur warning-light (251, 191, 36 = #fbbf24) avec opacité
+$color-warning-bright: #fbbf24;
+$color-warning-bright-alpha-05: rgba(251, 191, 36, 0.05);
+
+$color-info-alpha-10: rgba($color-info, 0.1);
+$color-info-alpha-15: rgba($color-info, 0.15);
+$color-info-alpha-20: rgba($color-info, 0.2);
+
+$color-secondary-alpha-10: rgba($brand-secondary, 0.1);
+$color-secondary-alpha-15: rgba($brand-secondary, 0.15);
+$color-secondary-alpha-20: rgba($brand-secondary, 0.2);
+
+// Autres couleurs avec opacités
+$color-gray-600-alpha-10: rgba($color-gray-600, 0.1);
+$color-gray-600-alpha-20: rgba($color-gray-600, 0.2);
 
 // ============================================
 // SPACING

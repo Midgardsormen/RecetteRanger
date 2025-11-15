@@ -8,12 +8,28 @@ export enum MealSlot {
   OTHER = 'OTHER',
 }
 
+export type BadgeVariant =
+  // Semantic colors
+  | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'
+  // Extended palette
+  | 'red' | 'orange' | 'amber' | 'yellow' | 'lime' | 'green' | 'emerald'
+  | 'teal' | 'cyan' | 'sky' | 'blue' | 'indigo' | 'violet' | 'purple'
+  | 'fuchsia' | 'pink' | 'rose';
+
 export const MealSlotLabels: Record<MealSlot, string> = {
   [MealSlot.BREAKFAST]: 'Petit-déjeuner',
   [MealSlot.LUNCH]: 'Déjeuner',
   [MealSlot.DINNER]: 'Dîner',
   [MealSlot.SNACK]: 'Goûter',
   [MealSlot.OTHER]: 'Autre',
+};
+
+export const MealSlotColors: Record<MealSlot, BadgeVariant> = {
+  [MealSlot.BREAKFAST]: 'amber',
+  [MealSlot.LUNCH]: 'emerald',
+  [MealSlot.DINNER]: 'indigo',
+  [MealSlot.SNACK]: 'pink',
+  [MealSlot.OTHER]: 'neutral',
 };
 
 export interface MealSlotConfig {

@@ -36,4 +36,5 @@ export { default as Title } from './Title.svelte';
 export { default as Loader } from './Loader.svelte';
 export { default as Badge } from './Badge.svelte';
 export { default as Tag } from './Tag.svelte';
+export { default as Dot } from './Dot.svelte';
 export { default as ProgressBar } from './ProgressBar.svelte';

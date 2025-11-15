@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typography - Design Tokens RecetteRanger</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f9fafb;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #244428 0%, #132315 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            color: #244428;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #CA8F2F;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .type-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .type-card:hover {
+            border-color: #244428;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .type-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .type-name {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 1rem;
+            color: #244428;
+            font-weight: 600;
+        }
+
+        .type-value {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.875rem;
+            color: #666;
+            background: #f5f5f5;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .type-preview {
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+
+        .copy-btn {
+            background: #244428;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #132315;
+        }
+
+        .copied {
+            background: #48bb78 !important;
+        }
+
+        .font-family-preview {
+            font-size: 2rem;
+            margin: 1rem 0;
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .type-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="design-tokens-index.html" class="back-link">← Retour à l'index</a>
+            <h1>🔤 Typography</h1>
+            <p class="subtitle">Documentation complète de la typographie - RecetteRanger</p>
+        </header>
+
+        <!-- FONT FAMILIES -->
+        <section class="section">
+            <h2 class="section-title">Font Families</h2>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-family-base</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-family-base')">Copier</button>
+                </div>
+                <div class="type-value">-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif</div>
+                <div class="font-family-preview" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;">
+                    The quick brown fox jumps over the lazy dog<br>
+                    <span style="font-size: 1rem;">Texte de base pour le contenu principal de l'application</span>
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-family-heading</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-family-heading')">Copier</button>
+                </div>
+                <div class="type-value">'Alegreya Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto</div>
+                <div class="font-family-preview" style="font-family: 'Alegreya Sans', sans-serif;">
+                    The quick brown fox jumps over the lazy dog<br>
+                    <span style="font-size: 1rem;">Pour les titres et headers de l'application</span>
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-family-mono</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-family-mono')">Copier</button>
+                </div>
+                <div class="type-value">'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace</div>
+                <div class="font-family-preview" style="font-family: 'SFMono-Regular', Consolas, monospace;">
+                    The quick brown fox jumps over the lazy dog<br>
+                    <span style="font-size: 1rem;">Pour le code et les valeurs techniques</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FONT SIZES -->
+        <section class="section">
+            <h2 class="section-title">Font Sizes</h2>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-size-xs</div>
+                    <div class="type-value">0.75rem / 12px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-xs')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 0.75rem;">
+                    Texte très petit pour les labels, badges et metadata (12px)
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-size-sm</div>
+                    <div class="type-value">0.875rem / 14px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-sm')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 0.875rem;">
+                    Texte petit pour les descriptions secondaires et helper text (14px)
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-size-base</div>
+                    <div class="type-value">1rem / 16px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-base')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 1rem;">
+                    Taille de base pour le texte principal du corps de l'application (16px)
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-size-lg</div>
+                    <div class="type-value">1.125rem / 18px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-lg')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 1.125rem;">
+                    Texte légèrement plus grand pour mettre en avant (18px)
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-size-xl</div>
+                    <div class="type-value">1.25rem / 20px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-xl')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 1.25rem;">
+                    Texte important ou petits titres (20px)
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-size-2xl</div>
+                    <div class="type-value">1.5rem / 24px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-2xl')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 1.5rem;">
+                    Sous-titres et titres de sections (24px)
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-size-3xl</div>
+                    <div class="type-value">1.875rem / 30px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-3xl')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 1.875rem;">
+                    Titres de pages (30px)
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-size-4xl</div>
+                    <div class="type-value">2.25rem / 36px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-4xl')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 2.25rem;">
+                    Grands titres principaux (36px)
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-size-5xl</div>
+                    <div class="type-value">3rem / 48px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-5xl')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 3rem;">
+                    Titres hero (48px)
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-size-6xl</div>
+                    <div class="type-value">3.75rem / 60px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-6xl')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 3.75rem;">
+                    Display (60px)
+                </div>
+            </div>
+        </section>
+
+        <!-- TITLE SIZES -->
+        <section class="section">
+            <h2 class="section-title">Title Sizes (h1-h6)</h2>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$title-size-1</div>
+                    <div class="type-value">$font-size-4xl / 36px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$title-size-1')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 2.25rem; font-family: 'Alegreya Sans', sans-serif; font-weight: 700;">
+                    Titre H1 - Page principale
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$title-size-2</div>
+                    <div class="type-value">$font-size-3xl / 30px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$title-size-2')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 1.875rem; font-family: 'Alegreya Sans', sans-serif; font-weight: 700;">
+                    Titre H2 - Sous-sections principales
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$title-size-3</div>
+                    <div class="type-value">$font-size-2xl / 24px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$title-size-3')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 1.5rem; font-family: 'Alegreya Sans', sans-serif; font-weight: 600;">
+                    Titre H3 - Sous-sections
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$title-size-4</div>
+                    <div class="type-value">$font-size-xl / 20px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$title-size-4')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 1.25rem; font-family: 'Alegreya Sans', sans-serif; font-weight: 600;">
+                    Titre H4 - Petites sections
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$title-size-5</div>
+                    <div class="type-value">$font-size-lg / 18px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$title-size-5')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 1.125rem; font-family: 'Alegreya Sans', sans-serif; font-weight: 600;">
+                    Titre H5 - Sous-titres
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$title-size-6</div>
+                    <div class="type-value">$font-size-base / 16px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$title-size-6')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-size: 1rem; font-family: 'Alegreya Sans', sans-serif; font-weight: 600;">
+                    Titre H6 - Petits titres
+                </div>
+            </div>
+        </section>
+
+        <!-- FONT WEIGHTS -->
+        <section class="section">
+            <h2 class="section-title">Font Weights</h2>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-weight-light</div>
+                    <div class="type-value">300</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-weight-light')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-weight: 300; font-size: 1.25rem;">
+                    Texte léger - pour mettre en retrait ou donner un style aéré
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-weight-normal</div>
+                    <div class="type-value">400</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-weight-normal')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-weight: 400; font-size: 1.25rem;">
+                    Texte normal - poids par défaut pour le contenu standard
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-weight-medium</div>
+                    <div class="type-value">500</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-weight-medium')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-weight: 500; font-size: 1.25rem;">
+                    Texte medium - pour mettre légèrement en évidence
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-weight-semibold</div>
+                    <div class="type-value">600</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-weight-semibold')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-weight: 600; font-size: 1.25rem;">
+                    Texte semi-gras - pour les titres et éléments importants
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$font-weight-bold</div>
+                    <div class="type-value">700</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-weight-bold')">Copier</button>
+                </div>
+                <div class="type-preview" style="font-weight: 700; font-size: 1.25rem;">
+                    Texte gras - pour une forte emphase
+                </div>
+            </div>
+        </section>
+
+        <!-- LINE HEIGHTS -->
+        <section class="section">
+            <h2 class="section-title">Line Heights</h2>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$line-height-tight</div>
+                    <div class="type-value">1.25</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$line-height-tight')">Copier</button>
+                </div>
+                <div class="type-preview" style="line-height: 1.25; font-size: 1.125rem;">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #666;">Serré - pour les titres et headings</div>
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$line-height-normal</div>
+                    <div class="type-value">1.5</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$line-height-normal')">Copier</button>
+                </div>
+                <div class="type-preview" style="line-height: 1.5; font-size: 1.125rem;">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #666;">Normal - pour le contenu standard (par défaut)</div>
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div class="type-name">$line-height-relaxed</div>
+                    <div class="type-value">1.75</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$line-height-relaxed')">Copier</button>
+                </div>
+                <div class="type-preview" style="line-height: 1.75; font-size: 1.125rem;">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #666;">Relâché - pour une meilleure lisibilité des longs textes</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXAMPLES -->
+        <section class="section">
+            <h2 class="section-title">Exemples d'utilisation</h2>
+
+            <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #244428; margin-bottom: 1rem;">Titre de page</h3>
+                <pre style="background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>h1 {
+  font-family: $font-family-heading;
+  font-size: $title-size-1;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  color: $color-text-primary;
+}</code></pre>
+            </div>
+
+            <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #244428; margin-bottom: 1rem;">Texte de corps</h3>
+                <pre style="background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>p {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-normal;
+  color: $color-text-primary;
+}</code></pre>
+            </div>
+
+            <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #244428; margin-bottom: 1rem;">Label de formulaire</h3>
+                <pre style="background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>label {
+  font-family: $font-family-base;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+}</code></pre>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                event.target.textContent = '✓ Copié !';
+                event.target.classList.add('copied');
+
+                setTimeout(() => {
+                    event.target.textContent = 'Copier';
+                    event.target.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Erreur lors de la copie:', err);
+                alert('Erreur lors de la copie');
+            });
+        }
+    </script>
+</body>
+</html>

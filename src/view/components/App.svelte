@@ -57,7 +57,7 @@
     border-radius: 16px;
     padding: 3rem;
     max-width: 600px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px $color-black-alpha-30;
   }
 
   h1 {
@@ -106,7 +106,7 @@
   button:hover {
     background: $brand-quaternary;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba($brand-primary, 0.4);
+    box-shadow: 0 4px 12px $color-primary-alpha-40;
   }
 
   button:active {

@@ -2,11 +2,12 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
-  import { SearchBar, ListItem, Button, Title, Filter, ConfirmModal } from '../../components/ui';
+  import { SearchBar, ListItem, Button, Title, Filter, ConfirmModal, Badge, Tag } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, SearchIngredientsDto } from '../../types/ingredient.types';
-  import { StoreAisle, Unit, StoreAisleLabels, UnitLabels } from '../../types/ingredient.types';
+  import { StoreAisle, Unit, StoreAisleLabels, StoreAisleColors, UnitLabels } from '../../types/ingredient.types';
   import { UserRole } from '../../types/user.types';
+  import { getMonthAbbreviations, getSeasonTagVariant } from '../../helpers/season.helper';
 
   // Recevoir les données du SSR
   let { ingredients: initialIngredients = [], user = null }: { ingredients?: Ingredient[], user?: any } = $props();
@@ -224,11 +225,34 @@
         <ListItem
           imageUrl={ingredient.imageUrl}
           imagePlaceholder="🍽️"
-          title={ingredient.label}
-          subtitle={StoreAisleLabels[ingredient.aisle]}
           onEdit={isAdmin() ? () => openDrawer(ingredient) : undefined}
           onDelete={isAdmin() ? () => openDeleteConfirmation(ingredient.id) : undefined}
-        />
+        >
+          {#snippet children()}
+            <h3 class="ingredient-title">{ingredient.label}</h3>
+          {/snippet}
+
+          {#snippet badge()}
+            <Badge variant={StoreAisleColors[ingredient.aisle]} size="xs">
+              {StoreAisleLabels[ingredient.aisle]}
+            </Badge>
+          {/snippet}
+
+          {#snippet footer()}
+            <div class="ingredient-seasons">
+              {#if ingredient.seasonMonths && ingredient.seasonMonths.length > 0}
+                {#each ingredient.seasonMonths as month}
+                  <Tag variant={getSeasonTagVariant(month)} size="xs">
+                    {getMonthAbbreviations([month])[0]}
+                  </Tag>
+                {/each}
+              {:else}
+                <!-- Espace vide pour l'uniformité -->
+                <div class="ingredient-seasons-placeholder"></div>
+              {/if}
+            </div>
+          {/snippet}
+        </ListItem>
       {/each}
     </div>
 
@@ -292,7 +316,7 @@
   $text-light: $color-gray-400;
   $border-color: $color-gray-200;
   $shadow-primary: rgba($brand-primary, 0.3);
-  $shadow-light: rgba(0, 0, 0, 0.08);
+  $shadow-light: $color-black-alpha-08;
   $spacing-base: 1rem;
   $breakpoint-mobile: 768px;
   $transition-duration: 0.3s;
@@ -431,5 +455,31 @@
       font-size: 0.9rem;
       margin-top: $spacing-base;
     }
+  }
+
+  .ingredient-title {
+    margin: 0;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: $line-height-normal;
+  }
+
+  .ingredient-seasons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    min-height: 28px; // Hauteur minimale pour l'uniformité (taille d'un petit tag)
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .ingredient-seasons-placeholder {
+    height: 28px; // Même hauteur qu'un tag small
+    width: 100%;
   }
 </style>

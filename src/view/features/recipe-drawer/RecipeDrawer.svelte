@@ -846,7 +846,7 @@
     font-size: 1rem;
 
     &:hover {
-      background: rgba(245, 101, 101, 0.2);
+      background: $color-danger-alpha-20;
     }
   }
 
@@ -968,7 +968,7 @@
     transition: all 0.2s;
 
     &:hover {
-      background: rgba(245, 101, 101, 0.1);
+      background: $color-danger-alpha-10;
     }
   }
 
@@ -1069,7 +1069,7 @@
 
       &:hover {
         border-color: $danger-color;
-        background: rgba(245, 101, 101, 0.1);
+        background: $color-danger-alpha-10;
       }
     }
   }

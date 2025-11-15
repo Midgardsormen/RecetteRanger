@@ -439,7 +439,7 @@
       transition: all 0.2s;
 
       &:hover {
-        background: rgba(245, 101, 101, 0.1);
+        background: $color-danger-alpha-10;
       }
     }
   }

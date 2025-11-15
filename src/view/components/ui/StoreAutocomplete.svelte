@@ -179,7 +179,7 @@
   $border-color: $color-gray-200;
   $white: $color-white;
   $text-dark: $color-gray-800;
-  $shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  $shadow: 0 2px 8px $color-black-alpha-10;
 
   .store-autocomplete {
     position: relative;
@@ -318,7 +318,7 @@
 
   .result-button--remove {
     &:hover {
-      background: rgba(220, 38, 38, 0.05);
+      background: $color-danger-dark-alt-alpha-05;
     }
 
     .store-name {

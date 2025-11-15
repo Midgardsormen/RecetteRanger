@@ -211,7 +211,7 @@
     padding: 4rem 2rem;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px $color-black-alpha-10;
 
     .empty-icon {
       font-size: 4rem;
@@ -239,13 +239,13 @@
     background: white;
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px $color-black-alpha-10;
     cursor: pointer;
     transition: all 0.3s ease;
 
     &:hover {
       transform: translateY(-4px);
-      box-shadow: 0 4px 16px rgba($brand-primary, 0.2);
+      box-shadow: 0 4px 16px $color-primary-alpha-20;
     }
 
     .list-header {

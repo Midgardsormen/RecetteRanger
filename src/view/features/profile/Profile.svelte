@@ -265,7 +265,7 @@
   $text-dark: $color-gray-800;
   $text-gray: $color-gray-600;
   $border-color: $color-gray-200;
-  $shadow-light: rgba(0, 0, 0, 0.08);
+  $shadow-light: $color-black-alpha-08;
   $spacing-base: 1rem;
 
   .profile {

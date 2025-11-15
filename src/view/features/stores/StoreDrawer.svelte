@@ -277,13 +277,13 @@
 
   .duplicates {
     padding: $spacing-base;
-    background: rgba(237, 137, 54, 0.1);
+    background: $color-warning-alpha-10;
     border: 2px solid $warning-color;
     border-radius: 8px;
 
     &__title {
       margin: 0 0 $spacing-base * 0.5 0;
-      color: rgba(237, 137, 54, 0.8);
+      color: $color-warning;
       font-weight: 600;
       font-size: 0.9rem;
     }
@@ -316,7 +316,7 @@
 
     &__warning {
       margin: 0;
-      color: rgba(237, 137, 54, 0.8);
+      color: $color-warning;
       font-size: 0.9rem;
       font-weight: 600;
     }

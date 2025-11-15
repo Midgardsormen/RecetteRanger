@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../../../types/meal-plan.types';
+  import { MealSlotColors } from '../../../../types/meal-plan.types';
   import { Button, IconButton, Badge } from '../../../../components/ui';
 
   interface Props {
@@ -234,7 +235,7 @@
                   {#if item.isExceptional && item.customSlotName}
                     <Badge variant="warning" size="small">{item.customSlotName}</Badge>
                   {:else}
-                    <Badge variant="primary" size="small">{slotConfigs.find(c => c.slot === item.slot)?.label || item.slot}</Badge>
+                    <Badge variant={MealSlotColors[item.slot]} size="small">{slotConfigs.find(c => c.slot === item.slot)?.label || item.slot}</Badge>
                   {/if}
                   {#if item.recipe}
                     <span class="recipe-name">{item.recipe.label}</span>
@@ -286,7 +287,7 @@
     background: $white;
     border-radius: 16px;
     padding: $spacing-base * 2;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px $color-black-alpha-08;
   }
 
   .calendar-header {
@@ -386,7 +387,7 @@
 
     &.today {
       border-color: $today-color;
-      background: rgba(251, 191, 36, 0.05);
+      background: $color-warning-bright-alpha-05;
 
       .day-number {
         color: $today-color;
@@ -473,7 +474,7 @@
     transition: background 0.2s;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.1);
+      background: $color-black-alpha-10;
     }
 
     &.edit {
@@ -484,7 +485,7 @@
 
     &.delete {
       &:hover {
-        background: rgba(245, 101, 101, 0.2);
+        background: $color-danger-alpha-20;
       }
     }
   }

@@ -43,7 +43,7 @@
 
   .header {
     
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px $color-black-alpha-10;
     position: sticky;
     top: 0;
     z-index: $z-index-header;
@@ -75,13 +75,13 @@
       width: 80px;
       height: 80px;
 
-      background: $color-dutch-white;
+      background: $brand-cream;
       border-radius: 50%;
       align-items: center;
       justify-content: center;
       box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.2),
-        0 4px 8px rgba(0, 0, 0, 0.15);
+        0 8px 24px $color-black-alpha-20,
+        0 4px 8px $color-black-alpha-15;
       z-index: 100;
 
       top: 0;
@@ -109,10 +109,10 @@
         width: 140px;
         height: 140px;
         box-shadow:
-          4px 4px 0 $color-permanent-geranium-lake,
-          8px 8px 0 $color-permanent-geranium-lake,
-          0 8px 24px rgba(0, 0, 0, 0.2),
-          0 4px 8px rgba(0, 0, 0, 0.15);
+          4px 4px 0 $brand-red,
+          8px 8px 0 $brand-red,
+          0 8px 24px $color-black-alpha-20,
+          0 4px 8px $color-black-alpha-15;
         position: absolute;
         left: 0;
         @media (min-width: $breakpoint-sm) {
@@ -197,10 +197,10 @@
     // Style the IconButton inside
     :global(button) {
       color: $color-white !important;
-      background: rgba(255, 255, 255, 0.1) !important;
+      background: $color-white-alpha-10 !important;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.2) !important;
+        background: $color-white-alpha-20 !important;
       }
     }
   }

@@ -180,7 +180,7 @@
   .register-card {
     position: relative;
     z-index: 1;
-    background: $color-dutch-white;
+    background: $brand-cream;
     border-radius: $radius-2xl;
     padding: $spacing-2xl;
     width: 100%;

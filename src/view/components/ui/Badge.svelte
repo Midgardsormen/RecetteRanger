@@ -1,9 +1,17 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
 
+  type ColorVariant =
+    // Semantic colors
+    | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'
+    // Extended palette
+    | 'red' | 'orange' | 'amber' | 'yellow' | 'lime' | 'green' | 'emerald'
+    | 'teal' | 'cyan' | 'sky' | 'blue' | 'indigo' | 'violet' | 'purple'
+    | 'fuchsia' | 'pink' | 'rose';
+
   interface Props {
-    variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral';
-    size?: 'small' | 'medium' | 'large';
+    variant?: ColorVariant;
+    size?: 'xs' | 'small' | 'medium' | 'large';
     pill?: boolean;
     dot?: boolean;
     children?: Snippet;
@@ -19,14 +27,8 @@
 </script>
 
 <span
-  class="badge"
-  class:badge--primary={variant === 'primary'}
-  class:badge--secondary={variant === 'secondary'}
-  class:badge--success={variant === 'success'}
-  class:badge--danger={variant === 'danger'}
-  class:badge--warning={variant === 'warning'}
-  class:badge--info={variant === 'info'}
-  class:badge--neutral={variant === 'neutral'}
+  class="badge badge--{variant}"
+  class:badge--xs={size === 'xs'}
   class:badge--small={size === 'small'}
   class:badge--medium={size === 'medium'}
   class:badge--large={size === 'large'}
@@ -53,26 +55,34 @@
     font-weight: $font-weight-semibold;
     line-height: 1;
     white-space: nowrap;
-    border-radius: $radius-md;
     transition: all $transition-base $transition-ease;
 
     // Sizes
+    &--xs {
+      padding: 0.125rem 0.375rem; // 2px 6px
+      font-size: 0.625rem; // 10px
+      border-radius: $radius-sm;
+    }
+
     &--small {
       padding: $spacing-xs $spacing-sm;
       font-size: $font-size-xs;
+      border-radius: $radius-sm;
     }
 
     &--medium {
       padding: $spacing-sm $spacing-md;
       font-size: $font-size-sm;
+      border-radius: $radius-md;
     }
 
     &--large {
       padding: $spacing-md $spacing-base;
       font-size: $font-size-base;
+      border-radius: $radius-lg;
     }
 
-    // Variants
+    // Variants - Semantic colors
     &--primary {
       background: $brand-primary;
       color: $color-white;
@@ -106,6 +116,92 @@
     &--neutral {
       background: $color-gray-200;
       color: $color-text-primary;
+    }
+
+    // Extended color palette
+    &--red {
+      background: $brand-red-600;
+      color: $color-white;
+    }
+
+    &--orange {
+      background: $color-orange-600;
+      color: $color-white;
+    }
+
+    &--amber {
+      background: $color-amber-600;
+      color: $color-white;
+    }
+
+    &--yellow {
+      background: $color-yellow-600;
+      color: $color-white;
+    }
+
+    &--lime {
+      background: $color-lime-600;
+      color: $color-white;
+    }
+
+    &--green {
+      background: $color-green-600;
+      color: $color-white;
+    }
+
+    &--emerald {
+      background: $color-emerald-600;
+      color: $color-white;
+    }
+
+    &--teal {
+      background: $color-teal-600;
+      color: $color-white;
+    }
+
+    &--cyan {
+      background: $color-cyan-600;
+      color: $color-white;
+    }
+
+    &--sky {
+      background: $color-sky-600;
+      color: $color-white;
+    }
+
+    &--blue {
+      background: $color-blue-600;
+      color: $color-white;
+    }
+
+    &--indigo {
+      background: $color-indigo-600;
+      color: $color-white;
+    }
+
+    &--violet {
+      background: $color-violet-600;
+      color: $color-white;
+    }
+
+    &--purple {
+      background: $color-purple-600;
+      color: $color-white;
+    }
+
+    &--fuchsia {
+      background: $color-fuchsia-600;
+      color: $color-white;
+    }
+
+    &--pink {
+      background: $color-pink-600;
+      color: $color-white;
+    }
+
+    &--rose {
+      background: $color-rose-600;
+      color: $color-white;
     }
 
     // Modifiers

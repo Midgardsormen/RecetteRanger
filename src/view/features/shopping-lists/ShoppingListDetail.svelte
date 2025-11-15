@@ -1,11 +1,13 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { Button, IconButton, Input, ArticleAutocomplete, StoreAutocomplete, Select, ProgressBar } from '../../components/ui';
+  import { Button, IconButton, Input, ArticleAutocomplete, StoreAutocomplete, Select, ProgressBar, Dot } from '../../components/ui';
   import { SelectArticleDrawer } from './components';
   import { StoreDrawer } from '../stores';
   import { apiService } from '../../services/api.service';
   import type { ShoppingList, ShoppingListItem } from '../../types/shopping-list.types';
   import { getAisleLabel } from '../../utils/aisle-labels';
+  import { StoreAisleColors } from '../../types/ingredient.types';
+  import { getBadgeColor } from '../../helpers/color.helper';
   import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
 
   interface Store {
@@ -714,7 +716,12 @@
 
               {#each Array.from(storeGroup.aisles) as [aisleKey, aisleGroup]}
                 <div class="aisle-subgroup">
-                  <h3 class="aisle-subtitle">{aisleGroup.label}</h3>
+                  <h3 class="aisle-subtitle">
+                    {#if aisleKey !== 'NON_CLASSE'}
+                      <Dot color={getBadgeColor(StoreAisleColors[aisleKey])} size="small" />
+                    {/if}
+                    {aisleGroup.label}
+                  </h3>
                   <div
                     class="items-list"
                     use:droppable={{
@@ -1048,6 +1055,9 @@
         padding-left: 0.5rem;
         border-bottom: 1px solid var(--border-color);
         font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
 
       .items-list {
@@ -1096,7 +1106,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px $color-black-alpha-10;
     }
 
     &.checked {

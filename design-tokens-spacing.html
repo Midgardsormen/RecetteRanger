@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spacing - Design Tokens RecetteRanger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f9fafb;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #244428 0%, #132315 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            color: #244428;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #CA8F2F;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .spacing-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .spacing-card:hover {
+            border-color: #244428;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .spacing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .spacing-name {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 1rem;
+            color: #244428;
+            font-weight: 600;
+        }
+
+        .spacing-value {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.875rem;
+            color: #666;
+            background: #f5f5f5;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .spacing-visual {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .spacing-bar {
+            background: linear-gradient(135deg, #244428 0%, #CA8F2F 100%);
+            height: 40px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(36, 68, 40, 0.2);
+        }
+
+        .spacing-measure {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.875rem;
+            color: #666;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .usage-example {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 3px solid #244428;
+            margin-top: 1rem;
+        }
+
+        .usage-title {
+            font-weight: 600;
+            color: #244428;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .usage-text {
+            font-size: 0.875rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            background: #244428;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #132315;
+        }
+
+        .copied {
+            background: #48bb78 !important;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .comparison-item {
+            background: white;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .comparison-box {
+            background: #244428;
+            margin: 1rem auto;
+            border-radius: 4px;
+        }
+
+        .comparison-label {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .spacing-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📏 Spacing (Espacements)</h1>
+            <p class="subtitle">Documentation complète des espacements - RecetteRanger</p>
+        </header>
+
+        <!-- SPACING SCALE -->
+        <section class="section">
+            <h2 class="section-title">Échelle d'espacement</h2>
+
+            <div class="spacing-card">
+                <div class="spacing-header">
+                    <div class="spacing-name">$spacing-xs</div>
+                    <div class="spacing-value">4px / 0.25rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-xs')">Copier</button>
+                </div>
+                <div class="spacing-visual">
+                    <div class="spacing-bar" style="width: 4px;"></div>
+                    <div class="spacing-measure">4px</div>
+                </div>
+                <div class="usage-example">
+                    <div class="usage-title">Utilisation recommandée</div>
+                    <div class="usage-text">• Espacement minimal entre éléments très proches<br>• Gap entre icône et texte<br>• Padding interne de petits badges</div>
+                </div>
+            </div>
+
+            <div class="spacing-card">
+                <div class="spacing-header">
+                    <div class="spacing-name">$spacing-sm</div>
+                    <div class="spacing-value">8px / 0.5rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-sm')">Copier</button>
+                </div>
+                <div class="spacing-visual">
+                    <div class="spacing-bar" style="width: 8px;"></div>
+                    <div class="spacing-measure">8px</div>
+                </div>
+                <div class="usage-example">
+                    <div class="usage-title">Utilisation recommandée</div>
+                    <div class="usage-text">• Padding de petits boutons<br>• Margin entre éléments de formulaire<br>• Gap dans les grilles compactes</div>
+                </div>
+            </div>
+
+            <div class="spacing-card">
+                <div class="spacing-header">
+                    <div class="spacing-name">$spacing-md</div>
+                    <div class="spacing-value">12px / 0.75rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-md')">Copier</button>
+                </div>
+                <div class="spacing-visual">
+                    <div class="spacing-bar" style="width: 12px;"></div>
+                    <div class="spacing-measure">12px</div>
+                </div>
+                <div class="usage-example">
+                    <div class="usage-title">Utilisation recommandée</div>
+                    <div class="usage-text">• Padding de cards compactes<br>• Margin entre sections proches<br>• Espacement dans les listes</div>
+                </div>
+            </div>
+
+            <div class="spacing-card">
+                <div class="spacing-header">
+                    <div class="spacing-name">$spacing-base</div>
+                    <div class="spacing-value">16px / 1rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-base')">Copier</button>
+                </div>
+                <div class="spacing-visual">
+                    <div class="spacing-bar" style="width: 16px;"></div>
+                    <div class="spacing-measure">16px</div>
+                </div>
+                <div class="usage-example">
+                    <div class="usage-title">Utilisation recommandée</div>
+                    <div class="usage-text">• Padding standard des boutons et inputs<br>• Margin par défaut entre éléments<br>• Gap dans les grilles standards<br>• Espacement de base le plus utilisé</div>
+                </div>
+            </div>
+
+            <div class="spacing-card">
+                <div class="spacing-header">
+                    <div class="spacing-name">$spacing-lg</div>
+                    <div class="spacing-value">24px / 1.5rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-lg')">Copier</button>
+                </div>
+                <div class="spacing-visual">
+                    <div class="spacing-bar" style="width: 24px;"></div>
+                    <div class="spacing-measure">24px</div>
+                </div>
+                <div class="usage-example">
+                    <div class="usage-title">Utilisation recommandée</div>
+                    <div class="usage-text">• Padding de cards et containers<br>• Margin entre sections distinctes<br>• Espacement généreux pour la lisibilité</div>
+                </div>
+            </div>
+
+            <div class="spacing-card">
+                <div class="spacing-header">
+                    <div class="spacing-name">$spacing-xl</div>
+                    <div class="spacing-value">32px / 2rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-xl')">Copier</button>
+                </div>
+                <div class="spacing-visual">
+                    <div class="spacing-bar" style="width: 32px;"></div>
+                    <div class="spacing-measure">32px</div>
+                </div>
+                <div class="usage-example">
+                    <div class="usage-title">Utilisation recommandée</div>
+                    <div class="usage-text">• Padding de grandes cards<br>• Margin entre sections majeures<br>• Espacement de headers et footers</div>
+                </div>
+            </div>
+
+            <div class="spacing-card">
+                <div class="spacing-header">
+                    <div class="spacing-name">$spacing-2xl</div>
+                    <div class="spacing-value">48px / 3rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-2xl')">Copier</button>
+                </div>
+                <div class="spacing-visual">
+                    <div class="spacing-bar" style="width: 48px;"></div>
+                    <div class="spacing-measure">48px</div>
+                </div>
+                <div class="usage-example">
+                    <div class="usage-title">Utilisation recommandée</div>
+                    <div class="usage-text">• Margin entre sections très distinctes<br>• Padding de containers principaux<br>• Espacement pour créer de la respiration</div>
+                </div>
+            </div>
+
+            <div class="spacing-card">
+                <div class="spacing-header">
+                    <div class="spacing-name">$spacing-3xl</div>
+                    <div class="spacing-value">64px / 4rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-3xl')">Copier</button>
+                </div>
+                <div class="spacing-visual">
+                    <div class="spacing-bar" style="width: 64px;"></div>
+                    <div class="spacing-measure">64px</div>
+                </div>
+                <div class="usage-example">
+                    <div class="usage-title">Utilisation recommandée</div>
+                    <div class="usage-text">• Margin entre pages sections<br>• Padding de landing pages<br>• Espacement important pour impact visuel</div>
+                </div>
+            </div>
+
+            <div class="spacing-card">
+                <div class="spacing-header">
+                    <div class="spacing-name">$spacing-4xl</div>
+                    <div class="spacing-value">72px / 5rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-4xl')">Copier</button>
+                </div>
+                <div class="spacing-visual">
+                    <div class="spacing-bar" style="width: 72px;"></div>
+                    <div class="spacing-measure">72px</div>
+                </div>
+                <div class="usage-example">
+                    <div class="usage-title">Utilisation recommandée</div>
+                    <div class="usage-text">• Margin maximum entre sections<br>• Padding de hero sections<br>• Espacement dramatique pour mise en page</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPARISON VISUAL -->
+        <section class="section">
+            <h2 class="section-title">Comparaison visuelle</h2>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <div class="comparison-label">$spacing-xs</div>
+                    <div class="comparison-box" style="width: 4px; height: 40px;"></div>
+                    <div class="comparison-label">4px</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">$spacing-sm</div>
+                    <div class="comparison-box" style="width: 8px; height: 40px;"></div>
+                    <div class="comparison-label">8px</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">$spacing-md</div>
+                    <div class="comparison-box" style="width: 12px; height: 40px;"></div>
+                    <div class="comparison-label">12px</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">$spacing-base</div>
+                    <div class="comparison-box" style="width: 16px; height: 40px;"></div>
+                    <div class="comparison-label">16px</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">$spacing-lg</div>
+                    <div class="comparison-box" style="width: 24px; height: 40px;"></div>
+                    <div class="comparison-label">24px</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">$spacing-xl</div>
+                    <div class="comparison-box" style="width: 32px; height: 40px;"></div>
+                    <div class="comparison-label">32px</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">$spacing-2xl</div>
+                    <div class="comparison-box" style="width: 48px; height: 40px;"></div>
+                    <div class="comparison-label">48px</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">$spacing-3xl</div>
+                    <div class="comparison-box" style="width: 64px; height: 40px;"></div>
+                    <div class="comparison-label">64px</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">$spacing-4xl</div>
+                    <div class="comparison-box" style="width: 72px; height: 40px;"></div>
+                    <div class="comparison-label">72px</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BEST PRACTICES -->
+        <section class="section">
+            <h2 class="section-title">Bonnes pratiques</h2>
+
+            <div style="background: #f0fff4; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #48bb78; margin-bottom: 1rem;">
+                <h3 style="color: #2f855a; margin-bottom: 0.5rem;">✓ À faire</h3>
+                <ul style="color: #2f855a; line-height: 1.8;">
+                    <li>Utiliser les variables d'espacement au lieu de valeurs fixes</li>
+                    <li>Privilégier $spacing-base pour la plupart des cas</li>
+                    <li>Utiliser des espacements cohérents dans tout le projet</li>
+                    <li>Augmenter l'espacement pour améliorer la lisibilité</li>
+                    <li>Utiliser les calculs ($spacing-base * 0.5) pour des valeurs intermédiaires</li>
+                </ul>
+            </div>
+
+            <div style="background: #fff5f5; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #f56565; margin-bottom: 1rem;">
+                <h3 style="color: #c53030; margin-bottom: 0.5rem;">✗ À éviter</h3>
+                <ul style="color: #c53030; line-height: 1.8;">
+                    <li>Éviter les valeurs fixes en pixels (ex: padding: 13px)</li>
+                    <li>Ne pas mélanger rem et px sans raison</li>
+                    <li>Éviter trop d'espacements différents dans une même page</li>
+                    <li>Ne pas utiliser de valeurs négatives pour margin sans raison</li>
+                    <li>Éviter les espacements trop serrés qui nuisent à la lisibilité</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- EXAMPLES -->
+        <section class="section">
+            <h2 class="section-title">Exemples d'utilisation</h2>
+
+            <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #244428; margin-bottom: 1rem;">Exemple 1: Card avec padding</h3>
+                <pre style="background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>.card {
+  padding: $spacing-lg;
+  margin-bottom: $spacing-base;
+
+  &__header {
+    margin-bottom: $spacing-md;
+  }
+
+  &__content {
+    padding: $spacing-base;
+  }
+}</code></pre>
+            </div>
+
+            <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #244428; margin-bottom: 1rem;">Exemple 2: Grid avec gap</h3>
+                <pre style="background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-lg;
+  padding: $spacing-2xl;
+}</code></pre>
+            </div>
+
+            <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #244428; margin-bottom: 1rem;">Exemple 3: Button avec padding</h3>
+                <pre style="background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>.button {
+  padding: $spacing-md $spacing-lg;
+  margin-right: $spacing-sm;
+
+  &__icon {
+    margin-right: $spacing-xs;
+  }
+}</code></pre>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                event.target.textContent = '✓ Copié !';
+                event.target.classList.add('copied');
+
+                setTimeout(() => {
+                    event.target.textContent = 'Copier';
+                    event.target.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Erreur lors de la copie:', err);
+                alert('Erreur lors de la copie');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Couleurs - Design Tokens RecetteRanger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f9fafb;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #244428 0%, #132315 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            margin: 2rem 0;
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #244428;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            color: #244428;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #CA8F2F;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .subsection-title {
+            font-size: 1.25rem;
+            color: #244428;
+            margin: 2rem 0 1rem;
+            font-weight: 600;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .color-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .color-card:hover {
+            border-color: #244428;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 120px;
+            position: relative;
+        }
+
+        .color-info {
+            padding: 1rem;
+        }
+
+        .color-name {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.875rem;
+            color: #244428;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .color-value {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.8rem;
+            color: #666;
+            background: #f5f5f5;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .color-usage {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .copy-btn {
+            background: #244428;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background: #132315;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+
+        .copied {
+            background: #48bb78 !important;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: rgba(36, 68, 40, 0.1);
+            color: #244428;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkerboard {
+            background-image:
+                linear-gradient(45deg, #ddd 25%, transparent 25%),
+                linear-gradient(-45deg, #ddd 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ddd 75%),
+                linear-gradient(-45deg, transparent 75%, #ddd 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Couleurs</h1>
+            <p class="subtitle">Documentation complète des couleurs - RecetteRanger</p>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Rechercher une couleur... (ex: primary, danger, gray)" />
+        </div>
+
+        <!-- BRAND COLORS -->
+        <section class="section">
+            <h2 class="section-title">Couleurs de marque (Brand)</h2>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: #244428;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$brand-primary</div>
+                        <div class="color-value">#244428</div>
+                        <div class="color-usage">Couleur principale de la marque - boutons, liens, headers</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$brand-primary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #CA8F2F;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$brand-secondary</div>
+                        <div class="color-value">#CA8F2F</div>
+                        <div class="color-usage">Couleur secondaire - accents, highlights</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$brand-secondary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #132315;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$brand-tertiary</div>
+                        <div class="color-value">#132315</div>
+                        <div class="color-usage">Couleur tertiaire - dark variant</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$brand-tertiary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #252221;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$brand-quaternary</div>
+                        <div class="color-value">#252221</div>
+                        <div class="color-usage">Couleur quaternaire - états hover/active</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$brand-quaternary')">Copier</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BRAND ACCENT COLORS -->
+        <section class="section">
+            <h2 class="section-title">Brand Accent Colors</h2>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: #F4E0C0;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$brand-cream</div>
+                        <div class="color-value">#F4E0C0</div>
+                        <div class="color-usage">Brand accent - backgrounds clairs, titres décoratifs, boutons inverse</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$brand-cream')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #DC3428;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$brand-red</div>
+                        <div class="color-value">#DC3428</div>
+                        <div class="color-usage">Brand accent rouge - ombres décoratives, accents visuels</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$brand-red')">Copier</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEMANTIC COLORS -->
+        <section class="section">
+            <h2 class="section-title">Couleurs sémantiques</h2>
+
+            <h3 class="subsection-title">Success (Succès)</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: #48bb78;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-success</div>
+                        <div class="color-value">#48bb78</div>
+                        <div class="color-usage">Messages de succès, validations</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-success')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #9ae6b4;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-success-light</div>
+                        <div class="color-value">#9ae6b4</div>
+                        <div class="color-usage">Variant clair pour backgrounds</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-success-light')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #2f855a;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-success-dark</div>
+                        <div class="color-value">#2f855a</div>
+                        <div class="color-usage">Variant foncé pour textes, hover</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-success-dark')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Danger (Erreur)</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: #f56565;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-danger</div>
+                        <div class="color-value">#f56565</div>
+                        <div class="color-usage">Messages d'erreur, actions destructives</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-danger')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #fc8181;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-danger-light</div>
+                        <div class="color-value">#fc8181</div>
+                        <div class="color-usage">Variant clair pour backgrounds</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-danger-light')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #c53030;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-danger-dark</div>
+                        <div class="color-value">#c53030</div>
+                        <div class="color-usage">Variant foncé pour textes, hover</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-danger-dark')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #e53e3e;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-danger-alt</div>
+                        <div class="color-value">#e53e3e</div>
+                        <div class="color-usage">Variant alternatif</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-danger-alt')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #dc2626;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-danger-dark-alt</div>
+                        <div class="color-value">#dc2626</div>
+                        <div class="color-usage">Variant dark alternatif</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-danger-dark-alt')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Warning (Avertissement)</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: #ed8936;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-warning</div>
+                        <div class="color-value">#ed8936</div>
+                        <div class="color-usage">Messages d'avertissement</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-warning')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #fbd38d;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-warning-light</div>
+                        <div class="color-value">#fbd38d</div>
+                        <div class="color-usage">Variant clair pour backgrounds</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-warning-light')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #c05621;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-warning-dark</div>
+                        <div class="color-value">#c05621</div>
+                        <div class="color-usage">Variant foncé pour textes</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-warning-dark')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #fbbf24;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-warning-bright</div>
+                        <div class="color-value">#fbbf24</div>
+                        <div class="color-usage">Variant bright/jaune</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-warning-bright')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Info (Information)</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: #4299e1;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-info</div>
+                        <div class="color-value">#4299e1</div>
+                        <div class="color-usage">Messages d'information</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-info')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #90cdf4;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-info-light</div>
+                        <div class="color-value">#90cdf4</div>
+                        <div class="color-usage">Variant clair pour backgrounds</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-info-light')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #2c5282;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-info-dark</div>
+                        <div class="color-value">#2c5282</div>
+                        <div class="color-usage">Variant foncé pour textes</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-info-dark')">Copier</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GRAY SCALE -->
+        <section class="section">
+            <h2 class="section-title">Échelle de gris</h2>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: #ffffff; border: 2px solid #e0e0e0;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-white</div>
+                        <div class="color-value">#ffffff</div>
+                        <div class="color-usage">Blanc pur - backgrounds, textes inversés</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-white')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #f9fafb;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-50</div>
+                        <div class="color-value">#f9fafb</div>
+                        <div class="color-usage">Background très clair</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-50')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #f5f5f5;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-100</div>
+                        <div class="color-value">#f5f5f5</div>
+                        <div class="color-usage">Background clair, états disabled</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-100')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #e0e0e0;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-200</div>
+                        <div class="color-value">#e0e0e0</div>
+                        <div class="color-usage">Bordures, séparateurs</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-200')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #d1d5db;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-300</div>
+                        <div class="color-value">#d1d5db</div>
+                        <div class="color-usage">Bordures secondaires</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-300')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #9ca3af;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-400</div>
+                        <div class="color-value">#9ca3af</div>
+                        <div class="color-usage">Placeholders, textes disabled</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-400')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #6b7280;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-500</div>
+                        <div class="color-value">#6b7280</div>
+                        <div class="color-usage">Textes tertiaires</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-500')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #666666;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-600</div>
+                        <div class="color-value">#666666</div>
+                        <div class="color-usage">Textes secondaires</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-600')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #4b5563;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-700</div>
+                        <div class="color-value">#4b5563</div>
+                        <div class="color-usage">Textes sombres</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-700')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #333333;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-800</div>
+                        <div class="color-value">#333333</div>
+                        <div class="color-usage">Textes primaires</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-800')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #1f2937;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-900</div>
+                        <div class="color-value">#1f2937</div>
+                        <div class="color-usage">Backgrounds très foncés</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-900')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #000000;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-black</div>
+                        <div class="color-value">#000000</div>
+                        <div class="color-usage">Noir pur</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-black')">Copier</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEXT COLORS -->
+        <section class="section">
+            <h2 class="section-title">Couleurs de texte</h2>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: #333333;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-text-primary</div>
+                        <div class="color-value">$color-gray-800 (#333333)</div>
+                        <div class="color-usage">Texte principal</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-text-primary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #666666;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-text-secondary</div>
+                        <div class="color-value">$color-gray-600 (#666666)</div>
+                        <div class="color-usage">Texte secondaire</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-text-secondary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #6b7280;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-text-tertiary</div>
+                        <div class="color-value">$color-gray-500 (#6b7280)</div>
+                        <div class="color-usage">Texte tertiaire</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-text-tertiary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #9ca3af;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-text-disabled</div>
+                        <div class="color-value">$color-gray-400 (#9ca3af)</div>
+                        <div class="color-usage">Texte désactivé</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-text-disabled')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #ffffff; border: 2px solid #e0e0e0;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-text-inverse</div>
+                        <div class="color-value">$color-white (#ffffff)</div>
+                        <div class="color-usage">Texte sur fond foncé</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-text-inverse')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #244428;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-text-link</div>
+                        <div class="color-value">$brand-primary (#244428)</div>
+                        <div class="color-usage">Liens</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-text-link')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #CA8F2F;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-text-link-hover</div>
+                        <div class="color-value">$brand-secondary (#CA8F2F)</div>
+                        <div class="color-usage">Liens au survol</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-text-link-hover')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #f56565;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-text-error</div>
+                        <div class="color-value">$color-danger (#f56565)</div>
+                        <div class="color-usage">Messages d'erreur</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-text-error')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #2f855a;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-text-success</div>
+                        <div class="color-value">$color-success-dark (#2f855a)</div>
+                        <div class="color-usage">Messages de succès</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-text-success')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #c05621;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-text-warning</div>
+                        <div class="color-value">$color-warning-dark (#c05621)</div>
+                        <div class="color-usage">Messages d'avertissement</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-text-warning')">Copier</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BACKGROUND COLORS -->
+        <section class="section">
+            <h2 class="section-title">Couleurs de fond</h2>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: #ffffff; border: 2px solid #e0e0e0;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-primary</div>
+                        <div class="color-value">$color-white (#ffffff)</div>
+                        <div class="color-usage">Background principal</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-primary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #f9fafb;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-secondary</div>
+                        <div class="color-value">$color-gray-50 (#f9fafb)</div>
+                        <div class="color-usage">Background secondaire</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-secondary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #f5f5f5;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-tertiary</div>
+                        <div class="color-value">$color-gray-100 (#f5f5f5)</div>
+                        <div class="color-usage">Background tertiaire</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-tertiary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #1f2937;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-dark</div>
+                        <div class="color-value">$color-gray-900 (#1f2937)</div>
+                        <div class="color-usage">Background foncé</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-dark')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #F4E0C0;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-light</div>
+                        <div class="color-value">$brand-cream (#F4E0C0)</div>
+                        <div class="color-usage">Background clair/chaud</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-light')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview checkerboard">
+                        <div style="width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-overlay</div>
+                        <div class="color-value">rgba(0, 0, 0, 0.5)</div>
+                        <div class="color-usage">Overlay pour modals</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-overlay')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #f5f5f5;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-disabled</div>
+                        <div class="color-value">$color-gray-100 (#f5f5f5)</div>
+                        <div class="color-usage">Background désactivé</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-disabled')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #f0fff4;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-success</div>
+                        <div class="color-value">#f0fff4</div>
+                        <div class="color-usage">Background success</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-success')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #fff5f5;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-danger</div>
+                        <div class="color-value">#fff5f5</div>
+                        <div class="color-usage">Background danger</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-danger')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #fffaf0;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-warning</div>
+                        <div class="color-value">#fffaf0</div>
+                        <div class="color-usage">Background warning</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-warning')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #ebf8ff;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-background-info</div>
+                        <div class="color-value">#ebf8ff</div>
+                        <div class="color-usage">Background info</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-background-info')">Copier</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BORDER COLORS -->
+        <section class="section">
+            <h2 class="section-title">Couleurs de bordure</h2>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: #e0e0e0;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-border-primary</div>
+                        <div class="color-value">$color-gray-200 (#e0e0e0)</div>
+                        <div class="color-usage">Bordure principale</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-border-primary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #d1d5db;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-border-secondary</div>
+                        <div class="color-value">$color-gray-300 (#d1d5db)</div>
+                        <div class="color-usage">Bordure secondaire</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-border-secondary')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #244428;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-border-focus</div>
+                        <div class="color-value">$brand-primary (#244428)</div>
+                        <div class="color-usage">Bordure focus</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-border-focus')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #f56565;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-border-error</div>
+                        <div class="color-value">$color-danger (#f56565)</div>
+                        <div class="color-usage">Bordure erreur</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-border-error')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #48bb78;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-border-success</div>
+                        <div class="color-value">$color-success (#48bb78)</div>
+                        <div class="color-usage">Bordure succès</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-border-success')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: #e0e0e0;"></div>
+                    <div class="color-info">
+                        <div class="color-name">$color-border-disabled</div>
+                        <div class="color-value">$color-gray-200 (#e0e0e0)</div>
+                        <div class="color-usage">Bordure désactivée</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-border-disabled')">Copier</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RGBA COLORS WITH OPACITY -->
+        <section class="section">
+            <h2 class="section-title">Couleurs avec opacité (RGBA)</h2>
+
+            <h3 class="subsection-title">White Alpha</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview checkerboard">
+                        <div style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.1);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-white-alpha-10</div>
+                        <div class="color-value">rgba(255, 255, 255, 0.1)</div>
+                        <div class="color-usage">10% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-white-alpha-10')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview checkerboard">
+                        <div style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.15);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-white-alpha-15</div>
+                        <div class="color-value">rgba(255, 255, 255, 0.15)</div>
+                        <div class="color-usage">15% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-white-alpha-15')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview checkerboard">
+                        <div style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.2);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-white-alpha-20</div>
+                        <div class="color-value">rgba(255, 255, 255, 0.2)</div>
+                        <div class="color-usage">20% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-white-alpha-20')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview checkerboard">
+                        <div style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-white-alpha-90</div>
+                        <div class="color-value">rgba(255, 255, 255, 0.9)</div>
+                        <div class="color-usage">90% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-white-alpha-90')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Black Alpha (pour shadows et overlays)</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(0, 0, 0, 0.03);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-black-alpha-03</div>
+                        <div class="color-value">rgba(0, 0, 0, 0.03)</div>
+                        <div class="color-usage">3% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-03')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(0, 0, 0, 0.05);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-black-alpha-05</div>
+                        <div class="color-value">rgba(0, 0, 0, 0.05)</div>
+                        <div class="color-usage">5% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-05')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(0, 0, 0, 0.06);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-black-alpha-06</div>
+                        <div class="color-value">rgba(0, 0, 0, 0.06)</div>
+                        <div class="color-usage">6% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-06')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(0, 0, 0, 0.08);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-black-alpha-08</div>
+                        <div class="color-value">rgba(0, 0, 0, 0.08)</div>
+                        <div class="color-usage">8% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-08')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(0, 0, 0, 0.1);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-black-alpha-10</div>
+                        <div class="color-value">rgba(0, 0, 0, 0.1)</div>
+                        <div class="color-usage">10% opacité - shadows</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-10')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(0, 0, 0, 0.15);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-black-alpha-15</div>
+                        <div class="color-value">rgba(0, 0, 0, 0.15)</div>
+                        <div class="color-usage">15% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-15')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(0, 0, 0, 0.2);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-black-alpha-20</div>
+                        <div class="color-value">rgba(0, 0, 0, 0.2)</div>
+                        <div class="color-usage">20% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-20')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-black-alpha-30</div>
+                        <div class="color-value">rgba(0, 0, 0, 0.3)</div>
+                        <div class="color-usage">30% opacité - overlays</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-30')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Primary Alpha</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(36, 68, 40, 0.03);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-primary-alpha-03</div>
+                        <div class="color-value">rgba($brand-primary, 0.03)</div>
+                        <div class="color-usage">3% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-03')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(36, 68, 40, 0.05);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-primary-alpha-05</div>
+                        <div class="color-value">rgba($brand-primary, 0.05)</div>
+                        <div class="color-usage">5% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-05')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(36, 68, 40, 0.08);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-primary-alpha-08</div>
+                        <div class="color-value">rgba($brand-primary, 0.08)</div>
+                        <div class="color-usage">8% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-08')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(36, 68, 40, 0.1);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-primary-alpha-10</div>
+                        <div class="color-value">rgba($brand-primary, 0.1)</div>
+                        <div class="color-usage">10% opacité - backgrounds légers</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-10')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(36, 68, 40, 0.12);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-primary-alpha-12</div>
+                        <div class="color-value">rgba($brand-primary, 0.12)</div>
+                        <div class="color-usage">12% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-12')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(36, 68, 40, 0.15);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-primary-alpha-15</div>
+                        <div class="color-value">rgba($brand-primary, 0.15)</div>
+                        <div class="color-usage">15% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-15')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(36, 68, 40, 0.2);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-primary-alpha-20</div>
+                        <div class="color-value">rgba($brand-primary, 0.2)</div>
+                        <div class="color-usage">20% opacité - focus rings</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-20')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(36, 68, 40, 0.25);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-primary-alpha-25</div>
+                        <div class="color-value">rgba($brand-primary, 0.25)</div>
+                        <div class="color-usage">25% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-25')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(36, 68, 40, 0.3);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-primary-alpha-30</div>
+                        <div class="color-value">rgba($brand-primary, 0.3)</div>
+                        <div class="color-usage">30% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-30')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(36, 68, 40, 0.4);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-primary-alpha-40</div>
+                        <div class="color-value">rgba($brand-primary, 0.4)</div>
+                        <div class="color-usage">40% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-40')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Secondary Alpha</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(202, 143, 47, 0.1);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-secondary-alpha-10</div>
+                        <div class="color-value">rgba($brand-secondary, 0.1)</div>
+                        <div class="color-usage">10% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-secondary-alpha-10')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(202, 143, 47, 0.15);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-secondary-alpha-15</div>
+                        <div class="color-value">rgba($brand-secondary, 0.15)</div>
+                        <div class="color-usage">15% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-secondary-alpha-15')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(202, 143, 47, 0.2);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-secondary-alpha-20</div>
+                        <div class="color-value">rgba($brand-secondary, 0.2)</div>
+                        <div class="color-usage">20% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-secondary-alpha-20')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Danger Alpha</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(245, 101, 101, 0.1);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-danger-alpha-10</div>
+                        <div class="color-value">rgba($color-danger, 0.1)</div>
+                        <div class="color-usage">10% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-danger-alpha-10')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(245, 101, 101, 0.2);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-danger-alpha-20</div>
+                        <div class="color-value">rgba($color-danger, 0.2)</div>
+                        <div class="color-usage">20% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-danger-alpha-20')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(245, 101, 101, 0.3);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-danger-alpha-30</div>
+                        <div class="color-value">rgba($color-danger, 0.3)</div>
+                        <div class="color-usage">30% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-danger-alpha-30')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(229, 62, 62, 0.1);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-danger-alt-alpha-10</div>
+                        <div class="color-value">rgba(229, 62, 62, 0.1)</div>
+                        <div class="color-usage">10% opacité (alt)</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-danger-alt-alpha-10')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(220, 38, 38, 0.05);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-danger-dark-alt-alpha-05</div>
+                        <div class="color-value">rgba(220, 38, 38, 0.05)</div>
+                        <div class="color-usage">5% opacité (dark alt)</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-danger-dark-alt-alpha-05')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Success Alpha</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(72, 187, 120, 0.1);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-success-alpha-10</div>
+                        <div class="color-value">rgba($color-success, 0.1)</div>
+                        <div class="color-usage">10% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-success-alpha-10')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(72, 187, 120, 0.2);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-success-alpha-20</div>
+                        <div class="color-value">rgba($color-success, 0.2)</div>
+                        <div class="color-usage">20% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-success-alpha-20')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Warning Alpha</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(237, 137, 54, 0.05);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-warning-alpha-05</div>
+                        <div class="color-value">rgba($color-warning, 0.05)</div>
+                        <div class="color-usage">5% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-warning-alpha-05')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(237, 137, 54, 0.1);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-warning-alpha-10</div>
+                        <div class="color-value">rgba($color-warning, 0.1)</div>
+                        <div class="color-usage">10% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-warning-alpha-10')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(237, 137, 54, 0.3);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-warning-alpha-30</div>
+                        <div class="color-value">rgba($color-warning, 0.3)</div>
+                        <div class="color-usage">30% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-warning-alpha-30')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(251, 191, 36, 0.05);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-warning-bright-alpha-05</div>
+                        <div class="color-value">rgba(251, 191, 36, 0.05)</div>
+                        <div class="color-usage">5% opacité (bright)</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-warning-bright-alpha-05')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Info Alpha</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(66, 153, 225, 0.1);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-info-alpha-10</div>
+                        <div class="color-value">rgba($color-info, 0.1)</div>
+                        <div class="color-usage">10% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-info-alpha-10')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(66, 153, 225, 0.15);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-info-alpha-15</div>
+                        <div class="color-value">rgba($color-info, 0.15)</div>
+                        <div class="color-usage">15% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-info-alpha-15')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(66, 153, 225, 0.2);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-info-alpha-20</div>
+                        <div class="color-value">rgba($color-info, 0.2)</div>
+                        <div class="color-usage">20% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-info-alpha-20')">Copier</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Gray Alpha</h3>
+            <div class="grid">
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(102, 102, 102, 0.1);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-600-alpha-10</div>
+                        <div class="color-value">rgba($color-gray-600, 0.1)</div>
+                        <div class="color-usage">10% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-600-alpha-10')">Copier</button>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview" style="background: white;">
+                        <div style="width: 100%; height: 100%; background: rgba(102, 102, 102, 0.2);"></div>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-name">$color-gray-600-alpha-20</div>
+                        <div class="color-value">rgba($color-gray-600, 0.2)</div>
+                        <div class="color-usage">20% opacité</div>
+                        <button class="copy-btn" onclick="copyToClipboard('$color-gray-600-alpha-20')">Copier</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const colorCards = document.querySelectorAll('.color-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+
+            colorCards.forEach(card => {
+                const colorName = card.querySelector('.color-name').textContent.toLowerCase();
+                const colorValue = card.querySelector('.color-value').textContent.toLowerCase();
+                const colorUsage = card.querySelector('.color-usage') ? card.querySelector('.color-usage').textContent.toLowerCase() : '';
+
+                if (colorName.includes(searchTerm) || colorValue.includes(searchTerm) || colorUsage.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Hide sections with no visible cards
+            document.querySelectorAll('.section').forEach(section => {
+                const visibleCards = section.querySelectorAll('.color-card[style*="display: block"], .color-card:not([style*="display: none"])');
+                section.style.display = visibleCards.length > 0 ? 'block' : 'none';
+            });
+        });
+
+        // Copy to clipboard functionality
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                event.target.textContent = '✓ Copié !';
+                event.target.classList.add('copied');
+
+                setTimeout(() => {
+                    event.target.textContent = 'Copier';
+                    event.target.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Erreur lors de la copie:', err);
+                alert('Erreur lors de la copie');
+            });
+        }
+    </script>
+</body>
+</html>

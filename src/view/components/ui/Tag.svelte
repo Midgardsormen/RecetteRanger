@@ -1,9 +1,17 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
 
+  type ColorVariant =
+    // Semantic colors
+    | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'
+    // Extended palette
+    | 'red' | 'orange' | 'amber' | 'yellow' | 'lime' | 'green' | 'emerald'
+    | 'teal' | 'cyan' | 'sky' | 'blue' | 'indigo' | 'violet' | 'purple'
+    | 'fuchsia' | 'pink' | 'rose';
+
   interface Props {
-    variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral';
-    size?: 'small' | 'medium' | 'large';
+    variant?: ColorVariant;
+    size?: 'xs' | 'small' | 'medium' | 'large';
     removable?: boolean;
     onRemove?: () => void;
     onclick?: () => void;
@@ -26,14 +34,8 @@
 </script>
 
 <span
-  class="tag"
-  class:tag--primary={variant === 'primary'}
-  class:tag--secondary={variant === 'secondary'}
-  class:tag--success={variant === 'success'}
-  class:tag--danger={variant === 'danger'}
-  class:tag--warning={variant === 'warning'}
-  class:tag--info={variant === 'info'}
-  class:tag--neutral={variant === 'neutral'}
+  class="tag tag--{variant}"
+  class:tag--xs={size === 'xs'}
   class:tag--small={size === 'small'}
   class:tag--medium={size === 'medium'}
   class:tag--large={size === 'large'}
@@ -77,6 +79,17 @@
     cursor: default;
 
     // Sizes
+    &--xs {
+      padding: 0.125rem 0.375rem; // 2px 6px
+      font-size: 0.625rem; // 10px
+
+      .tag__remove {
+        width: 12px;
+        height: 12px;
+        font-size: 8px;
+      }
+    }
+
     &--small {
       padding: $spacing-xs $spacing-sm;
       font-size: $font-size-xs;
@@ -110,7 +123,7 @@
       }
     }
 
-    // Variants
+    // Variants - Semantic colors
     &--primary {
       background: rgba($brand-primary, 0.1);
       color: $brand-primary;
@@ -206,6 +219,245 @@
 
       .tag__remove:hover {
         background: $color-gray-300;
+      }
+    }
+
+    // Extended color palette (soft style with light background)
+    &--red {
+      background: $brand-red-50;
+      color: $brand-red-700;
+      border-color: $brand-red-200;
+
+      &:hover {
+        background: $brand-red-100;
+      }
+
+      .tag__remove:hover {
+        background: $brand-red-200;
+      }
+    }
+
+    &--orange {
+      background: $color-orange-50;
+      color: $color-orange-700;
+      border-color: $color-orange-200;
+
+      &:hover {
+        background: $color-orange-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-orange-200;
+      }
+    }
+
+    &--amber {
+      background: $color-amber-50;
+      color: $color-amber-700;
+      border-color: $color-amber-200;
+
+      &:hover {
+        background: $color-amber-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-amber-200;
+      }
+    }
+
+    &--yellow {
+      background: $color-yellow-50;
+      color: $color-yellow-700;
+      border-color: $color-yellow-200;
+
+      &:hover {
+        background: $color-yellow-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-yellow-200;
+      }
+    }
+
+    &--lime {
+      background: $color-lime-50;
+      color: $color-lime-700;
+      border-color: $color-lime-200;
+
+      &:hover {
+        background: $color-lime-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-lime-200;
+      }
+    }
+
+    &--green {
+      background: $color-green-50;
+      color: $color-green-700;
+      border-color: $color-green-200;
+
+      &:hover {
+        background: $color-green-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-green-200;
+      }
+    }
+
+    &--emerald {
+      background: $color-emerald-50;
+      color: $color-emerald-700;
+      border-color: $color-emerald-200;
+
+      &:hover {
+        background: $color-emerald-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-emerald-200;
+      }
+    }
+
+    &--teal {
+      background: $color-teal-50;
+      color: $color-teal-700;
+      border-color: $color-teal-200;
+
+      &:hover {
+        background: $color-teal-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-teal-200;
+      }
+    }
+
+    &--cyan {
+      background: $color-cyan-50;
+      color: $color-cyan-700;
+      border-color: $color-cyan-200;
+
+      &:hover {
+        background: $color-cyan-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-cyan-200;
+      }
+    }
+
+    &--sky {
+      background: $color-sky-50;
+      color: $color-sky-700;
+      border-color: $color-sky-200;
+
+      &:hover {
+        background: $color-sky-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-sky-200;
+      }
+    }
+
+    &--blue {
+      background: $color-blue-50;
+      color: $color-blue-700;
+      border-color: $color-blue-200;
+
+      &:hover {
+        background: $color-blue-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-blue-200;
+      }
+    }
+
+    &--indigo {
+      background: $color-indigo-50;
+      color: $color-indigo-700;
+      border-color: $color-indigo-200;
+
+      &:hover {
+        background: $color-indigo-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-indigo-200;
+      }
+    }
+
+    &--violet {
+      background: $color-violet-50;
+      color: $color-violet-700;
+      border-color: $color-violet-200;
+
+      &:hover {
+        background: $color-violet-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-violet-200;
+      }
+    }
+
+    &--purple {
+      background: $color-purple-50;
+      color: $color-purple-700;
+      border-color: $color-purple-200;
+
+      &:hover {
+        background: $color-purple-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-purple-200;
+      }
+    }
+
+    &--fuchsia {
+      background: $color-fuchsia-50;
+      color: $color-fuchsia-700;
+      border-color: $color-fuchsia-200;
+
+      &:hover {
+        background: $color-fuchsia-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-fuchsia-200;
+      }
+    }
+
+    &--pink {
+      background: $color-pink-50;
+      color: $color-pink-700;
+      border-color: $color-pink-200;
+
+      &:hover {
+        background: $color-pink-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-pink-200;
+      }
+    }
+
+    &--rose {
+      background: $color-rose-50;
+      color: $color-rose-700;
+      border-color: $color-rose-200;
+
+      &:hover {
+        background: $color-rose-100;
+      }
+
+      .tag__remove:hover {
+        background: $color-rose-200;
       }
     }
 

@@ -203,7 +203,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+    box-shadow: -4px 0 24px $color-black-alpha-10;
 
     @media (min-width: $breakpoint-md) {
       max-width: 600px;
@@ -226,7 +226,7 @@
     &--left {
       transform: translateX(-100%);
       animation: slideInLeft $transition-slow ease forwards;
-      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+      box-shadow: 4px 0 24px $color-black-alpha-10;
 
       &.drawer--open {
         transform: translateX(0);
@@ -332,7 +332,7 @@
     transition: all $transition-base;
 
     &:hover {
-      background: rgba(245, 101, 101, 0.2);
+      background: $color-danger-alpha-20;
       color: $color-danger;
     }
 

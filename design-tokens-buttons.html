@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Tokens - Buttons - RecetteRanger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f9fafb;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 3rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #244428 0%, #132315 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #244428;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #CA8F2F;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .button-grid {
+            display: grid;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .button-variant {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: #fafafa;
+        }
+
+        .variant-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #244428;
+            margin-bottom: 1rem;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .button-states {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .button-preview {
+            text-align: center;
+        }
+
+        .button-demo {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            min-width: 140px;
+        }
+
+        .button-demo:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        .state-label {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .variables-list {
+            background: #f9fafb;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .variable-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        .variable-row:last-child {
+            border-bottom: none;
+        }
+
+        .variable-name {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            color: #244428;
+            font-weight: 500;
+        }
+
+        .variable-value {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .color-dot {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+
+        .info-box {
+            background: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box p {
+            color: #2c5282;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .code-example {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .button-states {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="design-tokens-index.html" class="back-link">← Retour à l'index</a>
+            <h1>🔘 Design Tokens - Buttons</h1>
+            <p class="subtitle">Toutes les variantes de boutons avec leurs états</p>
+        </header>
+
+        <section class="section">
+            <h2 class="section-title">Introduction</h2>
+            <div class="info-box">
+                <p>Les boutons sont définis avec des variables pour chaque état (normal, hover, active, disabled) et chaque partie (background, text, border). Cela assure une cohérence parfaite dans toute l'application.</p>
+            </div>
+        </section>
+
+        <!-- PRIMARY BUTTONS -->
+        <section class="section">
+            <h2 class="section-title">Primary Buttons</h2>
+
+            <div class="button-grid">
+                <div class="button-variant">
+                    <div class="variant-title">Primary Normal</div>
+                    <div class="button-states">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #244428; color: white; border: none;">
+                                Normal
+                            </button>
+                            <span class="state-label">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #132315; color: white; border: none;">
+                                Hover
+                            </button>
+                            <span class="state-label">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #0d1609; color: white; border: none;">
+                                Active
+                            </button>
+                            <span class="state-label">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: #a3a3a3; color: #d4d4d4; border: none; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-primary-bg</span>
+                            <span class="variable-value">#244428</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-primary-text</span>
+                            <span class="variable-value">white</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-primary-hover-bg</span>
+                            <span class="variable-value">#132315</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-primary-active-bg</span>
+                            <span class="variable-value">#0d1609</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-variant">
+                    <div class="variant-title">Primary Inverse</div>
+                    <div class="button-states">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: white; color: #244428; border: none;">
+                                Normal
+                            </button>
+                            <span class="state-label">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #f5f5f5; color: #244428; border: none;">
+                                Hover
+                            </button>
+                            <span class="state-label">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #e5e5e5; color: #244428; border: none;">
+                                Active
+                            </button>
+                            <span class="state-label">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: #a3a3a3; color: #d4d4d4; border: none; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-primary-inverse-bg</span>
+                            <span class="variable-value">white</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-primary-inverse-text</span>
+                            <span class="variable-value">$brand-primary</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-primary-inverse-hover-bg</span>
+                            <span class="variable-value">$color-gray-100</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-primary-inverse-active-bg</span>
+                            <span class="variable-value">$color-gray-200</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECONDARY BUTTONS -->
+        <section class="section">
+            <h2 class="section-title">Secondary Buttons</h2>
+
+            <div class="button-grid">
+                <div class="button-variant">
+                    <div class="variant-title">Secondary Normal</div>
+                    <div class="button-states">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #CA8F2F; color: white; border: none;">
+                                Normal
+                            </button>
+                            <span class="state-label">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #A0721F; color: white; border: none;">
+                                Hover
+                            </button>
+                            <span class="state-label">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #7A5618; color: white; border: none;">
+                                Active
+                            </button>
+                            <span class="state-label">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: #a3a3a3; color: #d4d4d4; border: none; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-secondary-bg</span>
+                            <span class="variable-value">#CA8F2F</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-secondary-text</span>
+                            <span class="variable-value">white</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-secondary-hover-bg</span>
+                            <span class="variable-value">#A0721F</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-secondary-active-bg</span>
+                            <span class="variable-value">#7A5618</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-variant">
+                    <div class="variant-title">Secondary Inverse</div>
+                    <div class="button-states">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: white; color: #CA8F2F; border: none;">
+                                Normal
+                            </button>
+                            <span class="state-label">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #f5f5f5; color: #CA8F2F; border: none;">
+                                Hover
+                            </button>
+                            <span class="state-label">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #e5e5e5; color: #CA8F2F; border: none;">
+                                Active
+                            </button>
+                            <span class="state-label">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: #a3a3a3; color: #d4d4d4; border: none; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-secondary-inverse-bg</span>
+                            <span class="variable-value">white</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-secondary-inverse-text</span>
+                            <span class="variable-value">$brand-secondary</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-secondary-inverse-hover-bg</span>
+                            <span class="variable-value">$color-gray-100</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-secondary-inverse-active-bg</span>
+                            <span class="variable-value">$color-gray-200</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- OUTLINED BUTTONS -->
+        <section class="section">
+            <h2 class="section-title">Outlined Buttons</h2>
+
+            <div class="button-grid">
+                <div class="button-variant">
+                    <div class="variant-title">Outlined Normal</div>
+                    <div class="button-states">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: transparent; color: #244428; border: 2px solid #244428;">
+                                Normal
+                            </button>
+                            <span class="state-label">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(36, 68, 40, 0.05); color: #244428; border: 2px solid #244428;">
+                                Hover
+                            </button>
+                            <span class="state-label">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(36, 68, 40, 0.1); color: #244428; border: 2px solid #244428;">
+                                Active
+                            </button>
+                            <span class="state-label">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: transparent; color: #a3a3a3; border: 2px solid #a3a3a3; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-outlined-bg</span>
+                            <span class="variable-value">transparent</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-outlined-text</span>
+                            <span class="variable-value">$brand-primary</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-outlined-border</span>
+                            <span class="variable-value">$brand-primary</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-outlined-hover-bg</span>
+                            <span class="variable-value">rgba($brand-primary, 0.05)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-variant">
+                    <div class="variant-title">Outlined Inverse</div>
+                    <div class="button-states" style="background: #244428; padding: 1rem; border-radius: 8px;">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: transparent; color: white; border: 2px solid white;">
+                                Normal
+                            </button>
+                            <span class="state-label" style="color: white;">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(255, 255, 255, 0.1); color: white; border: 2px solid white;">
+                                Hover
+                            </button>
+                            <span class="state-label" style="color: white;">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white;">
+                                Active
+                            </button>
+                            <span class="state-label" style="color: white;">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: transparent; color: rgba(255, 255, 255, 0.5); border: 2px solid rgba(255, 255, 255, 0.5); cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label" style="color: white;">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-outlined-inverse-bg</span>
+                            <span class="variable-value">transparent</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-outlined-inverse-text</span>
+                            <span class="variable-value">white</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-outlined-inverse-border</span>
+                            <span class="variable-value">white</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-outlined-inverse-hover-bg</span>
+                            <span class="variable-value">rgba(255, 255, 255, 0.1)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GHOST BUTTONS -->
+        <section class="section">
+            <h2 class="section-title">Ghost Buttons</h2>
+
+            <div class="button-grid">
+                <div class="button-variant">
+                    <div class="variant-title">Ghost Normal</div>
+                    <div class="button-states">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: transparent; color: #244428; border: none;">
+                                Normal
+                            </button>
+                            <span class="state-label">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(36, 68, 40, 0.08); color: #244428; border: none;">
+                                Hover
+                            </button>
+                            <span class="state-label">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(36, 68, 40, 0.15); color: #244428; border: none;">
+                                Active
+                            </button>
+                            <span class="state-label">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: transparent; color: #a3a3a3; border: none; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-ghost-bg</span>
+                            <span class="variable-value">transparent</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-ghost-text</span>
+                            <span class="variable-value">$brand-primary</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-ghost-hover-bg</span>
+                            <span class="variable-value">rgba($brand-primary, 0.08)</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-ghost-active-bg</span>
+                            <span class="variable-value">rgba($brand-primary, 0.15)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-variant">
+                    <div class="variant-title">Ghost Inverse</div>
+                    <div class="button-states" style="background: #244428; padding: 1rem; border-radius: 8px;">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: transparent; color: white; border: none;">
+                                Normal
+                            </button>
+                            <span class="state-label" style="color: white;">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(255, 255, 255, 0.1); color: white; border: none;">
+                                Hover
+                            </button>
+                            <span class="state-label" style="color: white;">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(255, 255, 255, 0.2); color: white; border: none;">
+                                Active
+                            </button>
+                            <span class="state-label" style="color: white;">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: transparent; color: rgba(255, 255, 255, 0.5); border: none; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label" style="color: white;">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-ghost-inverse-bg</span>
+                            <span class="variable-value">transparent</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-ghost-inverse-text</span>
+                            <span class="variable-value">white</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-ghost-inverse-hover-bg</span>
+                            <span class="variable-value">rgba(255, 255, 255, 0.1)</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-ghost-inverse-active-bg</span>
+                            <span class="variable-value">rgba(255, 255, 255, 0.2)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DANGER BUTTONS -->
+        <section class="section">
+            <h2 class="section-title">Danger Buttons</h2>
+
+            <div class="button-grid">
+                <div class="button-variant">
+                    <div class="variant-title">Danger Normal</div>
+                    <div class="button-states">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #dc2626; color: white; border: none;">
+                                Normal
+                            </button>
+                            <span class="state-label">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #b91c1c; color: white; border: none;">
+                                Hover
+                            </button>
+                            <span class="state-label">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #991b1b; color: white; border: none;">
+                                Active
+                            </button>
+                            <span class="state-label">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: #a3a3a3; color: #d4d4d4; border: none; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-danger-bg</span>
+                            <span class="variable-value">$color-danger</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-danger-text</span>
+                            <span class="variable-value">white</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-danger-hover-bg</span>
+                            <span class="variable-value">$color-danger-dark</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-danger-active-bg</span>
+                            <span class="variable-value">darken($color-danger, 15%)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-variant">
+                    <div class="variant-title">Danger Inverse</div>
+                    <div class="button-states">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: transparent; color: #dc2626; border: 2px solid #dc2626;">
+                                Normal
+                            </button>
+                            <span class="state-label">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(220, 38, 38, 0.1); color: #dc2626; border: 2px solid #dc2626;">
+                                Hover
+                            </button>
+                            <span class="state-label">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(220, 38, 38, 0.2); color: #dc2626; border: 2px solid #dc2626;">
+                                Active
+                            </button>
+                            <span class="state-label">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: transparent; color: #a3a3a3; border: 2px solid #a3a3a3; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-danger-inverse-bg</span>
+                            <span class="variable-value">transparent</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-danger-inverse-text</span>
+                            <span class="variable-value">$color-danger</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-danger-inverse-border</span>
+                            <span class="variable-value">$color-danger</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-danger-inverse-hover-bg</span>
+                            <span class="variable-value">rgba($color-danger, 0.1)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUCCESS BUTTONS -->
+        <section class="section">
+            <h2 class="section-title">Success Buttons</h2>
+
+            <div class="button-grid">
+                <div class="button-variant">
+                    <div class="variant-title">Success Normal</div>
+                    <div class="button-states">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #16a34a; color: white; border: none;">
+                                Normal
+                            </button>
+                            <span class="state-label">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #15803d; color: white; border: none;">
+                                Hover
+                            </button>
+                            <span class="state-label">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: #166534; color: white; border: none;">
+                                Active
+                            </button>
+                            <span class="state-label">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: #a3a3a3; color: #d4d4d4; border: none; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-success-bg</span>
+                            <span class="variable-value">$color-success</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-success-text</span>
+                            <span class="variable-value">white</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-success-hover-bg</span>
+                            <span class="variable-value">$color-success-dark</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-success-active-bg</span>
+                            <span class="variable-value">darken($color-success, 15%)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-variant">
+                    <div class="variant-title">Success Inverse</div>
+                    <div class="button-states">
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: transparent; color: #16a34a; border: 2px solid #16a34a;">
+                                Normal
+                            </button>
+                            <span class="state-label">Normal</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 2px solid #16a34a;">
+                                Hover
+                            </button>
+                            <span class="state-label">Hover</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" style="background: rgba(22, 163, 74, 0.2); color: #16a34a; border: 2px solid #16a34a;">
+                                Active
+                            </button>
+                            <span class="state-label">Active</span>
+                        </div>
+                        <div class="button-preview">
+                            <button class="button-demo" disabled style="background: transparent; color: #a3a3a3; border: 2px solid #a3a3a3; cursor: not-allowed;">
+                                Disabled
+                            </button>
+                            <span class="state-label">Disabled</span>
+                        </div>
+                    </div>
+                    <div class="variables-list">
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-success-inverse-bg</span>
+                            <span class="variable-value">transparent</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-success-inverse-text</span>
+                            <span class="variable-value">$color-success</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-success-inverse-border</span>
+                            <span class="variable-value">$color-success</span>
+                        </div>
+                        <div class="variable-row">
+                            <span class="variable-name">$btn-success-inverse-hover-bg</span>
+                            <span class="variable-value">rgba($color-success, 0.1)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DISABLED STATE -->
+        <section class="section">
+            <h2 class="section-title">Disabled State</h2>
+            <div class="info-box">
+                <p>Tous les boutons partagent le même état disabled pour assurer la cohérence.</p>
+            </div>
+            <div class="variables-list">
+                <div class="variable-row">
+                    <span class="variable-name">$btn-disabled-bg</span>
+                    <span class="variable-value">$color-gray-400</span>
+                </div>
+                <div class="variable-row">
+                    <span class="variable-name">$btn-disabled-text</span>
+                    <span class="variable-value">$color-gray-300</span>
+                </div>
+                <div class="variable-row">
+                    <span class="variable-name">$btn-disabled-border</span>
+                    <span class="variable-value">$color-gray-400</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- USAGE EXAMPLE -->
+        <section class="section">
+            <h2 class="section-title">Exemple d'utilisation</h2>
+            <div class="code-example">@use '../../styles/variables' as *;
+
+.btn-primary {
+  background: $btn-primary-bg;
+  color: $btn-primary-text;
+
+  &:hover {
+    background: $btn-primary-hover-bg;
+  }
+
+  &:active {
+    background: $btn-primary-active-bg;
+  }
+
+  &:disabled {
+    background: $btn-disabled-bg;
+    color: $btn-disabled-text;
+    cursor: not-allowed;
+  }
+}
+
+.btn-danger-outlined {
+  background: $btn-danger-inverse-bg;
+  color: $btn-danger-inverse-text;
+  border: 2px solid $btn-danger-inverse-border;
+
+  &:hover {
+    background: $btn-danger-inverse-hover-bg;
+  }
+
+  &:active {
+    background: $btn-danger-inverse-active-bg;
+  }
+}</div>
+        </section>
+    </div>
+</body>
+</html>

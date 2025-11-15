@@ -7,6 +7,8 @@
     title: string;
     subtitle?: string;
     metadata?: string[];
+    badge?: Snippet;
+    footer?: Snippet;
     onEdit?: () => void;
     onDelete?: () => void;
     onClick?: () => void;
@@ -19,6 +21,8 @@
     title,
     subtitle,
     metadata = [],
+    badge,
+    footer,
     onEdit,
     onDelete,
     onClick,
@@ -49,122 +53,138 @@
 <div
   class="list-item"
   class:list-item--clickable={!!onClick}
+  class:list-item--has-footer={!!footer}
   onclick={handleClick}
   role={onClick ? 'button' : undefined}
   tabindex={onClick ? 0 : undefined}
 >
-  <!-- Thumbnail -->
-  <div class="list-item__thumbnail">
-    {#if imageUrl}
-      <img src={imageUrl} alt={title} class="list-item__image" />
-    {:else}
-      <div class="list-item__placeholder">
-        {imagePlaceholder}
+  <div class="list-item__main">
+    <!-- Thumbnail -->
+    <div class="list-item__thumbnail">
+      {#if imageUrl}
+        <img src={imageUrl} alt={title} class="list-item__image" />
+      {:else}
+        <div class="list-item__placeholder">
+          {imagePlaceholder}
+        </div>
+      {/if}
+    </div>
+
+    <!-- Content -->
+    <div class="list-item__content">
+      {#if children}
+        {@render children()}
+      {:else}
+        <h3 class="list-item__title">{title}</h3>
+        {#if subtitle}
+          <p class="list-item__subtitle">{subtitle}</p>
+        {/if}
+        {#if metadata.length > 0}
+          <div class="list-item__metadata">
+            {#each metadata.slice(0, 5) as item}
+              <span class="list-item__badge">{item}</span>
+            {/each}
+            {#if metadata.length > 5}
+              <span class="list-item__badge">+{metadata.length - 5}</span>
+            {/if}
+          </div>
+        {/if}
+      {/if}
+    </div>
+
+    <!-- Badge and Actions side column -->
+    {#if badge || onEdit || onDelete}
+      <div class="list-item__side">
+        <!-- Badge -->
+        {#if badge}
+          <div class="list-item__badge-slot">
+            {@render badge()}
+          </div>
+        {/if}
+
+        <!-- Actions -->
+        {#if onEdit || onDelete}
+          <div class="list-item__actions">
+            {#if onEdit}
+              <button
+                class="list-item__action list-item__action--edit"
+                onclick={handleEdit}
+                title="Modifier"
+                type="button"
+              >
+                ✏️
+              </button>
+            {/if}
+            {#if onDelete}
+              <button
+                class="list-item__action list-item__action--delete"
+                onclick={handleDelete}
+                title="Supprimer"
+                type="button"
+              >
+                🗑️
+              </button>
+            {/if}
+          </div>
+        {/if}
       </div>
     {/if}
   </div>
 
-  <!-- Content -->
-  <div class="list-item__content">
-    {#if children}
-      {@render children()}
-    {:else}
-      <h3 class="list-item__title">{title}</h3>
-      {#if subtitle}
-        <p class="list-item__subtitle">{subtitle}</p>
-      {/if}
-      {#if metadata.length > 0}
-        <div class="list-item__metadata">
-          {#each metadata.slice(0, 5) as item}
-            <span class="list-item__badge">{item}</span>
-          {/each}
-          {#if metadata.length > 5}
-            <span class="list-item__badge">+{metadata.length - 5}</span>
-          {/if}
-        </div>
-      {/if}
-    {/if}
-  </div>
-
-  <!-- Actions -->
-  {#if onEdit || onDelete}
-    <div class="list-item__actions">
-      {#if onEdit}
-        <button
-          class="list-item__action list-item__action--edit"
-          onclick={handleEdit}
-          title="Modifier"
-          type="button"
-        >
-          ✏️
-        </button>
-      {/if}
-      {#if onDelete}
-        <button
-          class="list-item__action list-item__action--delete"
-          onclick={handleDelete}
-          title="Supprimer"
-          type="button"
-        >
-          🗑️
-        </button>
-      {/if}
+  <!-- Footer -->
+  {#if footer}
+    <div class="list-item__footer">
+      {@render footer()}
     </div>
   {/if}
 </div>
 
 <style lang="scss">
   @use '../../styles/variables' as *;
-  $primary-color: $brand-primary;
-  $secondary-color: $brand-secondary;
-  $danger-color: $color-danger;
-  $white: $color-white;
-  $text-dark: $color-gray-800;
-  $text-gray: $color-gray-600;
-  $text-light: $color-gray-400;
-  $border-color: $color-gray-200;
-  $shadow-light: rgba(0, 0, 0, 0.08);
-  $spacing-base: 1rem;
-  $transition-duration: 0.3s;
 
   .list-item {
     display: flex;
-    align-items: center;
-    gap: $spacing-base;
-    padding: $spacing-base;
-    background: $white;
-    border: 2px solid $border-color;
-    border-radius: 12px;
-    transition: all $transition-duration ease;
+    flex-direction: column;
+    background: $color-white;
+    border: 2px solid $color-border-primary;
+    border-radius: $radius-lg;
+    transition: all $transition-base ease;
 
     &--clickable {
       cursor: pointer;
 
       &:hover {
-        border-color: $primary-color;
-        box-shadow: 0 4px 12px $shadow-light;
+        border-color: $brand-primary;
+        box-shadow: 0 4px 12px $color-black-alpha-08;
         transform: translateY(-2px);
       }
 
       &:focus-visible {
         outline: none;
-        border-color: $primary-color;
-        box-shadow: 0 0 0 3px rgba($brand-primary, 0.2);
+        border-color: $brand-primary;
+        box-shadow: 0 0 0 3px $color-primary-alpha-20;
       }
     }
+  }
+
+  .list-item__main {
+    display: flex;
+    align-items: center;
+    gap: $spacing-base;
+    padding: $spacing-base;
   }
 
   .list-item__thumbnail {
     flex-shrink: 0;
     max-width: 150px;
     max-height: 65px;
-    border-radius: 8px;
+    border-radius: $radius-lg;
     overflow: visible;
-    background: rgba($brand-primary, 0.1);
+    background: $color-primary-alpha-10;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
+    padding: $spacing-sm;
   }
 
   .list-item__image {
@@ -176,7 +196,7 @@
   }
 
   .list-item__placeholder {
-    font-size: 2rem;
+    font-size: $font-size-2xl;
   }
 
   .list-item__content {
@@ -184,26 +204,26 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 0.25;
+    gap: $spacing-xs;
   }
 
   .list-item__title {
     margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: $text-dark;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    line-height: 1.4;
+    line-height: $line-height-normal;
     min-height: 2.8em; // 1.4 line-height * 2 lines
   }
 
   .list-item__subtitle {
     margin: 0;
-    font-size: 0.875rem;
-    color: $text-gray;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -212,24 +232,45 @@
   .list-item__metadata {
     display: flex;
     flex-wrap: nowrap;
-    gap: $spacing-base * 0.375;
+    gap: $spacing-sm;
     overflow: hidden;
   }
 
   .list-item__badge {
-    padding: $spacing-base * 0.2 $spacing-base * 0.4;
-    background: rgba($brand-primary, 0.1);
-    color: $primary-color;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    padding: $spacing-xs $spacing-sm;
+    background: $color-primary-alpha-10;
+    color: $brand-primary;
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
     white-space: nowrap;
   }
 
-  .list-item__actions {
+  .list-item__side {
     flex-shrink: 0;
     display: flex;
-    gap: $spacing-base * 0.5;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: $spacing-sm;
+    justify-content: flex-start;
+  }
+
+  .list-item__badge-slot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .list-item__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  .list-item__footer {
+    display: flex;
+    padding: $spacing-sm $spacing-base $spacing-base $spacing-base;
+    border-top: 1px solid $color-border-primary;
+    width: 100%;
   }
 
   .list-item__action {
@@ -239,41 +280,41 @@
     align-items: center;
     justify-content: center;
     background: transparent;
-    border: 2px solid $border-color;
-    border-radius: 8px;
-    font-size: 1.125rem;
+    border: 2px solid $color-border-primary;
+    border-radius: $radius-lg;
+    font-size: $font-size-lg;
     cursor: pointer;
-    transition: all $transition-duration ease;
+    transition: all $transition-base ease;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 2px 8px $shadow-light;
+      box-shadow: 0 2px 8px $color-black-alpha-08;
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 3px rgba($brand-primary, 0.2);
+      box-shadow: 0 0 0 3px $color-primary-alpha-20;
     }
 
     &--edit {
       &:hover {
-        border-color: $primary-color;
-        background: rgba($brand-primary, 0.1);
+        border-color: $brand-primary;
+        background: $color-primary-alpha-10;
       }
     }
 
     &--delete {
       &:hover {
-        border-color: $danger-color;
-        background: rgba(245, 101, 101, 0.1);
+        border-color: $color-danger;
+        background: $color-danger-alpha-10;
       }
     }
   }
 
   // Responsive
-  @media (max-width: 640px) {
-    .list-item {
-      padding: $spacing-base * 0.75;
+  @media (max-width: $breakpoint-sm) {
+    .list-item__main {
+      padding: $spacing-md;
     }
 
     .list-item__thumbnail {
@@ -287,21 +328,25 @@
     }
 
     .list-item__placeholder {
-      font-size: 1.5rem;
+      font-size: $font-size-xl;
     }
 
     .list-item__title {
-      font-size: 0.9rem;
+      font-size: $font-size-sm;
     }
 
     .list-item__subtitle {
-      font-size: 0.8rem;
+      font-size: $font-size-xs;
     }
 
     .list-item__action {
       width: 36px;
       height: 36px;
-      font-size: 1rem;
+      font-size: $font-size-base;
+    }
+
+    .list-item__footer {
+      padding: $spacing-sm $spacing-md $spacing-md $spacing-md;
     }
   }
 </style>

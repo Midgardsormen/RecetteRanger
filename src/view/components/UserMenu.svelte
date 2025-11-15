@@ -135,7 +135,7 @@
       align-items: center;
       gap: $spacing-sm;
       padding: $spacing-sm $spacing-md;
-      background: rgba($color-white, 0.1);
+      background: $color-white-alpha-10;
       border: none;
       border-radius: $radius-lg;
       color: $color-white;
@@ -144,7 +144,7 @@
       font-size: $font-size-sm;
 
       &:hover {
-        background: rgba($color-white, 0.2);
+        background: $color-white-alpha-20;
       }
     }
 
@@ -153,7 +153,7 @@
       height: 32px;
       border-radius: $radius-full;
       overflow: hidden;
-      background: rgba($color-white, 0.2);
+      background: $color-white-alpha-20;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -228,7 +228,7 @@
       align-items: center;
       gap: $spacing-xs;
       padding: $spacing-xs $spacing-sm;
-      background: rgba($color-white, 0.2);
+      background: $color-white-alpha-20;
       border-radius: $radius-sm;
       font-size: $font-size-xs;
       font-weight: $font-weight-semibold;
@@ -236,7 +236,7 @@
       letter-spacing: 0.5px;
 
       &--admin {
-        background: rgba($color-warning, 0.3);
+        background: $color-warning-alpha-30;
         color: $color-warning;
       }
     }

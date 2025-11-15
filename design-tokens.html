@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Tokens - RecetteRanger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f9fafb;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #244428 0%, #132315 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            margin: 2rem 0;
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #244428;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            color: #244428;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #CA8F2F;
+            font-family: 'Alegreya Sans', sans-serif;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+
+        .token-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.2s;
+        }
+
+        .token-card:hover {
+            border-color: #244428;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .token-name {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.875rem;
+            color: #244428;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .token-value {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.8rem;
+            color: #666;
+            background: #f5f5f5;
+            padding: 0.5rem;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            border: 1px solid #e0e0e0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .spacing-preview {
+            background: #244428;
+            height: 20px;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+        }
+
+        .shadow-preview {
+            width: 100%;
+            height: 60px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+        }
+
+        .font-preview {
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+        }
+
+        .copy-btn {
+            background: #244428;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background: #132315;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+
+        .copied {
+            background: #48bb78 !important;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: rgba(36, 68, 40, 0.1);
+            color: #244428;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Design Tokens</h1>
+            <p class="subtitle">Système de design complet pour RecetteRanger</p>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Rechercher une variable... (ex: primary, spacing, font)" />
+        </div>
+
+        <!-- BASE COLORS -->
+        <section class="section" data-section="colors">
+            <h2 class="section-title">Couleurs de marque</h2>
+            <div class="grid grid-4">
+                <div class="token-card">
+                    <div class="color-preview" style="background: #244428;"></div>
+                    <div class="token-name">$brand-primary</div>
+                    <div class="token-value">#244428</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$brand-primary')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #CA8F2F;"></div>
+                    <div class="token-name">$brand-secondary</div>
+                    <div class="token-value">#CA8F2F</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$brand-secondary')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #132315;"></div>
+                    <div class="token-name">$brand-tertiary</div>
+                    <div class="token-value">#132315</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$brand-tertiary')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #252221;"></div>
+                    <div class="token-name">$brand-quaternary</div>
+                    <div class="token-value">#252221</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$brand-quaternary')">Copier</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEMANTIC COLORS -->
+        <section class="section" data-section="colors">
+            <h2 class="section-title">Couleurs sémantiques</h2>
+            <div class="grid grid-4">
+                <div class="token-card">
+                    <div class="color-preview" style="background: #48bb78;"></div>
+                    <div class="token-name">$color-success</div>
+                    <div class="token-value">#48bb78</div>
+                    <span class="tag">Success</span>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-success')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #f56565;"></div>
+                    <div class="token-name">$color-danger</div>
+                    <div class="token-value">#f56565</div>
+                    <span class="tag">Danger</span>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-danger')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #ed8936;"></div>
+                    <div class="token-name">$color-warning</div>
+                    <div class="token-value">#ed8936</div>
+                    <span class="tag">Warning</span>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-warning')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #4299e1;"></div>
+                    <div class="token-name">$color-info</div>
+                    <div class="token-value">#4299e1</div>
+                    <span class="tag">Info</span>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-info')">Copier</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- GRAY SCALE -->
+        <section class="section" data-section="colors">
+            <h2 class="section-title">Échelle de gris</h2>
+            <div class="grid grid-4">
+                <div class="token-card">
+                    <div class="color-preview" style="background: #ffffff; border: 2px solid #e0e0e0;"></div>
+                    <div class="token-name">$color-white</div>
+                    <div class="token-value">#ffffff</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-white')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #f9fafb;"></div>
+                    <div class="token-name">$color-gray-50</div>
+                    <div class="token-value">#f9fafb</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-gray-50')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #f5f5f5;"></div>
+                    <div class="token-name">$color-gray-100</div>
+                    <div class="token-value">#f5f5f5</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-gray-100')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #e0e0e0;"></div>
+                    <div class="token-name">$color-gray-200</div>
+                    <div class="token-value">#e0e0e0</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-gray-200')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #d1d5db;"></div>
+                    <div class="token-name">$color-gray-300</div>
+                    <div class="token-value">#d1d5db</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-gray-300')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #9ca3af;"></div>
+                    <div class="token-name">$color-gray-400</div>
+                    <div class="token-value">#9ca3af</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-gray-400')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #6b7280;"></div>
+                    <div class="token-name">$color-gray-500</div>
+                    <div class="token-value">#6b7280</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-gray-500')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #666666;"></div>
+                    <div class="token-name">$color-gray-600</div>
+                    <div class="token-value">#666666</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-gray-600')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #4b5563;"></div>
+                    <div class="token-name">$color-gray-700</div>
+                    <div class="token-value">#4b5563</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-gray-700')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #333333;"></div>
+                    <div class="token-name">$color-gray-800</div>
+                    <div class="token-value">#333333</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-gray-800')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #1f2937;"></div>
+                    <div class="token-name">$color-gray-900</div>
+                    <div class="token-value">#1f2937</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-gray-900')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: #000000;"></div>
+                    <div class="token-name">$color-black</div>
+                    <div class="token-value">#000000</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-black')">Copier</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RGBA COLORS -->
+        <section class="section" data-section="colors">
+            <h2 class="section-title">Couleurs avec opacité</h2>
+
+            <h3 style="margin: 1.5rem 0 1rem; color: #244428;">Primary Alpha</h3>
+            <div class="grid grid-4">
+                <div class="token-card">
+                    <div class="color-preview" style="background: linear-gradient(to right, rgba(36, 68, 40, 0.03), rgba(36, 68, 40, 0.03)), white;"></div>
+                    <div class="token-name">$color-primary-alpha-03</div>
+                    <div class="token-value">3% opacity</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-03')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: linear-gradient(to right, rgba(36, 68, 40, 0.05), rgba(36, 68, 40, 0.05)), white;"></div>
+                    <div class="token-name">$color-primary-alpha-05</div>
+                    <div class="token-value">5% opacity</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-05')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: linear-gradient(to right, rgba(36, 68, 40, 0.1), rgba(36, 68, 40, 0.1)), white;"></div>
+                    <div class="token-name">$color-primary-alpha-10</div>
+                    <div class="token-value">10% opacity</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-10')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: linear-gradient(to right, rgba(36, 68, 40, 0.2), rgba(36, 68, 40, 0.2)), white;"></div>
+                    <div class="token-name">$color-primary-alpha-20</div>
+                    <div class="token-value">20% opacity</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-primary-alpha-20')">Copier</button>
+                </div>
+            </div>
+
+            <h3 style="margin: 1.5rem 0 1rem; color: #244428;">Black Alpha (pour shadows)</h3>
+            <div class="grid grid-4">
+                <div class="token-card">
+                    <div class="color-preview" style="background: linear-gradient(to right, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05)), white;"></div>
+                    <div class="token-name">$color-black-alpha-05</div>
+                    <div class="token-value">5% opacity</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-05')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), white;"></div>
+                    <div class="token-name">$color-black-alpha-10</div>
+                    <div class="token-value">10% opacity</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-10')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), white;"></div>
+                    <div class="token-name">$color-black-alpha-20</div>
+                    <div class="token-value">20% opacity</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-20')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="color-preview" style="background: linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), white;"></div>
+                    <div class="token-name">$color-black-alpha-30</div>
+                    <div class="token-value">30% opacity</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$color-black-alpha-30')">Copier</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPACING -->
+        <section class="section" data-section="spacing">
+            <h2 class="section-title">Espacements</h2>
+            <div class="grid grid-3">
+                <div class="token-card">
+                    <div class="spacing-preview" style="width: 4px;"></div>
+                    <div class="token-name">$spacing-xs</div>
+                    <div class="token-value">4px / 0.25rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-xs')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="spacing-preview" style="width: 8px;"></div>
+                    <div class="token-name">$spacing-sm</div>
+                    <div class="token-value">8px / 0.5rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-sm')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="spacing-preview" style="width: 12px;"></div>
+                    <div class="token-name">$spacing-md</div>
+                    <div class="token-value">12px / 0.75rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-md')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="spacing-preview" style="width: 16px;"></div>
+                    <div class="token-name">$spacing-base</div>
+                    <div class="token-value">16px / 1rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-base')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="spacing-preview" style="width: 24px;"></div>
+                    <div class="token-name">$spacing-lg</div>
+                    <div class="token-value">24px / 1.5rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-lg')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="spacing-preview" style="width: 32px;"></div>
+                    <div class="token-name">$spacing-xl</div>
+                    <div class="token-value">32px / 2rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-xl')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="spacing-preview" style="width: 48px;"></div>
+                    <div class="token-name">$spacing-2xl</div>
+                    <div class="token-value">48px / 3rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-2xl')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="spacing-preview" style="width: 64px;"></div>
+                    <div class="token-name">$spacing-3xl</div>
+                    <div class="token-value">64px / 4rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-3xl')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="spacing-preview" style="width: 72px;"></div>
+                    <div class="token-name">$spacing-4xl</div>
+                    <div class="token-value">72px / 5rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$spacing-4xl')">Copier</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- BORDER RADIUS -->
+        <section class="section" data-section="radius">
+            <h2 class="section-title">Border Radius</h2>
+            <div class="grid grid-4">
+                <div class="token-card">
+                    <div style="width: 60px; height: 60px; background: #244428; border-radius: 0; margin-bottom: 0.75rem;"></div>
+                    <div class="token-name">$radius-none</div>
+                    <div class="token-value">0</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$radius-none')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div style="width: 60px; height: 60px; background: #244428; border-radius: 4px; margin-bottom: 0.75rem;"></div>
+                    <div class="token-name">$radius-sm</div>
+                    <div class="token-value">4px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$radius-sm')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div style="width: 60px; height: 60px; background: #244428; border-radius: 6px; margin-bottom: 0.75rem;"></div>
+                    <div class="token-name">$radius-md</div>
+                    <div class="token-value">6px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$radius-md')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div style="width: 60px; height: 60px; background: #244428; border-radius: 8px; margin-bottom: 0.75rem;"></div>
+                    <div class="token-name">$radius-lg</div>
+                    <div class="token-value">8px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$radius-lg')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div style="width: 60px; height: 60px; background: #244428; border-radius: 12px; margin-bottom: 0.75rem;"></div>
+                    <div class="token-name">$radius-xl</div>
+                    <div class="token-value">12px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$radius-xl')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div style="width: 60px; height: 60px; background: #244428; border-radius: 16px; margin-bottom: 0.75rem;"></div>
+                    <div class="token-name">$radius-2xl</div>
+                    <div class="token-value">16px</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$radius-2xl')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div style="width: 60px; height: 60px; background: #244428; border-radius: 9999px; margin-bottom: 0.75rem;"></div>
+                    <div class="token-name">$radius-full</div>
+                    <div class="token-value">9999px (cercle)</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$radius-full')">Copier</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TYPOGRAPHY -->
+        <section class="section" data-section="typography">
+            <h2 class="section-title">Typographie</h2>
+
+            <h3 style="margin: 1.5rem 0 1rem; color: #244428;">Font Sizes</h3>
+            <div class="grid grid-3">
+                <div class="token-card">
+                    <div class="font-preview" style="font-size: 0.75rem;">Texte exemple</div>
+                    <div class="token-name">$font-size-xs</div>
+                    <div class="token-value">12px / 0.75rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-xs')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="font-preview" style="font-size: 0.875rem;">Texte exemple</div>
+                    <div class="token-name">$font-size-sm</div>
+                    <div class="token-value">14px / 0.875rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-sm')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="font-preview" style="font-size: 1rem;">Texte exemple</div>
+                    <div class="token-name">$font-size-base</div>
+                    <div class="token-value">16px / 1rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-base')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="font-preview" style="font-size: 1.125rem;">Texte exemple</div>
+                    <div class="token-name">$font-size-lg</div>
+                    <div class="token-value">18px / 1.125rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-lg')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="font-preview" style="font-size: 1.25rem;">Texte exemple</div>
+                    <div class="token-name">$font-size-xl</div>
+                    <div class="token-value">20px / 1.25rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-xl')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="font-preview" style="font-size: 1.5rem;">Texte</div>
+                    <div class="token-name">$font-size-2xl</div>
+                    <div class="token-value">24px / 1.5rem</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-size-2xl')">Copier</button>
+                </div>
+            </div>
+
+            <h3 style="margin: 1.5rem 0 1rem; color: #244428;">Font Weights</h3>
+            <div class="grid grid-4">
+                <div class="token-card">
+                    <div class="font-preview" style="font-weight: 300;">Texte léger</div>
+                    <div class="token-name">$font-weight-light</div>
+                    <div class="token-value">300</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-weight-light')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="font-preview" style="font-weight: 400;">Texte normal</div>
+                    <div class="token-name">$font-weight-normal</div>
+                    <div class="token-value">400</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-weight-normal')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="font-preview" style="font-weight: 500;">Texte medium</div>
+                    <div class="token-name">$font-weight-medium</div>
+                    <div class="token-value">500</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-weight-medium')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="font-preview" style="font-weight: 600;">Texte semibold</div>
+                    <div class="token-name">$font-weight-semibold</div>
+                    <div class="token-value">600</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-weight-semibold')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="font-preview" style="font-weight: 700;">Texte bold</div>
+                    <div class="token-name">$font-weight-bold</div>
+                    <div class="token-value">700</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$font-weight-bold')">Copier</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SHADOWS -->
+        <section class="section" data-section="shadows">
+            <h2 class="section-title">Ombres</h2>
+            <div class="grid grid-3">
+                <div class="token-card">
+                    <div class="shadow-preview" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);"></div>
+                    <div class="token-name">$shadow-sm</div>
+                    <div class="token-value">0 1px 2px 0 rgba(0,0,0,0.05)</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-sm')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="shadow-preview" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);"></div>
+                    <div class="token-name">$shadow-md</div>
+                    <div class="token-value">0 4px 6px -1px rgba(0,0,0,0.1)</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-md')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="shadow-preview" style="box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);"></div>
+                    <div class="token-name">$shadow-lg</div>
+                    <div class="token-value">0 10px 15px -3px rgba(0,0,0,0.1)</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-lg')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="shadow-preview" style="box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);"></div>
+                    <div class="token-name">$shadow-xl</div>
+                    <div class="token-value">0 20px 25px -5px rgba(0,0,0,0.1)</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-xl')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="shadow-preview" style="box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);"></div>
+                    <div class="token-name">$shadow-2xl</div>
+                    <div class="token-value">0 25px 50px -12px rgba(0,0,0,0.25)</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$shadow-2xl')">Copier</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- BREAKPOINTS -->
+        <section class="section" data-section="breakpoints">
+            <h2 class="section-title">Breakpoints (Responsive)</h2>
+            <div class="grid grid-3">
+                <div class="token-card">
+                    <div class="token-name">$breakpoint-xs</div>
+                    <div class="token-value">480px</div>
+                    <span class="tag">Mobile small</span>
+                    <button class="copy-btn" onclick="copyToClipboard('$breakpoint-xs')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="token-name">$breakpoint-sm</div>
+                    <div class="token-value">640px</div>
+                    <span class="tag">Mobile</span>
+                    <button class="copy-btn" onclick="copyToClipboard('$breakpoint-sm')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="token-name">$breakpoint-md</div>
+                    <div class="token-value">768px</div>
+                    <span class="tag">Tablet</span>
+                    <button class="copy-btn" onclick="copyToClipboard('$breakpoint-md')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="token-name">$breakpoint-lg</div>
+                    <div class="token-value">1024px</div>
+                    <span class="tag">Desktop</span>
+                    <button class="copy-btn" onclick="copyToClipboard('$breakpoint-lg')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="token-name">$breakpoint-xl</div>
+                    <div class="token-value">1280px</div>
+                    <span class="tag">Large desktop</span>
+                    <button class="copy-btn" onclick="copyToClipboard('$breakpoint-xl')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="token-name">$breakpoint-2xl</div>
+                    <div class="token-value">1536px</div>
+                    <span class="tag">Extra large</span>
+                    <button class="copy-btn" onclick="copyToClipboard('$breakpoint-2xl')">Copier</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Z-INDEX -->
+        <section class="section" data-section="zindex">
+            <h2 class="section-title">Z-Index (Layers)</h2>
+            <div class="grid grid-4">
+                <div class="token-card">
+                    <div class="token-name">$z-index-dropdown</div>
+                    <div class="token-value">1000</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$z-index-dropdown')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="token-name">$z-index-sticky</div>
+                    <div class="token-value">1020</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$z-index-sticky')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="token-name">$z-index-fixed</div>
+                    <div class="token-value">1030</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$z-index-fixed')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="token-name">$z-index-header</div>
+                    <div class="token-value">1040</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$z-index-header')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="token-name">$z-index-modal</div>
+                    <div class="token-value">1050</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$z-index-modal')">Copier</button>
+                </div>
+                <div class="token-card">
+                    <div class="token-name">$z-index-tooltip</div>
+                    <div class="token-value">1070</div>
+                    <button class="copy-btn" onclick="copyToClipboard('$z-index-tooltip')">Copier</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const tokenCards = document.querySelectorAll('.token-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+
+            tokenCards.forEach(card => {
+                const tokenName = card.querySelector('.token-name').textContent.toLowerCase();
+                const tokenValue = card.querySelector('.token-value').textContent.toLowerCase();
+
+                if (tokenName.includes(searchTerm) || tokenValue.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Hide sections with no visible cards
+            document.querySelectorAll('.section').forEach(section => {
+                const visibleCards = section.querySelectorAll('.token-card[style*="display: block"], .token-card:not([style*="display: none"])');
+                section.style.display = visibleCards.length > 0 ? 'block' : 'none';
+            });
+        });
+
+        // Copy to clipboard functionality
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Visual feedback
+                event.target.textContent = '✓ Copié !';
+                event.target.classList.add('copied');
+
+                setTimeout(() => {
+                    event.target.textContent = 'Copier';
+                    event.target.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Erreur lors de la copie:', err);
+                alert('Erreur lors de la copie');
+            });
+        }
+    </script>
+</body>
+</html>
