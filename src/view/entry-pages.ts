@@ -3,8 +3,7 @@
 export const pages = {
   Home: () => import('./features/home/Home.svelte'),
   Recipes: () => import('./features/recipes/Recipes.svelte'),
-  Recettes: () => import('./features/recettes/Recettes.svelte'),
-  RecipeDetail: () => import('./features/recettes/RecipeDetail.svelte'),
+  RecipeDetail: () => import('./features/recipes/RecipeDetail.svelte'),
   Ingredients: () => import('./features/ingredients/Ingredients.svelte'),
   Articles: () => import('./features/articles/Articles.svelte'),
   Stores: () => import('./features/stores/Stores.svelte'),
@@ -22,8 +21,7 @@ export const pages = {
 // Static imports for SSR (server-side rendering) - export les fragments autonomes
 export { default as Home } from './features/home/Home.svelte';
 export { default as Recipes } from './features/recipes/Recipes.svelte';
-export { default as Recettes } from './features/recettes/Recettes.svelte';
-export { default as RecipeDetail } from './features/recettes/RecipeDetail.svelte';
+export { default as RecipeDetail } from './features/recipes/RecipeDetail.svelte';
 export { default as Ingredients } from './features/ingredients/Ingredients.svelte';
 export { default as Articles } from './features/articles/Articles.svelte';
 export { default as Stores } from './features/stores/Stores.svelte';

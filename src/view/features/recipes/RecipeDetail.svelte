@@ -1,6 +1,7 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { Button, IconButton, Tag } from '../../components/ui';
+  import { IconButton, Tag, Hero, StepItem, Breadcrumb } from '../../components/ui';
+  import { Users, Clock, Utensils, ChefHat, Carrot, Zap } from 'lucide-svelte';
   import type { Recipe } from '../../types/recipe.types';
   import { RecipeCategoryLabels, RecipeDifficultyLabels } from '../../types/recipe.types';
   import { UnitLabels } from '../../types/ingredient.types';
@@ -59,17 +60,25 @@
 <Layout title={recipe.label} currentPage="/recettes" {user}>
 <div class="recipe-detail">
   {#if recipe}
-    <div class="recipe-header">
-      <Button variant="secondary" onclick={goBack}>
-        ← Retour
-      </Button>
 
-      <div class="recipe-hero">
+      <Breadcrumb
+        mode="simple"
+        backLabel="Retour"
+        onBack={goBack}
+      />
+
+      <Hero
+        variant="grid"
+        backgroundImage="/assets/images/ChatGPT Image 11 nov. 2025, 00_10_06.png"
+        backgroundColor="var(--brand-quaternary)"
+        overlay={true}
+        overlayOpacity={0.85}
+      >
         {#if recipe.imageUrl}
           <img src={recipe.imageUrl} alt={recipe.label} class="recipe-image" />
         {:else}
           <div class="recipe-image-placeholder">
-            <span>🍽️</span>
+            <Utensils size={80} />
           </div>
         {/if}
 
@@ -77,23 +86,23 @@
           <h1>{recipe.label}</h1>
 
           <div class="recipe-tags">
-            <Tag variant="primary" size="small">
+            <Tag variant="primary-inverse" size="small">
               {RecipeCategoryLabels[recipe.category] || 'Non catégorisé'}
             </Tag>
-            <Tag variant="info" size="small">
+            <Tag variant="info-inverse" size="small">
               {RecipeDifficultyLabels[recipe.difficulty]}
             </Tag>
           </div>
 
           <div class="recipe-meta">
             <div class="meta-item servings-control">
-              <span class="meta-icon">👥</span>
+              <Users class="meta-icon" size={20} />
               <IconButton icon="−" onclick={decrementServings} disabled={servings <= 1} size="small" variant="ghost" />
               <span class="servings-value">{servings} {servings > 1 ? 'personnes' : 'personne'}</span>
               <IconButton icon="+" onclick={incrementServings} size="small" variant="ghost" />
             </div>
             <div class="meta-item">
-              <span class="meta-icon">⏱️</span>
+              <Clock class="meta-icon" size={20} />
               <span>{formatTime(getTotalTime())}</span>
             </div>
           </div>
@@ -119,15 +128,15 @@
             {/if}
           </div>
         </div>
-      </div>
-    </div>
+      </Hero>
+
 
     <!-- Section Matériel et Appareils -->
     {#if (recipe.materiel && recipe.materiel.length > 0) || (recipe.appareils && recipe.appareils.length > 0)}
       <div class="equipment-section">
         {#if recipe.materiel && recipe.materiel.length > 0}
           <div class="equipment-card">
-            <h3>🔪 Matériel</h3>
+            <h3><Utensils size={20} style="display: inline-block; vertical-align: middle; margin-right: 8px;" /> Matériel</h3>
             <ul class="equipment-list">
               {#each recipe.materiel as item}
                 <li class="equipment-item">{item}</li>
@@ -138,7 +147,7 @@
 
         {#if recipe.appareils && recipe.appareils.length > 0}
           <div class="equipment-card">
-            <h3>⚡ Appareils</h3>
+            <h3><Zap size={20} style="display: inline-block; vertical-align: middle; margin-right: 8px;" /> Appareils</h3>
             <ul class="equipment-list">
               {#each recipe.appareils as item}
                 <li class="equipment-item">{item}</li>
@@ -152,7 +161,7 @@
     <div class="recipe-content">
       <!-- Section Ingrédients -->
       <div class="section ingredients-section">
-        <h2>🥕 Ingrédients</h2>
+        <h2><Carrot size={24} style="display: inline-block; vertical-align: middle; margin-right: 8px;" /> Ingrédients</h2>
         {#if recipe.ingredients && recipe.ingredients.length > 0}
           <ul class="ingredients-list">
             {#each recipe.ingredients as item}
@@ -180,24 +189,21 @@
 
       <!-- Section Étapes -->
       <div class="section steps-section">
-        <h2>👨‍🍳 Préparation</h2>
+        <h2><ChefHat size={24} style="display: inline-block; vertical-align: middle; margin-right: 8px;" /> Préparation</h2>
         {#if recipe.steps && recipe.steps.length > 0}
-          <ol class="steps-list">
+          <div class="steps-list">
             {#each recipe.steps as step}
-              <li class="step-item">
-                <div class="step-number">{step.stepNumber}</div>
-                <div class="step-content">
-                  <p class="step-description">{step.description}</p>
-                  {#if step.durationMinutes && step.durationMinutes > 0}
-                    <div class="step-duration">
-                      <span class="duration-icon">⏱️</span>
-                      <span>{formatTime(step.durationMinutes)}</span>
-                    </div>
-                  {/if}
-                </div>
-              </li>
+              <StepItem
+                stepNumber={step.stepNumber}
+                description={step.description}
+                duration={step.durationMinutes && step.durationMinutes > 0 ? formatTime(step.durationMinutes) : undefined}
+                badgeColor="quaternary"
+                badgeSize="medium"
+                badgeVariant="filled"
+                badgeShape="circle"
+              />
             {/each}
-          </ol>
+          </div>
         {:else}
           <p class="empty-message">Aucune étape définie</p>
         {/if}
@@ -210,9 +216,9 @@
 <style lang="scss">
    @use '../../styles/variables' as *;
   .recipe-detail {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
   }
 
   .loading,
@@ -247,25 +253,6 @@
     margin-bottom: 2.5rem;
   }
 
-  .back-button {
-    margin-bottom: 1.5rem;
-  }
-
-  .recipe-hero {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 2.5rem;
-    background: var(--surface-color);
-    border-radius: 16px;
-    padding: 2.5rem;
-    box-shadow: 0 2px 12px $color-black-alpha-08;
-
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-      padding: 1.5rem;
-    }
-  }
-
   .recipe-image {
     width: 100%;
     height: 300px;
@@ -281,13 +268,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 5rem;
+
+    :global(svg) {
+      opacity: 0.5;
+      color: $color-white;
+    }
   }
 
   .recipe-title-section {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    color: $color-white;
   }
 
   .recipe-tags {
@@ -299,8 +291,12 @@
   h1 {
     font-size: 2rem;
     margin: 0;
-    color: var(--text-color);
     line-height: 1.3;
+    text-transform: uppercase;
+    font-family: $font-family-heading;
+    font-weight: $font-weight-bold;
+    color: $color-decorative-title;
+    text-shadow: $shadow-decorative-title;
   }
 
   .recipe-meta {
@@ -308,6 +304,7 @@
     gap: 2rem;
     flex-wrap: wrap;
     margin-top: 0.5rem;
+    color: $color-white;
   }
 
   .meta-item {
@@ -316,10 +313,11 @@
     gap: 0.75rem;
     font-size: 1.1rem;
     font-weight: 500;
+    color: $color-white;
   }
 
-  .meta-icon {
-    font-size: 1.5rem;
+  :global(.meta-icon) {
+    flex-shrink: 0;
   }
 
   .servings-control {
@@ -327,8 +325,16 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: var(--background-color);
+    background: rgba($color-white, 0.15);
     border-radius: 12px;
+
+    :global(button) {
+      color: $color-white !important;
+
+      &:hover:not(:disabled) {
+        background: rgba($color-white, 0.2) !important;
+      }
+    }
   }
 
 
@@ -336,7 +342,7 @@
     min-width: 100px;
     text-align: center;
     font-weight: 600;
-    color: var(--text-color);
+    color: $color-white;
   }
 
   .time-breakdown {
@@ -344,7 +350,7 @@
     gap: 2rem;
     flex-wrap: wrap;
     padding: 1.5rem;
-    background: var(--background-color);
+    background: rgba($color-white, 0.15);
     border-radius: 12px;
     margin-top: 0.5rem;
   }
@@ -357,7 +363,7 @@
 
   .time-label {
     font-size: 0.85rem;
-    color: var(--text-secondary);
+    color: rgba($color-white, 0.85);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -365,7 +371,7 @@
   .time-value {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--primary-color);
+    color: $color-white;
   }
 
   .equipment-section {
@@ -434,6 +440,11 @@
     box-shadow: 0 2px 12px $color-black-alpha-08;
   }
 
+  .ingredients-section,
+  .steps-section {
+    background: $color-white;
+  }
+
   h2 {
     font-size: 1.5rem;
     margin: 0 0 1.5rem 0;
@@ -496,62 +507,9 @@
   }
 
   .steps-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    counter-reset: step-counter;
-  }
-
-  .step-item {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 1.25rem;
-    padding: 1.5rem;
-    border-radius: 12px;
-    background: var(--background-color);
-  }
-
-  .step-number {
-    width: 36px;
-    height: 36px;
-    background: var(--primary-color);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-
-  .step-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .step-description {
-    margin: 0;
-    line-height: 1.6;
-    color: var(--text-color);
-    font-size: 1rem;
-  }
-
-  .step-duration {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--primary-color);
-    font-weight: 500;
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
-  }
-
-  .duration-icon {
-    font-size: 1rem;
+    gap: 1rem;
   }
 
   .empty-message {

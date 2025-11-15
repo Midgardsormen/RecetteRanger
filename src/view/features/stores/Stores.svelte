@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import StoreDrawer from './StoreDrawer.svelte';
-  import { SearchBar, ListItem, Button, Title, ConfirmModal } from '../../components/ui';
+  import { ListItem, Button, ConfirmModal, PageHero } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import { UserRole } from '../../types/user.types';
 
@@ -37,6 +37,7 @@
   // Modal de confirmation de suppression
   let isConfirmModalOpen = $state(false);
   let storeToDelete = $state<string | null>(null);
+  let deleteError = $state<string>('');
 
   // Debounce pour la recherche
   let searchTimeout: ReturnType<typeof setTimeout>;
@@ -96,11 +97,13 @@
   function openDeleteConfirmation(id: string) {
     storeToDelete = id;
     isConfirmModalOpen = true;
+    deleteError = '';
   }
 
   function cancelDelete() {
     storeToDelete = null;
     isConfirmModalOpen = false;
+    deleteError = '';
   }
 
   async function confirmDelete() {
@@ -111,8 +114,9 @@
       await loadStores();
       isConfirmModalOpen = false;
       storeToDelete = null;
+      deleteError = '';
     } catch (err: any) {
-      alert('Erreur lors de la suppression : ' + err.message);
+      deleteError = err.message || 'Erreur lors de la suppression';
     }
   }
 
@@ -142,24 +146,15 @@
 
 <Layout title="Enseignes" currentPage="/stores" {user}>
 <div id="stores" class="stores">
-  <header class="stores__header">
-    <Title level={1} size="xxl">🏪 Enseignes</Title>
-
-    <div class="stores__actions">
-      <SearchBar
-        placeholder="Rechercher une enseigne..."
-        bind:value={searchQuery}
-        onInput={handleSearchInput}
-      />
-
-      <Button
-        variant="primary"
-        onclick={() => openDrawer()}
-      >
-        ➕ Ajouter une enseigne
-      </Button>
-    </div>
-  </header>
+  <PageHero
+    title="Enseignes"
+    actionLabel="+ Ajouter une enseigne"
+    onAction={() => openDrawer()}
+    showSearch={true}
+    searchPlaceholder="Rechercher une enseigne..."
+    bind:searchValue={searchQuery}
+    onSearchInput={handleSearchInput}
+  />
 
   {#if error}
     <div class="stores__error">{error}</div>
@@ -233,9 +228,12 @@
 <ConfirmModal
   isOpen={isConfirmModalOpen}
   title="Supprimer l'enseigne"
-  message="Êtes-vous sûr de vouloir supprimer cette enseigne ? Cette action est irréversible."
+  message={deleteError || "Êtes-vous sûr de vouloir supprimer cette enseigne ? Cette action est irréversible."}
+  confirmLabel="Supprimer"
+  cancelLabel="Annuler"
   onConfirm={confirmDelete}
   onCancel={cancelDelete}
+  variant={deleteError ? 'danger' : 'warning'}
 />
 
 <style lang="scss">
@@ -255,25 +253,9 @@
   $spacing-xl: $spacing-base * 3;
 
   .stores {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: $spacing-lg;
-
-    &__header {
-      margin-bottom: $spacing-lg;
-    }
-
-    &__actions {
-      display: flex;
-      gap: $spacing-md;
-      margin-top: $spacing-md;
-      flex-wrap: wrap;
-
-      @media (max-width: 768px) {
-        flex-direction: column;
-      }
-    }
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
 
     &__error {
       padding: $spacing-md;
@@ -317,11 +299,15 @@
 
     &__grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: 1fr;
       gap: $spacing-md;
 
-      @media (max-width: 768px) {
-        grid-template-columns: 1fr;
+      @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (min-width: 1024px) {
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 

@@ -1,9 +1,10 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { Button, IconButton, Badge } from '../../components/ui';
+  import { Button, IconButton, Badge, PageHero, Card, ConfirmModal } from '../../components/ui';
   import { GenerateShoppingListDrawer } from './components';
   import { apiService } from '../../services/api.service';
   import type { ShoppingList } from '../../types/shopping-list.types';
+  import { Calendar, ShoppingCart, Trash2 } from 'lucide-svelte';
 
   let { user }: { user: any } = $props();
 
@@ -11,6 +12,11 @@
   let shoppingLists = $state<ShoppingList[]>([]);
   let loading = $state(true);
   let showGenerateDrawer = $state(false);
+
+  // Modal de confirmation de suppression
+  let isConfirmModalOpen = $state(false);
+  let listToDelete = $state<string | null>(null);
+  let deleteError = $state<string>('');
 
   // Charger les listes
   async function loadShoppingLists() {
@@ -35,17 +41,31 @@
     window.location.href = `/shopping-lists/${listId}`;
   }
 
-  async function handleDeleteList(event: Event, listId: string) {
+  function openDeleteConfirmation(event: Event, listId: string) {
     event.stopPropagation(); // Empêcher la navigation vers le détail
+    listToDelete = listId;
+    isConfirmModalOpen = true;
+    deleteError = '';
+  }
 
-    if (!confirm('Supprimer cette liste de courses ?')) return;
+  function cancelDelete() {
+    listToDelete = null;
+    isConfirmModalOpen = false;
+    deleteError = '';
+  }
+
+  async function confirmDelete() {
+    if (!listToDelete) return;
 
     try {
-      await apiService.deleteShoppingList(listId);
+      await apiService.deleteShoppingList(listToDelete);
       // Retirer la liste de l'état local
-      shoppingLists = shoppingLists.filter(list => list.id !== listId);
+      shoppingLists = shoppingLists.filter(list => list.id !== listToDelete);
+      isConfirmModalOpen = false;
+      listToDelete = null;
+      deleteError = '';
     } catch (err: any) {
-      alert('Erreur lors de la suppression : ' + err.message);
+      deleteError = err.message || 'Erreur lors de la suppression';
     }
   }
 
@@ -79,15 +99,11 @@
 
 <Layout title="Listes de courses" currentPage="/shopping-lists" {user}>
   <div class="shopping-lists">
-    <div class="shopping-lists__header">
-      <div class="header-content">
-        <h1>🛒 Mes listes de courses</h1>
-        <p class="subtitle">Gérez vos courses facilement</p>
-      </div>
-      <Button onclick={handleGenerateClick}>
-        ✨ Générer depuis le planning
-      </Button>
-    </div>
+    <PageHero
+      title="Mes listes de courses"
+      actionLabel="+ Générer depuis le planning"
+      onAction={handleGenerateClick}
+    />
 
     {#if loading}
       <div class="loading-container">
@@ -96,7 +112,9 @@
       </div>
     {:else if shoppingLists.length === 0}
       <div class="empty-state">
-        <div class="empty-icon">🛒</div>
+        <div class="empty-icon">
+          <ShoppingCart size={64} />
+        </div>
         <h2>Aucune liste de courses</h2>
         <p>Générez une liste depuis votre planning de repas pour commencer !</p>
         <Button onclick={handleGenerateClick}>Générer ma première liste</Button>
@@ -104,35 +122,43 @@
     {:else}
       <div class="lists-grid">
         {#each shoppingLists as list}
-          <div class="list-card" onclick={() => handleListClick(list.id)}>
-            <div class="list-header">
-              <h3>{list.name}</h3>
-              <div class="list-header-actions">
+          <Card
+            title={list.name}
+            clickable={true}
+            onclick={() => handleListClick(list.id)}
+          >
+            {#snippet children()}
+              <div class="list-info">
+                {#if list.fromDate && list.toDate}
+                  <p class="date-range">
+                    <Calendar size={16} />
+                    {new Date(list.fromDate).toLocaleDateString('fr-FR')} - {new Date(list.toDate).toLocaleDateString('fr-FR')}
+                  </p>
+                {/if}
+                <p class="item-count">
+                  {list.items.length} article{list.items.length > 1 ? 's' : ''}
+                  {#if list.items.filter(i => i.checked).length > 0}
+                    · {list.items.filter(i => i.checked).length} coché{list.items.filter(i => i.checked).length > 1 ? 's' : ''}
+                  {/if}
+                </p>
+              </div>
+            {/snippet}
+            {#snippet footer()}
+              <div class="list-footer">
                 <Badge variant={getStatusVariant(list.status)} size="small" pill>
                   {getStatusLabel(list.status)}
                 </Badge>
                 <IconButton
-                  icon="🗑️"
-                  onclick={(e) => handleDeleteList(e, list.id)}
-                  size="small"
                   variant="danger"
-                />
+                  size="medium"
+                  onclick={(e) => openDeleteConfirmation(e, list.id)}
+                  ariaLabel="Supprimer"
+                >
+                  <Trash2 size={18} />
+                </IconButton>
               </div>
-            </div>
-            <div class="list-info">
-              {#if list.fromDate && list.toDate}
-                <p class="date-range">
-                  📅 {new Date(list.fromDate).toLocaleDateString('fr-FR')} - {new Date(list.toDate).toLocaleDateString('fr-FR')}
-                </p>
-              {/if}
-              <p class="item-count">
-                {list.items.length} article{list.items.length > 1 ? 's' : ''}
-                {#if list.items.filter(i => i.checked).length > 0}
-                  · {list.items.filter(i => i.checked).length} coché{list.items.filter(i => i.checked).length > 1 ? 's' : ''}
-                {/if}
-              </p>
-            </div>
-          </div>
+            {/snippet}
+          </Card>
         {/each}
       </div>
     {/if}
@@ -145,38 +171,25 @@
   onGenerate={loadShoppingLists}
 />
 
+<!-- Modal de confirmation de suppression -->
+<ConfirmModal
+  isOpen={isConfirmModalOpen}
+  title="Supprimer la liste de courses"
+  message={deleteError || "Êtes-vous sûr de vouloir supprimer cette liste de courses ? Cette action est irréversible."}
+  confirmLabel="Supprimer"
+  cancelLabel="Annuler"
+  onConfirm={confirmDelete}
+  onCancel={cancelDelete}
+  variant={deleteError ? 'danger' : 'warning'}
+/>
+
 <style lang="scss">
   @use '../../styles/variables' as *;
 
   .shopping-lists {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-  }
-
-  .shopping-lists__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-  }
-
-  .header-content {
-    h1 {
-      margin: 0;
-      font-size: 2rem;
-      color: var(--text-color);
-    }
-
-    .subtitle {
-      margin: 0.5rem 0 0 0;
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-    }
   }
 
   .loading-container {
@@ -214,7 +227,7 @@
     box-shadow: 0 2px 8px $color-black-alpha-10;
 
     .empty-icon {
-      font-size: 4rem;
+      color: $color-text-tertiary;
       margin-bottom: 1rem;
     }
 
@@ -231,101 +244,46 @@
 
   .lists-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1.5rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 
-  .list-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px $color-black-alpha-10;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  .list-info {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
 
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 16px $color-primary-alpha-20;
-    }
-
-    .list-header {
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 1rem;
-      gap: 1rem;
-
-      h3 {
-        margin: 0;
-        font-size: 1.2rem;
-        color: var(--text-color);
-        flex: 1;
-      }
-
-      .list-header-actions {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .status {
-        padding: 0.25rem 0.75rem;
-        border-radius: 12px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        white-space: nowrap;
-
-        &.status-draft {
-          background: $color-gray-100;
-          color: $color-gray-500;
-        }
-
-        &.status-in_progress {
-          background: $color-background-info;
-          color: $color-info-dark;
-        }
-
-        &.status-completed {
-          background: $color-success-light;
-          color: $color-success-dark;
-        }
-
-        &.status-archived {
-          background: $color-gray-100;
-          color: $color-gray-400;
-        }
-      }
-
-      .delete-list-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1.1rem;
-        padding: 0.25rem;
-        opacity: 0.6;
-        transition: opacity 0.2s;
-
-        &:hover {
-          opacity: 1;
-        }
-      }
+      align-items: center;
+      gap: $spacing-xs;
     }
 
-    .list-info {
-      p {
-        margin: 0.5rem 0 0 0;
-        font-size: 0.95rem;
-        color: var(--text-secondary);
-      }
-
-      .date-range {
-        font-weight: 500;
-      }
-
-      .item-count {
-        color: var(--text-tertiary);
-        font-size: 0.9rem;
-      }
+    .date-range {
+      font-weight: 500;
     }
+
+    .item-count {
+      color: var(--text-tertiary);
+      font-size: 0.9rem;
+    }
+  }
+
+  .list-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $spacing-base;
   }
 </style>

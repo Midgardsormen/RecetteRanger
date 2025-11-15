@@ -27,7 +27,8 @@ export default defineConfig({
           'vendor-cropperjs': ['cropperjs'],
           // Each feature as a separate chunk
           'feature-home': ['./src/view/features/home/Home.svelte'],
-          'feature-recettes': ['./src/view/features/recettes/Recettes.svelte'],
+          'feature-recipes': ['./src/view/features/recipes/Recipes.svelte'],
+          'feature-recipe-detail': ['./src/view/features/recipes/RecipeDetail.svelte'],
           'feature-ingredients': ['./src/view/features/ingredients/Ingredients.svelte'],
           'feature-meal-planning': ['./src/view/features/plannings/MealPlanning.svelte'],
           'feature-meal-planning-settings': ['./src/view/features/plannings/MealPlanningSettings.svelte'],

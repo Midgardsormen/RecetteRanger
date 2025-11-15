@@ -4,6 +4,8 @@
   type ColorVariant =
     // Semantic colors
     | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'
+    // Inverse variants (for dark backgrounds)
+    | 'primary-inverse' | 'info-inverse'
     // Extended palette
     | 'red' | 'orange' | 'amber' | 'yellow' | 'lime' | 'green' | 'emerald'
     | 'teal' | 'cyan' | 'sky' | 'blue' | 'indigo' | 'violet' | 'purple'
@@ -219,6 +221,37 @@
 
       .tag__remove:hover {
         background: $color-gray-300;
+      }
+    }
+
+    // Inverse variants (for dark backgrounds)
+    &--primary-inverse {
+      background: rgba($color-white, 0.9);
+      color: $brand-primary;
+      border-color: rgba($color-white, 1);
+      font-weight: $font-weight-semibold;
+
+      &:hover {
+        background: rgba($color-white, 1);
+      }
+
+      .tag__remove:hover {
+        background: rgba($brand-primary, 0.15);
+      }
+    }
+
+    &--info-inverse {
+      background: rgba($color-white, 0.9);
+      color: $color-info-dark;
+      border-color: rgba($color-white, 1);
+      font-weight: $font-weight-semibold;
+
+      &:hover {
+        background: rgba($color-white, 1);
+      }
+
+      .tag__remove:hover {
+        background: rgba($color-info, 0.15);
       }
     }
 

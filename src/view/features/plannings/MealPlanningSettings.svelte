@@ -1,6 +1,6 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { Button, Input, Select } from '../../components/ui';
+  import { Button, Input, PageHero, Breadcrumb, ConfirmModal } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { MealSlotConfig, MealSlot } from '../../types/meal-plan.types';
   import { MealSlot as MealSlotEnum, MealSlotLabels } from '../../types/meal-plan.types';
@@ -12,6 +12,11 @@
   let loading = $state(true);
   let saving = $state(false);
   let hasChanges = $state(false);
+  let successMessage = $state('');
+  let errorMessage = $state('');
+
+  // Modal de confirmation pour quitter sans sauvegarder
+  let isConfirmModalOpen = $state(false);
 
   // Charger les configurations
   async function loadConfigs() {
@@ -30,7 +35,7 @@
       }
     } catch (err) {
       console.error('Erreur lors du chargement des configurations:', err);
-      alert('Erreur lors du chargement des configurations');
+      errorMessage = 'Erreur lors du chargement des configurations';
     } finally {
       loading = false;
     }
@@ -44,6 +49,8 @@
 
   async function saveConfigs() {
     saving = true;
+    errorMessage = '';
+    successMessage = '';
     try {
       // Mettre à jour toutes les configurations
       await Promise.all(
@@ -57,10 +64,15 @@
       );
 
       hasChanges = false;
-      alert('Configurations enregistrées avec succès !');
+      successMessage = 'Configurations enregistrées avec succès !';
+
+      // Effacer le message après 3 secondes
+      setTimeout(() => {
+        successMessage = '';
+      }, 3000);
     } catch (err) {
       console.error('Erreur lors de l\'enregistrement:', err);
-      alert('Erreur lors de l\'enregistrement des configurations');
+      errorMessage = 'Erreur lors de l\'enregistrement des configurations';
     } finally {
       saving = false;
     }
@@ -90,11 +102,20 @@
     hasChanges = true;
   }
 
-  function goBack() {
-    if (hasChanges && !confirm('Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter ?')) {
-      return;
+  function attemptGoBack() {
+    if (hasChanges) {
+      isConfirmModalOpen = true;
+    } else {
+      goBack();
     }
-    window.location.href = '/planning';
+  }
+
+  function goBack() {
+    window.location.href = '/plannings';
+  }
+
+  function cancelGoBack() {
+    isConfirmModalOpen = false;
   }
 
   // Charger au montage
@@ -105,18 +126,26 @@
   });
 </script>
 
-<Layout title="Configuration des créneaux de repas" currentPage="/planning" {user}>
+<Layout title="Configuration des créneaux de repas" currentPage="/plannings" {user}>
   <div class="settings-page">
-    <div class="settings-header">
-      <Button variant="secondary" onclick={goBack}>
-        ← Retour au planning
-      </Button>
+    <Breadcrumb
+      mode="simple"
+      backLabel="Planning des repas"
+      onBack={attemptGoBack}
+    />
 
-      <div class="header-content">
-        <h1>⚙️ Configuration des créneaux</h1>
-        <p class="subtitle">Personnalisez les noms et l'ordre de vos créneaux de repas</p>
-      </div>
-    </div>
+    <PageHero
+      title="Configuration des créneaux"
+      subtitle="Personnalisez les noms et l'ordre de vos créneaux de repas"
+    />
+
+    {#if errorMessage}
+      <div class="message message--error">{errorMessage}</div>
+    {/if}
+
+    {#if successMessage}
+      <div class="message message--success">{successMessage}</div>
+    {/if}
 
     {#if loading}
       <div class="loading-container">
@@ -198,6 +227,18 @@
   </div>
 </Layout>
 
+<!-- Modal de confirmation pour quitter sans sauvegarder -->
+<ConfirmModal
+  isOpen={isConfirmModalOpen}
+  title="Modifications non enregistrées"
+  message="Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter sans enregistrer ?"
+  confirmLabel="Quitter sans enregistrer"
+  cancelLabel="Annuler"
+  onConfirm={goBack}
+  onCancel={cancelGoBack}
+  variant="warning"
+/>
+
 <style lang="scss">
   @use '../../styles/variables' as *;
   $primary-color: $brand-primary;
@@ -208,31 +249,38 @@
   $spacing-base: 1rem;
 
   .settings-page {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
   }
 
-  .settings-header {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+  .message {
+    padding: $spacing-base;
+    border-radius: 8px;
+    font-weight: $font-weight-medium;
+    animation: slideDown 0.3s ease;
 
-    .header-content {
-      h1 {
-        margin: 0;
-        font-size: 2rem;
-        color: $text-dark;
-      }
+    &--error {
+      background: $color-background-danger;
+      border: 1px solid $color-danger;
+      color: $color-danger;
+    }
 
-      .subtitle {
-        margin: 0.5rem 0 0 0;
-        color: $text-gray;
-        font-size: 1.1rem;
-      }
+    &--success {
+      background: rgba($color-success, 0.1);
+      border: 1px solid $color-success;
+      color: darken($color-success, 10%);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 

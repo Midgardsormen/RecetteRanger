@@ -13,10 +13,16 @@
     { href: '/shopping-lists', label: 'Liste de course', icon: '🛒' }
   ];
 
-
-
   // Check if user is authenticated
   const isAuthenticated = $derived(user !== null);
+
+  // Check if a nav item is active (exact match or starts with the href for sub-pages)
+  function isActive(itemHref: string): boolean {
+    if (itemHref === '/') {
+      return currentPage === '/';
+    }
+    return currentPage === itemHref || currentPage.startsWith(itemHref + '/');
+  }
 
   function handleNavClick() {
     // Close drawer on mobile when clicking a link
@@ -35,8 +41,8 @@
           <a
             href={item.href}
             class="nav-horizontal__link"
-            class:nav-horizontal__link--active={currentPage === item.href}
-            aria-current={currentPage === item.href ? 'page' : undefined}
+            class:nav-horizontal__link--active={isActive(item.href)}
+            aria-current={isActive(item.href) ? 'page' : undefined}
           >
             <span class="nav-horizontal__label">{item.label}</span>
           </a>
@@ -59,8 +65,8 @@
             <a
               href={item.href}
               class="mobile-nav__link"
-              class:mobile-nav__link--active={currentPage === item.href}
-              aria-current={currentPage === item.href ? 'page' : undefined}
+              class:mobile-nav__link--active={isActive(item.href)}
+              aria-current={isActive(item.href) ? 'page' : undefined}
               onclick={handleNavClick}
             >
               <span class="mobile-nav__icon">{item.icon}</span>

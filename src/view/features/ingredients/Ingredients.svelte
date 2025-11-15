@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
-  import { SearchBar, ListItem, Button, Title, Filter, ConfirmModal, Badge, Tag } from '../../components/ui';
+  import { ListItem, Button, ConfirmModal, Badge, Tag, PageHero, FilterGroup } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, SearchIngredientsDto } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, StoreAisleColors, UnitLabels } from '../../types/ingredient.types';
@@ -34,6 +34,7 @@
   // Modal de confirmation de suppression
   let isConfirmModalOpen = $state(false);
   let ingredientToDelete = $state<string | null>(null);
+  let deleteError = $state<string>('');
 
   // Debounce pour la recherche
   let searchTimeout: ReturnType<typeof setTimeout>;
@@ -102,11 +103,13 @@
   function openDeleteConfirmation(id: string) {
     ingredientToDelete = id;
     isConfirmModalOpen = true;
+    deleteError = '';
   }
 
   function cancelDelete() {
     ingredientToDelete = null;
     isConfirmModalOpen = false;
+    deleteError = '';
   }
 
   async function confirmDelete() {
@@ -117,8 +120,9 @@
       await loadIngredients();
       isConfirmModalOpen = false;
       ingredientToDelete = null;
+      deleteError = '';
     } catch (err: any) {
-      alert('Erreur lors de la suppression : ' + err.message);
+      deleteError = err.message || 'Erreur lors de la suppression';
     }
   }
 
@@ -148,55 +152,43 @@
 
 <Layout title="Ingrédients" currentPage="/ingredients" {user}>
 <div id="ingredients" class="ingredients">
-  <header class="ingredients__header">
-    <Title level={1}>🥗 Mes ingrédients</Title>
-    <Button onclick={() => openDrawer()}>
-      + Ajouter un ingrédient
-    </Button>
-  </header>
+  <PageHero
+    title="Mes ingrédients"
+    actionLabel="+ Ajouter un ingrédient"
+    onAction={() => openDrawer()}
+    showSearch={true}
+    searchPlaceholder="Rechercher un ingrédient..."
+    bind:searchValue={searchQuery}
+    onSearchInput={handleSearchInput}
+  >
+    {#snippet filters()}
+      <FilterGroup
+        label="Catégorie"
+        bind:value={selectedAisle}
+        onchange={handleFilterChange}
+        options={[
+          { value: '', label: 'Toutes' },
+          ...Object.entries(StoreAisleLabels).map(([key, label]) => ({
+            value: key,
+            label
+          }))
+        ]}
+        inverse={true}
+      />
 
-  <!-- Recherche et filtres -->
-  <div class="ingredients__search">
-    <SearchBar
-      bind:value={searchQuery}
-      placeholder="Rechercher un ingrédient..."
-      oninput={handleSearchInput}
-    />
-
-    <div class="ingredients__filters">
-      <div class="ingredients__filter-group">
-        <span class="ingredients__filter-label">Filtrer par</span>
-        <Filter
-          label="Catégorie"
-          mode="dropdown"
-          bind:value={selectedAisle}
-          onchange={handleFilterChange}
-          options={[
-            { value: '', label: 'Toutes' },
-            ...Object.entries(StoreAisleLabels).map(([key, label]) => ({
-              value: key,
-              label
-            }))
-          ]}
-        />
-      </div>
-
-      <div class="ingredients__filter-group">
-        <span class="ingredients__filter-label">Trier par</span>
-        <Filter
-          label="Ordre"
-          mode="dropdown"
-          bind:value={sortBy}
-          onchange={handleFilterChange}
-          options={[
-            { value: 'alpha', label: 'Alphabétique' },
-            { value: 'date', label: 'Date d\'ajout' },
-            { value: 'popularity', label: 'Popularité' }
-          ]}
-        />
-      </div>
-    </div>
-  </div>
+      <FilterGroup
+        label="Trier par"
+        bind:value={sortBy}
+        onchange={handleFilterChange}
+        options={[
+          { value: 'alpha', label: 'Alphabétique' },
+          { value: 'date', label: 'Date d\'ajout' },
+          { value: 'popularity', label: 'Popularité' }
+        ]}
+        inverse={true}
+      />
+    {/snippet}
+  </PageHero>
 
   {#if error}
     <div class="ingredients__error">{error}</div>
@@ -295,6 +287,18 @@
   {/if}
 </div>
 
+<!-- Modal de confirmation de suppression -->
+<ConfirmModal
+  isOpen={isConfirmModalOpen}
+  title="Supprimer l'ingrédient"
+  message={deleteError || "Êtes-vous sûr de vouloir supprimer cet ingrédient ? Cette action est irréversible."}
+  confirmLabel="Supprimer"
+  cancelLabel="Annuler"
+  onConfirm={confirmDelete}
+  onCancel={cancelDelete}
+  variant={deleteError ? 'danger' : 'warning'}
+/>
+
 <!-- Drawer -->
 <IngredientDrawer
   isOpen={isDrawerOpen}
@@ -325,41 +329,6 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-base * 2;
-
-    &__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: $spacing-base;
-    }
-
-
-    &__search {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-base;
-    }
-
-    &__filters {
-      display: flex;
-      gap: $spacing-base * 2;
-      flex-wrap: wrap;
-    }
-
-    &__filter-group {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-base * 0.5;
-    }
-
-    &__filter-label {
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: $text-gray;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
 
     &__error {
       padding: $spacing-base;

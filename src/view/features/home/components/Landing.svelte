@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Title } from '../../../components/ui';
+  import { Button, Title, Hero } from '../../../components/ui';
 
   function goToRegister() {
     window.location.href = '/register';
@@ -12,7 +12,14 @@
 
 <div class="landing">
   <!-- Hero Section -->
-  <div class="landing__hero">
+  <Hero
+    variant="default"
+    backgroundImage="/assets/images/ChatGPT Image 11 nov. 2025, 00_10_06.png"
+    backgroundColor="var(--brand-quaternary)"
+    overlay={true}
+    overlayOpacity={0.85}
+    textAlign="center"
+  >
     <div class="landing__hero-content">
       <p class="landing__hero-subtitle">
         Votre assistant personnel pour gérer vos recettes, planifier vos repas et optimiser vos courses
@@ -26,7 +33,7 @@
         </Button>
       </div>
     </div>
-  </div>
+  </Hero>
 
   <!-- Features Section -->
   <div class="landing__features">
@@ -70,49 +77,6 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-lg;
-
-    // Element: hero
-    &__hero {
-      @include retro-grain(0.3);
-      background: $brand-quaternary;
-      background-image: url('/assets/images/ChatGPT Image 11 nov. 2025, 00_10_06.png');
-      background-size: cover;
-      background-position: center;
-      background-blend-mode: overlay;
-      position: relative;
-      color: $color-white;
-      padding: $spacing-4xl $spacing-sm $spacing-lg;
-      border-radius: $radius-2xl;
-      text-align: center;
-      box-shadow: 0 4px 20px rgba($brand-primary, 0.3);
-
-      @media (min-width: $breakpoint-md) {
-        padding: 8rem $spacing-md $spacing-xl ;
-      }
-      @media (min-width: $breakpoint-lg) {
-        padding: 8rem  $spacing-lg $spacing-2xl;
-      }
-
-      // Overlay pour contrôler l'opacité de l'image
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: $brand-quaternary;
-        opacity: 0.85;
-        border-radius: $radius-2xl;
-        z-index: 0;
-      }
-
-      // S'assurer que le contenu est au-dessus de l'overlay
-      > * {
-        position: relative;
-        z-index: 1;
-      }
-    }
 
     // Element: hero-content
     &__hero-content {

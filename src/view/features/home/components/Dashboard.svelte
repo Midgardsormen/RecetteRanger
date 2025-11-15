@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Title, Tile, Link, Loader, ProgressBar } from '../../../components/ui';
+  import { Title, Tile, Link, Loader, ProgressBar, Hero } from '../../../components/ui';
   import { apiService } from '../../../services/api.service';
 
   let { user }: { user: any } = $props();
@@ -70,10 +70,17 @@
 
 <div class="dashboard">
   <!-- Welcome Section -->
-  <div class="dashboard__welcome">
+  <Hero
+    variant="compact"
+    backgroundImage="/assets/images/ChatGPT Image 11 nov. 2025, 00_10_06.png"
+    backgroundColor="var(--brand-quaternary)"
+    overlay={true}
+    overlayOpacity={0.85}
+    textAlign="center"
+  >
     <Title level={1} align="center"><span>Bienvenue,</span> {user.pseudo} !</Title>
     <p class="dashboard__welcome-subtitle">Gérez vos recettes, planifiez vos repas et organisez vos courses en un seul endroit.</p>
-  </div>
+  </Hero>
 
   {#if isLoading}
     <Loader size="large" message="Chargement de votre tableau de bord..." />
@@ -210,61 +217,21 @@
       font-size: $font-size-lg;
     }
 
-    // Element: welcome
-    &__welcome {
-      @include retro-grain(0.3);
-      background: $brand-quaternary;
-      background-image: url('/assets/images/ChatGPT Image 11 nov. 2025, 00_10_06.png');
-      background-size: cover;
-      background-position: center;
-      background-blend-mode: overlay;
-      position: relative;
-      color: $color-white;
-      padding: $spacing-lg $spacing-sm;
-      border-radius: $radius-2xl;
-      text-align: center;
-      box-shadow: 0 4px 20px rgba($brand-primary, 0.3);
-      @media (min-width: $breakpoint-md) {
-        padding:  $spacing-3xl $spacing-md $spacing-2xl;
-      }
-      @media (min-width: $breakpoint-lg) {
-        padding:  $spacing-4xl $spacing-lg $spacing-2xl;
-      }
-      // Overlay pour contrôler l'opacité de l'image
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: $brand-quaternary;
-        opacity: 0.85;
-        border-radius: $radius-2xl;
-        z-index: 0;
-      }
-
-      // S'assurer que le contenu est au-dessus de l'overlay
-      > * {
-        position: relative;
-        z-index: 1;
-      }
-
-      :global {
-        .title {
-          text-transform: uppercase;
-          font-family: $font-family-heading;
-          font-weight: $font-weight-bold;
-          color: $color-decorative-title;
-          text-shadow: $shadow-decorative-title;
-          opacity: 0.9;
-          display: flex;
-          flex-direction: column;
-          line-height: 1;
-          margin-bottom: $spacing-lg;
-          span{
-            font-size: $font-size-2xl;
-          }
+    // Styles globaux pour le titre dans le Hero
+    :global {
+      .hero .title {
+        text-transform: uppercase;
+        font-family: $font-family-heading;
+        font-weight: $font-weight-bold;
+        color: $color-decorative-title;
+        text-shadow: $shadow-decorative-title;
+        opacity: 0.9;
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+        margin-bottom: $spacing-lg;
+        span{
+          font-size: $font-size-2xl;
         }
       }
     }

@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import IconButton from './IconButton.svelte';
+  import { Pencil, Trash2 } from 'lucide-svelte';
 
   interface Props {
     imageUrl?: string;
@@ -13,6 +15,12 @@
     onDelete?: () => void;
     onClick?: () => void;
     children?: Snippet;
+    draggable?: boolean;
+    dragHandleSlot?: Snippet;
+    checkable?: boolean;
+    checked?: boolean;
+    onCheck?: (checked: boolean) => void;
+    showThumbnail?: boolean;
   }
 
   let {
@@ -26,7 +34,13 @@
     onEdit,
     onDelete,
     onClick,
-    children
+    children,
+    draggable = false,
+    dragHandleSlot,
+    checkable = false,
+    checked = false,
+    onCheck,
+    showThumbnail = true
   }: Props = $props();
 
   function handleClick() {
@@ -48,27 +62,56 @@
       onDelete();
     }
   }
+
+  function handleCheck(e: Event) {
+    e.stopPropagation();
+    if (onCheck) {
+      const target = e.target as HTMLInputElement;
+      onCheck(target.checked);
+    }
+  }
 </script>
 
 <div
   class="list-item"
   class:list-item--clickable={!!onClick}
   class:list-item--has-footer={!!footer}
+  class:list-item--checked={checkable && checked}
   onclick={handleClick}
   role={onClick ? 'button' : undefined}
   tabindex={onClick ? 0 : undefined}
 >
   <div class="list-item__main">
+    <!-- Drag handle (if draggable) -->
+    {#if draggable && dragHandleSlot}
+      <div class="list-item__drag-handle">
+        {@render dragHandleSlot()}
+      </div>
+    {/if}
+
+    <!-- Checkbox (if checkable) -->
+    {#if checkable}
+      <div class="list-item__checkbox">
+        <input
+          type="checkbox"
+          {checked}
+          onchange={handleCheck}
+        />
+      </div>
+    {/if}
+
     <!-- Thumbnail -->
-    <div class="list-item__thumbnail">
-      {#if imageUrl}
-        <img src={imageUrl} alt={title} class="list-item__image" />
-      {:else}
-        <div class="list-item__placeholder">
-          {imagePlaceholder}
-        </div>
-      {/if}
-    </div>
+    {#if showThumbnail}
+      <div class="list-item__thumbnail">
+        {#if imageUrl}
+          <img src={imageUrl} alt={title} class="list-item__image" />
+        {:else}
+          <div class="list-item__placeholder">
+            {imagePlaceholder}
+          </div>
+        {/if}
+      </div>
+    {/if}
 
     <!-- Content -->
     <div class="list-item__content">
@@ -106,24 +149,24 @@
         {#if onEdit || onDelete}
           <div class="list-item__actions">
             {#if onEdit}
-              <button
-                class="list-item__action list-item__action--edit"
+              <IconButton
+                variant="ghost"
+                size="medium"
                 onclick={handleEdit}
-                title="Modifier"
-                type="button"
+                ariaLabel="Modifier"
               >
-                ✏️
-              </button>
+                <Pencil size={18} />
+              </IconButton>
             {/if}
             {#if onDelete}
-              <button
-                class="list-item__action list-item__action--delete"
+              <IconButton
+                variant="danger"
+                size="medium"
                 onclick={handleDelete}
-                title="Supprimer"
-                type="button"
+                ariaLabel="Supprimer"
               >
-                🗑️
-              </button>
+                <Trash2 size={18} />
+              </IconButton>
             {/if}
           </div>
         {/if}
@@ -165,6 +208,17 @@
         box-shadow: 0 0 0 3px $color-primary-alpha-20;
       }
     }
+
+    &--checked {
+      opacity: 0.6;
+      background: $color-gray-50;
+
+      .list-item__title,
+      .list-item__content {
+        text-decoration: line-through;
+        color: $color-text-tertiary;
+      }
+    }
   }
 
   .list-item__main {
@@ -172,6 +226,34 @@
     align-items: center;
     gap: $spacing-base;
     padding: $spacing-base;
+  }
+
+  .list-item__drag-handle {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    color: $color-text-tertiary;
+    padding: $spacing-xs;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  .list-item__checkbox {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: $brand-primary;
+    }
   }
 
   .list-item__thumbnail {
@@ -273,44 +355,6 @@
     width: 100%;
   }
 
-  .list-item__action {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: 2px solid $color-border-primary;
-    border-radius: $radius-lg;
-    font-size: $font-size-lg;
-    cursor: pointer;
-    transition: all $transition-base ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 2px 8px $color-black-alpha-08;
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 3px $color-primary-alpha-20;
-    }
-
-    &--edit {
-      &:hover {
-        border-color: $brand-primary;
-        background: $color-primary-alpha-10;
-      }
-    }
-
-    &--delete {
-      &:hover {
-        border-color: $color-danger;
-        background: $color-danger-alpha-10;
-      }
-    }
-  }
-
   // Responsive
   @media (max-width: $breakpoint-sm) {
     .list-item__main {
@@ -337,12 +381,6 @@
 
     .list-item__subtitle {
       font-size: $font-size-xs;
-    }
-
-    .list-item__action {
-      width: 36px;
-      height: 36px;
-      font-size: $font-size-base;
     }
 
     .list-item__footer {

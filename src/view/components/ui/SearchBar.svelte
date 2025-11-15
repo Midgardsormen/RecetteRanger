@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Search, X } from 'lucide-svelte';
+
   interface Props {
     value?: string;
     placeholder?: string;
@@ -15,7 +17,7 @@
 </script>
 
 <div class="search-bar">
-  <div class="search-bar__icon">🔍</div>
+  <Search class="search-bar__icon" size={20} />
   <input
     type="text"
     class="search-bar__input"
@@ -31,7 +33,7 @@
       onclick={() => value = ''}
       aria-label="Effacer la recherche"
     >
-      ✕
+      <X size={18} />
     </button>
   {/if}
 </div>
@@ -55,11 +57,11 @@
     }
   }
 
-  .search-bar__icon {
-    padding-left: $spacing-base;
-    font-size: 1.2rem;
+  :global(.search-bar__icon) {
+    margin-left: $spacing-base;
     color: $color-text-tertiary;
     pointer-events: none;
+    flex-shrink: 0;
   }
 
   .search-bar__input {
@@ -86,24 +88,27 @@
   }
 
   .search-bar__clear {
-    padding: $spacing-sm;
+    padding: $spacing-xs;
     margin-right: $spacing-sm;
     border: none;
     background: rgba($brand-primary, 0.1);
     color: $brand-primary;
     border-radius: $radius-full;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all $transition-base $transition-ease;
-    font-size: 1.2rem;
-    line-height: 1;
+    flex-shrink: 0;
 
     &:hover {
       background: rgba($brand-primary, 0.2);
+    }
+
+    :global(svg) {
+      flex-shrink: 0;
     }
   }
 </style>

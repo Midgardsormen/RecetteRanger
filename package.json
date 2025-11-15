@@ -32,6 +32,7 @@
     "cloudinary": "^2.8.0",
     "cookie-parser": "^1.4.7",
     "cropperjs": "^1.6.2",
+    "lucide-svelte": "^0.553.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.1",

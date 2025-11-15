@@ -88,9 +88,27 @@
       align-items: center;
       justify-content: center;
       box-shadow:
-        0 8px 24px $color-black-alpha-20,
-        0 4px 8px $color-black-alpha-15;
+        1.5px 1.5px 0 $brand-red,
+        3px 3px 0 $brand-red,
+        0 3px 10px $color-black-alpha-20,
+        0 1.5px 4px $color-black-alpha-15;
       z-index: 100;
+
+      @media (min-width: $breakpoint-md) {
+        box-shadow:
+          2.5px 2.5px 0 $brand-red,
+          5px 5px 0 $brand-red,
+          0 5px 15px $color-black-alpha-20,
+          0 2.5px 5px $color-black-alpha-15;
+      }
+
+      @media (min-width: $breakpoint-lg) {
+        box-shadow:
+          3px 3px 0 $brand-red,
+          6px 6px 0 $brand-red,
+          0 7px 20px $color-black-alpha-20,
+          0 3.5px 7px $color-black-alpha-15;
+      }
 
       top: 0;
 

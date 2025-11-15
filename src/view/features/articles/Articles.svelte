@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
-  import { SearchBar, ListItem, Button, Title, Filter, ConfirmModal } from '../../components/ui';
+  import { ListItem, Button, Filter, ConfirmModal, PageHero } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, SearchIngredientsDto } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, UnitLabels } from '../../types/ingredient.types';
@@ -33,6 +33,7 @@
   // Modal de confirmation de suppression
   let isConfirmModalOpen = $state(false);
   let articleToDelete = $state<string | null>(null);
+  let deleteError = $state<string>('');
 
   // Debounce pour la recherche
   let searchTimeout: ReturnType<typeof setTimeout>;
@@ -101,11 +102,13 @@
   function openDeleteConfirmation(id: string) {
     articleToDelete = id;
     isConfirmModalOpen = true;
+    deleteError = '';
   }
 
   function cancelDelete() {
     articleToDelete = null;
     isConfirmModalOpen = false;
+    deleteError = '';
   }
 
   async function confirmDelete() {
@@ -116,8 +119,9 @@
       await loadArticles();
       isConfirmModalOpen = false;
       articleToDelete = null;
+      deleteError = '';
     } catch (err: any) {
-      alert('Erreur lors de la suppression : ' + err.message);
+      deleteError = err.message || 'Erreur lors de la suppression';
     }
   }
 
@@ -147,22 +151,16 @@
 
 <Layout title="Articles" currentPage="/articles" {user}>
 <div id="articles" class="articles">
-  <header class="articles__header">
-    <Title level={1}>🛒 Mes articles</Title>
-    <Button onclick={() => openDrawer()}>
-      + Ajouter un article
-    </Button>
-  </header>
-
-  <!-- Recherche et filtres -->
-  <div class="articles__search">
-    <SearchBar
-      bind:value={searchQuery}
-      placeholder="Rechercher un article..."
-      oninput={handleSearchInput}
-    />
-
-    <div class="articles__filters">
+  <PageHero
+    title="Mes articles"
+    actionLabel="+ Ajouter un article"
+    onAction={() => openDrawer()}
+    showSearch={true}
+    searchPlaceholder="Rechercher un article..."
+    bind:searchValue={searchQuery}
+    onSearchInput={handleSearchInput}
+  >
+    {#snippet filters()}
       <div class="articles__filter-group">
         <span class="articles__filter-label">Filtrer par</span>
         <Filter
@@ -194,8 +192,8 @@
           ]}
         />
       </div>
-    </div>
-  </div>
+    {/snippet}
+  </PageHero>
 
   {#if error}
     <div class="articles__error">{error}</div>
@@ -271,6 +269,18 @@
   {/if}
 </div>
 
+<!-- Modal de confirmation de suppression -->
+<ConfirmModal
+  isOpen={isConfirmModalOpen}
+  title="Supprimer l'article"
+  message={deleteError || "Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible."}
+  confirmLabel="Supprimer"
+  cancelLabel="Annuler"
+  onConfirm={confirmDelete}
+  onCancel={cancelDelete}
+  variant={deleteError ? 'danger' : 'warning'}
+/>
+
 <!-- Drawer -->
 <IngredientDrawer
   isOpen={isDrawerOpen}
@@ -302,27 +312,6 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-base * 2;
-
-    &__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: $spacing-base;
-    }
-
-
-    &__search {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-base;
-    }
-
-    &__filters {
-      display: flex;
-      gap: $spacing-base * 2;
-      flex-wrap: wrap;
-    }
 
     &__filter-group {
       display: flex;

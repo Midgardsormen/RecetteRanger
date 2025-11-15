@@ -2,6 +2,7 @@
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../../../types/meal-plan.types';
   import { MealSlotColors } from '../../../../types/meal-plan.types';
   import { Button, IconButton, Badge } from '../../../../components/ui';
+  import { ArrowLeft, ArrowRight } from 'lucide-svelte';
 
   interface Props {
     view?: CalendarView;
@@ -159,9 +160,13 @@
   <!-- Header avec navigation -->
   <div class="calendar-header">
     <div class="calendar-nav">
-      <Button variant="secondary" onclick={goToPrevious}>←</Button>
-      <Button variant="secondary" onclick={goToToday}>Aujourd'hui</Button>
-      <Button variant="secondary" onclick={goToNext}>→</Button>
+      <IconButton variant="ghost" size="medium" onclick={goToPrevious} ariaLabel="Précédent">
+        <ArrowLeft size={20} />
+      </IconButton>
+      <Button variant="ghost" onclick={goToToday}>Aujourd'hui</Button>
+      <IconButton variant="ghost" size="medium" onclick={goToNext} ariaLabel="Suivant">
+        <ArrowRight size={20} />
+      </IconButton>
     </div>
 
     <h2 class="calendar-title">

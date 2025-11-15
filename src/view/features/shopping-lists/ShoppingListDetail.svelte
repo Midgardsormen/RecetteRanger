@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
-  import { Button, IconButton, Input, ArticleAutocomplete, StoreAutocomplete, Select, ProgressBar, Dot } from '../../components/ui';
+  import { Button, IconButton, Input, ArticleAutocomplete, StoreAutocomplete, ProgressBar, Dot, ConfirmModal, Breadcrumb, PageHero, FilterGroup, ListItem } from '../../components/ui';
   import { SelectArticleDrawer } from './components';
   import { StoreDrawer } from '../stores';
   import { apiService } from '../../services/api.service';
@@ -8,7 +9,8 @@
   import { getAisleLabel } from '../../utils/aisle-labels';
   import { StoreAisleColors } from '../../types/ingredient.types';
   import { getBadgeColor } from '../../helpers/color.helper';
-  import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
+  import { draggable, droppable, type DragDropState, dndState } from '@thisux/sveltednd';
+  import { Check, X, Pencil, GripVertical, Printer } from 'lucide-svelte';
 
   interface Store {
     id: string;
@@ -45,6 +47,14 @@
   let groupBy = $state<'store' | 'aisle'>('store'); // Par défaut: grouper par enseigne
   let selectedStoreFilter = $state<string>('all'); // 'all' ou ID d'enseigne
 
+  // Modal de confirmation de suppression
+  let isConfirmModalOpen = $state(false);
+  let itemToDelete = $state<string | null>(null);
+  let deleteError = $state<string>('');
+
+  // Gestion centralisée des erreurs
+  let globalError = $state<string>('');
+
   // Charger la liste
   async function loadShoppingList() {
     if (!listId) return;
@@ -75,23 +85,42 @@
         }
       }
     } catch (err: any) {
-      alert('Erreur : ' + err.message);
+      globalError = err.message || 'Une erreur est survenue';
     }
   }
 
   // Supprimer un item
-  async function deleteItem(itemId: string) {
-    if (!confirm('Supprimer cet article ?')) return;
+  function openDeleteConfirmation(itemId: string) {
+    itemToDelete = itemId;
+    isConfirmModalOpen = true;
+    deleteError = '';
+  }
+
+  function cancelDelete() {
+    itemToDelete = null;
+    isConfirmModalOpen = false;
+    deleteError = '';
+  }
+
+  function handlePrint() {
+    window.print();
+  }
+
+  async function confirmDelete() {
+    if (!itemToDelete) return;
 
     try {
-      await apiService.deleteShoppingListItem(itemId);
+      await apiService.deleteShoppingListItem(itemToDelete);
 
       // Retirer localement
       if (shoppingList) {
-        shoppingList.items = shoppingList.items.filter(i => i.id !== itemId);
+        shoppingList.items = shoppingList.items.filter(i => i.id !== itemToDelete);
       }
+      isConfirmModalOpen = false;
+      itemToDelete = null;
+      deleteError = '';
     } catch (err: any) {
-      alert('Erreur : ' + err.message);
+      deleteError = err.message || 'Erreur lors de la suppression';
     }
   }
 
@@ -112,7 +141,7 @@
 
       shoppingList.items.push(newItem);
     } catch (err: any) {
-      alert('Erreur : ' + err.message);
+      globalError = err.message || 'Une erreur est survenue';
     }
   }
 
@@ -135,7 +164,7 @@
       selectedArticleId = null;
       selectedArticleAisle = null;
     } catch (err: any) {
-      alert('Erreur : ' + err.message);
+      globalError = err.message || 'Une erreur est survenue';
     } finally {
       
     }
@@ -178,7 +207,7 @@
       // Fermer l'édition
       cancelEditingItem();
     } catch (err: any) {
-      alert('Erreur : ' + err.message);
+      globalError = err.message || 'Une erreur est survenue';
     }
   }
 
@@ -213,7 +242,7 @@
       // Fermer l'édition
       cancelEditingStore();
     } catch (err: any) {
-      alert('Erreur : ' + err.message);
+      globalError = err.message || 'Une erreur est survenue';
     }
   }
 
@@ -268,6 +297,66 @@
   // État pour les animations de déplacement
   let flashingStore = $state<string | null>(null);
 
+  // Auto-scroll pendant le drag
+  let currentMouseY = $state(0);
+  let autoScrollInterval: ReturnType<typeof setInterval> | null = null;
+
+  function performScroll(mouseY: number) {
+    const scrollZone = 100; // Zone de 100px en haut et en bas
+    const maxScrollSpeed = 15;
+    const viewportHeight = window.innerHeight;
+
+    // Curseur dans la zone haute
+    if (mouseY >= 0 && mouseY < scrollZone) {
+      const intensity = 1 - (mouseY / scrollZone);
+      const scrollAmount = Math.ceil(maxScrollSpeed * intensity);
+      window.scrollBy({ top: -scrollAmount, behavior: 'auto' });
+    }
+    // Curseur dans la zone basse
+    else if (mouseY > viewportHeight - scrollZone && mouseY <= viewportHeight) {
+      const intensity = (mouseY - (viewportHeight - scrollZone)) / scrollZone;
+      const scrollAmount = Math.ceil(maxScrollSpeed * intensity);
+      window.scrollBy({ top: scrollAmount, behavior: 'auto' });
+    }
+  }
+
+  function handleMouseMove(e: MouseEvent) {
+    currentMouseY = e.clientY;
+  }
+
+  // Écouter les changements de drag state
+  $effect(() => {
+    const isDragging = dndState.draggedItem !== null;
+
+    if (isDragging) {
+      // Démarrer le listener de souris et l'auto-scroll
+      window.addEventListener('mousemove', handleMouseMove, true);
+
+      if (!autoScrollInterval) {
+        autoScrollInterval = setInterval(() => {
+          performScroll(currentMouseY);
+        }, 16); // ~60fps
+      }
+    } else {
+      // Arrêter tout
+      window.removeEventListener('mousemove', handleMouseMove, true);
+
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+      }
+    }
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove, true);
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+      }
+    };
+  });
+
   // Drag and drop handlers
   async function handleDropOnAisle(state: DragDropState<ShoppingListItem>, targetStoreKey: string, targetAisleKey: string) {
     const { draggedItem } = state;
@@ -318,7 +407,7 @@
         shoppingList.items[index].aisle = updatedItem.aisle;
       }
     } catch (err: any) {
-      alert('Erreur lors du déplacement : ' + err.message);
+      globalError = err.message || 'Erreur lors du déplacement';
     }
   }
 
@@ -360,7 +449,7 @@
         shoppingList.items[index].store = updatedItem.store;
       }
     } catch (err: any) {
-      alert('Erreur lors du déplacement : ' + err.message);
+      globalError = err.message || 'Erreur lors du déplacement';
     }
   }
 
@@ -518,60 +607,69 @@
         <Button onclick={goBack}>Retour aux listes</Button>
       </div>
     {:else if shoppingList}
-      <div class="header">
-        <Button variant="secondary" onclick={goBack}>← Retour</Button>
-        <div class="header-content">
-          <h1>{shoppingList.name}</h1>
-          {#if shoppingList.fromDate && shoppingList.toDate}
-            <p class="date-range">
-              {new Date(shoppingList.fromDate).toLocaleDateString('fr-FR')} - {new Date(shoppingList.toDate).toLocaleDateString('fr-FR')}
-            </p>
+      <Breadcrumb
+        backLabel="Listes de courses"
+        backHref="/shopping-lists"
+      />
+
+      <PageHero
+        title={shoppingList.name}
+        subtitle={shoppingList.fromDate && shoppingList.toDate
+          ? `${new Date(shoppingList.fromDate).toLocaleDateString('fr-FR')} - ${new Date(shoppingList.toDate).toLocaleDateString('fr-FR')}`
+          : undefined}
+        actionLabel="+ Ajouter un article"
+        onAction={() => { showSelectArticleDrawer = true; }}
+      >
+        {#snippet progress()}
+          <ProgressBar
+            value={stats().checked}
+            max={stats().total}
+            size="medium"
+            variant="success"
+            showLabel={true}
+            label="{stats().checked} / {stats().total} articles"
+            inverse={true}
+          />
+        {/snippet}
+
+        {#snippet filters()}
+          <FilterGroup
+            label="Grouper par"
+            bind:value={groupBy}
+            options={[
+              { value: 'store', label: 'Enseigne' },
+              { value: 'aisle', label: 'Rayon' }
+            ]}
+            inverse={true}
+          />
+
+          {#if groupBy === 'store'}
+            <FilterGroup
+              label="Filtrer par enseigne"
+              bind:value={selectedStoreFilter}
+              options={[
+                { value: 'all', label: 'Toutes les enseignes' },
+                { value: 'none', label: 'Sans enseigne' },
+                ...availableStores().map(store => ({ value: store.id, label: store.name }))
+              ]}
+              inverse={true}
+            />
           {/if}
-        </div>
-      </div>
+        {/snippet}
+      </PageHero>
 
-      <div class="progress-section">
-        <ProgressBar
-          value={stats().checked}
-          max={stats().total}
-          size="medium"
-          variant="success"
-          showLabel={true}
-          label="{stats().checked} / {stats().total} articles"
-        />
-      </div>
-
-      <div class="add-item-section">
-        <Button onclick={() => { showSelectArticleDrawer = true; }}>
-          + Ajouter un article
+      <div class="print-button-container no-print">
+        <Button onclick={handlePrint} variant="secondary-full" size="medium">
+          <Printer size={18} /> Imprimer
         </Button>
       </div>
 
-      <!-- Filtres et options d'affichage -->
-      <div class="filters-section">
-        <Select
-          id="groupBy"
-          label="Grouper par:"
-          bind:value={groupBy}
-          options={[
-            { value: 'store', label: '🏪 Enseigne' },
-            { value: 'aisle', label: '📦 Rayon' }
-          ]}
-        />
-
-        {#if groupBy === 'store'}
-          <Select
-            id="storeFilter"
-            label="Filtrer par enseigne:"
-            bind:value={selectedStoreFilter}
-            options={[
-              { value: 'all', label: 'Toutes les enseignes' },
-              { value: 'none', label: 'Sans enseigne' },
-              ...availableStores().map(store => ({ value: store.id, label: store.name }))
-            ]}
-          />
-        {/if}
-      </div>
+      {#if globalError}
+        <div class="error-banner">
+          <span>{globalError}</span>
+          <button onclick={() => { globalError = ''; }}>✕</button>
+        </div>
+      {/if}
 
       <div class="items-container">
         {#if groupBy === 'aisle'}
@@ -580,7 +678,7 @@
             <div class="group-section">
               <h2 class="group-title">{group.label}</h2>
               <div
-                class="items-list"
+                class="items-grid"
                 use:droppable={{
                   container: `aisle-${groupKey}`,
                   callbacks: {
@@ -589,31 +687,33 @@
                 }}
               >
                 {#each group.items as item}
-                  <div
-                    class="item-row"
-                    class:checked={item.checked}
+                  <ListItem
+                    title={item.label}
+                    draggable={true}
+                    checkable={true}
+                    checked={item.checked}
+                    onCheck={() => toggleItem(item)}
+                    onDelete={() => openDeleteConfirmation(item.id)}
+                    showThumbnail={false}
                   >
-                    <div
-                      class="drag-handle"
-                      title="Glisser pour déplacer"
-                      use:draggable={{
-                        container: `aisle-${groupKey}`,
-                        dragData: item
-                      }}
-                    >
-                      ⋮⋮
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={item.checked}
-                      onchange={() => toggleItem(item)}
-                      class="item-checkbox"
-                    />
-                    <div class="item-content">
-                      <span class="item-label">{item.label}</span>
+                    {#snippet dragHandleSlot()}
+                      <div
+                        use:draggable={{
+                          container: `aisle-${groupKey}`,
+                          dragData: item
+                        }}
+                        class="drag-handle"
+                        title="Glisser pour déplacer"
+                      >
+                        <GripVertical size={20} />
+                      </div>
+                    {/snippet}
+
+                    {#snippet children()}
+                      <h3 class="item-label">{item.label}</h3>
 
                       {#if editingItemId === item.id}
-                        <!-- Mode édition -->
+                        <!-- Mode édition quantité -->
                         <div class="item-edit-form">
                           <Input
                             id="edit-quantity-{item.id}"
@@ -621,79 +721,82 @@
                             step="0.01"
                             placeholder="Quantité"
                             bind:value={editQuantity}
-                            class="edit-quantity-input"
                           />
                           <Input
                             id="edit-unit-{item.id}"
                             placeholder="Unité (ex: kg, g, l)"
                             bind:value={editUnit}
-                            class="edit-unit-input"
                           />
                           <div class="edit-actions">
                             <IconButton
-                              icon="✓"
                               onclick={() => saveItemQuantity(item.id)}
                               size="small"
                               variant="success"
-                            />
+                              ariaLabel="Enregistrer"
+                            >
+                              <Check size={16} />
+                            </IconButton>
                             <IconButton
-                              icon="✕"
                               onclick={cancelEditingItem}
                               size="small"
                               variant="ghost"
-                            />
+                              ariaLabel="Annuler"
+                            >
+                              <X size={16} />
+                            </IconButton>
                           </div>
                         </div>
                       {:else}
-                        <!-- Mode affichage -->
+                        <!-- Mode affichage quantité -->
                         <div class="item-quantity-display" onclick={() => startEditingItem(item)}>
                           {#if formatQuantity(item)}
                             <span class="item-quantity">{formatQuantity(item)}</span>
                           {:else}
                             <span class="item-quantity-empty">+ Quantité</span>
                           {/if}
-                        </div>
-                      {/if}
-
-                      <!-- Affichage et édition de l'enseigne -->
-                      {#if editingStoreItemId === item.id}
-                        <div class="item-store-edit">
-                          <StoreAutocomplete
-                            id="edit-store-{item.id}"
-                            bind:value={editStoreName}
-                            onSelect={(store) => saveItemStore(item.id, store)}
-                            onCreateNew={(searchValue) => handleCreateNewStore(item.id, searchValue)}
-                            placeholder="Choisir une enseigne..."
-                          />
-                          <IconButton
-                            icon="✕"
-                            onclick={cancelEditingStore}
-                            size="small"
-                            variant="ghost"
-                          />
-                        </div>
-                      {:else}
-                        <div class="item-store-display" onclick={() => startEditingStore(item)}>
-                          {#if item.store}
-                            <span class="item-store">🏪 {item.store.name}</span>
-                          {:else}
-                            <span class="item-store-empty">+ Enseigne</span>
-                          {/if}
+                          <Pencil size={12} class="edit-icon" />
                         </div>
                       {/if}
 
                       {#if item.note}
                         <p class="item-note">{item.note}</p>
                       {/if}
-                    </div>
+                    {/snippet}
 
-                    <IconButton
-                      icon="🗑️"
-                      onclick={() => deleteItem(item.id)}
-                      size="small"
-                      variant="danger"
-                    />
-                  </div>
+                    {#snippet footer()}
+                      <div class="item-footer">
+                        <!-- Affichage et édition de l'enseigne -->
+                        {#if editingStoreItemId === item.id}
+                          <div class="item-store-edit">
+                            <StoreAutocomplete
+                              id="edit-store-{item.id}"
+                              bind:value={editStoreName}
+                              onSelect={(store) => saveItemStore(item.id, store)}
+                              onCreateNew={(searchValue) => handleCreateNewStore(item.id, searchValue)}
+                              placeholder="Choisir une enseigne..."
+                            />
+                            <IconButton
+                              onclick={cancelEditingStore}
+                              size="small"
+                              variant="ghost"
+                              ariaLabel="Annuler"
+                            >
+                              <X size={16} />
+                            </IconButton>
+                          </div>
+                        {:else}
+                          <div class="item-store-display" onclick={() => startEditingStore(item)}>
+                            {#if item.store}
+                              <span class="item-store">{item.store.name}</span>
+                            {:else}
+                              <span class="item-store-empty">+ Enseigne</span>
+                            {/if}
+                            <Pencil size={12} class="edit-icon" />
+                          </div>
+                        {/if}
+                      </div>
+                    {/snippet}
+                  </ListItem>
                 {/each}
               </div>
             </div>
@@ -723,7 +826,7 @@
                     {aisleGroup.label}
                   </h3>
                   <div
-                    class="items-list"
+                    class="items-grid"
                     use:droppable={{
                       container: `store-${storeKey}-aisle-${aisleKey}`,
                       callbacks: {
@@ -732,110 +835,116 @@
                     }}
                   >
                     {#each aisleGroup.items as item}
-                <div
-                  class="item-row"
-                  class:checked={item.checked}
-                >
-                  <div
-                    class="drag-handle"
-                    title="Glisser pour déplacer"
-                    use:draggable={{
-                      container: `store-${storeKey}-aisle-${aisleKey}`,
-                      dragData: item
-                    }}
-                  >
-                    ⋮⋮
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={item.checked}
-                    onchange={() => toggleItem(item)}
-                    class="item-checkbox"
-                  />
-                  <div class="item-content">
-                    <span class="item-label">{item.label}</span>
+                      <ListItem
+                        title={item.label}
+                        draggable={true}
+                        checkable={true}
+                        checked={item.checked}
+                        onCheck={() => toggleItem(item)}
+                        onDelete={() => openDeleteConfirmation(item.id)}
+                        showThumbnail={false}
+                      >
+                        {#snippet dragHandleSlot()}
+                          <div
+                            use:draggable={{
+                              container: `store-${storeKey}-aisle-${aisleKey}`,
+                              dragData: item
+                            }}
+                            class="drag-handle"
+                            title="Glisser pour déplacer"
+                          >
+                            <GripVertical size={20} />
+                          </div>
+                        {/snippet}
 
-                    {#if editingItemId === item.id}
-                      <!-- Mode édition -->
-                      <div class="item-edit-form">
-                        <Input
-                          id="edit-quantity-{item.id}"
-                          type="number"
-                          step="0.01"
-                          placeholder="Quantité"
-                          bind:value={editQuantity}
-                          class="edit-quantity-input"
-                        />
-                        <Input
-                          id="edit-unit-{item.id}"
-                          placeholder="Unité (ex: kg, g, l)"
-                          bind:value={editUnit}
-                          class="edit-unit-input"
-                        />
-                        <div class="edit-actions">
-                          <IconButton
-                            icon="✓"
-                            onclick={() => saveItemQuantity(item.id)}
-                            size="small"
-                            variant="success"
-                          />
-                          <IconButton
-                            icon="✕"
-                            onclick={cancelEditingItem}
-                            size="small"
-                            variant="ghost"
-                          />
-                        </div>
-                      </div>
-                    {:else}
-                      <!-- Mode affichage -->
-                      <div class="item-quantity-display" onclick={() => startEditingItem(item)}>
-                        {#if formatQuantity(item)}
-                          <span class="item-quantity">{formatQuantity(item)}</span>
-                        {:else}
-                          <span class="item-quantity-empty">+ Ajouter quantité</span>
-                        {/if}
-                      </div>
-                    {/if}
+                        {#snippet children()}
+                          <h3 class="item-label">{item.label}</h3>
 
-                    <!-- Affichage et édition de l'enseigne -->
-                    {#if editingStoreItemId === item.id}
-                      <div class="item-store-edit">
-                        <StoreAutocomplete
-                          id="edit-store-{item.id}"
-                          bind:value={editStoreName}
-                          onSelect={(store) => saveItemStore(item.id, store)}
-                          onCreateNew={(searchValue) => handleCreateNewStore(item.id, searchValue)}
-                          placeholder="Choisir une enseigne..."
-                        />
-                        <IconButton
-                          icon="✕"
-                          onclick={cancelEditingStore}
-                          size="small"
-                          variant="ghost"
-                        />
-                      </div>
-                    {:else}
-                      <div class="item-store-display" onclick={() => startEditingStore(item)}>
-                        {#if item.store}
-                          <span class="item-store">🏪 {item.store.name}</span>
-                        {:else}
-                          <span class="item-store-empty">+ Enseigne</span>
-                        {/if}
-                      </div>
-                    {/if}
+                          {#if editingItemId === item.id}
+                            <!-- Mode édition quantité -->
+                            <div class="item-edit-form">
+                              <Input
+                                id="edit-quantity-{item.id}"
+                                type="number"
+                                step="0.01"
+                                placeholder="Quantité"
+                                bind:value={editQuantity}
+                              />
+                              <Input
+                                id="edit-unit-{item.id}"
+                                placeholder="Unité (ex: kg, g, l)"
+                                bind:value={editUnit}
+                              />
+                              <div class="edit-actions">
+                                <IconButton
+                                  onclick={() => saveItemQuantity(item.id)}
+                                  size="small"
+                                  variant="success"
+                                  ariaLabel="Enregistrer"
+                                >
+                                  <Check size={16} />
+                                </IconButton>
+                                <IconButton
+                                  onclick={cancelEditingItem}
+                                  size="small"
+                                  variant="ghost"
+                                  ariaLabel="Annuler"
+                                >
+                                  <X size={16} />
+                                </IconButton>
+                              </div>
+                            </div>
+                          {:else}
+                            <!-- Mode affichage quantité -->
+                            <div class="item-quantity-display" onclick={() => startEditingItem(item)}>
+                              {#if formatQuantity(item)}
+                                <span class="item-quantity">{formatQuantity(item)}</span>
+                              {:else}
+                                <span class="item-quantity-empty">+ Quantité</span>
+                              {/if}
+                              <Pencil size={12} class="edit-icon" />
+                            </div>
+                          {/if}
 
-                    {#if item.note}
-                      <p class="item-note">{item.note}</p>
-                    {/if}
-                  </div>
-                  <IconButton
-                    icon="🗑️"
-                    onclick={() => deleteItem(item.id)}
-                    size="small"
-                    variant="danger"
-                  />
-                </div>
+                          {#if item.note}
+                            <p class="item-note">{item.note}</p>
+                          {/if}
+                        {/snippet}
+
+                        {#snippet footer()}
+                          <div class="item-footer">
+                            <!-- Affichage et édition de l'enseigne -->
+                            {#if editingStoreItemId === item.id}
+                              <div class="item-store-edit">
+                                <StoreAutocomplete
+                                  id="edit-store-{item.id}"
+                                  bind:value={editStoreName}
+                                  onSelect={(store) => saveItemStore(item.id, store)}
+                                  onCreateNew={(searchValue) => handleCreateNewStore(item.id, searchValue)}
+                                  placeholder="Choisir une enseigne..."
+                                />
+                                <IconButton
+                                  onclick={cancelEditingStore}
+                                  size="small"
+                                  variant="ghost"
+                                  ariaLabel="Annuler"
+                                >
+                                  <X size={16} />
+                                </IconButton>
+                              </div>
+                            {:else}
+                              <div class="item-store-display" onclick={() => startEditingStore(item)}>
+                                {#if item.store}
+                                  <span class="item-store">{item.store.name}</span>
+                                {:else}
+                                  <span class="item-store-empty">+ Enseigne</span>
+                                {/if}
+                                <Pencil size={12} class="edit-icon" />
+                              </div>
+                            {/if}
+                          </div>
+                        {/snippet}
+                      </ListItem>
                     {/each}
                   </div>
                 </div>
@@ -863,16 +972,26 @@
     onClose={handleStoreDrawerClose}
   />
 </Layout>
+
+<!-- Modal de confirmation de suppression -->
+<ConfirmModal
+  isOpen={isConfirmModalOpen}
+  title="Supprimer l'article"
+  message={deleteError || "Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible."}
+  confirmLabel="Supprimer"
+  cancelLabel="Annuler"
+  onConfirm={confirmDelete}
+  onCancel={cancelDelete}
+  variant={deleteError ? 'danger' : 'warning'}
+/>
+
 <style lang="scss">
   @use '../../styles/variables' as *;
 
   .shopping-list-detail {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: $spacing-lg;
   }
 
   .loading-container,
@@ -907,38 +1026,30 @@
     color: $color-danger-dark;
   }
 
-  .header {
+
+  .error-banner {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    .header-content {
-      h1 {
-        margin: 0;
-        font-size: 2rem;
-        color: var(--text-color);
-      }
-
-      .date-range {
-        margin: 0.5rem 0 0 0;
-        color: var(--text-secondary);
-        font-size: 1rem;
-      }
-    }
-  }
-
-  .progress-section {
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: $color-background-danger;
+    border: 2px solid $color-danger;
+    border-radius: 8px;
+    color: $color-danger;
     margin: 1rem 0;
-  }
+    font-weight: 500;
 
-  .add-item-section {
-    .add-item-form {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
+    button {
+      background: none;
+      border: none;
+      color: $color-danger;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0 0.5rem;
+      line-height: 1;
 
-      :global(.article-autocomplete) {
-        flex: 1;
+      &:hover {
+        opacity: 0.7;
       }
     }
   }
@@ -949,39 +1060,6 @@
     gap: 2rem;
   }
 
-  .filters-section {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    padding: 1rem;
-    background: $color-gray-50;
-    border-radius: 8px;
-
-    .filter-group {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      label {
-        font-weight: 600;
-        color: $color-gray-800;
-        font-size: 0.95rem;
-      }
-
-      .filter-select {
-        padding: 0.5rem 1rem;
-        border: 2px solid $color-gray-200;
-        border-radius: 6px;
-        font-size: 0.95rem;
-        cursor: pointer;
-
-        &:focus {
-          outline: none;
-          border-color: $brand-primary;
-        }
-      }
-    }
-  }
 
   .group-section {
     padding-left: 0.5rem;
@@ -994,14 +1072,22 @@
       border-bottom: 2px solid var(--border-color);
     }
 
-    .items-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
+    .items-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: $spacing-base;
       min-height: 60px;
       transition: all 0.2s ease;
       border-radius: 6px;
       padding: 0.25rem;
+
+      @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (min-width: 1024px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
 
       // Drop zone visual feedback
       &[data-drop-target="true"] {
@@ -1060,14 +1146,22 @@
         gap: 0.5rem;
       }
 
-      .items-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
+      .items-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: $spacing-base;
         padding-left: 1rem;
         min-height: 60px;
         transition: all 0.2s ease;
         border-radius: 6px;
+
+        @media (min-width: 768px) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (min-width: 1024px) {
+          grid-template-columns: repeat(3, 1fr);
+        }
 
         // Drop zone visual feedback for aisle subgroups
         &[data-drop-target="true"] {
@@ -1079,238 +1173,145 @@
     }
   }
 
-  .aisle-section {
-    .aisle-title {
-      margin: 0 0 1rem 0;
-      font-size: 1.3rem;
-      color: var(--text-color);
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--border-color);
+  // Styles for item content (inside ListItem children snippet)
+  .drag-handle {
+    cursor: grab;
+    color: $color-text-tertiary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $brand-primary;
     }
 
-    .items-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
+    &:active {
+      cursor: grabbing;
+    }
+
+    :global(svg) {
+      flex-shrink: 0;
     }
   }
 
-  .item-row {
+  .item-label {
+    margin: 0;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  .item-quantity-display {
+    cursor: pointer;
+    padding: 0.25rem 0;
+    transition: opacity 0.2s;
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
-    background: white;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
+    align-items: center;
+    gap: $spacing-xs;
 
     &:hover {
-      box-shadow: 0 2px 8px $color-black-alpha-10;
+      opacity: 0.7;
     }
 
-    &.checked {
-      opacity: 0.6;
-
-      .item-label {
-        text-decoration: line-through;
-      }
-    }
-
-    // Drag states - appliqué quand le handle est draggé
-    &:has(.drag-handle[data-dragging="true"]) {
+    :global(.edit-icon) {
+      color: $color-text-tertiary;
       opacity: 0.5;
-      transform: scale(0.95);
-    }
-
-    .drag-handle {
       flex-shrink: 0;
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: $color-gray-400;
-      font-size: 1rem;
-      cursor: grab;
-      user-select: none;
-      transition: all 0.2s ease;
-
-      &:hover {
-        color: $brand-primary;
-        transform: scale(1.1);
-      }
-
-      &:active {
-        cursor: grabbing;
-      }
-
-      // État pendant le drag
-      &[data-dragging="true"] {
-        cursor: grabbing;
-      }
-    }
-
-    .item-checkbox {
-      flex-shrink: 0;
-      width: 20px;
-      height: 20px;
-      margin-top: 2px;
-      cursor: pointer;
-    }
-
-    .item-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-
-      .item-label {
-        font-size: 1rem;
-        color: var(--text-color);
-        font-weight: 500;
-      }
-
-      .item-quantity-display {
-        cursor: pointer;
-        padding: 0.25rem 0;
-        transition: opacity 0.2s;
-
-        &:hover {
-          opacity: 0.7;
-        }
-      }
-
-      .item-quantity {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        font-weight: 600;
-      }
-
-      .item-quantity-empty {
-        font-size: 0.85rem;
-        color: var(--text-tertiary);
-        font-style: italic;
-        opacity: 0.7;
-      }
-
-      .item-edit-form {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        margin-top: 0.5rem;
-
-        :global(.edit-quantity-input) {
-          width: 80px;
-        }
-
-        :global(.edit-unit-input) {
-          width: 120px;
-        }
-
-        .edit-actions {
-          display: flex;
-          gap: 0.25rem;
-
-          button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            transition: background 0.2s;
-          }
-
-          .save-btn {
-            color: $color-success-dark;
-
-            &:hover {
-              background: $color-success-light;
-            }
-          }
-
-          .cancel-btn {
-            color: $color-danger;
-
-            &:hover {
-              background: $color-danger-light;
-            }
-          }
-        }
-      }
-
-      .item-store-display {
-        cursor: pointer;
-        padding: 0.25rem 0;
-        transition: opacity 0.2s;
-
-        &:hover {
-          opacity: 0.7;
-        }
-      }
-
-      .item-store {
-        font-size: 0.85rem;
-        color: $brand-primary;
-        font-weight: 600;
-      }
-
-      .item-store-empty {
-        font-size: 0.85rem;
-        color: var(--text-tertiary);
-        font-style: italic;
-        opacity: 0.7;
-      }
-
-      .item-store-edit {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        margin-top: 0.5rem;
-
-        :global(.store-autocomplete) {
-          flex: 1;
-        }
-
-        .cancel-btn-small {
-          background: none;
-          border: none;
-          cursor: pointer;
-          font-size: 1.2rem;
-          padding: 0.25rem 0.5rem;
-          border-radius: 4px;
-          color: $color-danger;
-          transition: background 0.2s;
-
-          &:hover {
-            background: $color-danger-light;
-          }
-        }
-      }
-
-      .item-note {
-        margin: 0;
-        font-size: 0.85rem;
-        color: var(--text-tertiary);
-        font-style: italic;
-      }
-    }
-
-    .delete-btn {
-      flex-shrink: 0;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-      padding: 0.25rem;
-      opacity: 0.6;
       transition: opacity 0.2s;
-
-      &:hover {
-        opacity: 1;
-      }
+      align-self: flex-start;
+      margin-top: -2px;
     }
+
+    &:hover :global(.edit-icon) {
+      opacity: 0.8;
+    }
+  }
+
+  .item-quantity {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  .item-quantity-empty {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  .item-edit-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+
+    .edit-actions {
+      display: flex;
+      gap: 0.25rem;
+      margin-left: auto;
+    }
+  }
+
+  .item-store-display {
+    cursor: pointer;
+    padding: 0.25rem 0;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    :global(.edit-icon) {
+      color: $color-text-tertiary;
+      opacity: 0.5;
+      flex-shrink: 0;
+      transition: opacity 0.2s;
+      align-self: flex-start;
+      margin-top: -2px;
+    }
+
+    &:hover :global(.edit-icon) {
+      opacity: 0.8;
+    }
+  }
+
+  .item-store {
+    font-size: 0.85rem;
+    color: $brand-primary;
+    font-weight: 600;
+  }
+
+  .item-store-empty {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  .item-store-edit {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
+
+  .item-note {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    font-style: italic;
+  }
+
+  .item-footer {
+    display: flex;
+    align-items: center;
+    width: 100%;
   }
 
   // Animations pour le feedback de déplacement d'article
@@ -1343,6 +1344,251 @@
     100% {
       transform: scale(1);
       color: var(--text-color);
+    }
+  }
+
+  .print-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: $spacing-md;
+  }
+
+  // Styles d'impression
+  @media print {
+    // Masquer les éléments non nécessaires
+    :global(.layout__footer),
+    :global(header),
+    :global(nav),
+    .error-banner,
+    :global(.breadcrumb),
+    :global(.page-hero__actions),
+    :global(.page-hero__filters),
+    :global(.page-hero__controls),
+    :global(.page-hero__progress),
+    :global(.list-item__actions),
+    .drag-handle,
+    :global(.list-item__checkbox),
+    :global(.edit-icon),
+    .edit-icon,
+    .item-store-display,
+    .item-quantity-display :global(.edit-icon),
+    .no-print {
+      display: none !important;
+    }
+
+    // Réinitialiser les marges et padding
+    .shopping-list-detail {
+      padding: 0;
+      background: white;
+    }
+
+    // Simplifier le Hero pour l'impression
+    :global(.hero) {
+      padding: 0 !important;
+      margin: 0 !important;
+      background: white !important;
+      box-shadow: none !important;
+    }
+
+    :global(.hero__overlay) {
+      display: none !important;
+    }
+
+    :global(.page-hero) {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    :global(.page-hero__header) {
+      margin: 0 0 6pt 0 !important;
+      padding: 0 !important;
+    }
+
+    // Titre de la liste - sans ombre, simple
+    :global(.page-hero__title),
+    :global(.title) {
+      font-size: 16pt !important;
+      margin: 0 0 2pt 0 !important;
+      padding: 0 !important;
+      color: black !important;
+      text-shadow: none !important;
+      text-transform: none !important;
+      font-weight: bold !important;
+    }
+
+    :global(.page-hero__subtitle) {
+      font-size: 9pt !important;
+      margin: 0 0 6pt 0 !important;
+      padding: 0 !important;
+      color: #666 !important;
+    }
+
+    // Groupes compacts avec break control
+    .aisle-group,
+    .store-group {
+      page-break-inside: auto;
+      margin: 0 0 4pt 0 !important;
+      padding: 0 !important;
+      border: none !important;
+    }
+
+    .aisle-title,
+    .store-title {
+      font-size: 10pt;
+      font-weight: bold;
+      margin: 0 0 2pt 0 !important;
+      padding: 0 0 1pt 0 !important;
+      border-bottom: 1px solid #999;
+      color: black !important;
+      page-break-after: avoid !important;
+    }
+
+    // Répéter le nom de l'enseigne sur chaque page
+    .store-group {
+      page-break-before: auto;
+    }
+
+    .store-title {
+      page-break-after: avoid !important;
+      position: relative;
+    }
+
+    .store-title::after {
+      content: '';
+      display: block;
+      page-break-inside: avoid;
+    }
+
+    // Forcer l'affichage du titre d'enseigne en haut de chaque nouvelle page
+    @supports (break-before: page) {
+      .store-group {
+        break-inside: auto;
+      }
+
+      .store-title {
+        break-after: avoid;
+        display: table-header-group;
+      }
+    }
+
+    .aisle-subtitle {
+      font-size: 8pt;
+      font-weight: bold;
+      margin: 2pt 0 4pt 0 !important;
+      padding: 0 0 2pt 0 !important;
+      color: black !important;
+    }
+
+    .aisle-subgroup {
+      margin: 0 0 4pt 0 !important;
+      padding: 0 !important;
+    }
+
+    // Grille d'items en liste simple
+    .items-grid {
+      display: block !important;
+      grid-template-columns: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      gap: 0 !important;
+    }
+
+    .items-grid > :global(.list-item:not(:last-child)) {
+      margin-bottom: 0pt !important;
+    }
+
+    // Items très compacts alignés à gauche - tout sur une ligne
+    :global(.list-item) {
+      page-break-inside: avoid;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: transparent !important;
+      display: block !important;
+      line-height: 1.2 !important;
+    }
+
+    :global(.list-item__main) {
+      padding: 0 !important;
+      margin: 0 !important;
+      gap: 3pt !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: baseline !important;
+    }
+
+    :global(.list-item__content) {
+      gap: 3pt !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: baseline !important;
+      flex-wrap: wrap !important;
+    }
+
+    :global(.list-item--checked) {
+      opacity: 0.4 !important;
+      text-decoration: line-through !important;
+    }
+
+    .item-label {
+      font-size: 9pt !important;
+      color: black;
+      margin: 0 !important;
+      line-height: 1.2 !important;
+      flex-shrink: 0 !important;
+    }
+
+    .item-quantity-display {
+      font-size: 8pt !important;
+      color: #555 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      flex-shrink: 0 !important;
+    }
+
+    .item-quantity {
+      font-size: 8pt !important;
+      color: #555 !important;
+    }
+
+    .item-quantity-empty {
+      display: none !important;
+    }
+
+    .item-store-display {
+      display: none !important;
+    }
+
+    .item-note {
+      font-size: 7pt !important;
+      color: #888 !important;
+      font-style: italic;
+      margin: 0 !important;
+      flex-basis: 100% !important;
+    }
+
+    // Cases à cocher compactes
+    :global(.list-item__main)::before {
+      content: '☐';
+      font-size: 10pt;
+      margin-right: 3pt;
+      flex-shrink: 0;
+      line-height: 1.2;
+    }
+
+    :global(.list-item--checked .list-item__main)::before {
+      content: '☑';
+    }
+
+    // Footer compact
+    .item-footer {
+      border-top: none !important;
+      padding: 0 !important;
+      margin-top: 1pt !important;
     }
   }
 </style>

@@ -13,11 +13,14 @@ export { default as Tile } from './Tile.svelte';
 export { default as ListItem } from './ListItem.svelte';
 export { default as Accordion } from './Accordion.svelte';
 export { default as Dropdown } from './Dropdown.svelte';
+export { default as Hero } from './Hero.svelte';
+export { default as PageHero } from './PageHero.svelte';
 
 // Input Components
 export { default as ImageUpload } from './ImageUpload.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
 export { default as Filter } from './Filter.svelte';
+export { default as FilterGroup } from './FilterGroup.svelte';
 export { default as ArticleAutocomplete } from './ArticleAutocomplete.svelte';
 export { default as StoreAutocomplete } from './StoreAutocomplete.svelte';
 
@@ -32,9 +35,14 @@ export { default as Link } from './Link.svelte';
 // Typography Components
 export { default as Title } from './Title.svelte';
 
+// Navigation Components
+export { default as Breadcrumb } from './Breadcrumb.svelte';
+
 // Feedback Components
 export { default as Loader } from './Loader.svelte';
 export { default as Badge } from './Badge.svelte';
 export { default as Tag } from './Tag.svelte';
 export { default as Dot } from './Dot.svelte';
 export { default as ProgressBar } from './ProgressBar.svelte';
+export { default as NumberBadge } from './NumberBadge.svelte';
+export { default as StepItem } from './StepItem.svelte';

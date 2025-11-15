@@ -39,17 +39,13 @@
     <div class="card__header">
       {@render header()}
     </div>
-  {:else if imageUrl || imagePlaceholder}
+  {:else if imageUrl}
     <div class="card__header">
-      {#if imageUrl}
-        <img
-          src={imageUrl}
-          alt={title || ''}
-          class="card__image"
-        />
-      {:else}
-        <div class="card__placeholder">{imagePlaceholder}</div>
-      {/if}
+      <img
+        src={imageUrl}
+        alt={title || ''}
+        class="card__image"
+      />
     </div>
   {/if}
 

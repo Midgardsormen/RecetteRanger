@@ -2,7 +2,7 @@
   import Layout from '../../layouts/Layout.svelte';
   import { Calendar } from './components/calendar';
   import { MealPlanDrawer } from './components/meal-plan-drawer';
-  import { Button } from '../../components/ui';
+  import { Button, PageHero, ConfirmModal } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../types/meal-plan.types';
 
@@ -17,6 +17,11 @@
   let showMealDrawer = $state(false);
   let selectedDate = $state(new Date());
   let editingMealItem = $state<any>(null);
+
+  // Modal de confirmation de suppression
+  let isConfirmModalOpen = $state(false);
+  let mealToDelete = $state<any>(null);
+  let deleteError = $state<string>('');
 
   // Charger les données
   async function loadData() {
@@ -94,16 +99,29 @@
     showMealDrawer = true;
   }
 
-  async function handleMealDelete(item: any) {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer ce repas ?`)) {
-      return;
-    }
+  function openDeleteConfirmation(item: any) {
+    mealToDelete = item;
+    isConfirmModalOpen = true;
+    deleteError = '';
+  }
+
+  function cancelDelete() {
+    mealToDelete = null;
+    isConfirmModalOpen = false;
+    deleteError = '';
+  }
+
+  async function confirmDelete() {
+    if (!mealToDelete) return;
 
     try {
-      await apiService.deleteMealPlanItem(item.id);
+      await apiService.deleteMealPlanItem(mealToDelete.id);
       await loadData(); // Recharger les données
+      isConfirmModalOpen = false;
+      mealToDelete = null;
+      deleteError = '';
     } catch (err: any) {
-      alert('Erreur lors de la suppression : ' + err.message);
+      deleteError = err.message || 'Erreur lors de la suppression';
     }
   }
 
@@ -124,7 +142,7 @@
   }
 
   function openSettings() {
-    window.location.href = '/planning/settings';
+    window.location.href = '/plannings/settings';
   }
 
   // Charger les données au montage et quand l'utilisateur change
@@ -137,15 +155,11 @@
 
 <Layout title="Planning des repas" currentPage="/planning" {user}>
   <div class="meal-planning">
-    <div class="planning-header">
-      <div class="header-content">
-        <h1>📅 Planning des repas</h1>
-        <p class="subtitle">Organisez vos repas de la semaine</p>
-      </div>
-      <Button variant="secondary" onclick={openSettings}>
-        ⚙️ Personnaliser les créneaux
-      </Button>
-    </div>
+    <PageHero
+      title="Planning des repas"
+      actionLabel="⚙️ Personnaliser les créneaux"
+      onAction={openSettings}
+    />
 
     {#if loading}
       <div class="loading-container">
@@ -162,7 +176,7 @@
         onViewChange={handleViewChange}
         onDateNavigate={handleDateNavigate}
         onMealEdit={handleMealEdit}
-        onMealDelete={handleMealDelete}
+        onMealDelete={openDeleteConfirmation}
       />
     {/if}
   </div>
@@ -179,36 +193,23 @@
   onSave={handleMealSaved}
 />
 
+<!-- Modal de confirmation de suppression -->
+<ConfirmModal
+  isOpen={isConfirmModalOpen}
+  title="Supprimer le repas"
+  message={deleteError || "Êtes-vous sûr de vouloir supprimer ce repas ? Cette action est irréversible."}
+  confirmLabel="Supprimer"
+  cancelLabel="Annuler"
+  onConfirm={confirmDelete}
+  onCancel={cancelDelete}
+  variant={deleteError ? 'danger' : 'warning'}
+/>
+
 <style lang="scss">
   .meal-planning {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-  }
-
-  .planning-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-  }
-
-  .header-content {
-    h1 {
-      margin: 0;
-      font-size: 2rem;
-      color: var(--text-color);
-    }
-
-    .subtitle {
-      margin: 0.5rem 0 0 0;
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-    }
   }
 
   .loading-container {

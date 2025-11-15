@@ -2,11 +2,12 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { RecipeDrawer } from '../recipe-drawer';
-  import { SearchBar, Card, Button, Title, Filter, ConfirmModal } from '../../components/ui';
+  import { Card, Button, ConfirmModal, PageHero, Badge, IconButton, FilterGroup } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Recipe } from '../../types/recipe.types';
   import { RecipeCategory, RecipeCategoryLabels } from '../../types/recipe.types';
   import { UserRole } from '../../types/user.types';
+  import { BookOpen, Clock, Flame, Carrot, Pencil, Trash2 } from 'lucide-svelte';
 
   // Recevoir les données du SSR
   let { recipes: initialRecipes = [], user = null }: { recipes?: Recipe[], user?: any } = $props();
@@ -33,6 +34,7 @@
   // Modal de confirmation de suppression
   let isConfirmModalOpen = $state(false);
   let recipeToDelete = $state<string | null>(null);
+  let deleteError = $state<string>('');
 
   // Debounce pour la recherche
   let searchTimeout: ReturnType<typeof setTimeout>;
@@ -101,11 +103,13 @@
   function openDeleteConfirmation(id: string) {
     recipeToDelete = id;
     isConfirmModalOpen = true;
+    deleteError = '';
   }
 
   function cancelDelete() {
     recipeToDelete = null;
     isConfirmModalOpen = false;
+    deleteError = '';
   }
 
   async function confirmDelete() {
@@ -116,8 +120,9 @@
       await loadRecipes();
       isConfirmModalOpen = false;
       recipeToDelete = null;
+      deleteError = '';
     } catch (err: any) {
-      alert('Erreur lors de la suppression : ' + err.message);
+      deleteError = err.message || 'Erreur lors de la suppression';
     }
   }
 
@@ -157,71 +162,56 @@
   }
 </script>
 
-<Layout title="Recettes" currentPage="/recipes" {user}>
+<Layout title="Recettes" currentPage="/recettes" {user}>
 <div id="recipes" class="recipes">
-  <header class="recipes__header">
-    <Title level={1}>📖 Mes recettes</Title>
-    <Button onclick={() => openDrawer()}>
-      + Ajouter une recette
-    </Button>
-  </header>
+  <PageHero
+    title="Mes recettes"
+    actionLabel="+ Ajouter une recette"
+    onAction={() => openDrawer()}
+    showSearch={true}
+    searchPlaceholder="Rechercher une recette..."
+    bind:searchValue={searchQuery}
+    onSearchInput={handleSearchInput}
+  >
+    {#snippet filters()}
+      <FilterGroup
+        label="Affichage"
+        bind:value={filter}
+        onchange={handleFilterChange}
+        options={[
+          { value: 'all', label: 'Toutes les recettes' },
+          { value: 'mine', label: 'Mes recettes' }
+        ]}
+        inverse={true}
+      />
 
-  <!-- Recherche et filtres -->
-  <div class="recipes__search">
-    <SearchBar
-      bind:value={searchQuery}
-      placeholder="Rechercher une recette..."
-      oninput={handleSearchInput}
-    />
+      <FilterGroup
+        label="Catégorie"
+        bind:value={selectedCategory}
+        onchange={handleFilterChange}
+        options={[
+          { value: '', label: 'Toutes' },
+          ...Object.entries(RecipeCategoryLabels).map(([key, label]) => ({
+            value: key,
+            label
+          }))
+        ]}
+        inverse={true}
+      />
 
-    <div class="recipes__filters">
-      <div class="recipes__filter-group">
-        <span class="recipes__filter-label">Affichage</span>
-        <Filter
-          label="Recettes"
-          mode="dropdown"
-          bind:value={filter}
-          onchange={handleFilterChange}
-          options={[
-            { value: 'all', label: 'Toutes les recettes' },
-            { value: 'mine', label: 'Mes recettes' }
-          ]}
-        />
-      </div>
-
-      <div class="recipes__filter-group">
-        <span class="recipes__filter-label">Filtrer par</span>
-        <Filter
-          label="Catégorie"
-          mode="dropdown"
-          bind:value={selectedCategory}
-          onchange={handleFilterChange}
-          options={[
-            { value: '', label: 'Toutes' },
-            ...Object.entries(RecipeCategoryLabels).map(([key, label]) => ({
-              value: key,
-              label
-            }))
-          ]}
-        />
-      </div>
-
-      <div class="recipes__filter-group">
-        <span class="recipes__filter-label">Trier par</span>
-        <Filter
-          label="Ordre"
-          mode="dropdown"
-          bind:value={sortBy}
-          onchange={handleFilterChange}
-          options={[
-            { value: 'alpha', label: 'Alphabétique' },
-            { value: 'date', label: 'Date d\'ajout' },
-            { value: 'popularity', label: 'Popularité' }
-          ]}
-        />
-      </div>
-    </div>
-  </div>
+      <FilterGroup
+        label="Trier par"
+        bind:value={sortBy}
+        onchange={handleFilterChange}
+        options={[
+          { value: 'alpha', label: 'Alphabétique' },
+          { value: 'date', label: 'Date d\'ajout' },
+          { value: 'popularity', label: 'Popularité' }
+        ]}
+        inverse={true}
+      />
+    {/snippet}
+  </PageHero>
 
   {#if error}
     <div class="recipes__error">{error}</div>
@@ -231,7 +221,9 @@
     <div class="recipes__loading">Chargement...</div>
   {:else if recipes.length === 0}
     <div class="recipes__empty">
-      <div class="recipes__empty-icon">📖</div>
+      <div class="recipes__empty-icon">
+        <BookOpen size={80} />
+      </div>
       <h2 class="recipes__empty-title">Aucune recette trouvée</h2>
       <p class="recipes__empty-text">
         {searchQuery || selectedCategory
@@ -259,43 +251,45 @@
             <div class="recipe-card-footer">
               <div class="recipe-card-info">
                 {#if recipe.prepMinutes > 0}
-                  <span class="recipe-card-badge">
-                    ⏱️ {formatTime(recipe.prepMinutes)}
-                  </span>
+                  <Badge variant="neutral" size="xs">
+                    <Clock size={14} /> {formatTime(recipe.prepMinutes)}
+                  </Badge>
                 {/if}
                 {#if recipe.cookMinutes > 0}
-                  <span class="recipe-card-badge">
-                    🔥 {formatTime(recipe.cookMinutes)}
-                  </span>
+                  <Badge variant="neutral" size="xs">
+                    <Flame size={14} /> {formatTime(recipe.cookMinutes)}
+                  </Badge>
                 {/if}
                 {#if recipe.ingredients?.length > 0}
-                  <span class="recipe-card-badge">
-                    🥕 {recipe.ingredients.length} ingr.
-                  </span>
+                  <Badge variant="neutral" size="xs">
+                    <Carrot size={14} /> {recipe.ingredients.length} ingr.
+                  </Badge>
                 {/if}
               </div>
               {#if canModifyRecipe(recipe)}
                 <div class="recipe-card-actions">
-                  <button
-                    class="recipe-card-action"
+                  <IconButton
+                    variant="ghost"
+                    size="medium"
                     onclick={(e) => {
                       e.stopPropagation();
                       openDrawer(recipe);
                     }}
-                    title="Modifier"
+                    ariaLabel="Modifier"
                   >
-                    ✏️
-                  </button>
-                  <button
-                    class="recipe-card-action recipe-card-action--delete"
+                    <Pencil size={18} />
+                  </IconButton>
+                  <IconButton
+                    variant="danger"
+                    size="medium"
                     onclick={(e) => {
                       e.stopPropagation();
                       openDeleteConfirmation(recipe.id);
                     }}
-                    title="Supprimer"
+                    ariaLabel="Supprimer"
                   >
-                    🗑️
-                  </button>
+                    <Trash2 size={18} />
+                  </IconButton>
                 </div>
               {/if}
             </div>
@@ -347,11 +341,12 @@
 <ConfirmModal
   isOpen={isConfirmModalOpen}
   title="Supprimer la recette"
-  message="Êtes-vous sûr de vouloir supprimer cette recette ? Cette action est irréversible."
+  message={deleteError || "Êtes-vous sûr de vouloir supprimer cette recette ? Cette action est irréversible."}
   confirmLabel="Supprimer"
   cancelLabel="Annuler"
   onConfirm={confirmDelete}
   onCancel={cancelDelete}
+  variant={deleteError ? 'danger' : 'warning'}
 />
 
 <!-- Drawer -->
@@ -384,40 +379,6 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-base * 2;
-
-    &__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: $spacing-base;
-    }
-
-    &__search {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-base;
-    }
-
-    &__filters {
-      display: flex;
-      gap: $spacing-base * 2;
-      flex-wrap: wrap;
-    }
-
-    &__filter-group {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-base * 0.5;
-    }
-
-    &__filter-label {
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: $text-gray;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
 
     &__error {
       padding: $spacing-base;
@@ -530,44 +491,16 @@
     flex-wrap: wrap;
     gap: $spacing-base * 0.5;
     flex: 1;
-  }
 
-  .recipe-card-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: $spacing-base * 0.25 $spacing-base * 0.5;
-    background: rgba($brand-primary, 0.1);
-    color: $primary-color;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    white-space: nowrap;
+    :global(.badge) {
+      :global(svg) {
+        flex-shrink: 0;
+      }
+    }
   }
 
   .recipe-card-actions {
     display: flex;
     gap: $spacing-base * 0.5;
-  }
-
-  .recipe-card-action {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: $spacing-base * 0.25;
-    border-radius: 6px;
-    transition: all 0.2s;
-    opacity: 0.6;
-
-    &:hover {
-      opacity: 1;
-      background: rgba($brand-primary, 0.1);
-    }
-
-    &--delete {
-      &:hover {
-        background: $color-danger-alpha-10;
-      }
-    }
   }
 </style>
