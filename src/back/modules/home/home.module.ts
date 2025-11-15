@@ -15,5 +15,6 @@ import { SvelteRenderService } from '../../services/svelte-render.service';
   ],
   controllers: [HomeController],
   providers: [HomeService, SvelteRenderService],
+  exports: [HomeService], // Export HomeService so it can be used in other modules
 })
 export class HomeModule {}

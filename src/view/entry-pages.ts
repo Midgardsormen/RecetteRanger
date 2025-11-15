@@ -14,7 +14,9 @@ export const pages = {
   ShoppingListDetail: () => import('./features/shopping-lists/ShoppingListDetail.svelte'),
   Profile: () => import('./features/profile/Profile.svelte'),
   Login: () => import('./features/auth/Login.svelte'),
-  Register: () => import('./features/auth/Register.svelte')
+  Register: () => import('./features/auth/Register.svelte'),
+  PrivacyPolicy: () => import('./features/privacy/PrivacyPolicy.svelte'),
+  LegalNotice: () => import('./features/legal/LegalNotice.svelte')
 };
 
 // Static imports for SSR (server-side rendering) - export les fragments autonomes
@@ -32,3 +34,5 @@ export { default as ShoppingListDetail } from './features/shopping-lists/Shoppin
 export { default as Profile } from './features/profile/Profile.svelte';
 export { default as Login } from './features/auth/Login.svelte';
 export { default as Register } from './features/auth/Register.svelte';
+export { default as PrivacyPolicy } from './features/privacy/PrivacyPolicy.svelte';
+export { default as LegalNotice } from './features/legal/LegalNotice.svelte';

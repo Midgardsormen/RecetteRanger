@@ -2,7 +2,10 @@
   import { onMount } from 'svelte';
   import Navigation from '../features/navigation/Navigation.svelte';
   import Header from '../components/Header.svelte';
+  import CookieConsent from '../components/CookieConsent.svelte';
+  import CookiePreferences from '../components/CookiePreferences.svelte';
   import { authStore } from '../stores/auth.store';
+  import { cookieConsentStore } from '../stores/cookie-consent.store';
   import { apiService } from '../services/api.service';
   import type { Snippet } from 'svelte';
 
@@ -16,6 +19,10 @@
 
   function closeMobileMenu() {
     isMobileMenuOpen = false;
+  }
+
+  function openCookiePreferences() {
+    cookieConsentStore.setPreferencesVisibility(true);
   }
 
   // Initialiser immédiatement l'authStore si on a les données SSR
@@ -38,7 +45,7 @@
 </svelte:head>
 
 <div class="layout">
-  <Header onMenuToggle={toggleMobileMenu} {user} />
+  <Header onMenuToggle={toggleMobileMenu} {user} {currentPage} />
 
   <Navigation {currentPage} {user} isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
 
@@ -48,7 +55,23 @@
 
   <footer class="layout__footer">
     <p class="layout__footer-text">&copy; 2025 RecetteRanger - Votre gestionnaire de recettes personnel</p>
+    <div class="layout__footer-links">
+      <a href="/legal-notice" class="layout__footer-link">Mentions légales</a>
+      <span class="layout__footer-separator">•</span>
+      <a href="/privacy-policy" class="layout__footer-link">Politique de confidentialité</a>
+      <span class="layout__footer-separator">•</span>
+      <button
+        class="layout__footer-link layout__footer-link--button"
+        onclick={openCookiePreferences}
+      >
+        Gérer les cookies
+      </button>
+    </div>
   </footer>
+
+  <!-- Composants de gestion des cookies -->
+  <CookieConsent />
+  <CookiePreferences />
 </div>
 
 <style lang="scss">
@@ -96,9 +119,44 @@
 
     // Element: footer-text
     &__footer-text {
-      margin: 0;
+      margin: 0 0 $spacing-sm 0;
       opacity: $opacity-80;
-      
+    }
+
+    // Element: footer-links
+    &__footer-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-sm;
+      font-size: $font-size-sm;
+    }
+
+    // Element: footer-separator
+    &__footer-separator {
+      opacity: $opacity-50;
+    }
+
+    // Element: footer-link
+    &__footer-link {
+      color: $color-white;
+      text-decoration: none;
+      opacity: $opacity-80;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 1;
+        text-decoration: underline;
+      }
+
+      &--button {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: inherit;
+        font-family: inherit;
+        cursor: pointer;
+      }
     }
   }
 </style>

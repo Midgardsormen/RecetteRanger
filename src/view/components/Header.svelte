@@ -3,12 +3,14 @@
   import { IconButton } from './ui';
   import UserMenu from './UserMenu.svelte';
 
-  let { onMenuToggle, user = null }: { onMenuToggle: () => void; user?: any } = $props();
+  let { onMenuToggle, user = null, currentPage = '/' }: { onMenuToggle: () => void; user?: any; currentPage?: string } = $props();
 
   const isAuthenticated = $derived(user !== null);
+  const isHomePage = $derived(currentPage === '/');
+  const isPublicPage = $derived(!isAuthenticated && !isHomePage);
 </script>
 
-<header class="header">
+<header class="header" class:header--public={isPublicPage}>
   <div class="header__container">
     <!-- Burger menu button (visible only on mobile/tablet and if authenticated) -->
     {#if isAuthenticated}
@@ -24,7 +26,7 @@
     {/if}
 
     <!-- Logo (always visible) -->
-    <a href="/" class="header__brand" class:header__brand--landing={!isAuthenticated}>
+    <a href="/" class="header__brand" class:header__brand--landing={!isAuthenticated && isHomePage} class:header__brand--public={isPublicPage}>
       <div class="header__logo-wrapper">
         <img src={IMAGES.logo.main} alt="RecetteRanger" class="header__logo" />
       </div>
@@ -42,12 +44,17 @@
   @use '../styles/variables' as *;
 
   .header {
-    
+
     box-shadow: 0 2px 8px $color-black-alpha-10;
     position: sticky;
     top: 0;
     z-index: $z-index-header;
     height: 64px;
+
+    // Style pour les pages publiques (legal, privacy, etc.)
+    &--public {
+      position: relative; // Non-sticky
+    }
 
     &__container {
       background: $brand-tertiary;
@@ -72,6 +79,7 @@
       text-decoration: none;
       transition: opacity $transition-base;
 
+      // Taille par défaut (pages internes)
       width: 80px;
       height: 80px;
 
@@ -92,19 +100,22 @@
         position: absolute;
         width: 120px;
         height: 120px;
-
       }
+
       @media (min-width: $breakpoint-lg) {
         position: absolute;
-        width: 200px;
-        height: 200px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 160px;
+        height: 160px;
         margin-top: 0;
       }
+
       &:hover {
         opacity: 0.9;
       }
 
-      // Style spécial pour la landing page (non connecté)
+      // Style spécial pour la landing page (homepage non connecté)
       &--landing {
         width: 140px;
         height: 140px;
@@ -149,21 +160,29 @@
           }
         }
       }
+
+      // Style pour les pages publiques non-homepage (legal, privacy, etc.)
+      // Utilise le style par défaut (même taille que les pages internes authentifiées)
+      &--public {
+        // Aucun override nécessaire, le style par défaut est déjà bon
+      }
     }
 
     &__logo {
-      width: 75px;
-      height: 75px;
+      // Taille par défaut (pages internes)
+      width: 60px;
+      height: 60px;
       object-fit: contain;
+
       @media (min-width: $breakpoint-md) {
         width: 85px;
         height: 85px;
       }
+
       @media (min-width: $breakpoint-lg) {
         width: 120px;
         height: 120px;
       }
-
     }
 
     &__brand-text {
