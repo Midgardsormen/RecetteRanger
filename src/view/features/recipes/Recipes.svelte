@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { RecipeDrawer } from '../recipe-drawer';
-  import { Card, Button, ConfirmModal, PageHero, Badge, IconButton, FilterGroup } from '../../components/ui';
+  import { Card, Button, ConfirmModal, PageHero, Badge, IconButton, FilterGroup, AuthorLink } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Recipe } from '../../types/recipe.types';
   import { RecipeCategory, RecipeCategoryLabels } from '../../types/recipe.types';
@@ -247,6 +247,21 @@
           clickable={true}
           onclick={() => window.location.href = `/recettes/${recipe.id}`}
         >
+          {#snippet children()}
+            {#if recipe.owner}
+              <div
+                class="recipe-card-author"
+                onclick={(e) => e.stopPropagation()}
+              >
+                <AuthorLink
+                  authorId={recipe.owner.id}
+                  authorPseudo={recipe.owner.pseudo}
+                  authorAvatar={recipe.owner.avatarUrl}
+                  size="small"
+                />
+              </div>
+            {/if}
+          {/snippet}
           {#snippet footer()}
             <div class="recipe-card-footer">
               <div class="recipe-card-info">
@@ -476,6 +491,13 @@
       font-size: 0.9rem;
       margin-top: $spacing-base;
     }
+  }
+
+  // Recipe Card Author
+  .recipe-card-author {
+    margin-top: $spacing-base * 0.75;
+    padding-top: $spacing-base * 0.75;
+    border-top: 1px solid $border-color;
   }
 
   // Recipe Card Footer

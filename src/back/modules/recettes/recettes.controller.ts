@@ -1,4 +1,4 @@
-import { Controller, Get, Res, UseGuards, Request, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Res, UseGuards, Request, Param, NotFoundException, Query } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
 import { RecettesService } from './recettes.service';
@@ -13,9 +13,10 @@ export class RecettesController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getRecettesPage(@Request() req, @Res() res: Response) {
+  async getRecettesPage(@Request() req, @Query('ownerId') ownerId: string, @Res() res: Response) {
     // Récupérer les recettes pour l'utilisateur connecté
-    const recipes = await this.recettesService.getRecettesForUser(req.user.id);
+    // Si ownerId est fourni, filtrer par propriétaire, sinon afficher toutes les recettes accessibles
+    const recipes = await this.recettesService.getRecettesForUser(req.user.id, ownerId);
 
     // Rendre la page avec les données en SSR
     const html = await this.svelteRenderService.render('Recipes', {

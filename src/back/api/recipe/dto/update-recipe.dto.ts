@@ -99,6 +99,11 @@ export class UpdateRecipeDto {
   @IsString({ each: true })
   appareils?: string[];
 
+  @ApiProperty({ description: 'URL source de la recette', required: false })
+  @IsOptional()
+  @IsString()
+  sourceUrl?: string;
+
   @ApiProperty({
     description: 'Visibilité de la recette',
     enum: ['PRIVATE', 'SHARED', 'PUBLIC'],

@@ -98,6 +98,11 @@ export class CreateRecipeDto {
   @IsString({ each: true })
   appareils?: string[];
 
+  @ApiProperty({ description: 'URL source de la recette', example: 'https://example.com/recette', required: false })
+  @IsOptional()
+  @IsString()
+  sourceUrl?: string;
+
   @ApiProperty({ description: 'ID du propriétaire (utilisateur)', required: false })
   @IsOptional()
   @IsString()

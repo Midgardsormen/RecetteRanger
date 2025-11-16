@@ -3,14 +3,18 @@
   import { apiService } from '../services/api.service';
   import { Button } from './ui';
   import { onMount } from 'svelte';
+  import { Settings, Crown, LogOut, User as UserIcon, Shield } from 'lucide-svelte';
+
+  let { user: userProp = null }: { user?: any } = $props();
 
   let showDropdown = $state(false);
   let menuElement: HTMLDivElement;
 
+  // Utiliser le prop user en priorité, sinon le store
   const { isAuthenticated, user, isLoading } = $derived({
-    isAuthenticated: $authStore.isAuthenticated,
-    user: $authStore.user,
-    isLoading: $authStore.isLoading
+    isAuthenticated: userProp ? true : $authStore.isAuthenticated,
+    user: userProp || $authStore.user,
+    isLoading: userProp ? false : $authStore.isLoading
   });
 
   function toggleDropdown() {
@@ -86,17 +90,29 @@
           <div class="user-menu__dropdown-email">{user.email}</div>
           <div class="user-menu__dropdown-role">
             <span class="user-menu__role-badge" class:user-menu__role-badge--admin={user.role === 'ADMIN'}>
-              {user.role === 'ADMIN' ? '👑 Admin' : '👤 Utilisateur'}
+              {#if user.role === 'ADMIN'}
+                <Crown size={14} />
+                Admin
+              {:else}
+                <UserIcon size={14} />
+                Utilisateur
+              {/if}
             </span>
           </div>
         </div>
         <div class="user-menu__dropdown-divider"></div>
         <a href="/profile" class="user-menu__dropdown-item">
-          <span class="user-menu__dropdown-icon">⚙️</span>
+          <Settings size={18} class="user-menu__dropdown-icon" />
           Mon profil
         </a>
+        {#if user.role === 'ADMIN'}
+          <a href="/admin" class="user-menu__dropdown-item user-menu__dropdown-item--admin">
+            <Shield size={18} class="user-menu__dropdown-icon" />
+            Administration
+          </a>
+        {/if}
         <button class="user-menu__dropdown-item" onclick={handleLogout} type="button">
-          <span class="user-menu__dropdown-icon">🚪</span>
+          <LogOut size={18} class="user-menu__dropdown-icon" />
           Se déconnecter
         </button>
       </div>
@@ -264,10 +280,19 @@
       &:hover {
         background: $color-background-tertiary;
       }
+
+      &--admin {
+        background: rgba($color-danger, 0.05);
+        font-weight: $font-weight-semibold;
+
+        &:hover {
+          background: rgba($color-danger, 0.1);
+        }
+      }
     }
 
     &__dropdown-icon {
-      font-size: $font-size-lg;
+      flex-shrink: 0;
     }
 
     &__auth-buttons {

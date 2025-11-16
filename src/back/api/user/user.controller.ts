@@ -36,6 +36,30 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get(':id/public')
+  @ApiOperation({ summary: 'Récupérer le profil public d\'un utilisateur' })
+  @ApiParam({ name: 'id', description: 'ID de l\'utilisateur' })
+  @ApiResponse({
+    status: 200,
+    description: 'Profil public trouvé'
+  })
+  @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })
+  async getPublicProfile(@Param('id') id: string) {
+    return this.userService.findPublicProfile(id);
+  }
+
+  @Get(':id/recipes')
+  @ApiOperation({ summary: 'Récupérer les recettes récentes d\'un utilisateur' })
+  @ApiParam({ name: 'id', description: 'ID de l\'utilisateur' })
+  @ApiResponse({
+    status: 200,
+    description: 'Recettes récentes trouvées'
+  })
+  @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })
+  async getUserRecipes(@Param('id') id: string) {
+    return this.userService.findUserRecentRecipes(id);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Récupérer un utilisateur par ID' })
   @ApiParam({ name: 'id', description: 'ID de l\'utilisateur' })

@@ -33,6 +33,7 @@ export class HomeService {
           firstName: true,
           lastName: true,
           avatarUrl: true,
+          role: true,
           createdAt: true
         }
       });

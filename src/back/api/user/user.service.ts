@@ -48,6 +48,60 @@ export class UserService {
     });
   }
 
+  async findPublicProfile(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        pseudo: true,
+        avatarUrl: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
+  }
+
+  async findUserRecentRecipes(userId: string, limit: number = 8) {
+    // Vérifier que l'utilisateur existe
+    await this.findPublicProfile(userId);
+
+    // Récupérer les recettes publiques récentes de l'utilisateur
+    return this.prisma.recipe.findMany({
+      where: {
+        ownerId: userId,
+        visibility: 'PUBLIC'
+      },
+      include: {
+        ingredients: {
+          include: {
+            ingredient: true
+          }
+        },
+        steps: {
+          orderBy: {
+            stepNumber: 'asc'
+          }
+        },
+        owner: {
+          select: {
+            id: true,
+            pseudo: true,
+            avatarUrl: true,
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: limit
+    });
+  }
+
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },

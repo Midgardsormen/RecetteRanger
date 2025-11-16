@@ -108,6 +108,7 @@ export class RecipeService {
             select: {
               id: true,
               pseudo: true,
+              avatarUrl: true,
             }
           }
         },
@@ -142,6 +143,13 @@ export class RecipeService {
             ingredient: true,
           },
         },
+        owner: {
+          select: {
+            id: true,
+            pseudo: true,
+            avatarUrl: true,
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc',
@@ -161,6 +169,13 @@ export class RecipeService {
             ingredient: true,
           },
         },
+        owner: {
+          select: {
+            id: true,
+            pseudo: true,
+            avatarUrl: true,
+          }
+        }
       },
     });
 

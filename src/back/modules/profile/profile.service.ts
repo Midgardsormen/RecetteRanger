@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 
 @Injectable()
@@ -6,7 +6,7 @@ export class ProfileService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getUserProfile(userId: string) {
-    return this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -20,5 +20,30 @@ export class ProfileService {
         updatedAt: true,
       },
     });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    return user;
+  }
+
+  async getPublicProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        pseudo: true,
+        avatarUrl: true,
+        createdAt: true,
+        // Ne pas inclure firstName, lastName, email pour le profil public
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    return user;
   }
 }

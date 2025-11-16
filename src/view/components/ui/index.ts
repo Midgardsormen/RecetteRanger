@@ -37,6 +37,7 @@ export { default as Title } from './Title.svelte';
 
 // Navigation Components
 export { default as Breadcrumb } from './Breadcrumb.svelte';
+export { default as AuthorLink } from './AuthorLink.svelte';
 
 // Feedback Components
 export { default as Loader } from './Loader.svelte';

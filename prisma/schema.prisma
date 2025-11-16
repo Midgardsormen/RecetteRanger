@@ -167,6 +167,7 @@ model Recipe {
   difficulty  RecipeDifficulty @default(MEDIUM)
   materiel    String[]         @default([])
   appareils   String[]         @default([])
+  sourceUrl   String?          @db.VarChar(2048) // Lien vers la source de la recette
 
   owner      User?            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId    String?

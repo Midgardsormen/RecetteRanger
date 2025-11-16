@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
 
   interface Props {
-    variant?: 'default' | 'danger' | 'success' | 'primary' | 'secondary' | 'ghost';
+    variant?: 'default' | 'danger' | 'success' | 'primary' | 'secondary' | 'ghost' | 'ghost-inverse';
     size?: 'small' | 'medium' | 'large';
     disabled?: boolean;
     type?: 'button' | 'submit' | 'reset';
@@ -162,6 +162,20 @@
 
       &:active:not(:disabled) {
         background: $color-black-alpha-10;
+      }
+    }
+
+    &--ghost-inverse {
+      color: $color-white;
+      background: rgba($color-white, 0.1);
+
+      &:hover:not(:disabled) {
+        color: $color-white;
+        background: rgba($color-white, 0.2);
+      }
+
+      &:active:not(:disabled) {
+        background: rgba($color-white, 0.3);
       }
     }
   }

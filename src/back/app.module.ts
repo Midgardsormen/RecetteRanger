@@ -21,6 +21,8 @@ import { PlanningsModule } from './modules/plannings/plannings.module';
 import { ShoppingListsModule } from './modules/shopping-lists/shopping-lists.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { StoresModule } from './modules/stores/stores.module';
+import { UsersModule } from './modules/users/users.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -43,6 +45,8 @@ import { StoresModule } from './modules/stores/stores.module';
     ShoppingListsModule,
     ProfileModule,
     StoresModule,
+    UsersModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [SvelteRenderService],

@@ -5,16 +5,35 @@ import { PrismaService } from '../../shared/prisma/prisma.service';
 export class RecettesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getRecettesForUser(userId: string) {
-    // Récupérer les recettes de l'utilisateur + les recettes publiques
-    return this.prisma.recipe.findMany({
-      where: {
+  async getRecettesForUser(userId: string, filterOwnerId?: string) {
+    let whereClause: any;
+
+    if (filterOwnerId) {
+      // Si on filtre par un propriétaire spécifique
+      if (filterOwnerId === userId) {
+        // Si c'est mes propres recettes, afficher toutes mes recettes
+        whereClause = { ownerId: filterOwnerId };
+      } else {
+        // Si c'est les recettes d'un autre utilisateur, afficher uniquement ses recettes publiques
+        whereClause = {
+          ownerId: filterOwnerId,
+          visibility: 'PUBLIC'
+        };
+      }
+    } else {
+      // Pas de filtre : afficher mes recettes + les recettes publiques
+      whereClause = {
         OR: [
           { ownerId: userId }, // Recettes de l'utilisateur
           { ownerId: null }, // Recettes publiques (disponibles pour tous)
           { visibility: 'PUBLIC' } // Recettes publiques explicites
         ]
-      },
+      };
+    }
+
+    // Récupérer les recettes
+    return this.prisma.recipe.findMany({
+      where: whereClause,
       include: {
         ingredients: {
           include: {
@@ -24,6 +43,13 @@ export class RecettesService {
         steps: {
           orderBy: {
             stepNumber: 'asc'
+          }
+        },
+        owner: {
+          select: {
+            id: true,
+            pseudo: true,
+            avatarUrl: true,
           }
         }
       },
@@ -53,6 +79,13 @@ export class RecettesService {
         steps: {
           orderBy: {
             stepNumber: 'asc'
+          }
+        },
+        owner: {
+          select: {
+            id: true,
+            pseudo: true,
+            avatarUrl: true,
           }
         }
       }

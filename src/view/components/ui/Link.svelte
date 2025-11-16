@@ -49,17 +49,16 @@
     font-family: $font-family-heading;
     font-weight: $font-weight-bold;
     font-size: $font-size-base;
-    text-decoration: none;
-    text-transform: uppercase;
+    text-decoration: underline;
+    text-transform: none;
     transition: all $transition-base;
-    letter-spacing: 0.5px;
 
     &--primary {
       color: $brand-primary;
 
       &:hover {
         color: $brand-secondary;
-        transform: translateX(4px);
+        text-decoration: none;
       }
     }
 
@@ -68,18 +67,16 @@
 
       &:hover {
         color: $brand-primary;
-        transform: translateX(4px);
+        text-decoration: none;
       }
     }
 
     &--inverse {
       color: $color-text-inverse;
-      text-shadow: $text-shadow-sharp-md;
 
       &:hover {
         color: $brand-cream;
-        text-shadow: $text-shadow-sharp-lg;
-        transform: translateX(4px);
+        text-decoration: none;
       }
     }
   }

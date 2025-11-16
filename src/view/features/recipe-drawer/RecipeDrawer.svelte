@@ -35,6 +35,7 @@
     prepMinutes: 0,
     servings: 1,
     imageUrl: '',
+    sourceUrl: '',
     visibility: RecipeVisibility.PRIVATE,
     materiel: [],
     appareils: [],
@@ -67,6 +68,7 @@
           prepMinutes: recipe.prepMinutes,
           servings: recipe.servings,
           imageUrl: recipe.imageUrl || '',
+          sourceUrl: recipe.sourceUrl || '',
           visibility: recipe.visibility || RecipeVisibility.PRIVATE,
           materiel: recipe.materiel || [],
           appareils: recipe.appareils || [],
@@ -96,6 +98,7 @@
           prepMinutes: 0,
           servings: 1,
           imageUrl: '',
+          sourceUrl: '',
           visibility: RecipeVisibility.PRIVATE,
           materiel: [],
           appareils: [],
@@ -301,6 +304,7 @@
         difficulty: formData.difficulty,
         materiel: formData.materiel.length > 0 ? formData.materiel : undefined,
         appareils: formData.appareils.length > 0 ? formData.appareils : undefined,
+        sourceUrl: formData.sourceUrl?.trim() || undefined,
         visibility: formData.visibility,
         ingredients: formData.ingredients.map(ing => ({
           ingredientId: ing.ingredientId,
@@ -462,6 +466,14 @@
         placeholder="1"
         required
         error={errors.servings}
+      />
+
+      <Input
+        id="sourceUrl"
+        label="Lien source (optionnel)"
+        type="url"
+        bind:value={formData.sourceUrl}
+        placeholder="https://exemple.com/recette"
       />
 
       <p class="help-text">💡 Créez la recette pour 1 personne. Les quantités seront ajustées automatiquement lors de la consultation.</p>

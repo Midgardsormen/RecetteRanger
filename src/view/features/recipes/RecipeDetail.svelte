@@ -1,13 +1,16 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { IconButton, Tag, Hero, StepItem, Breadcrumb } from '../../components/ui';
-  import { Users, Clock, Utensils, ChefHat, Carrot, Zap } from 'lucide-svelte';
+  import { IconButton, Tag, Hero, StepItem, Breadcrumb, AuthorLink, Link } from '../../components/ui';
+  import { Users, Clock, Utensils, ChefHat, Carrot, Zap, ExternalLink } from 'lucide-svelte';
   import type { Recipe } from '../../types/recipe.types';
   import { RecipeCategoryLabels, RecipeDifficultyLabels } from '../../types/recipe.types';
   import { UnitLabels } from '../../types/ingredient.types';
 
   // Recevoir les données du SSR
   let { recipe, user = null }: { recipe: Recipe, user?: any } = $props();
+
+  // Debug
+  console.log('Recipe sourceUrl:', recipe?.sourceUrl);
 
   // Nombre de personnes (par défaut 4)
   let servings = $state(4);
@@ -85,26 +88,49 @@
         <div class="recipe-title-section">
           <h1>{recipe.label}</h1>
 
-          <div class="recipe-tags">
-            <Tag variant="primary-inverse" size="small">
-              {RecipeCategoryLabels[recipe.category] || 'Non catégorisé'}
-            </Tag>
-            <Tag variant="info-inverse" size="small">
-              {RecipeDifficultyLabels[recipe.difficulty]}
-            </Tag>
+          <div class="recipe-meta-tags">
+            <div class="recipe-tags">
+              <Tag variant="primary-inverse" size="small">
+                {RecipeCategoryLabels[recipe.category] || 'Non catégorisé'}
+              </Tag>
+              <Tag variant="info-inverse" size="small">
+                {RecipeDifficultyLabels[recipe.difficulty]}
+              </Tag>
+            </div>
+
+            {#if recipe.owner}
+              <div class="recipe-author">
+                <AuthorLink
+                  authorId={recipe.owner.id}
+                  authorPseudo={recipe.owner.pseudo}
+                  authorAvatar={recipe.owner.avatarUrl}
+                  size="medium"
+                />
+              </div>
+            {/if}
           </div>
 
           <div class="recipe-meta">
-            <div class="meta-item servings-control">
-              <Users class="meta-icon" size={20} />
-              <IconButton icon="−" onclick={decrementServings} disabled={servings <= 1} size="small" variant="ghost" />
-              <span class="servings-value">{servings} {servings > 1 ? 'personnes' : 'personne'}</span>
-              <IconButton icon="+" onclick={incrementServings} size="small" variant="ghost" />
+            <div class="recipe-meta-left">
+              <div class="meta-item servings-control">
+                <Users class="meta-icon" size={20} />
+                <IconButton onclick={decrementServings} disabled={servings <= 1} size="small" variant="ghost-inverse">−</IconButton>
+                <span class="servings-value">{servings} {servings > 1 ? 'personnes' : 'personne'}</span>
+                <IconButton onclick={incrementServings} size="small" variant="ghost-inverse">+</IconButton>
+              </div>
+              <div class="meta-item">
+                <Clock class="meta-icon" size={20} />
+                <span>{formatTime(getTotalTime())}</span>
+              </div>
             </div>
-            <div class="meta-item">
-              <Clock class="meta-icon" size={20} />
-              <span>{formatTime(getTotalTime())}</span>
-            </div>
+            {#if recipe.sourceUrl}
+              <div class="recipe-meta-right">
+                <Link href={recipe.sourceUrl} variant="inverse" target="_blank" rel="noopener noreferrer">
+                  Recette originale
+                  <ExternalLink size={16} />
+                </Link>
+              </div>
+            {/if}
           </div>
 
           <div class="time-breakdown">
@@ -129,7 +155,6 @@
           </div>
         </div>
       </Hero>
-
 
     <!-- Section Matériel et Appareils -->
     {#if (recipe.materiel && recipe.materiel.length > 0) || (recipe.appareils && recipe.appareils.length > 0)}
@@ -282,10 +307,39 @@
     color: $color-white;
   }
 
+  .recipe-meta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-base;
+  }
+
   .recipe-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+
+  .recipe-author {
+    :global(.author-link__pseudo) {
+      color: $color-white !important;
+      text-decoration: underline;
+    }
+
+    :global(.author-link__avatar-placeholder) {
+      background: rgba($color-white, 0.25);
+      color: $color-white;
+    }
+
+    :global(.author-link--clickable:hover .author-link__pseudo) {
+      color: $brand-cream !important;
+      text-decoration: none !important;
+    }
+
+    :global(.author-link--clickable:hover .author-link__avatar-placeholder) {
+      background: rgba($color-white, 0.4);
+    }
   }
 
   h1 {
@@ -301,10 +355,32 @@
 
   .recipe-meta {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 2rem;
     flex-wrap: wrap;
     margin-top: 0.5rem;
     color: $color-white;
+  }
+
+  .recipe-meta-left {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .recipe-meta-right {
+    :global(.link) {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-xs;
+      text-transform: none !important;
+      text-shadow: none !important;
+
+      :global(svg) {
+        flex-shrink: 0;
+      }
+    }
   }
 
   .meta-item {
@@ -324,9 +400,6 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: rgba($color-white, 0.15);
-    border-radius: 12px;
 
     :global(button) {
       color: $color-white !important;
@@ -349,9 +422,6 @@
     display: flex;
     gap: 2rem;
     flex-wrap: wrap;
-    padding: 1.5rem;
-    background: rgba($color-white, 0.15);
-    border-radius: 12px;
     margin-top: 0.5rem;
   }
 

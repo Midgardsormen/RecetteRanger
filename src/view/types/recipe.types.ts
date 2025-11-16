@@ -12,10 +12,16 @@ export interface Recipe {
   difficulty: RecipeDifficulty;
   materiel: string[];
   appareils: string[];
+  sourceUrl?: string | null;
   ownerId: string | null;
   visibility: RecipeVisibility;
   steps: Step[];
   ingredients: RecipeIngredient[];
+  owner?: {
+    id: string;
+    pseudo: string;
+    avatarUrl: string | null;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -125,6 +131,7 @@ export interface RecipeFormData {
   prepMinutes: number;
   servings: number;
   imageUrl: string;
+  sourceUrl?: string;
   visibility: RecipeVisibility;
   materiel: string[];
   appareils: string[];

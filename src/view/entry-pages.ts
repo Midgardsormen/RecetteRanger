@@ -12,6 +12,8 @@ export const pages = {
   ShoppingLists: () => import('./features/shopping-lists/ShoppingLists.svelte'),
   ShoppingListDetail: () => import('./features/shopping-lists/ShoppingListDetail.svelte'),
   Profile: () => import('./features/profile/Profile.svelte'),
+  Users: () => import('./features/users/Users.svelte'),
+  Admin: () => import('./features/admin/Admin.svelte'),
   Login: () => import('./features/auth/Login.svelte'),
   Register: () => import('./features/auth/Register.svelte'),
   PrivacyPolicy: () => import('./features/privacy/PrivacyPolicy.svelte'),
@@ -30,6 +32,8 @@ export { default as MealPlanningSettings } from './features/plannings/MealPlanni
 export { default as ShoppingLists } from './features/shopping-lists/ShoppingLists.svelte';
 export { default as ShoppingListDetail } from './features/shopping-lists/ShoppingListDetail.svelte';
 export { default as Profile } from './features/profile/Profile.svelte';
+export { default as Users } from './features/users/Users.svelte';
+export { default as Admin } from './features/admin/Admin.svelte';
 export { default as Login } from './features/auth/Login.svelte';
 export { default as Register } from './features/auth/Register.svelte';
 export { default as PrivacyPolicy } from './features/privacy/PrivacyPolicy.svelte';

@@ -35,7 +35,7 @@
 
     <!-- User Menu -->
     <div class="header__user">
-      <UserMenu />
+      <UserMenu {user} />
     </div>
   </div>
 </header>
