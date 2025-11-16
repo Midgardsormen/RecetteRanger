@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { IngredientsController } from './ingredients.controller';
-import { IngredientsService } from './ingredients.service';
-import { PrismaModule } from '../../shared/prisma/prisma.module';
+import { IngredientModule } from '../../api/ingredient/ingredient.module';
 import { SvelteRenderService } from '../../services/svelte-render.service';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [IngredientModule],
   controllers: [IngredientsController],
-  providers: [IngredientsService, SvelteRenderService],
+  providers: [SvelteRenderService],
 })
 export class IngredientsModule {}

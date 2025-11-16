@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { StoresController } from './stores.controller';
-import { StoresService } from './stores.service';
-import { PrismaService } from '../../shared/prisma/prisma.service';
+import { StoreModule } from '../../api/store/store.module';
 import { SvelteRenderService } from '../../services/svelte-render.service';
 
 @Module({
+  imports: [StoreModule],
   controllers: [StoresController],
-  providers: [StoresService, PrismaService, SvelteRenderService],
-  exports: [StoresService],
+  providers: [SvelteRenderService],
 })
 export class StoresModule {}

@@ -1,13 +1,11 @@
 import { Controller, Get, Res, UseGuards, Request } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
-import { PlanningsService } from './plannings.service';
 import { SvelteRenderService } from '../../services/svelte-render.service';
 
 @Controller('plannings')
 export class PlanningsController {
   constructor(
-    private readonly planningsService: PlanningsService,
     private readonly svelteRenderService: SvelteRenderService
   ) {}
 
