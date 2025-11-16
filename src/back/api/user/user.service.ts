@@ -25,6 +25,7 @@ export class UserService {
         lastName: true,
         email: true,
         role: true,
+        accountStatus: true,
         avatarUrl: true,
         createdAt: true,
         updatedAt: true,
@@ -41,6 +42,7 @@ export class UserService {
         lastName: true,
         email: true,
         role: true,
+        accountStatus: true,
         avatarUrl: true,
         createdAt: true,
         updatedAt: true,
@@ -112,6 +114,7 @@ export class UserService {
         lastName: true,
         email: true,
         role: true,
+        accountStatus: true,
         avatarUrl: true,
         createdAt: true,
         updatedAt: true,
@@ -128,6 +131,10 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     await this.findOne(id); // Vérifie que l'utilisateur existe
 
+    console.log('[UserService.update] Received update for user:', id);
+    console.log('[UserService.update] UpdateUserDto:', updateUserDto);
+    console.log('[UserService.update] avatarUrl in DTO:', updateUserDto.avatarUrl);
+
     // Préparer les données de mise à jour
     const { password, ...otherData } = updateUserDto;
     const updateData: any = { ...otherData };
@@ -137,7 +144,10 @@ export class UserService {
       updateData.passwordHash = await bcrypt.hash(password, 10);
     }
 
-    return this.prisma.user.update({
+    console.log('[UserService.update] Data being sent to Prisma:', updateData);
+    console.log('[UserService.update] avatarUrl in updateData:', updateData.avatarUrl);
+
+    const updatedUser = await this.prisma.user.update({
       where: { id },
       data: updateData,
       select: {
@@ -147,11 +157,17 @@ export class UserService {
         lastName: true,
         email: true,
         role: true,
+        accountStatus: true,
         avatarUrl: true,
         createdAt: true,
         updatedAt: true,
       },
     });
+
+    console.log('[UserService.update] User after update from DB:', updatedUser);
+    console.log('[UserService.update] avatarUrl after update:', updatedUser.avatarUrl);
+
+    return updatedUser;
   }
 
   async remove(id: string) {
@@ -162,5 +178,65 @@ export class UserService {
     });
 
     return { message: `User with ID ${id} successfully deleted` };
+  }
+
+  async getPendingCount() {
+    const count = await this.prisma.user.count({
+      where: {
+        accountStatus: 'PENDING',
+      },
+    });
+
+    return { count };
+  }
+
+  async approveUser(id: string) {
+    await this.findOne(id); // Vérifie que l'utilisateur existe
+
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: {
+        accountStatus: 'APPROVED',
+      },
+      select: {
+        id: true,
+        pseudo: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        accountStatus: true,
+        avatarUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return user;
+  }
+
+  async rejectUser(id: string) {
+    await this.findOne(id); // Vérifie que l'utilisateur existe
+
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: {
+        accountStatus: 'REJECTED',
+      },
+      select: {
+        id: true,
+        pseudo: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        accountStatus: true,
+        avatarUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return user;
   }
 }

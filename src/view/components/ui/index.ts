@@ -46,4 +46,5 @@ export { default as Tag } from './Tag.svelte';
 export { default as Dot } from './Dot.svelte';
 export { default as ProgressBar } from './ProgressBar.svelte';
 export { default as NumberBadge } from './NumberBadge.svelte';
+export { default as NotificationBadge } from './NotificationBadge.svelte';
 export { default as StepItem } from './StepItem.svelte';

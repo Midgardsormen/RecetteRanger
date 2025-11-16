@@ -36,6 +36,22 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('pending/count')
+  @ApiOperation({ summary: 'Compter les utilisateurs en attente de validation' })
+  @ApiResponse({
+    status: 200,
+    description: 'Nombre d\'utilisateurs en attente',
+    schema: {
+      type: 'object',
+      properties: {
+        count: { type: 'number' }
+      }
+    }
+  })
+  getPendingCount() {
+    return this.userService.getPendingCount();
+  }
+
   @Get(':id/public')
   @ApiOperation({ summary: 'Récupérer le profil public d\'un utilisateur' })
   @ApiParam({ name: 'id', description: 'ID de l\'utilisateur' })
@@ -84,6 +100,24 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
+  }
+
+  @Patch(':id/approve')
+  @ApiOperation({ summary: 'Approuver un compte utilisateur' })
+  @ApiParam({ name: 'id', description: 'ID de l\'utilisateur' })
+  @ApiResponse({ status: 200, description: 'Compte approuvé' })
+  @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })
+  approve(@Param('id') id: string) {
+    return this.userService.approveUser(id);
+  }
+
+  @Patch(':id/reject')
+  @ApiOperation({ summary: 'Rejeter un compte utilisateur' })
+  @ApiParam({ name: 'id', description: 'ID de l\'utilisateur' })
+  @ApiResponse({ status: 200, description: 'Compte rejeté' })
+  @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })
+  reject(@Param('id') id: string) {
+    return this.userService.rejectUser(id);
   }
 
   @Delete(':id')

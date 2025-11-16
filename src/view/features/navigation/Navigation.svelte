@@ -16,6 +16,9 @@
   // Check if user is authenticated
   const isAuthenticated = $derived(user !== null);
 
+  // Check if user is admin
+  const isAdmin = $derived(user?.role === 'ADMIN');
+
   // Check if a nav item is active (exact match or starts with the href for sub-pages)
   function isActive(itemHref: string): boolean {
     if (itemHref === '/') {
@@ -111,8 +114,10 @@
     }
 
     &__link {
-      display: block;
+      display: flex;
       align-items: center;
+      justify-content: center;
+      gap: $spacing-xs;
       padding: $spacing-base $spacing-sm;
       color: $color-text-inverse;
       text-decoration: none;
@@ -125,7 +130,7 @@
       border: 5px solid transparent;
       font-family: $font-family-heading;
       text-shadow: $shadow-decorative-navigation;
-      
+
       opacity: 0.9;
       &:hover {
         border-bottom: 5px solid $brand-red;

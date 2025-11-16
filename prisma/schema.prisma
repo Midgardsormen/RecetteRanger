@@ -76,6 +76,12 @@ enum UserRole {
   ADMIN
 }
 
+enum AccountStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum MealSlot {
   BREAKFAST
   LUNCH
@@ -137,14 +143,15 @@ enum Unit {
  * ====== Modèles ======
  */
 model User {
-  id           String   @id @default(cuid())
-  pseudo       String   @unique
-  firstName    String
-  lastName     String
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  avatarUrl    String?  @db.VarChar(2048)
-  role         UserRole @default(USER)
+  id            String        @id @default(cuid())
+  pseudo        String        @unique
+  firstName     String
+  lastName      String
+  email         String        @unique
+  passwordHash  String        @map("password_hash")
+  avatarUrl     String?       @db.VarChar(2048)
+  role          UserRole      @default(USER)
+  accountStatus AccountStatus @default(PENDING)
 
   recipes         Recipe[]
   mealDays        MealPlanDay[]
@@ -153,6 +160,8 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([accountStatus])
 }
 
 model Recipe {

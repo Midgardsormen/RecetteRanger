@@ -50,6 +50,7 @@ export class AuthService {
         lastName: true,
         email: true,
         role: true,
+        accountStatus: true,
         avatarUrl: true,
       },
     });
@@ -84,6 +85,16 @@ export class AuthService {
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Identifiants incorrects');
+    }
+
+    // Vérifier le statut du compte (sauf pour les admins)
+    if (user.role !== 'ADMIN') {
+      if (user.accountStatus === 'PENDING') {
+        throw new UnauthorizedException('Votre compte est en attente de validation par un administrateur');
+      }
+      if (user.accountStatus === 'REJECTED') {
+        throw new UnauthorizedException('Votre demande de compte a été refusée');
+      }
     }
 
     // Générer le token JWT

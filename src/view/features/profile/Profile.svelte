@@ -119,13 +119,23 @@
 
     try {
       const userId = isAdminEditing ? profileUser.id : initialUser.id;
-      const updatedUser = await apiService.updateUser(userId, {
+      const updateData = {
         pseudo: formData.pseudo,
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         avatarUrl: formData.avatarUrl || null
-      });
+      };
+
+      console.log('[Profile.handleUpdateProfile] Updating user:', userId);
+      console.log('[Profile.handleUpdateProfile] isAdminEditing:', isAdminEditing);
+      console.log('[Profile.handleUpdateProfile] formData.avatarUrl:', formData.avatarUrl);
+      console.log('[Profile.handleUpdateProfile] updateData:', updateData);
+
+      const updatedUser = await apiService.updateUser(userId, updateData);
+
+      console.log('[Profile.handleUpdateProfile] Response from API:', updatedUser);
+      console.log('[Profile.handleUpdateProfile] updatedUser.avatarUrl:', updatedUser.avatarUrl);
 
       // Mettre à jour le store auth uniquement si c'est mon propre profil
       if (isOwnProfile) {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { authStore } from '../stores/auth.store';
   import { apiService } from '../services/api.service';
-  import { Button } from './ui';
+  import { Button, NotificationBadge } from './ui';
   import { onMount } from 'svelte';
   import { Settings, Crown, LogOut, User as UserIcon, Shield } from 'lucide-svelte';
 
@@ -9,6 +9,7 @@
 
   let showDropdown = $state(false);
   let menuElement: HTMLDivElement;
+  let pendingUsersCount = $state(0);
 
   // Utiliser le prop user en priorité, sinon le store
   const { isAuthenticated, user, isLoading } = $derived({
@@ -16,6 +17,8 @@
     user: userProp || $authStore.user,
     isLoading: userProp ? false : $authStore.isLoading
   });
+
+  const isAdmin = $derived(user?.role === 'ADMIN');
 
   function toggleDropdown() {
     showDropdown = !showDropdown;
@@ -47,17 +50,47 @@
     window.location.href = '/register';
   }
 
+  // Fetch pending users count for admins
+  async function fetchPendingCount() {
+    if (isAdmin) {
+      try {
+        const response = await fetch('/api/users/pending/count');
+        if (response.ok) {
+          const data = await response.json();
+          pendingUsersCount = data.count;
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération du nombre d\'utilisateurs en attente:', error);
+      }
+    }
+  }
+
   // Fermer le dropdown si on clique en dehors
   onMount(() => {
+    // Fetch pending count on mount
+    fetchPendingCount();
+
+    // Refresh count every 30 seconds
+    const interval = setInterval(fetchPendingCount, 30000);
+
     function handleClickOutside(event: MouseEvent) {
       if (menuElement && !menuElement.contains(event.target as Node)) {
         closeDropdown();
       }
     }
 
+    // Listen for user status changes
+    function handleUserStatusChanged() {
+      fetchPendingCount();
+    }
+
     document.addEventListener('click', handleClickOutside);
+    window.addEventListener('user-status-changed', handleUserStatusChanged);
+
     return () => {
+      clearInterval(interval);
       document.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('user-status-changed', handleUserStatusChanged);
     };
   });
 </script>
@@ -69,14 +102,30 @@
     </div>
   {:else if isAuthenticated && user}
     <!-- Utilisateur connecté -->
-    <button class="user-menu__button" onclick={toggleDropdown} type="button">
-      <div class="user-menu__avatar">
-        {#if user.avatarUrl}
-          <img src={user.avatarUrl} alt={user.pseudo} />
-        {:else}
-          <span class="user-menu__avatar-fallback">
-            {user.firstName?.[0] || ''}{user.lastName?.[0] || ''}
-          </span>
+    <button
+      class="user-menu__button"
+      onclick={toggleDropdown}
+      type="button"
+      title={isAdmin && pendingUsersCount > 0 ? `${pendingUsersCount} demande${pendingUsersCount > 1 ? 's' : ''} d'inscription en attente` : ''}
+    >
+      <div class="user-menu__avatar-container">
+        <div class="user-menu__avatar">
+          {#if user.avatarUrl}
+            <img src={user.avatarUrl} alt={user.pseudo} />
+          {:else}
+            <span class="user-menu__avatar-fallback">
+              {user.firstName?.[0] || ''}{user.lastName?.[0] || ''}
+            </span>
+          {/if}
+        </div>
+        {#if isAdmin}
+          <NotificationBadge
+            count={pendingUsersCount}
+            size="medium"
+            variant="danger"
+            position="top-right"
+            animate={true}
+          />
         {/if}
       </div>
       <span class="user-menu__name">{user.pseudo}</span>
@@ -162,6 +211,10 @@
       &:hover {
         background: $color-white-alpha-20;
       }
+    }
+
+    &__avatar-container {
+      position: relative;
     }
 
     &__avatar {
@@ -365,6 +418,18 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
     }
   }
 </style>

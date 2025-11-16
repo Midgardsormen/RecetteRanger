@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '@prisma/client';
+import { UserRole, AccountStatus } from '@prisma/client';
 
 export class UserDto {
   @ApiProperty({ description: 'ID unique de l\'utilisateur' })
@@ -19,6 +19,9 @@ export class UserDto {
 
   @ApiProperty({ description: 'Rôle de l\'utilisateur', enum: UserRole })
   role: UserRole;
+
+  @ApiProperty({ description: 'Statut du compte', enum: AccountStatus })
+  accountStatus: AccountStatus;
 
   @ApiProperty({ description: 'URL de l\'avatar', nullable: true })
   avatarUrl: string | null;
