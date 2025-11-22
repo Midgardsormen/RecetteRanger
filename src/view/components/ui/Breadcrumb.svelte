@@ -22,13 +22,10 @@
    *    />
    */
 
-  import { ArrowLeft, Home } from 'lucide-svelte';
-
-  type BreadcrumbItem = {
-    label: string;
-    href?: string;
-    onclick?: () => void;
-  };
+  import { Home } from 'lucide-svelte';
+  import { BackButton } from './';
+  import { handleBreadcrumbClick } from '../../utils';
+  import type { BreadcrumbProps, BreadcrumbItem } from '../../types';
 
   let {
     items = [],
@@ -38,49 +35,17 @@
     backLabel,
     backHref,
     onBack
-  }: {
-    items?: BreadcrumbItem[];
-    mode?: 'full' | 'simple';
-    showHomeIcon?: boolean;
-    separator?: string;
-    backLabel?: string;
-    backHref?: string;
-    onBack?: () => void;
-  } = $props();
+  }: BreadcrumbProps = $props();
 
-  function handleClick(item: BreadcrumbItem, e: MouseEvent) {
-    if (item.onclick) {
-      e.preventDefault();
-      item.onclick();
-    }
-  }
-
-  function handleBackClick(e: MouseEvent) {
-    if (onBack) {
-      e.preventDefault();
-      onBack();
-    }
+  function handleItemClick(item: BreadcrumbItem, e: MouseEvent) {
+    handleBreadcrumbClick(item.onclick, e);
   }
 </script>
 
 {#if mode === 'simple'}
   <!-- Mode simple : juste une flèche de retour -->
   <nav class="breadcrumb breadcrumb--simple" aria-label="Breadcrumb">
-    {#if backHref}
-      <a href={backHref} class="breadcrumb__back" onclick={handleBackClick}>
-        <ArrowLeft class="breadcrumb__arrow" size={20} />
-        {#if backLabel}
-          <span class="breadcrumb__back-label">{backLabel}</span>
-        {/if}
-      </a>
-    {:else if onBack}
-      <button type="button" class="breadcrumb__back" onclick={handleBackClick}>
-        <ArrowLeft class="breadcrumb__arrow" size={20} />
-        {#if backLabel}
-          <span class="breadcrumb__back-label">{backLabel}</span>
-        {/if}
-      </button>
-    {/if}
+    <BackButton label={backLabel} href={backHref} onclick={onBack} />
   </nav>
 {:else if mode === 'full'}
   <!-- Mode complet : breadcrumb avec arborescence -->
@@ -100,11 +65,11 @@
           {#if index < items.length - 1}
             <span class="breadcrumb__separator" aria-hidden="true">{separator}</span>
             {#if item.href}
-              <a href={item.href} class="breadcrumb__link" onclick={(e) => handleClick(item, e)}>
+              <a href={item.href} class="breadcrumb__link" onclick={(e) => handleItemClick(item, e)}>
                 {item.label}
               </a>
             {:else if item.onclick}
-              <button type="button" class="breadcrumb__link" onclick={(e) => handleClick(item, e)}>
+              <button type="button" class="breadcrumb__link" onclick={(e) => handleItemClick(item, e)}>
                 {item.label}
               </button>
             {:else}
@@ -125,22 +90,13 @@
       {@const previousItem = items.length > 1 ? items[items.length - 2] : null}
       <div class="breadcrumb__mobile">
         {#if previousItem}
-          {#if previousItem.href}
-            <a href={previousItem.href} class="breadcrumb__back" onclick={(e) => handleClick(previousItem, e)}>
-              <ArrowLeft class="breadcrumb__arrow" size={20} />
-              <span class="breadcrumb__back-label">{previousItem.label}</span>
-            </a>
-          {:else if previousItem.onclick}
-            <button type="button" class="breadcrumb__back" onclick={(e) => handleClick(previousItem, e)}>
-              <ArrowLeft class="breadcrumb__arrow" size={20} />
-              <span class="breadcrumb__back-label">{previousItem.label}</span>
-            </button>
-          {/if}
+          <BackButton
+            label={previousItem.label}
+            href={previousItem.href}
+            onclick={previousItem.onclick}
+          />
         {:else if showHomeIcon}
-          <a href="/" class="breadcrumb__back">
-            <ArrowLeft class="breadcrumb__arrow" size={20} />
-            <span class="breadcrumb__back-label">Accueil</span>
-          </a>
+          <BackButton label="Accueil" href="/" />
         {/if}
       </div>
     {/if}
@@ -152,50 +108,6 @@
 
   .breadcrumb {
     margin-bottom: $spacing-md;
-
-    // Mode simple
-    &--simple {
-      .breadcrumb__back {
-        display: inline-flex;
-        align-items: center;
-        gap: $spacing-xs;
-        color: $color-text-secondary;
-        text-decoration: none;
-        font-size: $font-size-base;
-        font-weight: $font-weight-medium;
-        transition: color $transition-base $transition-ease;
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        font-family: $font-family-base;
-
-        &:hover {
-          color: $brand-primary;
-
-          .breadcrumb__arrow {
-            transform: translateX(-4px);
-          }
-        }
-
-        &:focus-visible {
-          outline: 2px solid $brand-primary;
-          outline-offset: 4px;
-          border-radius: $radius-sm;
-        }
-      }
-
-      :global(.breadcrumb__arrow) {
-        transition: transform $transition-base $transition-ease;
-        flex-shrink: 0;
-      }
-
-      .breadcrumb__back-label {
-        @media (max-width: $breakpoint-sm) {
-          display: none;
-        }
-      }
-    }
 
     // Mode complet
     &--full {
@@ -218,41 +130,6 @@
 
         @media (max-width: $breakpoint-md) {
           display: block;
-        }
-
-        .breadcrumb__back {
-          display: inline-flex;
-          align-items: center;
-          gap: $spacing-xs;
-          color: $color-text-secondary;
-          text-decoration: none;
-          font-size: $font-size-base;
-          font-weight: $font-weight-medium;
-          transition: color $transition-base $transition-ease;
-          background: none;
-          border: none;
-          padding: 0;
-          cursor: pointer;
-          font-family: $font-family-base;
-
-          &:hover {
-            color: $brand-primary;
-
-            .breadcrumb__arrow {
-              transform: translateX(-4px);
-            }
-          }
-
-          &:focus-visible {
-            outline: 2px solid $brand-primary;
-            outline-offset: 4px;
-            border-radius: $radius-sm;
-          }
-        }
-
-        :global(.breadcrumb__arrow) {
-          transition: transform $transition-base $transition-ease;
-          flex-shrink: 0;
         }
       }
 

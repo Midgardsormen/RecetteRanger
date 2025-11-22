@@ -1,4 +1,7 @@
 <script lang="ts">
+  import FormField from './FormField.svelte';
+  import { Eye, EyeOff } from 'lucide-svelte';
+
   interface Props {
     id: string;
     label?: string;
@@ -7,6 +10,7 @@
     required?: boolean;
     disabled?: boolean;
     error?: string;
+    hint?: string;
   }
 
   let {
@@ -16,7 +20,8 @@
     placeholder = '',
     required = false,
     disabled = false,
-    error
+    error,
+    hint
   }: Props = $props();
 
   let showPassword = $state(false);
@@ -26,15 +31,7 @@
   }
 </script>
 
-<div class="password-input">
-  {#if label}
-    <label for={id} class="password-input__label">
-      {label}
-      {#if required}
-        <span class="password-input__required">*</span>
-      {/if}
-    </label>
-  {/if}
+<FormField {label} {required} {error} {hint}>
   <div class="password-input__wrapper">
     <input
       {id}
@@ -45,43 +42,29 @@
       {disabled}
       class="password-input__input"
       class:password-input__input--error={error}
+      aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
     />
     <button
       type="button"
       class="password-input__toggle"
       onclick={togglePasswordVisibility}
       aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+      aria-pressed={showPassword}
+      title={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
     >
       {#if showPassword}
-        👁️
+        <EyeOff size={18} />
       {:else}
-        👁️‍🗨️
+        <Eye size={18} />
       {/if}
     </button>
   </div>
-  {#if error}
-    <span class="password-input__error">{error}</span>
-  {/if}
-</div>
+</FormField>
 
 <style lang="scss">
   @use '../../../styles/variables' as *;
 
   .password-input {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
-
-    &__label {
-      font-weight: $font-weight-semibold;
-      font-size: $font-size-sm;
-      color: $color-label-text;
-    }
-
-    &__required {
-      color: $color-label-required;
-    }
-
     &__wrapper {
       position: relative;
       display: flex;
@@ -100,15 +83,25 @@
       &:focus {
         outline: none;
         border-color: $color-input-border-focus;
+        box-shadow: $shadow-focus-primary;
       }
 
       &:disabled {
         background: $color-input-disabled-background;
         cursor: not-allowed;
+        opacity: 0.6;
       }
 
       &--error {
         border-color: $color-input-error-border;
+
+        &:focus {
+          box-shadow: $shadow-focus-danger;
+        }
+      }
+
+      &::placeholder {
+        color: $color-input-placeholder;
       }
     }
 
@@ -134,11 +127,6 @@
         outline: 2px solid $brand-primary;
         outline-offset: 2px;
       }
-    }
-
-    &__error {
-      color: $color-text-error;
-      font-size: $font-size-sm;
     }
   }
 </style>

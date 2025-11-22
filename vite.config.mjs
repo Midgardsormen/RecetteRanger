@@ -37,9 +37,9 @@ export default defineConfig({
           'feature-auth-register': ['./src/view/features/auth/Register.svelte'],
           // UI Components
           'ui-components': [
-            './src/view/components/ui/Drawer.svelte',
-            './src/view/components/ui/Modal.svelte',
-            './src/view/components/ui/ImageUpload.svelte'
+            './src/view/components/ui/Drawer/Drawer.svelte',
+            './src/view/components/ui/Modal/Modal.svelte',
+            './src/view/components/ui/ImageUpload/ImageUpload.svelte'
           ],
           // Shared components
           'components': [

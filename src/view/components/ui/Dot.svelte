@@ -1,18 +1,15 @@
 <script lang="ts">
-  interface Props {
-    color?: string;
-    size?: 'xs' | 'small' | 'medium' | 'large';
-  }
+  import type { DotProps } from '../../types';
 
   let {
-    color = '#cccccc',
+    color,
     size = 'medium'
-  }: Props = $props();
+  }: DotProps = $props();
 </script>
 
 <span
   class="dot dot--{size}"
-  style="background-color: {color};"
+  style={color ? `background-color: ${color};` : undefined}
 ></span>
 
 <style lang="scss">
@@ -22,25 +19,26 @@
     display: inline-block;
     border-radius: 50%;
     flex-shrink: 0;
+    background-color: $color-dot-default;
 
     &--xs {
-      width: 6px;
-      height: 6px;
+      width: $size-dot-xs;
+      height: $size-dot-xs;
     }
 
     &--small {
-      width: 8px;
-      height: 8px;
+      width: $size-dot-sm;
+      height: $size-dot-sm;
     }
 
     &--medium {
-      width: 10px;
-      height: 10px;
+      width: $size-dot-md;
+      height: $size-dot-md;
     }
 
     &--large {
-      width: 12px;
-      height: 12px;
+      width: $size-dot-lg;
+      height: $size-dot-lg;
     }
   }
 </style>

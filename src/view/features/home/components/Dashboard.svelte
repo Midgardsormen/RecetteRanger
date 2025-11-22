@@ -209,6 +209,27 @@
     flex-direction: column;
     gap: $spacing-2xl;
 
+    // Ajouter du padding-top au Hero pour que le logo chevauche
+    :global(.hero--compact) {
+      // Mobile: logo home = 110px, on veut qu'il chevauche
+      padding-top: 50px;
+
+      // Small mobile: logo home = 120px
+      @media (min-width: $breakpoint-sm) {
+        padding-top: 55px;
+      }
+
+      // Tablet: logo home = 150px
+      @media (min-width: $breakpoint-md) {
+        padding-top: 65px;
+      }
+
+      // Desktop: logo home = 180px
+      @media (min-width: $breakpoint-lg) {
+        padding-top: 80px;
+      }
+    }
+
     // Element: loading
     &__loading {
       text-align: center;

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import FormField from './FormField.svelte';
+
   interface Props {
     id?: string;
     type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
@@ -30,16 +32,7 @@
   }: Props = $props();
 </script>
 
-<div class="input-wrapper">
-  {#if label}
-    <label class="input-label" for={id}>
-      {label}
-      {#if required}
-        <span class="required">*</span>
-      {/if}
-    </label>
-  {/if}
-
+<FormField {label} {required} {error} {hint}>
   <input
     {id}
     {type}
@@ -52,36 +45,10 @@
     {onchange}
     {onblur}
   />
-
-  {#if error}
-    <span class="input-error">{error}</span>
-  {/if}
-
-  {#if hint && !error}
-    <span class="input-hint">{hint}</span>
-  {/if}
-</div>
+</FormField>
 
 <style lang="scss">
   @use '../../../styles/variables' as *;
-
-  .input-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
-  }
-
-  .input-label {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-label-text;
-    display: block;
-  }
-
-  .required {
-    color: $color-label-required;
-    margin-left: $spacing-xs;
-  }
 
   .input {
     padding: $spacing-md $spacing-base;
@@ -91,6 +58,7 @@
     font-family: inherit;
     transition: all $transition-base $transition-ease;
     background: $color-input-background;
+    width: 100%;
 
     &:focus {
       outline: none;
@@ -115,17 +83,5 @@
     &::placeholder {
       color: $color-input-placeholder;
     }
-  }
-
-  .input-error {
-    font-size: $font-size-sm;
-    color: $color-text-error;
-    margin-top: -$spacing-xs;
-  }
-
-  .input-hint {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-    margin-top: -$spacing-xs;
   }
 </style>

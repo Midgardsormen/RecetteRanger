@@ -1,4 +1,6 @@
 <script lang="ts">
+  import FormField from './FormField.svelte';
+
   interface Props {
     id?: string;
     value?: string;
@@ -32,16 +34,7 @@
   }: Props = $props();
 </script>
 
-<div class="textarea-wrapper">
-  {#if label}
-    <label class="textarea-label" for={id}>
-      {label}
-      {#if required}
-        <span class="required">*</span>
-      {/if}
-    </label>
-  {/if}
-
+<FormField {label} {required} {error} {hint}>
   <textarea
     {id}
     {placeholder}
@@ -55,36 +48,10 @@
     {onchange}
     {onblur}
   ></textarea>
-
-  {#if error}
-    <span class="textarea-error">{error}</span>
-  {/if}
-
-  {#if hint && !error}
-    <span class="textarea-hint">{hint}</span>
-  {/if}
-</div>
+</FormField>
 
 <style lang="scss">
   @use '../../../styles/variables' as *;
-
-  .textarea-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
-  }
-
-  .textarea-label {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-label-text;
-    display: block;
-  }
-
-  .required {
-    color: $color-label-required;
-    margin-left: $spacing-xs;
-  }
 
   .textarea {
     padding: $spacing-md $spacing-base;
@@ -96,6 +63,7 @@
     background: $color-input-background;
     resize: vertical;
     min-height: 100px;
+    width: 100%;
 
     &:focus {
       outline: none;
@@ -120,17 +88,5 @@
     &::placeholder {
       color: $color-input-placeholder;
     }
-  }
-
-  .textarea-error {
-    font-size: $font-size-sm;
-    color: $color-text-error;
-    margin-top: -$spacing-xs;
-  }
-
-  .textarea-hint {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-    margin-top: -$spacing-xs;
   }
 </style>

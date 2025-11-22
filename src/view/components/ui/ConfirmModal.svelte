@@ -1,15 +1,6 @@
 <script lang="ts">
-  import Modal from './Modal.svelte';
-
-  interface Props {
-    isOpen?: boolean;
-    title?: string;
-    message: string;
-    confirmLabel?: string;
-    cancelLabel?: string;
-    onConfirm: () => void;
-    onCancel: () => void;
-  }
+  import Modal from './Modal/Modal.svelte';
+  import type { ConfirmModalProps } from '../../types';
 
   let {
     isOpen = false,
@@ -19,7 +10,7 @@
     cancelLabel = 'Annuler',
     onConfirm,
     onCancel
-  }: Props = $props();
+  }: ConfirmModalProps = $props();
 </script>
 
 <Modal

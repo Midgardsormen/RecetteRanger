@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import FormField from './FormField.svelte';
 
   interface Props {
     id?: string;
@@ -28,16 +29,7 @@
   }: Props = $props();
 </script>
 
-<div class="select-wrapper">
-  {#if label}
-    <label class="select-label" for={id}>
-      {label}
-      {#if required}
-        <span class="required">*</span>
-      {/if}
-    </label>
-  {/if}
-
+<FormField {label} {required} {error} {hint}>
   <select
     {id}
     {disabled}
@@ -54,36 +46,10 @@
       {@render children()}
     {/if}
   </select>
-
-  {#if error}
-    <span class="select-error">{error}</span>
-  {/if}
-
-  {#if hint && !error}
-    <span class="select-hint">{hint}</span>
-  {/if}
-</div>
+</FormField>
 
 <style lang="scss">
   @use '../../../styles/variables' as *;
-
-  .select-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
-  }
-
-  .select-label {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-label-text;
-    display: block;
-  }
-
-  .required {
-    color: $color-label-required;
-    margin-left: $spacing-xs;
-  }
 
   .select {
     padding: $spacing-md $spacing-base;
@@ -99,6 +65,7 @@
     background-repeat: no-repeat;
     background-position: right $spacing-base center;
     padding-right: 2.5rem;
+    width: 100%;
 
     &:focus {
       outline: none;
@@ -119,17 +86,5 @@
         box-shadow: $shadow-focus-danger;
       }
     }
-  }
-
-  .select-error {
-    font-size: $font-size-sm;
-    color: $color-text-error;
-    margin-top: -$spacing-xs;
-  }
-
-  .select-hint {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-    margin-top: -$spacing-xs;
   }
 </style>

@@ -46,7 +46,7 @@
     transition: background-color $transition-base $transition-ease;
 
     &:hover {
-      background-color: rgba($brand-primary, 0.05);
+      background-color: $color-primary-alpha-05;
     }
 
     &--disabled {
@@ -76,7 +76,7 @@
     }
 
     &:focus ~ .checkbox__checkmark {
-      box-shadow: 0 0 0 3px rgba($brand-primary, 0.2);
+      box-shadow: 0 0 0 3px $color-primary-alpha-20;
     }
   }
 

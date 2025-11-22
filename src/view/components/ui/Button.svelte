@@ -1,15 +1,5 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
-
-  interface Props {
-    variant?: 'primary' | 'primary-inverse' | 'secondary' | 'secondary-inverse' | 'outlined' | 'outlined-inverse' | 'ghost' | 'ghost-inverse' | 'danger' | 'danger-inverse' | 'success' | 'success-inverse';
-    size?: 'small' | 'medium' | 'large';
-    disabled?: boolean;
-    fullWidth?: boolean;
-    type?: 'button' | 'submit' | 'reset';
-    onclick?: (e: MouseEvent) => void;
-    children?: Snippet;
-  }
+  import type { ButtonProps } from '../../types';
 
   let {
     variant = 'primary',
@@ -18,21 +8,41 @@
     fullWidth = false,
     type = 'button',
     onclick,
-    children
-  }: Props = $props();
+    children,
+    element = 'button',
+    href,
+    target,
+    rel
+  }: ButtonProps = $props();
 </script>
 
-<button
-  class="button button--{variant} button--{size}"
-  class:button--full-width={fullWidth}
-  {type}
-  {disabled}
-  {onclick}
->
-  {#if children}
-    {@render children()}
-  {/if}
-</button>
+{#if element === 'a'}
+  <a
+    {href}
+    {target}
+    {rel}
+    class="button button--{variant} button--{size}"
+    class:button--full-width={fullWidth}
+    class:button--disabled={disabled}
+    onclick={onclick}
+  >
+    {#if children}
+      {@render children()}
+    {/if}
+  </a>
+{:else}
+  <button
+    class="button button--{variant} button--{size}"
+    class:button--full-width={fullWidth}
+    {type}
+    {disabled}
+    {onclick}
+  >
+    {#if children}
+      {@render children()}
+    {/if}
+  </button>
+{/if}
 
 <style lang="scss">
   @use '../../styles/variables' as *;
@@ -49,6 +59,7 @@
     cursor: pointer;
     transition: all $transition-slow $transition-ease;
     line-height: 1;
+    text-decoration: none;
 
     // Par défaut 100% sur mobile, largeur max au-delà de sm
     width: 100%;
@@ -58,15 +69,16 @@
       width: auto;
     }
 
-    &:disabled {
-      opacity: 0.5;
+    &:disabled,
+    &--disabled {
+      opacity: $opacity-50;
       cursor: not-allowed;
       pointer-events: none;
     }
 
     &:focus-visible {
-      outline: 2px solid $brand-primary;
-      outline-offset: 2px;
+      outline: $outline-width solid $brand-primary;
+      outline-offset: $outline-offset;
     }
 
     // Sizes
@@ -90,14 +102,14 @@
     &--primary {
       background: $color-button-primary-background;
       color: $color-button-primary-text;
-      border: 2px solid $color-button-primary-border;
-      &:hover:not(:disabled) {
+      border: $border-width-base solid $color-button-primary-border;
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-primary-hover-background;
         color: $color-button-primary-hover-text;
-        border: 2px solid $color-button-primary-hover-border;
+        border: $border-width-base solid $color-button-primary-hover-border;
       }
 
-      &:active:not(:disabled) {
+      &:active:not(:disabled):not(.button--disabled) {
         background: $color-button-primary-active-background;
         color: $color-button-primary-hover-text;
       }
@@ -108,12 +120,12 @@
       background: $color-button-primary-inverse-background;
       color: $color-button-primary-inverse-text;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-primary-inverse-hover-background;
         color: $color-button-primary-inverse-hover-text;
       }
 
-      &:active:not(:disabled) {
+      &:active:not(:disabled):not(.button--disabled) {
         background: $color-button-primary-inverse-active-background;
         color: $color-button-primary-inverse-hover-text;
       }
@@ -123,15 +135,15 @@
     &--secondary {
       background: $color-button-secondary-background;
       color: $color-button-secondary-text;
-      border: 2px solid $color-button-secondary-border;
+      border: $border-width-base solid $color-button-secondary-border;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-secondary-hover-background;
         color: $color-button-secondary-hover-text;
         border-color: $color-button-secondary-hover-border;
       }
 
-      &:active:not(:disabled) {
+      &:active:not(:disabled):not(.button--disabled) {
         background: $color-button-secondary-active-background;
         color: $color-button-secondary-active-text;
         border-color: $color-button-secondary-active-border;
@@ -142,15 +154,15 @@
     &--secondary-inverse {
       background: $color-button-secondary-inverse-background;
       color: $color-button-secondary-inverse-text;
-      border: 2px solid $color-button-secondary-inverse-border;
+      border: $border-width-base solid $color-button-secondary-inverse-border;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-secondary-inverse-hover-background;
         color: $color-button-secondary-inverse-hover-text;
         border-color: $color-button-secondary-inverse-hover-border;
       }
 
-      &:active:not(:disabled) {
+      &:active:not(:disabled):not(.button--disabled) {
         background: $color-button-secondary-inverse-active-background;
         color: $color-button-secondary-inverse-active-text;
         border-color: $color-button-secondary-inverse-active-border;
@@ -161,15 +173,15 @@
     &--outlined {
       background: $color-button-outlined-background;
       color: $color-button-outlined-text;
-      border: 2px solid $color-button-outlined-border;
+      border: $border-width-base solid $color-button-outlined-border;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-outlined-hover-background;
         color: $color-button-outlined-hover-text;
         border-color: $color-button-outlined-hover-border;
       }
 
-      &:active:not(:disabled) {
+      &:active:not(:disabled):not(.button--disabled) {
         background: $color-button-outlined-active-background;
         color: $color-button-outlined-active-text;
       }
@@ -179,13 +191,10 @@
     &--outlined-inverse {
       background: $color-button-outlined-inverse-background;
       color: $color-button-outlined-inverse-text;
-      border: 2px solid $color-button-outlined-inverse-border;
+      border: $border-width-base solid $color-button-outlined-inverse-border;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-outlined-inverse-hover-background;
-      }
-
-      &:active:not(:disabled) {
       }
     }
 
@@ -194,11 +203,11 @@
       background: $color-button-ghost-background;
       color: $color-button-ghost-text;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-ghost-hover-background;
       }
 
-      &:active:not(:disabled) {
+      &:active:not(:disabled):not(.button--disabled) {
         background: $color-button-ghost-active-background;
       }
     }
@@ -208,11 +217,11 @@
       background: $color-button-ghost-inverse-background;
       color: $color-button-ghost-inverse-text;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-ghost-inverse-hover-background;
       }
 
-      &:active:not(:disabled) {
+      &:active:not(:disabled):not(.button--disabled) {
         background: $color-button-ghost-inverse-active-background;
       }
     }
@@ -222,11 +231,8 @@
       background: $color-button-danger-background;
       color: $color-button-danger-text;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-danger-hover-background;
-      }
-
-      &:active:not(:disabled) {
       }
     }
 
@@ -234,15 +240,12 @@
     &--danger-inverse {
       background: $color-button-danger-inverse-background;
       color: $color-button-danger-inverse-text;
-      border: 2px solid $color-button-danger-inverse-border;
+      border: $border-width-base solid $color-button-danger-inverse-border;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-danger-inverse-hover-background;
         color: $color-button-danger-inverse-hover-text;
         border-color: $color-button-danger-inverse-hover-border;
-      }
-
-      &:active:not(:disabled) {
       }
     }
 
@@ -251,11 +254,8 @@
       background: $color-button-success-background;
       color: $color-button-success-text;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-success-hover-background;
-      }
-
-      &:active:not(:disabled) {
       }
     }
 
@@ -263,15 +263,12 @@
     &--success-inverse {
       background: $color-button-success-inverse-background;
       color: $color-button-success-inverse-text;
-      border: 2px solid $color-button-success-inverse-border;
+      border: $border-width-base solid $color-button-success-inverse-border;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(.button--disabled) {
         background: $color-button-success-inverse-hover-background;
         color: $color-button-success-inverse-hover-text;
         border-color: $color-button-success-inverse-hover-border;
-      }
-
-      &:active:not(:disabled) {
       }
     }
 

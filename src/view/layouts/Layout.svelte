@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Navigation from '../features/navigation/Navigation.svelte';
-  import Header from '../components/Header.svelte';
-  import CookieConsent from '../components/CookieConsent.svelte';
-  import CookiePreferences from '../components/CookiePreferences.svelte';
+  import Header from '../components/header/Header.svelte';
+  import CookieConsent from '../components/cookie/consent/CookieConsent.svelte';
+  import CookiePreferences from '../components/cookie/preferences/CookiePreferences.svelte';
   import { authStore } from '../stores/auth.store';
   import { cookieConsentStore } from '../stores/cookie-consent.store';
   import { apiService } from '../services/api.service';

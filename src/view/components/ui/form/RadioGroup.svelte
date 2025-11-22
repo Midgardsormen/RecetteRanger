@@ -103,7 +103,7 @@
 
       &:hover:not(&--disabled) {
         border-color: $brand-primary;
-        background: rgba($brand-primary, 0.05);
+        background: $color-primary-alpha-05;
       }
 
       &--disabled {
@@ -129,7 +129,7 @@
       }
 
       &:focus + .radio-group__circle {
-        box-shadow: 0 0 0 3px rgba($brand-primary, 0.2);
+        box-shadow: 0 0 0 3px $color-primary-alpha-20;
       }
     }
 

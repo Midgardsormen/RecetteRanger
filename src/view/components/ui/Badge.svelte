@@ -1,21 +1,5 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
-
-  type ColorVariant =
-    // Semantic colors
-    | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'
-    // Extended palette
-    | 'red' | 'orange' | 'amber' | 'yellow' | 'lime' | 'green' | 'emerald'
-    | 'teal' | 'cyan' | 'sky' | 'blue' | 'indigo' | 'violet' | 'purple'
-    | 'fuchsia' | 'pink' | 'rose';
-
-  interface Props {
-    variant?: ColorVariant;
-    size?: 'xs' | 'small' | 'medium' | 'large';
-    pill?: boolean;
-    dot?: boolean;
-    children?: Snippet;
-  }
+  import type { BadgeProps } from '../../types';
 
   let {
     variant = 'neutral',
@@ -23,7 +7,7 @@
     pill = false,
     dot = false,
     children
-  }: Props = $props();
+  }: BadgeProps = $props();
 </script>
 
 <span
@@ -59,8 +43,8 @@
 
     // Sizes
     &--xs {
-      padding: 0.125rem 0.375rem; // 2px 6px
-      font-size: 0.625rem; // 10px
+      padding: $spacing-2xs $spacing-xs-plus;
+      font-size: $font-size-2xs;
       border-radius: $radius-sm;
     }
 
@@ -215,8 +199,8 @@
   }
 
   .badge__dot {
-    width: 8px;
-    height: 8px;
+    width: $size-dot;
+    height: $size-dot;
     border-radius: 50%;
     background: currentColor;
     opacity: 0.8;

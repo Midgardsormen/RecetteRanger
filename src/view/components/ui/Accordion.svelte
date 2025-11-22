@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import { ChevronDown } from 'lucide-svelte';
 
   interface Props {
     title: string;
@@ -36,7 +37,7 @@
   >
     <span class="accordion__title">{title}</span>
     <span class="accordion__icon" class:accordion__icon--open={isOpen}>
-      ▼
+      <ChevronDown size={16} />
     </span>
   </button>
 
@@ -72,7 +73,7 @@
     text-align: left;
 
     &:hover {
-      background: rgba($brand-primary, 0.05);
+      background: $color-primary-alpha-05;
     }
 
     &:focus-visible {

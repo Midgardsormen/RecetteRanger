@@ -1,18 +1,5 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
-
-  interface Props {
-    title?: string;
-    subtitle?: string;
-    imageUrl?: string;
-    imagePlaceholder?: string;
-    clickable?: boolean;
-    onclick?: () => void;
-    header?: Snippet;
-    content?: Snippet;
-    footer?: Snippet;
-    children?: Snippet;
-  }
+  import type { CardProps } from '../../types';
 
   let {
     title,
@@ -25,7 +12,7 @@
     content,
     footer,
     children
-  }: Props = $props();
+  }: CardProps = $props();
 </script>
 
 <div
@@ -88,13 +75,13 @@
       cursor: pointer;
 
       &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px $color-card-hover-shadow;
+        transform: $transform-hover-lift-md;
+        box-shadow: $card-hover-shadow;
         border-color: $brand-primary;
       }
 
       &:active {
-        transform: translateY(-2px);
+        transform: $transform-active-lift;
       }
     }
   }
@@ -111,15 +98,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
-
-  .card__placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: $font-size-4xl;
   }
 
   .card__body {
@@ -144,6 +122,6 @@
   .card__footer {
     padding: $spacing-base;
     border-top: 1px solid $color-border-primary;
-    background: rgba($brand-primary, 0.02);
+    background: rgba($brand-primary, $card-footer-background-opacity);
   }
 </style>

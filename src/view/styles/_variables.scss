@@ -243,6 +243,11 @@ $color-background-warning: #fffaf0;
 $color-background-info: #ebf8ff;
 
 // ============================================
+// DOT COLORS
+// ============================================
+$color-dot-default: $color-gray-300;
+
+// ============================================
 // TAG/BADGE SEMANTIC MAPPINGS (exemples d'usage)
 // ============================================
 // Utilise les couleurs ci-dessus pour créer des mappings sémantiques
@@ -456,6 +461,7 @@ $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 $shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+$shadow-dropdown: 0 4px 20px rgba(0, 0, 0, 0.1);
 
 $shadow-decorative-title:
     1px 1px 0 $brand-red,
@@ -487,6 +493,7 @@ $text-shadow-sharp-secondary:
     1px 1px 0 $brand-secondary,
     2px 2px 0 $brand-secondary;
 $text-shadow-soft: 2px 2px 4px rgba(0, 0, 0, 0.3);
+$text-shadow-soft-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
 $text-shadow-glow: 0 0 10px rgba(255, 255, 255, 0.5);
 
 // Focus shadows
@@ -501,6 +508,7 @@ $shadow-focus-success: 0 0 0 3px rgba(72, 187, 120, 0.1);
 $color-white-alpha-10: rgba(255, 255, 255, 0.1);
 $color-white-alpha-15: rgba(255, 255, 255, 0.15);
 $color-white-alpha-20: rgba(255, 255, 255, 0.2);
+$color-white-alpha-30: rgba(255, 255, 255, 0.3);
 $color-white-alpha-90: rgba(255, 255, 255, 0.9);
 
 // Blacks avec opacités (pour shadows et overlays)
@@ -562,17 +570,32 @@ $color-gray-600-alpha-10: rgba($color-gray-600, 0.1);
 $color-gray-600-alpha-20: rgba($color-gray-600, 0.2);
 
 // ============================================
+// SHADOWS (with color variables)
+// ============================================
+// Component-specific shadows that depend on color variables
+$shadow-filter-selected: 0 4px 12px $color-primary-alpha-30;
+$shadow-hero-default: 0 4px 20px $color-primary-alpha-30;
+$shadow-hero-grid: 0 2px 12px $color-black-alpha-08;
+$shadow-image-upload-drag: 0 8px 24px $color-primary-alpha-20;
+$shadow-image-upload-hover: 0 4px 12px $color-primary-alpha-30;
+$shadow-list-item-hover: 0 4px 12px $color-black-alpha-08;
+$shadow-list-item-focus: 0 0 0 3px $color-primary-alpha-20;
+
+// ============================================
 // SPACING
 // ============================================
 $spacing-base: 1rem; // 16px
-$spacing-xs: $spacing-base * 0.25;  // 4px
-$spacing-sm: $spacing-base * 0.5;   // 8px
-$spacing-md: $spacing-base * 0.75;  // 12px
-$spacing-lg: $spacing-base * 1.5;   // 24px
-$spacing-xl: $spacing-base * 2;     // 32px
-$spacing-2xl: $spacing-base * 3;    // 48px
-$spacing-3xl: $spacing-base * 4;    // 64px
-$spacing-4xl: $spacing-base * 5;    // 72px
+$spacing-2xs: $spacing-base * 0.125; // 2px
+$spacing-xs: $spacing-base * 0.25;   // 4px
+$spacing-xs-plus: $spacing-base * 0.375; // 6px
+$spacing-sm: $spacing-base * 0.5;    // 8px
+$spacing-md: $spacing-base * 0.75;   // 12px
+$spacing-lg: $spacing-base * 1.5;    // 24px
+$spacing-xl: $spacing-base * 2;      // 32px
+$spacing-2xl: $spacing-base * 3;     // 48px
+$spacing-3xl: $spacing-base * 4;     // 64px
+$spacing-4xl: $spacing-base * 5;     // 80px
+$spacing-5xl: $spacing-base * 8;     // 128px (for large hero sections)
 // ============================================
 // BORDER RADIUS
 // ============================================
@@ -583,6 +606,13 @@ $radius-lg: 8px;
 $radius-xl: 12px;
 $radius-2xl: 16px;
 $radius-full: 9999px;
+
+// ============================================
+// BORDER WIDTH
+// ============================================
+$border-width-thin: 1px;
+$border-width-base: 2px;
+$border-width-thick: 3px;
 
 // ============================================
 // TRANSITIONS
@@ -605,6 +635,7 @@ $font-family-heading: 'Alegreya Sans', -apple-system, BlinkMacSystemFont, 'Segoe
 $font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
 
 // Font sizes
+$font-size-2xs: 0.625rem;  // 10px
 $font-size-xs: 0.75rem;    // 12px
 $font-size-sm: 0.875rem;   // 14px
 $font-size-base: 1rem;     // 16px
@@ -636,6 +667,13 @@ $line-height-tight: 1.25;
 $line-height-normal: 1.5;
 $line-height-relaxed: 1.75;
 
+// Letter spacing
+$letter-spacing-tight: -0.025em;
+$letter-spacing-normal: 0;
+$letter-spacing-wide: 0.025em;
+$letter-spacing-wider: 0.05em;
+$letter-spacing-widest: 0.1em;
+
 // ============================================
 // BREAKPOINTS (Responsive)
 // ============================================
@@ -656,8 +694,27 @@ $z-index-sidebar: 1035;
 $z-index-header: 1040;
 $z-index-modal-backdrop: 1040;
 $z-index-modal: 1050;
+$z-index-drawer-header: 10; // Relative z-index within drawer
 $z-index-popover: 1060;
 $z-index-tooltip: 1070;
+$z-index-cookie-banner: 1080; // Above modals and tooltips
+
+// ============================================
+// SIZES (common component sizes)
+// ============================================
+// Dot sizes
+$size-dot-xs: 6px;
+$size-dot-sm: 8px;
+$size-dot-md: 10px;
+$size-dot-lg: 12px;
+$size-dot: $size-dot-sm;  // Default (alias for backwards compatibility)
+
+// Icon sizes
+$size-icon-sm: 16px;      // Small icon
+$size-icon-md: 24px;      // Medium icon
+$size-icon-md-plus: 28px; // Medium+ icon (IconText medium)
+$size-icon-lg: 32px;      // Large icon
+$size-icon-xl: 36px;      // Extra large icon (IconText large)
 
 // ============================================
 // MAX WIDTHS
@@ -689,6 +746,53 @@ $opacity-70: 0.7;
 $opacity-80: 0.8;
 $opacity-90: 0.9;
 $opacity-100: 1;
+
+// ============================================
+// TRANSFORMS
+// ============================================
+$transform-hover-lift-sm: translateY(-2px);
+$transform-hover-lift-md: translateY(-4px);
+$transform-hover-lift-lg: translateY(-8px);
+$transform-active-lift: translateY(-2px);
+
+// Scale transforms
+$transform-scale-hover: scale(1.05);
+$transform-scale-active: scale(0.95);
+
+// ============================================
+// OUTLINE
+// ============================================
+$outline-width: 2px;
+$outline-offset: 2px;
+
+// ============================================
+// CARD SPECIFIC
+// ============================================
+$card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+$card-footer-background-opacity: 0.02;
+
+// ============================================
+// DRAWER / MODAL SPECIFIC
+// ============================================
+$drawer-header-min-height: 72px;
+$drawer-close-button-size: 40px;
+$drawer-scrollbar-width: 8px;
+$drawer-shadow-left: 4px 0 24px;
+$drawer-shadow-right: -4px 0 24px;
+
+// ============================================
+// LIST ITEM SPECIFIC
+// ============================================
+$list-item-checkbox-size: 20px;
+$list-item-thumbnail-max-width: 150px;
+$list-item-thumbnail-max-height: 65px;
+$list-item-thumbnail-max-width-sm: 120px;
+$list-item-thumbnail-max-height-sm: 50px;
+$list-item-image-max-width: 150px;
+$list-item-image-max-height: 50px;
+$list-item-image-max-width-sm: 120px;
+$list-item-image-max-height-sm: 40px;
+$list-item-title-min-height: 2.8em;
 
 // ============================================
 // MIXINS
