@@ -1,6 +1,6 @@
 import { Controller, Get, Res, UseGuards, Request, Param, NotFoundException, Query } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
+import { JwtAuthRedirectGuard } from '../../api/auth/guards/jwt-auth-redirect.guard';
 import { RecipeService } from '../../api/recipe/recipe.service';
 import { SvelteRenderService } from '../../services/svelte-render.service';
 
@@ -12,7 +12,7 @@ export class RecettesController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRedirectGuard)
   async getRecettesPage(@Request() req, @Query('ownerId') ownerId: string, @Res() res: Response) {
     // Récupérer les recettes pour l'utilisateur connecté en utilisant le service de l'API
     // Si ownerId est fourni, filtrer par propriétaire, sinon afficher toutes les recettes accessibles
@@ -35,7 +35,7 @@ export class RecettesController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRedirectGuard)
   async getRecetteDetailPage(@Request() req, @Param('id') id: string, @Res() res: Response) {
     // Récupérer la recette en utilisant le service de l'API
     const recipe = await this.recipeService.findOne(id);

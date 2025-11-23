@@ -1,6 +1,6 @@
 import { Controller, Get, Res, UseGuards, Request, Param, ForbiddenException } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
+import { JwtAuthRedirectGuard } from '../../api/auth/guards/jwt-auth-redirect.guard';
 import { UserService } from '../../api/user/user.service';
 import { SvelteRenderService } from '../../services/svelte-render.service';
 import { UserRole } from '../../types/user.types';
@@ -13,7 +13,7 @@ export class UsersController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRedirectGuard)
   async getUsersPage(@Request() req, @Res() res: Response) {
     // Vérifier que l'utilisateur est admin
     if (req.user.role !== UserRole.ADMIN) {
@@ -34,7 +34,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRedirectGuard)
   async getUserProfilePage(@Request() req, @Param('id') id: string, @Res() res: Response) {
     // Vérifier que l'utilisateur est admin
     if (req.user.role !== UserRole.ADMIN) {

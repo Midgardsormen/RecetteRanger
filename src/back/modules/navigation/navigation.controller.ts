@@ -1,8 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { NavigationService } from './navigation.service';
 import { NavigationItemDto } from './dto/navigation-item.dto';
+import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
 
 @Controller('api/navigation')
+@UseGuards(JwtAuthGuard) // Mode privé : navigation nécessite authentification
 export class NavigationController {
   constructor(private readonly navigationService: NavigationService) {}
 

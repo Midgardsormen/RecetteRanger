@@ -14,6 +14,7 @@ import { ShoppingListModule } from './api/shopping-list/shopping-list.module';
 import { UploadModule } from './api/upload/upload.module';
 import { StoreModule } from './api/store/store.module';
 import { CsrfMiddleware } from './shared/middleware/csrf.middleware';
+import { RobotsHeaderMiddleware } from './shared/middleware/robots-header.middleware';
 
 // Modules SSR pour les pages
 import { HomeModule } from './modules/home/home.module';
@@ -75,6 +76,12 @@ export class AppModule implements NestModule {
     // sauf GET, HEAD, OPTIONS (gérés automatiquement par csrf-csrf)
     consumer
       .apply(CsrfMiddleware)
+      .forRoutes('*');
+
+    // Appliquer le header X-Robots-Tag sur toutes les routes
+    // pour empêcher l'indexation par les moteurs de recherche
+    consumer
+      .apply(RobotsHeaderMiddleware)
       .forRoutes('*');
   }
 }

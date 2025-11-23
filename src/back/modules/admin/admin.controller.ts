@@ -1,6 +1,6 @@
 import { Controller, Get, Res, UseGuards, Request, ForbiddenException } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
+import { JwtAuthRedirectGuard } from '../../api/auth/guards/jwt-auth-redirect.guard';
 import { SvelteRenderService } from '../../services/svelte-render.service';
 import { UserRole } from '../../types/user.types';
 
@@ -11,7 +11,7 @@ export class AdminController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRedirectGuard)
   async getAdminPage(@Request() req, @Res() res: Response) {
     // Vérifier que l'utilisateur est admin
     if (req.user.role !== UserRole.ADMIN) {

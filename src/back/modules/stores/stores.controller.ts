@@ -1,6 +1,6 @@
 import { Controller, Get, Res, UseGuards, Request } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
+import { JwtAuthRedirectGuard } from '../../api/auth/guards/jwt-auth-redirect.guard';
 import { StoreService } from '../../api/store/store.service';
 import { SvelteRenderService } from '../../services/svelte-render.service';
 
@@ -12,7 +12,7 @@ export class StoresController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRedirectGuard)
   async getStoresPage(@Request() req, @Res() res: Response) {
     // Récupérer les enseignes en utilisant le service de l'API
     const result = await this.storeService.findAll({ limit: 1000, page: 1 });

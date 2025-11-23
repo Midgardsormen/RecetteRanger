@@ -174,6 +174,39 @@ ALLOWED_ORIGINS="https://votredomaine.com,https://www.votredomaine.com"
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
+## ✅ Mode Privé / Non-référencé
+
+### Configuration actuelle
+
+**Protection anti-indexation (triple couche)**
+- [x] `public/robots.txt` : bloque tous les robots (`User-agent: * / Disallow: /`)
+- [x] Meta robots dans `<head>` : `<meta name="robots" content="noindex, nofollow">`
+  - `src/view/index.html:6` (template principal)
+  - `src/back/services/svelte-render.service.ts:23` (fallback)
+- [x] Header HTTP `X-Robots-Tag: noindex, nofollow` sur toutes les routes
+  - `src/back/shared/middleware/robots-header.middleware.ts`
+  - Appliqué globalement dans `app.module.ts:84`
+- [x] Pas de sitemap généré
+
+**Protection par authentification (UX optimisée)**
+- [x] Pages SSR : `@UseGuards(JwtAuthRedirectGuard)` → redirige vers `/login` (302)
+  - `src/back/api/auth/guards/jwt-auth-redirect.guard.ts`
+  - Home, recipes, ingredients, stores, plannings, shopping-lists, profile, users, admin
+- [x] API REST : `@UseGuards(JwtAuthGuard)` → renvoie 401
+  - `/api/ingredients/*`, `/api/recipes/*`, `/api/stores/*`, etc.
+- [x] API navigation protégée (non utilisée par pages publiques)
+- [x] Routes publiques (minimum strict) :
+  - `/login`, `/register` (auth nécessaire)
+  - `/auth/csrf-token`, `/auth/logout` (endpoints auth)
+  - `/privacy-policy`, `/legal-notice` (obligation légale RGPD)
+
+**Options avancées (non implémentées)**
+- [ ] Basic Auth au niveau hébergeur (Render/Heroku)
+- [ ] Whitelist IP (si besoin de restreindre davantage)
+- [ ] Authentification à deux facteurs (2FA)
+
+Voir détails complets dans `PRIVATE_MODE.md`.
+
 ## ✅ Upload de fichiers
 
 ### Configuration actuelle

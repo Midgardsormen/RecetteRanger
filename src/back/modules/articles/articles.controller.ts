@@ -1,6 +1,6 @@
 import { Controller, Get, Res, UseGuards, Request } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
+import { JwtAuthRedirectGuard } from '../../api/auth/guards/jwt-auth-redirect.guard';
 import { ArticlesService } from './articles.service';
 import { SvelteRenderService } from '../../services/svelte-render.service';
 
@@ -12,7 +12,7 @@ export class ArticlesController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRedirectGuard)
   async getArticlesPage(@Request() req, @Res() res: Response) {
     // Récupérer les données de tous les articles pour l'utilisateur connecté
     const articles = await this.articlesService.getArticlesForUser(req.user.id);

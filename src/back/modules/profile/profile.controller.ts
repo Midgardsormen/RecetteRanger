@@ -1,11 +1,11 @@
 import { Controller, Get, Res, UseGuards, Request, Param } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
-import { OptionalJwtAuthGuard } from '../../api/auth/guards/optional-jwt-auth.guard';
+import { JwtAuthRedirectGuard } from '../../api/auth/guards/jwt-auth-redirect.guard';
 import { ProfileService } from './profile.service';
 import { SvelteRenderService } from '../../services/svelte-render.service';
 
 @Controller('profile')
+@UseGuards(JwtAuthRedirectGuard) // Mode privé : profils accessibles uniquement si authentifié
 export class ProfileController {
   constructor(
     private readonly profileService: ProfileService,
@@ -14,7 +14,6 @@ export class ProfileController {
 
   // Route pour mon profil (/profile)
   @Get()
-  @UseGuards(JwtAuthGuard)
   async getMyProfilePage(@Request() req, @Res() res: Response) {
     // Récupérer les données de l'utilisateur connecté
     const user = await this.profileService.getUserProfile(req.user.id);
@@ -32,17 +31,16 @@ export class ProfileController {
 
   // Route pour le profil d'un utilisateur (/profile/:id)
   @Get(':id')
-  @UseGuards(OptionalJwtAuthGuard)
   async getUserProfilePage(@Request() req, @Param('id') userId: string, @Res() res: Response) {
-    const currentUser = req.user || null;
-    const isOwnProfile = currentUser && currentUser.id === userId;
+    const currentUser = req.user; // Garanti d'exister grâce au guard au niveau controller
+    const isOwnProfile = currentUser.id === userId;
 
     // Si c'est mon propre profil, rediriger vers /profile
     if (isOwnProfile) {
       return res.redirect('/profile');
     }
 
-    // Sinon, charger le profil public
+    // Sinon, charger le profil d'un autre utilisateur (mode privé : nécessite auth)
     const html = await this.svelteRenderService.render('Profile', {
       user: currentUser,
       profileUserId: userId,

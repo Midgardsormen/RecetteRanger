@@ -1,0 +1,7 @@
+# RecetteRanger - Application privée
+# Interdiction d'indexation pour tous les robots
+
+User-agent: *
+Disallow: /
+
+# Pas de sitemap (application privée non-référencée)

@@ -1,6 +1,6 @@
 import { Controller, Get, Res, UseGuards, Request, Param } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../../api/auth/guards/jwt-auth.guard';
+import { JwtAuthRedirectGuard } from '../../api/auth/guards/jwt-auth-redirect.guard';
 import { SvelteRenderService } from '../../services/svelte-render.service';
 
 @Controller('shopping-lists')
@@ -10,7 +10,7 @@ export class ShoppingListsController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRedirectGuard)
   async getShoppingListsPage(@Request() req, @Res() res: Response) {
     // Rendre la page liste des listes de courses
     const html = await this.svelteRenderService.render('ShoppingLists', {
@@ -21,7 +21,7 @@ export class ShoppingListsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRedirectGuard)
   async getShoppingListDetailPage(@Param('id') id: string, @Request() req, @Res() res: Response) {
     // Rendre la page de détail d'une liste
     const html = await this.svelteRenderService.render('ShoppingListDetail', {
