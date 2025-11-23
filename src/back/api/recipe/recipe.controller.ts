@@ -22,17 +22,11 @@ export class RecipeController {
   })
   @ApiResponse({ status: 400, description: 'Données invalides' })
   async create(@Request() req, @Body() createRecipeDto: CreateRecipeDto) {
-    try {
-      // Ajouter l'ID de l'utilisateur connecté
-      const result = await this.recipeService.create({
-        ...createRecipeDto,
-        ownerId: req.user.id
-      });
-      return result;
-    } catch (error) {
-      console.error('Error creating recipe:', error);
-      throw error;
-    }
+    // Le service gère déjà les erreurs avec logAndThrow
+    return this.recipeService.create({
+      ...createRecipeDto,
+      ownerId: req.user.id
+    });
   }
 
   @Post('search')

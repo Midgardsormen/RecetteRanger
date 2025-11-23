@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { CloudinaryService } from '../../services/cloudinary.service';
+import { logError } from '../../shared/utils/logger.util';
 
 export interface ProcessedImage {
   filename: string;
@@ -21,7 +22,70 @@ export class UploadService {
   constructor(private readonly cloudinaryService: CloudinaryService) {}
 
   /**
-   * Valide le fichier uploadé
+   * Vérifie les magic bytes pour détecter le vrai type de fichier
+   * Protection contre le spoofing de mimetype
+   */
+  private detectMimeFromBuffer(buf: Buffer): 'image/jpeg' | 'image/png' | 'image/webp' | null {
+    if (buf.length < 12) return null;
+
+    // JPEG: FF D8 FF
+    if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) {
+      return 'image/jpeg';
+    }
+
+    // PNG: 89 50 4E 47 0D 0A 1A 0A
+    const pngSig = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+    if (pngSig.every((b, i) => buf[i] === b)) {
+      return 'image/png';
+    }
+
+    // WebP: "RIFF" (bytes 0..3) + "WEBP" (bytes 8..11)
+    const riff = buf.toString('ascii', 0, 4);
+    const webp = buf.toString('ascii', 8, 12);
+    if (riff === 'RIFF' && webp === 'WEBP') {
+      return 'image/webp';
+    }
+
+    return null;
+  }
+
+  /**
+   * Upload une image d'ingrédient
+   * La validation de taille et mimetype est faite par ParseFilePipe dans le controller
+   * Ici on fait la validation magic bytes (défense en profondeur)
+   */
+  async uploadIngredientImage(file: Express.Multer.File): Promise<{
+    thumbnail: ProcessedImage;
+    medium: ProcessedImage;
+    original: ProcessedImage;
+  }> {
+    const MAX_SIZE = 10 * 1024 * 1024;
+
+    if (!file) {
+      throw new BadRequestException('Fichier manquant.');
+    }
+
+    if (file.size > MAX_SIZE) {
+      throw new BadRequestException('Fichier trop volumineux (max 10MB).');
+    }
+
+    // Validation magic bytes : vrai contenu du fichier
+    const detected = this.detectMimeFromBuffer(file.buffer);
+    if (!detected) {
+      throw new BadRequestException('Fichier non reconnu comme une image valide.');
+    }
+
+    // Défense en profondeur : vérifier cohérence mimetype déclaré vs détecté
+    if (file.mimetype !== detected) {
+      throw new BadRequestException('Type de fichier invalide (mimetype falsifié).');
+    }
+
+    return this.processIngredientImage(file);
+  }
+
+  /**
+   * Valide le fichier uploadé (méthode legacy, à supprimer si non utilisée ailleurs)
+   * @deprecated Use uploadIngredientImage instead
    */
   validateImageFile(file: any): void {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -38,20 +102,35 @@ export class UploadService {
         'Fichier trop volumineux. Taille maximale : 10MB.'
       );
     }
+
+    if (file.buffer) {
+      const detectedMimeType = this.detectMimeFromBuffer(file.buffer);
+      if (!detectedMimeType) {
+        throw new BadRequestException(
+          'Fichier invalide ou corrompu. Le contenu ne correspond pas à une image.'
+        );
+      }
+
+      if (detectedMimeType !== file.mimetype) {
+        throw new BadRequestException(
+          `Type de fichier incohérent. Déclaré: ${file.mimetype}, Détecté: ${detectedMimeType}`
+        );
+      }
+    }
   }
 
   /**
    * Process une image et l'upload sur Cloudinary
+   * IMPORTANT : Cette méthode ne fait pas de validation, elle doit être appelée
+   * uniquement depuis uploadIngredientImage qui fait les validations
    */
-  async processIngredientImage(
+  private async processIngredientImage(
     file: any
   ): Promise<{
     thumbnail: ProcessedImage;
     medium: ProcessedImage;
     original: ProcessedImage;
   }> {
-    this.validateImageFile(file);
-
     try {
       // Upload l'image sur Cloudinary
       const result = await this.cloudinaryService.uploadImage(
@@ -114,12 +193,15 @@ export class UploadService {
 
   /**
    * Supprime une image de Cloudinary
+   * Note: Cette opération est "best effort" - les erreurs sont loggées mais pas relancées
+   * car la suppression d'image est généralement une opération de nettoyage non-critique
    */
   async deleteIngredientImage(publicId: string): Promise<void> {
     try {
       await this.cloudinaryService.deleteImage(publicId);
     } catch (error) {
-      console.error(`Erreur lors de la suppression de l'image: ${error.message}`);
+      // Log mais ne rethrow pas : la suppression d'image est best-effort
+      logError('Erreur lors de la suppression de l\'image', error);
     }
   }
 

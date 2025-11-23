@@ -4,7 +4,9 @@ import {
   UploadedFile,
   UseInterceptors,
   UseGuards,
-  BadRequestException,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -16,15 +18,27 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post('ingredient-image')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('file'))
   async uploadIngredientImage(
-    @UploadedFile() file: any
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: true,
+        validators: [
+          // Validation 1: Taille max 10MB
+          new MaxFileSizeValidator({
+            maxSize: 10 * 1024 * 1024,
+          }),
+          // Validation 2: Type de fichier (mimetype complet, pas "image/*")
+          new FileTypeValidator({
+            fileType: /^image\/(jpeg|png|webp)$/,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
   ) {
-    if (!file) {
-      throw new BadRequestException('Aucun fichier fourni');
-    }
-
-    const result = await this.uploadService.processIngredientImage(file);
+    // Validation 3: Magic bytes + traitement
+    const result = await this.uploadService.uploadIngredientImage(file);
 
     return {
       message: 'Image uploadée et traitée avec succès',

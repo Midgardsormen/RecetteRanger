@@ -1,4 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { ThrottlerModule, ThrottlerGuard, minutes } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { SvelteRenderService } from './services/svelte-render.service';
 import { NavigationModule } from './modules/navigation/navigation.module';
@@ -11,6 +13,7 @@ import { MealPlanModule } from './api/meal-plan/meal-plan.module';
 import { ShoppingListModule } from './api/shopping-list/shopping-list.module';
 import { UploadModule } from './api/upload/upload.module';
 import { StoreModule } from './api/store/store.module';
+import { CsrfMiddleware } from './shared/middleware/csrf.middleware';
 
 // Modules SSR pour les pages
 import { HomeModule } from './modules/home/home.module';
@@ -26,6 +29,14 @@ import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
+    // Rate limiting global
+    ThrottlerModule.forRoot([
+      {
+        name: 'default',
+        ttl: minutes(1), // 1 minute
+        limit: 60, // 60 requêtes par minute par IP (global)
+      },
+    ]),
     PrismaModule,
     AuthModule,
     NavigationModule,
@@ -49,6 +60,21 @@ import { AdminModule } from './modules/admin/admin.module';
     AdminModule,
   ],
   controllers: [AppController],
-  providers: [SvelteRenderService],
+  providers: [
+    SvelteRenderService,
+    // Activer le throttler globalement
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Appliquer le middleware CSRF sur toutes les routes API
+    // sauf GET, HEAD, OPTIONS (gérés automatiquement par csrf-csrf)
+    consumer
+      .apply(CsrfMiddleware)
+      .forRoutes('*');
+  }
+}

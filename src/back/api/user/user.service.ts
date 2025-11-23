@@ -131,10 +131,6 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     await this.findOne(id); // Vérifie que l'utilisateur existe
 
-    console.log('[UserService.update] Received update for user:', id);
-    console.log('[UserService.update] UpdateUserDto:', updateUserDto);
-    console.log('[UserService.update] avatarUrl in DTO:', updateUserDto.avatarUrl);
-
     // Préparer les données de mise à jour
     const { password, ...otherData } = updateUserDto;
     const updateData: any = { ...otherData };
@@ -143,9 +139,6 @@ export class UserService {
     if (password) {
       updateData.passwordHash = await bcrypt.hash(password, 10);
     }
-
-    console.log('[UserService.update] Data being sent to Prisma:', updateData);
-    console.log('[UserService.update] avatarUrl in updateData:', updateData.avatarUrl);
 
     const updatedUser = await this.prisma.user.update({
       where: { id },
@@ -163,9 +156,6 @@ export class UserService {
         updatedAt: true,
       },
     });
-
-    console.log('[UserService.update] User after update from DB:', updatedUser);
-    console.log('[UserService.update] avatarUrl after update:', updatedUser.avatarUrl);
 
     return updatedUser;
   }

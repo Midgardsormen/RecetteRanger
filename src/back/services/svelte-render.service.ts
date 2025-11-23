@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { logError } from '../shared/utils/logger.util';
 
 @Injectable()
 export class SvelteRenderService {
@@ -51,7 +52,7 @@ export class SvelteRenderService {
       // Injecter dans le template
       return this.injectHtml(body, null, head, componentName, props);
     } catch (error) {
-      console.error('SSR rendering error:', error);
+      logError('SSR rendering error', error);
       return this.renderDev(componentName, props);
     }
   }

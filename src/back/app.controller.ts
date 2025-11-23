@@ -1,9 +1,11 @@
 import { Controller, Get, Res, Request } from '@nestjs/common';
 import { Response } from 'express';
+import { SkipThrottle } from '@nestjs/throttler';
 import { SvelteRenderService } from './services/svelte-render.service';
 import { HomeService } from './modules/home/home.service';
 
 @Controller()
+@SkipThrottle() // Pages SSR publiques : pas de rate limiting
 export class AppController {
   constructor(
     private readonly svelteRenderService: SvelteRenderService,

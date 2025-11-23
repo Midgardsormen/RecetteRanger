@@ -5,6 +5,7 @@
 
 import Cropper from 'cropperjs';
 import { IMAGE_UPLOAD_MESSAGES, IMAGE_UPLOAD_API, CROPPER_CONFIG } from './ImageUpload.config';
+import { apiService } from '../../../services/api.service';
 
 // ============================================
 // FILE VALIDATION
@@ -109,22 +110,19 @@ export function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 
 /**
  * Upload image blob to server
+ * Utilise apiService.uploadFormData pour inclure le token CSRF
  */
 export async function uploadImage(blob: Blob, filename: string): Promise<any> {
   const formData = new FormData();
-  formData.append('image', blob, filename);
+  // Le backend attend le champ 'file' (cf. FileInterceptor('file') dans le controller)
+  formData.append('file', blob, filename);
 
-  const response = await fetch(IMAGE_UPLOAD_API.uploadEndpoint, {
-    method: IMAGE_UPLOAD_API.method,
-    body: formData,
-    credentials: IMAGE_UPLOAD_API.credentials,
-  });
-
-  if (!response.ok) {
+  try {
+    // Utilise la méthode uploadFormData qui gère automatiquement le CSRF
+    return await apiService.uploadFormData(IMAGE_UPLOAD_API.uploadEndpoint, formData);
+  } catch (error) {
     throw new Error(IMAGE_UPLOAD_MESSAGES.errorUpload);
   }
-
-  return response.json();
 }
 
 // ============================================

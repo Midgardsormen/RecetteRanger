@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { NavigationItemDto } from './dto/navigation-item.dto';
+import { logError } from '../../shared/utils/logger.util';
 
 @Injectable()
 export class NavigationService {
@@ -18,7 +19,7 @@ export class NavigationService {
       const config = JSON.parse(configData);
       this.navigationItems = config.items;
     } catch (error) {
-      console.error('Failed to load navigation config:', error);
+      logError('Failed to load navigation config', error);
       // Fallback to default navigation
       this.navigationItems = [
         { href: '/', label: 'Home', icon: '🏠', order: 1, visible: true },

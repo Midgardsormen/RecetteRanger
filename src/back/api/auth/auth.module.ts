@@ -12,7 +12,7 @@ import { PrismaModule } from '../../shared/prisma/prisma.module';
     PassportModule,
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET || 'votre-secret-jwt-tres-securise-changez-moi',
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '7d' }, // Token valide 7 jours
     }),
   ],

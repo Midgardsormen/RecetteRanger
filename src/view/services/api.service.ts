@@ -2,6 +2,9 @@ import { authStore } from '../stores/auth.store';
 
 const API_BASE_URL = 'http://localhost:3000';
 
+// Store pour le token CSRF
+let csrfToken: string | null = null;
+
 interface LoginData {
   identifier: string;
   password: string;
@@ -29,9 +32,32 @@ interface AuthResponse {
 
 class ApiService {
   private getHeaders(): HeadersInit {
-    return {
+    const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
+
+    // Ajouter le token CSRF si disponible pour les requêtes mutantes
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken;
+    }
+
+    return headers;
+  }
+
+  // Récupérer le token CSRF depuis le serveur
+  async fetchCsrfToken(): Promise<void> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/csrf-token`, {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        csrfToken = data.csrfToken;
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération du token CSRF:', error);
+    }
   }
 
   async login(data: LoginData): Promise<AuthResponse> {
@@ -409,6 +435,56 @@ class ApiService {
   async getStore(id: string) {
     return this.authenticatedFetch(`/api/stores/${id}`);
   }
+
+  // ===== Upload API =====
+
+  /**
+   * Upload FormData avec protection CSRF
+   * À utiliser pour tous les uploads de fichiers
+   */
+  async uploadFormData(url: string, formData: FormData): Promise<any> {
+    // S'assurer que le token CSRF est disponible
+    if (!csrfToken) {
+      await this.fetchCsrfToken();
+    }
+
+    const headers: HeadersInit = {};
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken;
+    }
+    // NE PAS mettre Content-Type : le browser ajoutera le boundary automatiquement
+
+    const response = await fetch(`${API_BASE_URL}${url}`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include',
+      headers,
+    });
+
+    if (response.status === 401) {
+      authStore.logout();
+      throw new Error('Session expirée, veuillez vous reconnecter');
+    }
+
+    if (response.status === 403) {
+      // Potentiellement token CSRF invalide, réessayer une fois
+      await this.fetchCsrfToken();
+      throw new Error('Token CSRF invalide. Veuillez réessayer.');
+    }
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Erreur lors de l\'upload');
+    }
+
+    return response.json();
+  }
 }
 
 export const apiService = new ApiService();
+
+// Initialiser le token CSRF au démarrage de l'application
+// Ceci doit être appelé avant toute requête mutante
+if (typeof window !== 'undefined') {
+  apiService.fetchCsrfToken();
+}

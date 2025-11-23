@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { logAndThrow } from '../../shared/utils/logger.util';
 
 @Injectable()
 export class RecipeService {
@@ -48,8 +49,7 @@ export class RecipeService {
       console.log('Recipe created successfully:', result.id);
       return result;
     } catch (error) {
-      console.error('Error creating recipe in service:', error);
-      throw error;
+      logAndThrow('Error creating recipe in service', error);
     }
   }
 
