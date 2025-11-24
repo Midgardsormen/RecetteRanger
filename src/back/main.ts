@@ -66,8 +66,9 @@ async function bootstrap() {
     ],
     scriptSrc: [
       "'self'",
+      "'unsafe-inline'", // Nécessaire pour window.__INITIAL_DATA__
       "https://cdnjs.cloudflare.com", // CropperJS
-      ...(process.env.NODE_ENV === 'development' ? ["http://localhost:5173", "'unsafe-inline'"] : [])
+      ...(process.env.NODE_ENV === 'development' ? ["http://localhost:5173"] : [])
     ],
     connectSrc: [
       "'self'",

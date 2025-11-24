@@ -36,7 +36,7 @@ export class SvelteRenderService {
     // Charger le manifest Vite en production
     if (!this.isDev) {
       try {
-        const manifestPath = join(__dirname, '../../client/.vite/manifest.json');
+        const manifestPath = join(__dirname, '../../client/manifest.json');
         this.manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
       } catch (error) {
         logError('Failed to load Vite manifest', error);
@@ -68,8 +68,18 @@ export class SvelteRenderService {
 
     // Trouver l'entrée principale dans le manifest
     let entryScript = '/assets/main.js'; // Fallback
-    if (this.manifest && this.manifest['src/view/entry-client.ts']) {
-      entryScript = '/' + this.manifest['src/view/entry-client.ts'].file;
+    if (this.manifest) {
+      // Le manifest Vite a cette structure: { "src/view/entry-client.ts": { "file": "assets/main-ABC123.js", ... } }
+      const mainEntry = this.manifest['src/view/entry-client.ts'];
+      if (mainEntry && mainEntry.file) {
+        entryScript = '/' + mainEntry.file;
+        console.log('Using manifest entry:', entryScript);
+      } else {
+        console.warn('Manifest loaded but no entry found for src/view/entry-client.ts');
+        console.log('Available manifest keys:', Object.keys(this.manifest));
+      }
+    } else {
+      console.warn('No manifest loaded, using fallback script path');
     }
 
     return this.template

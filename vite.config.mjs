@@ -15,7 +15,7 @@ export default defineConfig({
   ],
   build: {
     outDir: 'dist/client',
-    manifest: true,
+    manifest: 'manifest.json',
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/view/entry-client.ts')
