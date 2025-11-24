@@ -7,6 +7,7 @@ import { logError } from '../shared/utils/logger.util';
 export class SvelteRenderService {
   private template: string;
   private isDev = process.env.NODE_ENV !== 'production';
+  private manifest: any = null;
 
   constructor() {
     // Charger le template HTML
@@ -31,6 +32,16 @@ export class SvelteRenderService {
 </body>
 </html>`;
     }
+
+    // Charger le manifest Vite en production
+    if (!this.isDev) {
+      try {
+        const manifestPath = join(__dirname, '../../client/.vite/manifest.json');
+        this.manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+      } catch (error) {
+        logError('Failed to load Vite manifest', error);
+      }
+    }
   }
 
   async render(componentName: string, props: any = {}): Promise<string> {
@@ -40,22 +51,36 @@ export class SvelteRenderService {
         return this.renderDev(componentName, props);
       }
 
-      // En production, charger le composant compilé
-      const componentPath = join(__dirname, `../../client/${componentName}.js`);
-      const componentModule = await import(componentPath);
-      const component = componentModule.default;
-
-      // Rendre le composant côté serveur avec l'API Svelte 5
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { render: svelteRender } = require('svelte/server');
-      const { body, head } = svelteRender(component, { props });
-
-      // Injecter dans le template
-      return this.injectHtml(body, null, head, componentName, props);
+      // En production, on utilise uniquement le client-side rendering
+      // car Vite génère les composants avec des noms hashés
+      return this.renderProd(componentName, props);
     } catch (error) {
       logError('SSR rendering error', error);
       return this.renderDev(componentName, props);
     }
+  }
+
+  private async renderProd(componentName: string, props: any): Promise<string> {
+    const initialData = {
+      pageName: componentName,
+      props: props
+    };
+
+    // Trouver l'entrée principale dans le manifest
+    let entryScript = '/assets/main.js'; // Fallback
+    if (this.manifest && this.manifest['src/view/entry-client.ts']) {
+      entryScript = '/' + this.manifest['src/view/entry-client.ts'].file;
+    }
+
+    return this.template
+      .replace('<!--head-->', '')
+      .replace('<!--app-->', '<div id="app"></div>')
+      .replace('<!--scripts-->', `
+        <script>
+          window.__INITIAL_DATA__ = ${JSON.stringify(initialData)};
+        </script>
+        <script type="module" src="${entryScript}"></script>
+      `);
   }
 
   private async renderDev(componentName: string, props: any): Promise<string> {
