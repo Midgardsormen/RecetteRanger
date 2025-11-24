@@ -102,6 +102,8 @@ async function bootstrap() {
     transform: true, // Transforme automatiquement les types
   }));
 
+  const port = process.env.PORT || 3000;
+
   // Configuration Swagger - UNIQUEMENT en développement
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
@@ -137,7 +139,6 @@ async function bootstrap() {
     prefix: '/',
   });
 
-  const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`🚀 Application is running on: http://localhost:${port}`);
 }
