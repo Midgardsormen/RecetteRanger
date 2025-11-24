@@ -133,7 +133,32 @@ async function bootstrap() {
   // Servir les fichiers statiques du client
   // Les assets Vite sont dans dist/client/assets/, donc on sert dist/client/ sans préfixe
   // pour que /assets/main-xxx.js pointe vers dist/client/assets/main-xxx.js
-  app.useStaticAssets(join(__dirname, '../client'));
+  const clientPath = join(__dirname, '../client');
+  console.log('[STATIC FILES] Client path:', clientPath);
+
+  // Debug: lister le contenu du répertoire client
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      const fs = require('fs');
+      if (fs.existsSync(clientPath)) {
+        console.log('[STATIC FILES] Contents of client dir:', fs.readdirSync(clientPath));
+        const assetsPath = join(clientPath, 'assets');
+        if (fs.existsSync(assetsPath)) {
+          const assetFiles = fs.readdirSync(assetsPath);
+          console.log('[STATIC FILES] Contents of assets dir:', assetFiles.slice(0, 10)); // Premiers 10 fichiers
+          console.log('[STATIC FILES] Total assets files:', assetFiles.length);
+        } else {
+          console.error('[STATIC FILES] Assets directory does not exist:', assetsPath);
+        }
+      } else {
+        console.error('[STATIC FILES] Client directory does not exist:', clientPath);
+      }
+    } catch (error) {
+      console.error('[STATIC FILES] Error listing directories:', error);
+    }
+  }
+
+  app.useStaticAssets(clientPath);
 
   // Servir les fichiers uploadés (depuis dist/ vers public/)
   app.useStaticAssets(join(__dirname, '../public'), {
