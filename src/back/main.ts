@@ -131,9 +131,9 @@ async function bootstrap() {
   }
 
   // Servir les fichiers statiques du client
-  app.useStaticAssets(join(__dirname, '../client'), {
-    prefix: '/assets/',
-  });
+  // Les assets Vite sont dans dist/client/assets/, donc on sert dist/client/ sans préfixe
+  // pour que /assets/main-xxx.js pointe vers dist/client/assets/main-xxx.js
+  app.useStaticAssets(join(__dirname, '../client'));
 
   // Servir les fichiers uploadés (depuis dist/ vers public/)
   app.useStaticAssets(join(__dirname, '../public'), {
