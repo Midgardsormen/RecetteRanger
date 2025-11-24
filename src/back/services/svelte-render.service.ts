@@ -35,7 +35,8 @@ export class SvelteRenderService {
 
     // Charger le manifest Vite en production
     if (!this.isDev) {
-      const manifestPath = join(__dirname, '../../client/manifest.json');
+      // __dirname est dans dist/services, le manifest est dans dist/client
+      const manifestPath = join(__dirname, '../client/manifest.json');
       try {
         console.log('Attempting to load manifest from:', manifestPath);
         console.log('__dirname is:', __dirname);
@@ -72,7 +73,8 @@ export class SvelteRenderService {
 
     // Si le manifest n'est pas chargé, essayer de le charger maintenant
     if (!this.manifest) {
-      const manifestPath = join(__dirname, '../../client/manifest.json');
+      // __dirname est dans dist/services, le manifest est dans dist/client
+      const manifestPath = join(__dirname, '../client/manifest.json');
       console.log('[MANIFEST DEBUG] Attempting to load manifest from:', manifestPath);
       console.log('[MANIFEST DEBUG] __dirname is:', __dirname);
       try {
@@ -83,7 +85,7 @@ export class SvelteRenderService {
         } else {
           console.error('[MANIFEST DEBUG] Manifest file does not exist at:', manifestPath);
           // Lister le contenu du répertoire
-          const clientDir = join(__dirname, '../../client');
+          const clientDir = join(__dirname, '../client');
           if (fs.existsSync(clientDir)) {
             console.log('[MANIFEST DEBUG] Contents of client dir:', fs.readdirSync(clientDir));
           } else {
