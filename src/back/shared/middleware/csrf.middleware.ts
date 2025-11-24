@@ -4,13 +4,27 @@ import { doubleCsrf } from 'csrf-csrf';
 
 const isProd = process.env.NODE_ENV === 'production';
 
-// Configuration du Double Submit Cookie CSRF
+// Routes qui ne doivent PAS être protégées par CSRF
+const CSRF_IGNORED_PATHS = new Set([
+  '/auth/login',
+  '/auth/register',
+  // si tu exposes aussi ces routes sous /api :
+  '/api/auth/login',
+  '/api/auth/register',
+]);
+
+const normalizePath = (p: string) => {
+  if (!p) return '/';
+  const n = p.replace(/\/+$/, ''); // enlève trailing slashes
+  return n.length ? n : '/';
+};
+
+// Configuration Double Submit Cookie CSRF
 const {
   generateCsrfToken,
   validateRequest,
   doubleCsrfProtection,
 } = doubleCsrf({
-  // Secret dédié CSRF (obligatoire, pas de fallback)
   getSecret: () => {
     if (!process.env.CSRF_SECRET) {
       throw new Error('CSRF_SECRET must be set in environment variables');
@@ -18,20 +32,16 @@ const {
     return process.env.CSRF_SECRET;
   },
 
-  // Lier le token à la session utilisateur (JWT cookie)
-  // Si pas de JWT, utiliser req.ip en fallback (utilisateurs anonymes)
   getSessionIdentifier: (req: Request) =>
     req.cookies?.access_token ?? req.cookies?.refresh_token ?? req.ip ?? 'anon',
 
-  // __Host- seulement en production (exige HTTPS + Secure + Path=/ + pas de Domain)
-  // En dev HTTP, utiliser un nom simple pour que le cookie soit accepté par le navigateur
   cookieName: isProd ? '__Host-psifi.x-csrf-token' : 'psifi.x-csrf-token',
 
   cookieOptions: {
     httpOnly: true,
     sameSite: 'lax',
-    secure: isProd, // HTTPS obligatoire en production
-    path: '/',      // Requis pour __Host- en production
+    secure: isProd,
+    path: '/',
   },
 
   size: 64,
@@ -44,18 +54,26 @@ const {
 @Injectable()
 export class CsrfMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    // Log pour debug
+    const path = normalizePath(req.path);
+
+    // ✅ skip CSRF pour login/register
+    if (CSRF_IGNORED_PATHS.has(path)) {
+      if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
+        console.log('[CSRF] Skipped for auth route:', req.method, path);
+      }
+      return next();
+    }
+
+    // Debug
     if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
-      console.log('[CSRF] Request:', req.method, req.path);
+      console.log('[CSRF] Request:', req.method, path);
       console.log('[CSRF] Token from header:', req.headers['x-csrf-token']);
       console.log('[CSRF] Cookies:', Object.keys(req.cookies || {}));
       console.log('[CSRF] CSRF cookie name:', isProd ? '__Host-psifi.x-csrf-token' : 'psifi.x-csrf-token');
     }
 
-    // Appliquer la protection CSRF
-    doubleCsrfProtection(req, res, next);
+    return doubleCsrfProtection(req, res, next);
   }
 }
 
-// Export pour utilisation dans les contrôleurs
 export { generateCsrfToken, validateRequest };
