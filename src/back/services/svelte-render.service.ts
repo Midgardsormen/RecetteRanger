@@ -70,6 +70,31 @@ export class SvelteRenderService {
       props: props
     };
 
+    // Si le manifest n'est pas chargé, essayer de le charger maintenant
+    if (!this.manifest) {
+      const manifestPath = join(__dirname, '../../client/manifest.json');
+      console.log('[MANIFEST DEBUG] Attempting to load manifest from:', manifestPath);
+      console.log('[MANIFEST DEBUG] __dirname is:', __dirname);
+      try {
+        const fs = require('fs');
+        if (fs.existsSync(manifestPath)) {
+          this.manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+          console.log('[MANIFEST DEBUG] Manifest loaded successfully, keys:', Object.keys(this.manifest).length);
+        } else {
+          console.error('[MANIFEST DEBUG] Manifest file does not exist at:', manifestPath);
+          // Lister le contenu du répertoire
+          const clientDir = join(__dirname, '../../client');
+          if (fs.existsSync(clientDir)) {
+            console.log('[MANIFEST DEBUG] Contents of client dir:', fs.readdirSync(clientDir));
+          } else {
+            console.error('[MANIFEST DEBUG] Client directory does not exist:', clientDir);
+          }
+        }
+      } catch (error) {
+        console.error('[MANIFEST DEBUG] Failed to load manifest:', error);
+      }
+    }
+
     // Trouver l'entrée principale dans le manifest
     let entryScript = '/assets/main.js'; // Fallback
     if (this.manifest) {
