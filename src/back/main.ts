@@ -102,27 +102,30 @@ async function bootstrap() {
     transform: true, // Transforme automatiquement les types
   }));
 
-  // Configuration Swagger
-  const config = new DocumentBuilder()
-    .setTitle('RecetteRanger API')
-    .setDescription('API de gestion de recettes, planification de repas et listes de courses. L\'authentification se fait via des cookies HTTP-only.')
-    .setVersion('1.0')
-    .addTag('auth', 'Authentification')
-    .addTag('users', 'Gestion des utilisateurs')
-    .addTag('recipes', 'Gestion des recettes')
-    .addTag('ingredients', 'Gestion des ingrédients')
-    .addTag('meal-plans', 'Planification des repas')
-    .addTag('shopping-lists', 'Listes de courses')
-    .addCookieAuth('access_token', {
-      type: 'http',
-      in: 'cookie',
-      scheme: 'bearer',
-      description: 'Cookie HTTP-only contenant le JWT'
-    })
-    .build();
+  // Configuration Swagger - UNIQUEMENT en développement
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('RecetteRanger API')
+      .setDescription('API de gestion de recettes, planification de repas et listes de courses. L\'authentification se fait via des cookies HTTP-only.')
+      .setVersion('1.0')
+      .addTag('auth', 'Authentification')
+      .addTag('users', 'Gestion des utilisateurs')
+      .addTag('recipes', 'Gestion des recettes')
+      .addTag('ingredients', 'Gestion des ingrédients')
+      .addTag('meal-plans', 'Planification des repas')
+      .addTag('shopping-lists', 'Listes de courses')
+      .addCookieAuth('access_token', {
+        type: 'http',
+        in: 'cookie',
+        scheme: 'bearer',
+        description: 'Cookie HTTP-only contenant le JWT'
+      })
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+    console.log(`📚 Swagger documentation available at: http://localhost:${port}/api`);
+  }
 
   // Servir les fichiers statiques du client
   app.useStaticAssets(join(__dirname, '../client'), {
@@ -137,7 +140,6 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`🚀 Application is running on: http://localhost:${port}`);
-  console.log(`📚 Swagger documentation available at: http://localhost:${port}/api`);
 }
 
 bootstrap();
