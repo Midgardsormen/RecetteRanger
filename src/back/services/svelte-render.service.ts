@@ -37,8 +37,12 @@ export class SvelteRenderService {
     if (!this.isDev) {
       try {
         const manifestPath = join(__dirname, '../../client/manifest.json');
+        console.log('Attempting to load manifest from:', manifestPath);
+        console.log('__dirname is:', __dirname);
         this.manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+        console.log('Manifest loaded successfully, keys:', Object.keys(this.manifest).length);
       } catch (error) {
+        console.error('Failed to load Vite manifest from:', manifestPath);
         logError('Failed to load Vite manifest', error);
       }
     }
