@@ -44,6 +44,14 @@ const {
 @Injectable()
 export class CsrfMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
+    // Log pour debug
+    if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
+      console.log('[CSRF] Request:', req.method, req.path);
+      console.log('[CSRF] Token from header:', req.headers['x-csrf-token']);
+      console.log('[CSRF] Cookies:', Object.keys(req.cookies || {}));
+      console.log('[CSRF] CSRF cookie name:', isProd ? '__Host-psifi.x-csrf-token' : 'psifi.x-csrf-token');
+    }
+
     // Appliquer la protection CSRF
     doubleCsrfProtection(req, res, next);
   }
