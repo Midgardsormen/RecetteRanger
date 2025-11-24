@@ -25,11 +25,12 @@ async function bootstrap() {
   // IMPORTANT: Les origines doivent être exactes (sans slash final, sans chemin)
   // ✅ Correct: https://recetteranger.onrender.com
   // ❌ Incorrect: https://recetteranger.onrender.com/ ou https://recetteranger.onrender.com/login
-  const allowedOrigins = process.env.NODE_ENV === 'production'
-    ? process.env.ALLOWED_ORIGINS?.split(',')
-        .map(s => s.trim())
-        .filter(Boolean) || []
-    : ['http://localhost:5173'];
+  const allowedOrigins =
+    process.env.NODE_ENV === 'production'
+      ? process.env.ALLOWED_ORIGINS?.split(',')
+          .map((s) => s.trim())
+          .filter(Boolean) || []
+      : ['http://localhost:5173'];
 
   app.enableCors({
     origin: allowedOrigins,
@@ -49,34 +50,33 @@ async function bootstrap() {
     styleSrc: [
       "'self'",
       "'unsafe-inline'", // Nécessaire pour les styles inline de Svelte
-      "https://fonts.googleapis.com",
-      "https://cdnjs.cloudflare.com",
-      ...(process.env.NODE_ENV === 'development' ? ["http://localhost:5173"] : [])
+      'https://fonts.googleapis.com',
+      'https://cdnjs.cloudflare.com',
+      ...(process.env.NODE_ENV === 'development' ? ['http://localhost:5173'] : []),
     ],
-    fontSrc: [
-      "'self'",
-      "https://fonts.gstatic.com"
-    ],
+    fontSrc: ["'self'", 'https://fonts.gstatic.com'],
     imgSrc: [
       "'self'",
-      "data:", // Pour les SVG inline (ex: Select.svelte)
-      "https://res.cloudinary.com", // Images Cloudinary
-      "blob:", // Pour les previews d'upload
-      ...(process.env.NODE_ENV === 'development' ? ["https://*"] : []) // Logos magasins en dev
+      'data:', // Pour les SVG inline (ex: Select.svelte)
+      'https://res.cloudinary.com', // Images Cloudinary
+      'blob:', // Pour les previews d'upload
+      ...(process.env.NODE_ENV === 'development' ? ['https://*'] : []), // Logos magasins en dev
     ],
     scriptSrc: [
       "'self'",
       "'unsafe-inline'", // Nécessaire pour window.__INITIAL_DATA__
-      "https://cdnjs.cloudflare.com", // CropperJS
-      ...(process.env.NODE_ENV === 'development' ? ["http://localhost:5173"] : [])
+      'https://cdnjs.cloudflare.com', // CropperJS
+      ...(process.env.NODE_ENV === 'development' ? ['http://localhost:5173'] : []),
     ],
     connectSrc: [
       "'self'",
-      ...(process.env.NODE_ENV === 'development' ? ["http://localhost:3000", "http://localhost:5173", "ws://localhost:5173"] : [])
+      ...(process.env.NODE_ENV === 'development'
+        ? ['http://localhost:3000', 'http://localhost:5173', 'ws://localhost:5173']
+        : []),
     ],
     objectSrc: ["'none'"],
     baseUri: ["'self'"], // Limite les URLs de base
-    frameAncestors: ["'none'"] // Équivalent moderne de X-Frame-Options: DENY
+    frameAncestors: ["'none'"], // Équivalent moderne de X-Frame-Options: DENY
   };
 
   // IMPORTANT: Ajouter upgradeInsecureRequests UNIQUEMENT en production
@@ -86,22 +86,26 @@ async function bootstrap() {
     cspDirectives.upgradeInsecureRequests = [];
   }
 
-  app.use(helmet({
-    contentSecurityPolicy: {
-      directives: cspDirectives
-    },
-    // IMPORTANT: crossOriginEmbedderPolicy est désactivé par défaut dans Helmet
-    // mais on le force explicitement à false pour être certain qu'il ne soit pas activé,
-    // car il bloquerait le chargement des images Cloudinary
-    crossOriginEmbedderPolicy: false,
-  }));
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: cspDirectives,
+      },
+      // IMPORTANT: crossOriginEmbedderPolicy est désactivé par défaut dans Helmet
+      // mais on le force explicitement à false pour être certain qu'il ne soit pas activé,
+      // car il bloquerait le chargement des images Cloudinary
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
 
   // Activer la validation globale
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true, // Supprime les propriétés non définies dans le DTO
-    forbidNonWhitelisted: true, // Renvoie une erreur si des propriétés non définies sont envoyées
-    transform: true, // Transforme automatiquement les types
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Supprime les propriétés non définies dans le DTO
+      forbidNonWhitelisted: true, // Renvoie une erreur si des propriétés non définies sont envoyées
+      transform: true, // Transforme automatiquement les types
+    }),
+  );
 
   const port = process.env.PORT || 3000;
 
@@ -109,7 +113,9 @@ async function bootstrap() {
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
       .setTitle('RecetteRanger API')
-      .setDescription('API de gestion de recettes, planification de repas et listes de courses. L\'authentification se fait via des cookies HTTP-only.')
+      .setDescription(
+        "API de gestion de recettes, planification de repas et listes de courses. L'authentification se fait via des cookies HTTP-only.",
+      )
       .setVersion('1.0')
       .addTag('auth', 'Authentification')
       .addTag('users', 'Gestion des utilisateurs')
@@ -121,7 +127,7 @@ async function bootstrap() {
         type: 'http',
         in: 'cookie',
         scheme: 'bearer',
-        description: 'Cookie HTTP-only contenant le JWT'
+        description: 'Cookie HTTP-only contenant le JWT',
       })
       .build();
 
@@ -130,42 +136,53 @@ async function bootstrap() {
     console.log(`📚 Swagger documentation available at: http://localhost:${port}/api`);
   }
 
-  // Servir les fichiers statiques du client
-  // Les assets Vite sont dans dist/client/assets/, donc on sert dist/client/ sans préfixe
-  // pour que /assets/main-xxx.js pointe vers dist/client/assets/main-xxx.js
-  const clientPath = join(__dirname, '../client');
+  // ============================
+  // STATIC CLIENT (Vite build)
+  // ============================
+  // IMPORTANT:
+  // - Vite build sort dans dist/client/assets
+  // - Le manifest injecte /assets/xxx.js
+  // => on doit servir dist/client à la racine.
+  // On utilise process.cwd() pour être stable en prod (Render)
+  const clientPath = join(process.cwd(), 'dist', 'client');
   console.log('[STATIC FILES] Client path:', clientPath);
+  console.log('[STATIC FILES] NODE_ENV:', process.env.NODE_ENV);
 
   // Debug: lister le contenu du répertoire client
-  if (process.env.NODE_ENV === 'production') {
-    try {
-      const fs = require('fs');
-      if (fs.existsSync(clientPath)) {
-        console.log('[STATIC FILES] Contents of client dir:', fs.readdirSync(clientPath));
-        const assetsPath = join(clientPath, 'assets');
-        if (fs.existsSync(assetsPath)) {
-          const assetFiles = fs.readdirSync(assetsPath);
-          console.log('[STATIC FILES] Contents of assets dir:', assetFiles.slice(0, 10)); // Premiers 10 fichiers
-          console.log('[STATIC FILES] Total assets files:', assetFiles.length);
-        } else {
-          console.error('[STATIC FILES] Assets directory does not exist:', assetsPath);
-        }
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs = require('fs');
+    if (fs.existsSync(clientPath)) {
+      console.log('[STATIC FILES] Contents of client dir:', fs.readdirSync(clientPath));
+      const assetsPath = join(clientPath, 'assets');
+      if (fs.existsSync(assetsPath)) {
+        const assetFiles = fs.readdirSync(assetsPath);
+        console.log('[STATIC FILES] Contents of assets dir:', assetFiles.slice(0, 10)); // Premiers 10 fichiers
+        console.log('[STATIC FILES] Total assets files:', assetFiles.length);
       } else {
-        console.error('[STATIC FILES] Client directory does not exist:', clientPath);
+        console.error('[STATIC FILES] Assets directory does not exist:', assetsPath);
       }
-    } catch (error) {
-      console.error('[STATIC FILES] Error listing directories:', error);
+    } else {
+      console.error('[STATIC FILES] Client directory does not exist:', clientPath);
     }
+  } catch (error) {
+    console.error('[STATIC FILES] Error listing directories:', error);
   }
 
-  app.useStaticAssets(clientPath);
+  // index:false évite que dist/client/index.html prenne le pas sur le SSR
+  app.useStaticAssets(clientPath, { index: false });
 
-  // Servir les fichiers uploadés (depuis dist/ vers public/)
-  app.useStaticAssets(join(__dirname, '../public'), {
+  // ============================
+  // STATIC UPLOADS / PUBLIC
+  // ============================
+  // Tu servais déjà "public" à la racine.
+  // On garde le même comportement, mais avec process.cwd()
+  const publicPath = join(process.cwd(), 'dist', 'public');
+  app.useStaticAssets(publicPath, {
     prefix: '/',
   });
 
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   console.log(`🚀 Application is running on: http://localhost:${port}`);
 }
 
