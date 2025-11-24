@@ -1,6 +1,9 @@
 import { authStore } from '../stores/auth.store';
 
-const API_BASE_URL = 'http://localhost:3000';
+// En production, utiliser l'URL actuelle, en dev utiliser localhost:3000
+const API_BASE_URL = typeof window !== 'undefined' && window.location.origin.includes('localhost')
+  ? 'http://localhost:3000'
+  : '';
 
 // Store pour le token CSRF
 let csrfToken: string | null = null;
