@@ -35,8 +35,8 @@ export class SvelteRenderService {
 
     // Charger le manifest Vite en production
     if (!this.isDev) {
+      const manifestPath = join(__dirname, '../../client/manifest.json');
       try {
-        const manifestPath = join(__dirname, '../../client/manifest.json');
         console.log('Attempting to load manifest from:', manifestPath);
         console.log('__dirname is:', __dirname);
         this.manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
