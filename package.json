@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm run build:server && npm run build:client",
     "build:server": "nest build",
-    "build:client": "vite build --outDir dist/client --ssrManifest && node -e \"require('fs').copyFileSync('src/view/index.html', 'dist/client/index.html')\"",
+    "build:client": "vite build --outDir dist/client && node -e \"require('fs').copyFileSync('src/view/index.html', 'dist/client/index.html')\"",
     "build:ssr": "vite build --ssr src/view/entry-server.ts --outDir dist/server",
     "start": "nest start",
     "start:dev": "nest start --watch",
