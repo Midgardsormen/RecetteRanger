@@ -37,39 +37,37 @@
     z-index: 100;
 
     // Mobile-first: Taille et positionnement par défaut (mobile)
-    width: 80px;
-    height: 80px;
+    // Pour les pages internes, on reste dans le flux (pas de position absolute)
+    width: 48px;
+    height: 48px;
     box-shadow:
-      1.5px 1.5px 0 $brand-red,
-      3px 3px 0 $brand-red,
-      0 3px 10px $color-black-alpha-20,
-      0 1.5px 4px $color-black-alpha-15;
-    position: absolute;
-    top: 0;
-    left: 0;
+      1px 1px 0 $brand-red,
+      2px 2px 0 $brand-red,
+      0 2px 6px $color-black-alpha-20,
+      0 1px 3px $color-black-alpha-15;
+    position: relative;
+    flex-shrink: 0; // Empêche le logo de rétrécir
 
-    // Tablet: centré horizontalement
+    // Tablet: taille augmentée
     @media (min-width: $breakpoint-md) {
-      width: 120px;
-      height: 120px;
+      width: 56px;
+      height: 56px;
       box-shadow:
-        2.5px 2.5px 0 $brand-red,
-        5px 5px 0 $brand-red,
-        0 5px 15px $color-black-alpha-20,
-        0 2.5px 5px $color-black-alpha-15;
-      left: 50%;
-      transform: translateX(-50%);
+        1.5px 1.5px 0 $brand-red,
+        3px 3px 0 $brand-red,
+        0 3px 10px $color-black-alpha-20,
+        0 1.5px 4px $color-black-alpha-15;
     }
 
     // Desktop: taille augmentée
     @media (min-width: $breakpoint-lg) {
-      width: 160px;
-      height: 160px;
+      width: 64px;
+      height: 64px;
       box-shadow:
-        3px 3px 0 $brand-red,
-        6px 6px 0 $brand-red,
-        0 7px 20px $color-black-alpha-20,
-        0 3.5px 7px $color-black-alpha-15;
+        2px 2px 0 $brand-red,
+        4px 4px 0 $brand-red,
+        0 4px 12px $color-black-alpha-20,
+        0 2px 5px $color-black-alpha-15;
     }
 
     &:hover {
@@ -79,6 +77,8 @@
     // Variant: Landing page (non-authenticated homepage)
     &--landing {
       // Mobile: plus grand et à gauche
+      position: absolute;
+      top: 0;
       width: 140px;
       height: 140px;
       left: 0;
@@ -132,8 +132,12 @@
     // Taille intermédiaire entre default et landing
     &--home {
       // Mobile: taille moyenne
+      position: absolute;
+      top: 0;
       width: 110px;
       height: 110px;
+      left: 0;
+      transform: none;
       box-shadow:
         2.5px 2.5px 0 $brand-red,
         5px 5px 0 $brand-red,
@@ -185,9 +189,59 @@
     }
 
     // Variant: Public pages (legal, privacy, etc.)
-    // Uses default styles
     &--public {
-      // No overrides needed, default is already correct
+      position: absolute;
+      top: 0;
+      width: 80px;
+      height: 80px;
+      left: 0;
+      box-shadow:
+        1.5px 1.5px 0 $brand-red,
+        3px 3px 0 $brand-red,
+        0 3px 10px $color-black-alpha-20,
+        0 1.5px 4px $color-black-alpha-15;
+
+      // Tablet: centré horizontalement
+      @media (min-width: $breakpoint-md) {
+        width: 120px;
+        height: 120px;
+        box-shadow:
+          2.5px 2.5px 0 $brand-red,
+          5px 5px 0 $brand-red,
+          0 5px 15px $color-black-alpha-20,
+          0 2.5px 5px $color-black-alpha-15;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      // Desktop: taille augmentée
+      @media (min-width: $breakpoint-lg) {
+        width: 160px;
+        height: 160px;
+        box-shadow:
+          3px 3px 0 $brand-red,
+          6px 6px 0 $brand-red,
+          0 7px 20px $color-black-alpha-20,
+          0 3.5px 7px $color-black-alpha-15;
+      }
+
+      .logo__image {
+        // Mobile
+        width: 60px;
+        height: 60px;
+
+        // Tablet
+        @media (min-width: $breakpoint-md) {
+          width: 85px;
+          height: 85px;
+        }
+
+        // Desktop
+        @media (min-width: $breakpoint-lg) {
+          width: 120px;
+          height: 120px;
+        }
+      }
     }
 
     &__wrapper {
@@ -200,19 +254,19 @@
       object-fit: contain;
 
       // Mobile-first: Taille par défaut (mobile)
-      width: 60px;
-      height: 60px;
+      width: 36px;
+      height: 36px;
 
       // Tablet
       @media (min-width: $breakpoint-md) {
-        width: 85px;
-        height: 85px;
+        width: 42px;
+        height: 42px;
       }
 
       // Desktop
       @media (min-width: $breakpoint-lg) {
-        width: 120px;
-        height: 120px;
+        width: 48px;
+        height: 48px;
       }
     }
 
