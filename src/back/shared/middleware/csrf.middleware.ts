@@ -60,7 +60,10 @@ const {
 @Injectable()
 export class CsrfMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    const path = normalizePath(req.path);
+    // Utiliser originalUrl pour obtenir le chemin complet de la requête
+    // req.path peut être différent dans NestJS à cause du routing modulaire
+    const fullPath = req.originalUrl?.split('?')[0] || req.path; // Enlever query params
+    const path = normalizePath(fullPath);
 
     // ✅ skip CSRF pour login/register
     if (CSRF_IGNORED_PATHS.has(path)) {
@@ -74,7 +77,6 @@ export class CsrfMiddleware implements NestMiddleware {
     if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
       console.log('[CSRF] Request:', req.method, path);
       console.log('[CSRF] Original URL:', req.originalUrl);
-      console.log('[CSRF] Base URL:', req.baseUrl);
       console.log('[CSRF] Token from header:', req.headers['x-csrf-token']);
       console.log('[CSRF] Cookies:', Object.keys(req.cookies || {}));
       console.log('[CSRF] CSRF cookie value:', req.cookies?.['psifi.x-csrf-token'] ? 'present' : 'missing');
