@@ -34,13 +34,14 @@ interface AuthResponse {
 }
 
 class ApiService {
-  private getHeaders(): HeadersInit {
+  private getHeaders(skipCsrf = false): HeadersInit {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
 
     // Ajouter le token CSRF si disponible pour les requêtes mutantes
-    if (csrfToken) {
+    // Skip pour login/register car ces routes sont exemptées de CSRF
+    if (csrfToken && !skipCsrf) {
       headers['X-CSRF-Token'] = csrfToken;
     }
 
@@ -66,7 +67,7 @@ class ApiService {
   async login(data: LoginData): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
-      headers: this.getHeaders(),
+      headers: this.getHeaders(true), // Skip CSRF pour login
       credentials: 'include', // Permet l'envoi et la réception de cookies
       body: JSON.stringify(data),
     });
@@ -82,7 +83,7 @@ class ApiService {
   async register(data: RegisterData): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
-      headers: this.getHeaders(),
+      headers: this.getHeaders(true), // Skip CSRF pour register
       credentials: 'include', // Permet l'envoi et la réception de cookies
       body: JSON.stringify(data),
     });
