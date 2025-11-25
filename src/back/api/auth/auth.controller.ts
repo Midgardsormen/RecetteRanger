@@ -58,18 +58,25 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Response({ passthrough: true }) res: ExpressResponse
   ) {
-    const result = await this.authService.login(loginDto);
+    console.log('[AUTH] Login attempt for:', loginDto.identifier);
+    try {
+      const result = await this.authService.login(loginDto);
+      console.log('[AUTH] Login successful for user:', result.user.id);
 
-    // Définir le token dans un cookie HTTP-only
-    res.cookie('access_token', result.access_token, {
-      httpOnly: true, // Inaccessible depuis JavaScript
-      secure: process.env.NODE_ENV === 'production', // HTTPS uniquement en production
-      sameSite: 'lax', // Protection CSRF
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
-    });
+      // Définir le token dans un cookie HTTP-only
+      res.cookie('access_token', result.access_token, {
+        httpOnly: true, // Inaccessible depuis JavaScript
+        secure: process.env.NODE_ENV === 'production', // HTTPS uniquement en production
+        sameSite: 'lax', // Protection CSRF
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+      });
 
-    // Retourner uniquement les infos utilisateur (pas le token)
-    return { user: result.user };
+      // Retourner uniquement les infos utilisateur (pas le token)
+      return { user: result.user };
+    } catch (error) {
+      console.error('[AUTH] Login error:', error);
+      throw error;
+    }
   }
 
   @Get('me')
