@@ -34,8 +34,12 @@ const {
     return process.env.CSRF_SECRET;
   },
 
-  getSessionIdentifier: (req: Request) =>
-    req.cookies?.access_token ?? req.cookies?.refresh_token ?? req.ip ?? 'anon',
+  getSessionIdentifier: (req: Request) => {
+    // Utiliser le cookie d'authentification s'il existe, sinon une valeur par défaut
+    // Note: Ne pas utiliser req.ip car il peut changer avec les load balancers
+    const sessionId = req.cookies?.access_token || 'anonymous-session';
+    return sessionId;
+  },
 
   cookieName: 'psifi.x-csrf-token',
 
@@ -69,9 +73,12 @@ export class CsrfMiddleware implements NestMiddleware {
     // Debug
     if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
       console.log('[CSRF] Request:', req.method, path);
+      console.log('[CSRF] Original URL:', req.originalUrl);
+      console.log('[CSRF] Base URL:', req.baseUrl);
       console.log('[CSRF] Token from header:', req.headers['x-csrf-token']);
       console.log('[CSRF] Cookies:', Object.keys(req.cookies || {}));
       console.log('[CSRF] CSRF cookie value:', req.cookies?.['psifi.x-csrf-token'] ? 'present' : 'missing');
+      console.log('[CSRF] Session ID:', req.cookies?.access_token ? 'authenticated' : 'anonymous');
     }
 
     return doubleCsrfProtection(req, res, next);
