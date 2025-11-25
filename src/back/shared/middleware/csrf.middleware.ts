@@ -8,10 +8,12 @@ const isProd = process.env.NODE_ENV === 'production';
 const CSRF_IGNORED_PATHS = new Set([
   '/auth/login',
   '/auth/register',
+  '/auth/logout', // Déconnexion ne nécessite pas de protection CSRF
   '/auth/csrf-token', // Permet d'obtenir le token CSRF
   // si tu exposes aussi ces routes sous /api :
   '/api/auth/login',
   '/api/auth/register',
+  '/api/auth/logout',
   '/api/auth/csrf-token',
 ]);
 
