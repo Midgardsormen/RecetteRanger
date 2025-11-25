@@ -60,7 +60,9 @@ async function bootstrap() {
       'data:', // Pour les SVG inline (ex: Select.svelte)
       'https://res.cloudinary.com', // Images Cloudinary
       'blob:', // Pour les previews d'upload
-      ...(process.env.NODE_ENV === 'development' ? ['https://*'] : []), // Logos magasins en dev
+      'https://upload.wikimedia.org', // Logos magasins (Wikipedia)
+      'https://encrypted-tbn0.gstatic.com', // Logos magasins (Google Images)
+      ...(process.env.NODE_ENV === 'development' ? ['https://*'] : []), // Tous domaines en dev
     ],
     scriptSrc: [
       "'self'",
