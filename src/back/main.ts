@@ -55,15 +55,7 @@ async function bootstrap() {
       ...(process.env.NODE_ENV === 'development' ? ['http://localhost:5173'] : []),
     ],
     fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-    imgSrc: [
-      "'self'",
-      'data:', // Pour les SVG inline (ex: Select.svelte)
-      'https://res.cloudinary.com', // Images Cloudinary
-      'blob:', // Pour les previews d'upload
-      'https://upload.wikimedia.org', // Logos magasins (Wikipedia)
-      'https://encrypted-tbn0.gstatic.com', // Logos magasins (Google Images)
-      ...(process.env.NODE_ENV === 'development' ? ['https://*'] : []), // Tous domaines en dev
-    ],
+    imgSrc: ["*"],
     scriptSrc: [
       "'self'",
       "'unsafe-inline'", // Nécessaire pour window.__INITIAL_DATA__
