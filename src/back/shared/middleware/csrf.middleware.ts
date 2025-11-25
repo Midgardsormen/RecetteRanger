@@ -8,9 +8,11 @@ const isProd = process.env.NODE_ENV === 'production';
 const CSRF_IGNORED_PATHS = new Set([
   '/auth/login',
   '/auth/register',
+  '/auth/csrf-token', // Permet d'obtenir le token CSRF
   // si tu exposes aussi ces routes sous /api :
   '/api/auth/login',
   '/api/auth/register',
+  '/api/auth/csrf-token',
 ]);
 
 const normalizePath = (p: string) => {
@@ -35,11 +37,11 @@ const {
   getSessionIdentifier: (req: Request) =>
     req.cookies?.access_token ?? req.cookies?.refresh_token ?? req.ip ?? 'anon',
 
-  cookieName: isProd ? '__Host-psifi.x-csrf-token' : 'psifi.x-csrf-token',
+  cookieName: 'psifi.x-csrf-token',
 
   cookieOptions: {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'lax', // 'strict' empêcherait l'envoi du cookie lors de navigations externes
     secure: isProd,
     path: '/',
   },
@@ -69,7 +71,7 @@ export class CsrfMiddleware implements NestMiddleware {
       console.log('[CSRF] Request:', req.method, path);
       console.log('[CSRF] Token from header:', req.headers['x-csrf-token']);
       console.log('[CSRF] Cookies:', Object.keys(req.cookies || {}));
-      console.log('[CSRF] CSRF cookie name:', isProd ? '__Host-psifi.x-csrf-token' : 'psifi.x-csrf-token');
+      console.log('[CSRF] CSRF cookie value:', req.cookies?.['psifi.x-csrf-token'] ? 'present' : 'missing');
     }
 
     return doubleCsrfProtection(req, res, next);
