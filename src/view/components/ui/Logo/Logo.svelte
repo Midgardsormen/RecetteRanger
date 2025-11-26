@@ -36,38 +36,41 @@
     border-radius: $radius-full;
     z-index: 100;
 
-    // Mobile-first: Taille et positionnement par défaut (mobile)
-    // Pour les pages internes, on reste dans le flux (pas de position absolute)
-    width: 48px;
-    height: 48px;
+    // Mobile-first: Logo centré et plus grand pour les pages internes
+    position: absolute;
+    top: 0;
+    left: 100px;
+    transform: translateX(-50%);
+    width: 85px;
+    height: 85px;
     box-shadow:
-      1px 1px 0 $brand-red,
       2px 2px 0 $brand-red,
-      0 2px 6px $color-black-alpha-20,
-      0 1px 3px $color-black-alpha-15;
-    position: relative;
+      4px 4px 0 $brand-red,
+      0 4px 12px $color-black-alpha-20,
+      0 2px 5px $color-black-alpha-15;
     flex-shrink: 0; // Empêche le logo de rétrécir
 
     // Tablet: taille augmentée
     @media (min-width: $breakpoint-md) {
-      width: 56px;
-      height: 56px;
+      width: 110px;
+      height: 110px;
+      left: 50%;
       box-shadow:
-        1.5px 1.5px 0 $brand-red,
-        3px 3px 0 $brand-red,
-        0 3px 10px $color-black-alpha-20,
-        0 1.5px 4px $color-black-alpha-15;
+        2.5px 2.5px 0 $brand-red,
+        5px 5px 0 $brand-red,
+        0 5px 15px $color-black-alpha-20,
+        0 2.5px 5px $color-black-alpha-15;
     }
 
     // Desktop: taille augmentée
     @media (min-width: $breakpoint-lg) {
-      width: 64px;
-      height: 64px;
+      width: 130px;
+      height: 130px;
       box-shadow:
-        2px 2px 0 $brand-red,
-        4px 4px 0 $brand-red,
-        0 4px 12px $color-black-alpha-20,
-        0 2px 5px $color-black-alpha-15;
+        3px 3px 0 $brand-red,
+        6px 6px 0 $brand-red,
+        0 6px 18px $color-black-alpha-20,
+        0 3px 6px $color-black-alpha-15;
     }
 
     &:hover {
@@ -76,13 +79,13 @@
 
     // Variant: Landing page (non-authenticated homepage)
     &--landing {
-      // Mobile: plus grand et à gauche
+      // Mobile: centré pour éviter le chevauchement avec le burger menu
       position: absolute;
       top: 0;
       width: 140px;
       height: 140px;
-      left: 0;
-      transform: none;
+      left: 50%;
+      transform: translateX(-50%);
       box-shadow:
         4px 4px 0 $brand-red,
         8px 8px 0 $brand-red,
@@ -93,8 +96,6 @@
       @media (min-width: $breakpoint-sm) {
         width: 150px;
         height: 150px;
-        left: 50%;
-        transform: translateX(-50%);
       }
 
       // Tablet
@@ -131,13 +132,14 @@
     // Variant: Home page (authenticated user)
     // Taille intermédiaire entre default et landing
     &--home {
-      // Mobile: taille moyenne
+      // Mobile: centré pour éviter le chevauchement avec le burger menu
       position: absolute;
       top: 0;
       width: 110px;
       height: 110px;
-      left: 0;
-      transform: none;
+      left: 100px;
+      
+      transform: translateX(-50%);
       box-shadow:
         2.5px 2.5px 0 $brand-red,
         5px 5px 0 $brand-red,
@@ -146,10 +148,9 @@
 
       // Small mobile: centré
       @media (min-width: $breakpoint-sm) {
+        left: 50%;
         width: 120px;
         height: 120px;
-        left: 50%;
-        transform: translateX(-50%);
       }
 
       // Tablet
@@ -253,20 +254,20 @@
     &__image {
       object-fit: contain;
 
-      // Mobile-first: Taille par défaut (mobile)
-      width: 36px;
-      height: 36px;
+      // Mobile-first: Taille par défaut (mobile) - augmentée pour les pages internes
+      width: 70px;
+      height: 70px;
 
       // Tablet
       @media (min-width: $breakpoint-md) {
-        width: 42px;
-        height: 42px;
+        width: 85px;
+        height: 85px;
       }
 
       // Desktop
       @media (min-width: $breakpoint-lg) {
-        width: 48px;
-        height: 48px;
+        width: 100px;
+        height: 100px;
       }
     }
 

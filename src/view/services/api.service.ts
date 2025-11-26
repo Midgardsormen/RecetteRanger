@@ -51,7 +51,8 @@ class ApiService {
   // Récupérer le token CSRF depuis le serveur
   async fetchCsrfToken(): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/csrf-token`, {
+      // L'endpoint est /auth/csrf-token (pas /api/auth/csrf-token)
+      const response = await fetch('/auth/csrf-token', {
         credentials: 'include',
       });
 

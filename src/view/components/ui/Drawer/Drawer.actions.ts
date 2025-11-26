@@ -50,16 +50,29 @@ export function setupFocusTrap(
 
 /**
  * Block body scroll when drawer is open
+ * Compensate for scrollbar width to prevent layout shift
  */
 export function setupBodyScrollLock(isOpen: boolean): () => void {
   if (isOpen) {
+    // Calculer la largeur de la scrollbar avant de la masquer
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    // Bloquer le scroll
     document.body.style.overflow = 'hidden';
+
+    // Compenser la disparition de la scrollbar
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
   } else {
+    // Restaurer les valeurs par défaut
     document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
   }
 
   // Cleanup function
   return () => {
     document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
   };
 }

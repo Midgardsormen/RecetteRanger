@@ -33,6 +33,7 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
+    width: 100%;
 
     &__label {
       font-size: $font-size-sm;

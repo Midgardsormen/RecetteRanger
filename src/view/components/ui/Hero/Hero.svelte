@@ -51,10 +51,12 @@
       box-shadow: $shadow-hero-default;
 
       @media (min-width: $breakpoint-md) {
-        padding: $spacing-5xl $spacing-md $spacing-xl;
+        // Padding-top augmenté pour le logo plus grand (200px) + marge
+        padding: 220px $spacing-md $spacing-xl;
       }
       @media (min-width: $breakpoint-lg) {
-        padding: $spacing-5xl $spacing-lg $spacing-2xl;
+        // Padding-top augmenté pour le logo encore plus grand (220px) + marge
+        padding: 240px $spacing-lg $spacing-2xl;
       }
     }
 

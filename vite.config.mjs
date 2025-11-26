@@ -53,6 +53,7 @@ export default defineConfig({
       }
     }
   },
+  publicDir: 'public', // Servir le dossier public/ en développement
   server: {
     port: 5173,
     strictPort: true, // Ne pas chercher un autre port si 5173 est occupé

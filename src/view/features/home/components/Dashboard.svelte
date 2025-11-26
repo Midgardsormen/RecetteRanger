@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Title, Tile, Link, Loader, ProgressBar, Hero } from '../../../components/ui';
+  import { Title, Link, Loader, ProgressBar, Hero } from '../../../components/ui';
   import { apiService } from '../../../services/api.service';
+  import DashboardTile from './DashboardTile/DashboardTile.svelte';
 
   let { user }: { user: any } = $props();
 
@@ -88,114 +89,102 @@
     <!-- Dashboard Tiles -->
     <div class="dashboard__grid">
       <!-- Dernières recettes créées -->
-      <div class="dashboard__tile dashboard__tile--feature">
-        <div class="dashboard__tile-bg" style="background-image: url('/assets/images/52122fb2-7c16-43c4-ab68-d3669ef31c0e.png')"></div>
-        <div class="dashboard__tile-content">
-          <h3 class="dashboard__tile-title">Dernières recettes</h3>
-          {#if lastRecipes.length > 0}
-            <ul class="dashboard__recipes-compact">
-              {#each lastRecipes as recipe}
-                <li class="dashboard__recipe-compact-item">
-                  <a href="/recettes/{recipe.id}" class="dashboard__recipe-compact-link">
-                    <div class="dashboard__recipe-compact-image">
-                      {#if recipe.imageUrl}
-                        <img src={recipe.imageUrl} alt={recipe.label} />
-                      {:else}
-                        <span class="dashboard__recipe-compact-placeholder">🍽️</span>
-                      {/if}
-                    </div>
-                    <div class="dashboard__recipe-compact-content">
-                      {#if recipe.category}
-                        <span class="dashboard__recipe-compact-category">{recipe.category}</span>
-                      {/if}
-                      <span class="dashboard__recipe-compact-title">{recipe.label}</span>
-                    </div>
-                  </a>
-                </li>
-              {/each}
-            </ul>
-            <Link href="/recettes" variant="inverse">
-              Voir toutes mes recettes →
-            </Link>
-          {:else}
-            <p class="dashboard__tile-empty-text">Vous n'avez pas encore créé de recette</p>
-          {/if}
-        </div>
-      </div>
-
-      <!-- Repas prévus aujourd'hui -->
-      <div class="dashboard__tile dashboard__tile--feature">
-        <div class="dashboard__tile-bg" style="background-image: url('/assets/images/a8800c87-1ca0-4225-ab1e-adcb646fbf18.png')"></div>
-        <div class="dashboard__tile-content">
-          <h3 class="dashboard__tile-title">Au menu aujourd'hui</h3>
-          {#if todaysMeals.length > 0}
-            <ul class="dashboard__meals-compact">
-              {#each todaysMeals as meal}
-                <li class="dashboard__meal-compact-item">
-                  {#if meal.recipe}
-                    <a href="/recettes/{meal.recipe.id}" class="dashboard__meal-compact-link">
-                      <div class="dashboard__meal-compact-image">
-                        {#if meal.recipe.imageUrl}
-                          <img src={meal.recipe.imageUrl} alt={meal.recipe.label} />
-                        {:else}
-                          <span class="dashboard__meal-compact-placeholder">🍽️</span>
-                        {/if}
-                      </div>
-                      <div class="dashboard__meal-compact-content">
-                        <span class="dashboard__meal-compact-slot">{meal.slot}</span>
-                        <span class="dashboard__meal-compact-title">{meal.recipe.label}</span>
-                      </div>
-                    </a>
-                  {:else}
-                    <div class="dashboard__meal-compact-link dashboard__meal-compact-link--no-recipe">
-                      <div class="dashboard__meal-compact-image">
-                        <span class="dashboard__meal-compact-placeholder">📝</span>
-                      </div>
-                      <div class="dashboard__meal-compact-content">
-                        <span class="dashboard__meal-compact-slot">{meal.slot}</span>
-                        <span class="dashboard__meal-compact-title">{meal.note || 'Repas sans recette'}</span>
-                      </div>
-                    </div>
-                  {/if}
-                </li>
-              {/each}
-            </ul>
-          {:else}
-            <p class="dashboard__tile-empty-text">Aucun repas prévu pour aujourd'hui.<br/>Que diriez-vous de planifier quelque chose de bon ?</p>
-          {/if}
-          <Link href="/plannings" variant="inverse">Voir les plannings →</Link>
-        </div>
-      </div>
-
-      <!-- Articles à acheter -->
-      <div class="dashboard__tile dashboard__tile--feature">
-        <div class="dashboard__tile-bg" style="background-image: url('/assets/images/375f5d6f-4fd3-4293-8af7-84e87db0b4e7.png')"></div>
-        <div class="dashboard__tile-content">
-          <h3 class="dashboard__tile-title">Courses en cours</h3>
-          {#if shoppingLists.length > 0}
-            <div class="dashboard__shopping-compact">
-              {#each shoppingLists as list}
-                {@const totalItems = list.items.length}
-                {@const checkedItems = list.items.filter((item) => item.checked).length}
-                {@const progress = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0}
-
-                <a href="/shopping-lists/{list.id}" class="dashboard__shopping-list-card">
-                  <p class="dashboard__shopping-list-name">{list.name}</p>
-                  <div class="dashboard__shopping-list-stats">
-                    <p class="dashboard__shopping-list-count">{checkedItems} article{checkedItems > 1 ? 's' : ''} acheté{checkedItems > 1 ? 's' : ''} sur {totalItems}</p>
-                    <ProgressBar value={checkedItems} max={totalItems} size="small" variant="success" />
+      <DashboardTile title="Dernières recettes" backgroundImage="/assets/images/52122fb2-7c16-43c4-ab68-d3669ef31c0e.png">
+        {#if lastRecipes.length > 0}
+          <ul class="dashboard__recipes-compact">
+            {#each lastRecipes as recipe}
+              <li class="dashboard__recipe-compact-item">
+                <a href="/recettes/{recipe.id}" class="dashboard__recipe-compact-link">
+                  <div class="dashboard__recipe-compact-image">
+                    {#if recipe.imageUrl}
+                      <img src={recipe.imageUrl} alt={recipe.label} />
+                    {:else}
+                      <span class="dashboard__recipe-compact-placeholder">🍽️</span>
+                    {/if}
+                  </div>
+                  <div class="dashboard__recipe-compact-content">
+                    {#if recipe.category}
+                      <span class="dashboard__recipe-compact-category">{recipe.category}</span>
+                    {/if}
+                    <span class="dashboard__recipe-compact-title">{recipe.label}</span>
                   </div>
                 </a>
-              {/each}
-              <Link href="/shopping-lists" variant="inverse">
-                Voir toutes mes listes →
-              </Link>
-            </div>
-          {:else}
-            <p class="dashboard__tile-empty-text">Aucune liste de courses en cours.<br/>Tout est fait ou c'est le moment d'en créer une !</p>
-          {/if}
-        </div>
-      </div>
+              </li>
+            {/each}
+          </ul>
+          <Link href="/recettes" variant="inverse">
+            Voir toutes mes recettes →
+          </Link>
+        {:else}
+          <p class="dashboard__tile-empty-text">Vous n'avez pas encore créé de recette</p>
+        {/if}
+      </DashboardTile>
+
+      <!-- Repas prévus aujourd'hui -->
+      <DashboardTile title="Au menu aujourd'hui" backgroundImage="/assets/images/a8800c87-1ca0-4225-ab1e-adcb646fbf18.png">
+        {#if todaysMeals.length > 0}
+          <ul class="dashboard__meals-compact">
+            {#each todaysMeals as meal}
+              <li class="dashboard__meal-compact-item">
+                {#if meal.recipe}
+                  <a href="/recettes/{meal.recipe.id}" class="dashboard__meal-compact-link">
+                    <div class="dashboard__meal-compact-image">
+                      {#if meal.recipe.imageUrl}
+                        <img src={meal.recipe.imageUrl} alt={meal.recipe.label} />
+                      {:else}
+                        <span class="dashboard__meal-compact-placeholder">🍽️</span>
+                      {/if}
+                    </div>
+                    <div class="dashboard__meal-compact-content">
+                      <span class="dashboard__meal-compact-slot">{meal.slot}</span>
+                      <span class="dashboard__meal-compact-title">{meal.recipe.label}</span>
+                    </div>
+                  </a>
+                {:else}
+                  <div class="dashboard__meal-compact-link dashboard__meal-compact-link--no-recipe">
+                    <div class="dashboard__meal-compact-image">
+                      <span class="dashboard__meal-compact-placeholder">📝</span>
+                    </div>
+                    <div class="dashboard__meal-compact-content">
+                      <span class="dashboard__meal-compact-slot">{meal.slot}</span>
+                      <span class="dashboard__meal-compact-title">{meal.note || 'Repas sans recette'}</span>
+                    </div>
+                  </div>
+                {/if}
+              </li>
+            {/each}
+          </ul>
+        {:else}
+          <p class="dashboard__tile-empty-text">Aucun repas prévu pour aujourd'hui.<br/>Que diriez-vous de planifier quelque chose de bon ?</p>
+        {/if}
+        <Link href="/plannings" variant="inverse">Voir les plannings →</Link>
+      </DashboardTile>
+
+      <!-- Articles à acheter -->
+      <DashboardTile title="Courses en cours" backgroundImage="/assets/images/375f5d6f-4fd3-4293-8af7-84e87db0b4e7.png">
+        {#if shoppingLists.length > 0}
+          <div class="dashboard__shopping-compact">
+            {#each shoppingLists as list}
+              {@const totalItems = list.items.length}
+              {@const checkedItems = list.items.filter((item) => item.checked).length}
+              {@const progress = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0}
+
+              <a href="/shopping-lists/{list.id}" class="dashboard__shopping-list-card">
+                <p class="dashboard__shopping-list-name">{list.name}</p>
+                <div class="dashboard__shopping-list-stats">
+                  <p class="dashboard__shopping-list-count">{checkedItems} article{checkedItems > 1 ? 's' : ''} acheté{checkedItems > 1 ? 's' : ''} sur {totalItems}</p>
+                  <ProgressBar value={checkedItems} max={totalItems} size="small" variant="success" />
+                </div>
+              </a>
+            {/each}
+            <Link href="/shopping-lists" variant="inverse">
+              Voir toutes mes listes →
+            </Link>
+          </div>
+        {:else}
+          <p class="dashboard__tile-empty-text">Aucune liste de courses en cours.<br/>Tout est fait ou c'est le moment d'en créer une !</p>
+        {/if}
+      </DashboardTile>
     </div>
   {/if}
 </div>
@@ -207,7 +196,6 @@
   .dashboard {
     display: flex;
     flex-direction: column;
-    gap: $spacing-2xl;
 
     // Ajouter du padding-top au Hero pour que le logo chevauche
     :global(.hero--compact) {
@@ -221,21 +209,13 @@
 
       // Tablet: logo home = 150px
       @media (min-width: $breakpoint-md) {
-        padding-top: 65px;
+        padding-top: 90px;
       }
 
       // Desktop: logo home = 180px
       @media (min-width: $breakpoint-lg) {
-        padding-top: 80px;
+        padding-top: 50px;
       }
-    }
-
-    // Element: loading
-    &__loading {
-      text-align: center;
-      padding: $spacing-2xl;
-      color: $color-text-secondary;
-      font-size: $font-size-lg;
     }
 
     // Styles globaux pour le titre dans le Hero
@@ -277,100 +257,6 @@
       @media (min-width: $breakpoint-md) {
         grid-template-columns: repeat(3, 1fr);
       }
-    }
-
-    // Element: tile
-    &__tile {
-      background: $color-white;
-      border-radius: $radius-xl;
-      padding: $spacing-lg;
-      box-shadow: $shadow-md;
-
-      // Modifier pour les tiles avec image de fond
-      &--feature {
-        @include retro-grain(0.3);
-        position: relative;
-        background: $brand-tertiary;
-        display: flex;
-        flex-direction: column;
-        padding: $spacing-xl;
-        overflow: hidden;
-        opacity: 0.9;
-      }
-    }
-
-    &__tile-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-size: cover;
-      background-position: center;
-      opacity: 0.3;
-      z-index: 0;
-    }
-
-    &__tile-content {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: $spacing-base;
-      flex: 1;
-
-      :global(.link) {
-        align-self: flex-end;
-      }
-    }
-
-    &__tile-title {
-      text-transform: uppercase;
-      font-family: $font-family-heading;
-      font-size: $title-size-1;
-      font-weight: $font-weight-bold;
-      color: $color-decorative-title;
-      text-shadow: $shadow-decorative-title;
-      margin: 0 0 $spacing-base 0;
-      text-align: center;
-      line-height: 1;
-
-      .dashboard__tile--feature & {
-        color: $color-decorative-title;
-        text-shadow: $shadow-decorative-title;
-        opacity: 0.9;
-      }
-    }
-
-    &__tile-info {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      transition: transform $transition-base;
-
-      &:hover {
-        transform: scale(1.05);
-      }
-    }
-
-    &__tile-label {
-      color: $color-text-inverse;
-      font-weight: $font-weight-bold;
-      text-shadow: $text-shadow-sharp-md;
-      font-size: $font-size-lg;
-      margin: $spacing-xs 0;
-      line-height: $line-height-tight;
-    }
-
-    &__tile-description {
-      color: $color-text-inverse;
-      font-weight: $font-weight-medium;
-      text-shadow: $text-shadow-sharp-sm;
-      font-size: $font-size-base;
-      margin: 0;
-      opacity: 0.9;
     }
 
     &__tile-empty-text {
