@@ -149,19 +149,11 @@
   .drawer {
     background: $color-white;
     width: 100%;
-    max-width: 100%;
+    max-width: 410px;
     height: 100vh;
     display: flex;
     flex-direction: column;
     box-shadow: $drawer-shadow-right $color-black-alpha-10;
-
-    @media (min-width: $breakpoint-md) {
-      max-width: 600px;
-    }
-
-    @media (min-width: $breakpoint-lg) {
-      max-width: 700px;
-    }
 
     // Position variants
     &--right {
@@ -241,6 +233,11 @@
     flex: 1;
     overflow-y: auto;
     padding: $spacing-lg;
+
+    // Réduire le padding sur mobile pour éviter le débordement des selects
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-md;
+    }
 
     // Full body variant (for navigation)
     &--full {

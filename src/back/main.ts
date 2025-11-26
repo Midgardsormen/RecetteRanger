@@ -55,7 +55,7 @@ async function bootstrap() {
       ...(process.env.NODE_ENV === 'development' ? ['http://localhost:5173'] : []),
     ],
     fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-    imgSrc: ["*"],
+    imgSrc: ["*", "data:"],
     scriptSrc: [
       "'self'",
       "'unsafe-inline'", // Nécessaire pour window.__INITIAL_DATA__
@@ -169,9 +169,14 @@ async function bootstrap() {
   // ============================
   // STATIC UPLOADS / PUBLIC
   // ============================
-  // Tu servais déjà "public" à la racine.
-  // On garde le même comportement, mais avec process.cwd()
-  const publicPath = join(process.cwd(), 'dist', 'public');
+  // En développement, servir depuis public/
+  // En production, servir depuis dist/public/ (après build qui copie public -> dist/public)
+  const publicPath =
+    process.env.NODE_ENV === 'production'
+      ? join(process.cwd(), 'dist', 'public')
+      : join(process.cwd(), 'public');
+
+  console.log('[STATIC FILES] Public path:', publicPath);
   app.useStaticAssets(publicPath, {
     prefix: '/',
   });

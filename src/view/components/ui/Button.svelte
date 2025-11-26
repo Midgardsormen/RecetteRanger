@@ -63,9 +63,10 @@
 
     // Par défaut 100% sur mobile, largeur max au-delà de sm
     width: 100%;
-    max-width: 300px;
+    
 
     @media (min-width: $breakpoint-sm) {
+      max-width: 300px;
       width: auto;
     }
 

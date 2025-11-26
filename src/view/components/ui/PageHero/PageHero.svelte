@@ -132,6 +132,8 @@
   }
 
   .page-hero__search {
+    flex: 1; // Permet au SearchBar de prendre l'espace disponible
+
     // Override SearchBar styles for dark background
     :global(.search-bar) {
       background: rgba($color-white, 0.15);
