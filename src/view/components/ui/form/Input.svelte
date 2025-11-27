@@ -58,7 +58,6 @@
     font-family: inherit;
     transition: all $transition-base $transition-ease;
     background: $color-input-background;
-    width: 100%;
 
     &:focus {
       outline: none;

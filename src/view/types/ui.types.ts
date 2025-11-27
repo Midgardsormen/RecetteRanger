@@ -608,3 +608,17 @@ export interface TitleProps {
   gradient?: boolean;
   children?: Snippet;
 }
+
+// ============================================
+// ALERT
+// ============================================
+
+export type AlertVariant = 'info' | 'success' | 'warning' | 'error' | 'neutral';
+
+export interface AlertProps {
+  variant?: AlertVariant;
+  title?: string;
+  closable?: boolean;
+  onClose?: () => void;
+  children?: Snippet;
+}

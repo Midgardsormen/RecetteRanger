@@ -44,6 +44,7 @@ export { default as Breadcrumb } from './Breadcrumb.svelte';
 export { default as AuthorLink } from './AuthorLink';
 
 // Feedback Components
+export { default as Alert } from './Alert';
 export { default as Loader } from './Loader';
 export { default as Spinner } from './Spinner';
 export { default as Badge } from './Badge.svelte';
