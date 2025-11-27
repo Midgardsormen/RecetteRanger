@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Drawer, ImageUpload, Input, Select, Button } from '../../components/ui';
+  import { Drawer, ImageUpload, Input, Select, Button, Alert } from '../../components/ui';
   import Textarea from '../../components/ui/form/Textarea.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
   import { apiService } from '../../services/api.service';
@@ -335,15 +335,18 @@
     }
   }
 
-  // Calculer le titre en fonction de l'étape et du mode
+  // Calculer le titre en fonction du mode
   function getTitle(): string {
-    const prefix = recipe ? '✏️ Modifier' : '➕ Nouvelle';
-    const suffix = currentStep === 1
-      ? 'Informations'
+    return recipe ? 'Modifier la recette' : 'Ajouter une recette';
+  }
+
+  // Calculer le titre de la section en fonction de l'étape
+  function getSectionTitle(): string {
+    return currentStep === 1
+      ? 'Informations générales'
       : currentStep === 2
       ? 'Ingrédients'
-      : 'Étapes';
-    return `${prefix} recette - ${suffix}`;
+      : 'Étapes de préparation';
   }
 
   // Actions du drawer en fonction de l'étape
@@ -392,6 +395,8 @@
   primaryAction={getPrimaryAction()}
   secondaryAction={getSecondaryAction()}
 >
+  <h2 class="recipe-drawer__section-title">{getSectionTitle()}</h2>
+
   {#if currentStep === 1}
     <!-- ÉTAPE 1 : Informations générales -->
     <form class="recipe-form" onsubmit={(e) => { e.preventDefault(); goToStep(2); }}>
@@ -476,7 +481,9 @@
         placeholder="https://exemple.com/recette"
       />
 
-      <p class="help-text">💡 Créez la recette pour 1 personne. Les quantités seront ajustées automatiquement lors de la consultation.</p>
+      <Alert variant="info">
+        Créez la recette pour 1 personne. Les quantités seront ajustées automatiquement lors de la consultation.
+      </Alert>
 
       <!-- Matériel -->
       <div class="form-field">
@@ -775,10 +782,21 @@
   $border-color: $color-gray-200;
   $spacing-base: 1rem;
 
+  .recipe-drawer {
+    &__section-title {
+      margin: 0 0 $spacing-base * 1.5 0;
+      color: $primary-color;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-bottom: 2px solid rgba($primary-color, 0.2);
+      padding-bottom: $spacing-base * 0.75;
+    }
+  }
+
   .recipe-form {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 1.5;
+    gap: $spacing-base * 0.75;
   }
 
   .form-field {
@@ -797,6 +815,10 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: $spacing-base;
+
+    @media (max-width: $breakpoint-sm) {
+      grid-template-columns: 1fr;
+    }
   }
 
   .form-error {
@@ -805,21 +827,15 @@
     margin-top: $spacing-base * 0.5;
   }
 
-  .help-text {
-    margin: -0.5rem 0 0 0;
-    padding: 0.75rem;
-    background: rgba($brand-primary, 0.05);
-    border-left: 3px solid $primary-color;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    color: $text-gray;
-    line-height: 1.5;
-  }
-
   .list-input-container {
     display: flex;
     gap: $spacing-base * 0.5;
     align-items: flex-end;
+
+    @media (max-width: $breakpoint-sm) {
+      flex-direction: column;
+      align-items: stretch;
+    }
   }
 
   .tags-container {

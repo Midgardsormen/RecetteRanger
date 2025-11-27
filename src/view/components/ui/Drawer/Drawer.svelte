@@ -5,7 +5,7 @@
   import type { DrawerProps } from '../../../types/ui.types';
   import { DRAWER_DEFAULTS, DRAWER_LABELS, DRAWER_SIZES } from './Drawer.config';
   import { setupFocusTrap, setupBodyScrollLock } from './Drawer.actions';
-  import { X, ChevronLeft } from 'lucide-svelte';
+  import { X, ArrowLeft } from 'lucide-svelte';
 
   let {
     isOpen = DRAWER_DEFAULTS.isOpen,
@@ -56,29 +56,32 @@
         class:drawer__header--navigation={variant === 'navigation'}
         class="drawer__header"
       >
-        {#if showBackButton && onBack}
-          <IconButton
-            variant={variant === 'navigation' ? 'ghost-inverse' : 'default'}
-            size="large"
-            onclick={onBack}
-            ariaLabel={DRAWER_LABELS.backAriaLabel}
-          >
-            <ChevronLeft size={24} />
-          </IconButton>
-        {/if}
+        <span class="drawer__back" class:drawer__back--hidden={!showBackButton || !onBack}>
+          {#if showBackButton && onBack}
+            <IconButton
+              variant={variant === 'navigation' ? 'ghost-inverse' : 'default'}
+              size="large"
+              onclick={onBack}
+              ariaLabel={DRAWER_LABELS.backAriaLabel}
+            >
+              <ArrowLeft size={24} />
+            </IconButton>
+          {/if}
+        </span>
 
         {#if title}
           <h2 id="drawer-title" class="drawer__title">{title}</h2>
         {/if}
-
-        <IconButton
-          variant={variant === 'navigation' ? 'ghost-inverse' : 'danger'}
-          size="large"
-          onclick={onClose}
-          ariaLabel={DRAWER_LABELS.closeAriaLabel}
-        >
-          <X size={24} />
-        </IconButton>
+        <span class="drawer__close">
+          <IconButton
+            variant={variant === 'navigation' ? 'ghost-inverse' : 'default'}
+            size="large"
+            onclick={onClose}
+            ariaLabel={DRAWER_LABELS.closeAriaLabel}
+          >
+            <X size={24} />
+          </IconButton>
+        </span>
       </div>
 
       <!-- Body -->
@@ -119,6 +122,33 @@
 <style lang="scss">
   @use '../../../styles/variables' as *;
 
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
   .drawer-overlay {
     position: fixed;
     top: 0;
@@ -134,15 +164,6 @@
 
     &--left {
       justify-content: flex-start;
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
     }
   }
 
@@ -180,102 +201,98 @@
       background: $brand-primary;
       padding: 0;
     }
-  }
 
-  @keyframes slideInRight {
-    from {
-      transform: translateX(100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
-
-  @keyframes slideInLeft {
-    from {
-      transform: translateX(-100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
-
-  .drawer__header {
-    display: flex;
-    align-items: center;
-    gap: $spacing-base;
-    padding: $spacing-lg;
-    border-bottom: 1px solid $color-border-primary;
-    background: $color-white;
-    position: sticky;
-    top: 0;
-    z-index: $z-index-drawer-header;
-    min-height: $drawer-header-min-height;
-
-    &--navigation {
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: $spacing-base;
       padding: $spacing-sm;
-      justify-content: flex-end;
-      min-height: auto;
-      background: none;
-      border-bottom: none;
-    }
-  }
+      border-bottom: 1px solid $color-border-primary;
+      background: $color-white;
+      position: sticky;
+      top: 0;
+      z-index: $z-index-drawer-header;
+      min-height: $drawer-header-min-height;
 
-  .drawer__title {
-    flex: 1;
-    margin: 0;
-    color: $color-text-primary;
-    font-size: $font-size-2xl;
-    font-weight: $font-weight-semibold;
-  }
-
-  .drawer__body {
-    flex: 1;
-    overflow-y: auto;
-    padding: $spacing-lg;
-
-    // Réduire le padding sur mobile pour éviter le débordement des selects
-    @media (max-width: $breakpoint-sm) {
-      padding: $spacing-md;
-    }
-
-    // Full body variant (for navigation)
-    &--full {
-      padding: 0;
-      height: 100%;
-      overflow-y: auto; // Scroll uniquement si nécessaire
-    }
-
-    // Custom scrollbar
-    &::-webkit-scrollbar {
-      width: $drawer-scrollbar-width;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: $color-gray-100;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: $color-gray-200;
-      border-radius: $radius-sm;
-
-      &:hover {
-        background: $color-gray-400;
+      &--navigation {
+        padding: $spacing-sm;
+        justify-content: flex-end;
+        min-height: auto;
+        background: none;
+        border-bottom: none;
       }
     }
 
-    // Firefox scrollbar
-    scrollbar-width: thin;
-    scrollbar-color: $color-gray-200 $color-gray-100;
-  }
+    &__back {
+      display: flex;
+      align-items: center;
+      min-width: 48px; // Réserver l'espace pour le bouton
 
-  .drawer__footer {
-    display: flex;
-    gap: $spacing-base;
-    padding: $spacing-lg;
-    border-top: 1px solid $color-border-primary;
-    background: $color-white;
-    position: sticky;
-    bottom: 0;
+      &--hidden {
+        visibility: hidden; // Cache le bouton mais garde l'espace
+      }
+    }
+
+    &__title {
+      flex: 1;
+      margin: 0;
+      color: $color-text-primary;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+    }
+
+    &__close {
+      align-self: flex-start;
+    }
+
+    &__body {
+      flex: 1;
+      overflow-y: auto;
+      padding: $spacing-lg $spacing-sm;
+      background-color: $color-background-light;
+
+      // Réduire le padding sur mobile pour éviter le débordement des selects
+      @media (min-width: $breakpoint-sm) {
+        padding: $spacing-xl $spacing-sm;
+      }
+      // Full body variant (for navigation)
+      &--full {
+        padding: 0;
+        height: 100%;
+        overflow-y: auto; // Scroll uniquement si nécessaire
+      }
+
+      // Custom scrollbar
+      &::-webkit-scrollbar {
+        width: $drawer-scrollbar-width;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: $color-gray-100;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: $color-gray-200;
+        border-radius: $radius-sm;
+
+        &:hover {
+          background: $color-gray-400;
+        }
+      }
+
+      // Firefox scrollbar
+      scrollbar-width: thin;
+      scrollbar-color: $color-gray-200 $color-gray-100;
+    }
+
+    &__footer {
+      display: flex;
+      gap: $spacing-base;
+      padding: $spacing-lg;
+      border-top: 1px solid $color-border-primary;
+      background: $color-white;
+      position: sticky;
+      bottom: 0;
+    }
   }
 </style>

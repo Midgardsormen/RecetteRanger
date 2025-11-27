@@ -39,7 +39,7 @@
     // Mobile-first: Logo centré et plus grand pour les pages internes
     position: absolute;
     top: 0;
-    left: 100px;
+    left: 110px;
     transform: translateX(-50%);
     width: 85px;
     height: 85px;
@@ -135,9 +135,9 @@
       // Mobile: centré pour éviter le chevauchement avec le burger menu
       position: absolute;
       top: 0;
-      width: 110px;
-      height: 110px;
-      left: 100px;
+      width: 100px;
+      height: 100px;
+      left: 110px;
       
       transform: translateX(-50%);
       box-shadow:

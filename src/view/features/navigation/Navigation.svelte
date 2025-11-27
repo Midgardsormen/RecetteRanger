@@ -72,8 +72,7 @@
               aria-current={isActive(item.href) ? 'page' : undefined}
               onclick={handleNavClick}
             >
-              <span class="mobile-nav__icon">{item.icon}</span>
-              <span class="mobile-nav__label">{item.label}</span>
+                <span class="mobile-nav__label">{item.label}</span>
             </a>
           </li>
         {/each}
