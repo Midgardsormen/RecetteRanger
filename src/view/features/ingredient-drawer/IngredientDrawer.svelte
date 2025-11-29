@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { Drawer, ImageUpload, Input, Select, Checkbox, RadioGroup, Tag } from '../../components/ui';
-  import { apiService } from '../../services/api.service';
+  import { Drawer, ImageUpload, Input, Select, Checkbox, RadioGroup, Tag, FormField } from '../../components/ui';
+  import { Pencil, Plus, Search, AlertTriangle } from 'lucide-svelte';
   import type { Ingredient, CreateIngredientDto, SimilarIngredient } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, UnitLabels, MONTHS } from '../../types/ingredient.types';
+  import { validateIngredientForm, type ValidationErrors } from './validation';
+  import { checkDuplicates, saveIngredient } from './actions';
 
   interface Props {
     isOpen?: boolean;
@@ -29,7 +31,7 @@
 
   // Validation et état
   let saving = $state(false);
-  let errors = $state<Record<string, string>>({});
+  let errors = $state<ValidationErrors>({});
 
   // Réinitialiser le formulaire quand l'ingrédient change ou quand le drawer s'ouvre
   $effect(() => {
@@ -63,21 +65,10 @@
     }
   });
 
-  async function checkDuplicates() {
-    if (label.length < 2) {
-      similarIngredients = [];
-      return;
-    }
-
+  async function handleCheckDuplicates() {
     checkingDuplicates = true;
     try {
-      const result = await apiService.checkDuplicates(label);
-      // Si on est en mode édition, exclure l'ingrédient en cours d'édition
-      similarIngredients = result.similarIngredients.filter(
-        (sim: SimilarIngredient) => sim.id !== ingredient?.id
-      );
-    } catch (err) {
-      console.error('Erreur lors de la vérification des doublons:', err);
+      similarIngredients = await checkDuplicates(label, ingredient?.id);
     } finally {
       checkingDuplicates = false;
     }
@@ -86,14 +77,14 @@
   function handleLabelInput() {
     errors.label = '';
     clearTimeout(duplicateCheckTimeout);
-    duplicateCheckTimeout = setTimeout(checkDuplicates, 500);
+    duplicateCheckTimeout = setTimeout(handleCheckDuplicates, 500);
   }
 
-  function toggleUnit(unit: Unit) {
-    if (selectedUnits.has(unit)) {
-      selectedUnits.delete(unit);
-    } else {
+  function toggleUnit(unit: Unit, isChecked: boolean) {
+    if (isChecked) {
       selectedUnits.add(unit);
+    } else {
+      selectedUnits.delete(unit);
     }
     selectedUnits = new Set(selectedUnits);
     errors.units = '';
@@ -108,45 +99,11 @@
     selectedMonths = new Set(selectedMonths);
   }
 
-  function validate(): boolean {
-    errors = {};
-    let isValid = true;
-
-    if (label.trim().length < 2) {
-      errors.label = 'Le nom doit contenir au moins 2 caractères';
-      isValid = false;
-    }
-
-    if (selectedUnits.size === 0) {
-      errors.units = 'Veuillez sélectionner au moins une unité';
-      isValid = false;
-    }
-
-    if (imageUrl && !isValidUrl(imageUrl)) {
-      errors.imageUrl = 'URL invalide';
-      isValid = false;
-    }
-
-    return isValid;
-  }
-
-  function isValidUrl(url: string): boolean {
-    // Accepter les chemins relatifs qui commencent par /
-    if (url.startsWith('/')) {
-      return true;
-    }
-
-    // Valider les URLs complètes
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
   async function handleSubmit() {
-    if (!validate()) {
+    const validation = validateIngredientForm(label, selectedUnits, imageUrl);
+
+    if (!validation.isValid) {
+      errors = validation.errors;
       return;
     }
 
@@ -159,15 +116,10 @@
         units: Array.from(selectedUnits),
         imageUrl: imageUrl.trim() || undefined,
         seasonMonths: Array.from(selectedMonths),
-        isFood: showFoodTypeSelector ? articleType === 'food' : true, // Si le sélecteur est affiché, utiliser articleType, sinon toujours alimentaire
+        isFood: showFoodTypeSelector ? articleType === 'food' : true,
       };
 
-      if (ingredient) {
-        await apiService.updateIngredient(ingredient.id, data);
-      } else {
-        await apiService.createIngredient(data);
-      }
-
+      await saveIngredient(ingredient, data);
       onSave();
     } catch (err: any) {
       alert('Erreur : ' + err.message);
@@ -175,11 +127,15 @@
       saving = false;
     }
   }
+
+  // Computed property pour l'icône du titre
+  const titleIcon = $derived(ingredient ? Pencil : Plus);
+  const titleText = $derived(ingredient ? "Modifier l'ingrédient" : "Ajouter un ingrédient");
 </script>
 
 <Drawer
   {isOpen}
-  title={ingredient ? '✏️ Modifier l\'ingrédient' : '➕ Ajouter un ingrédient'}
+  title={titleText}
   {onClose}
   primaryAction={{
     label: ingredient ? 'Modifier' : 'Ajouter',
@@ -194,46 +150,56 @@
 >
   <form class="ingredient-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
     <!-- Nom de l'ingrédient -->
-    <Input
-      id="label"
+    <FormField
+      name="label"
       label={showFoodTypeSelector ? "Nom de l'article" : "Nom de l'ingrédient"}
-      bind:value={label}
-      oninput={handleLabelInput}
-      placeholder={articleType === 'food' ? "Ex: Tomate" : "Ex: Lessive"}
       required
       error={errors.label}
-    />
+      variant="inverse"
+    >
+      <Input
+        id="label"
+        bind:value={label}
+        oninput={handleLabelInput}
+        placeholder={articleType === 'food' ? "Ex: Tomate" : "Ex: Lessive"}
+        required
+      />
+    </FormField>
 
     <!-- Type d'article (alimentaire/non-alimentaire) - optionnel -->
     {#if showFoodTypeSelector}
-      <RadioGroup
-        label="Type d'article"
-        name="articleType"
-        bind:value={articleType}
-        options={[
-          {
-            value: 'food',
-            label: 'Alimentaire',
-            description: 'Produits alimentaires et ingrédients de cuisine'
-          },
-          {
-            value: 'non-food',
-            label: 'Non-alimentaire',
-            description: 'Articles ménagers, hygiène, etc.'
-          }
-        ]}
-      />
+      <FormField name="articleType" label="Type d'article" variant="inverse">
+        <RadioGroup
+          name="articleType"
+          bind:value={articleType}
+          variant="inverse"
+          options={[
+            {
+              value: 'food',
+              label: 'Alimentaire',
+              description: 'Produits alimentaires et ingrédients de cuisine'
+            },
+            {
+              value: 'non-food',
+              label: 'Non-alimentaire',
+              description: 'Articles ménagers, hygiène, etc.'
+            }
+          ]}
+        />
+      </FormField>
     {/if}
 
     <!-- Détection de doublons -->
     {#if checkingDuplicates}
       <div class="duplicates-check">
-        <span>🔍 Vérification des doublons...</span>
+        <Search size={16} />
+        <span>Vérification des doublons...</span>
       </div>
     {:else if similarIngredients.length > 0}
       <div class="duplicates">
         <p class="duplicates__title">
-          ⚠️ Ingrédients similaires trouvés :
+          <AlertTriangle size={16} />
+          Ingrédients similaires trouvés :
         </p>
         <ul class="duplicates__list">
           {#each similarIngredients as similar}
@@ -251,41 +217,45 @@
     {/if}
 
     <!-- Catégorie -->
-    <Select
-      id="aisle"
-      label="Catégorie"
-      bind:value={aisle}
-      required
-    >
-      {#each Object.entries(StoreAisleLabels) as [key, label]}
-        <option value={key}>{label}</option>
-      {/each}
-    </Select>
+    <FormField name="aisle" label="Catégorie" required variant="inverse">
+      <Select
+        id="aisle"
+        bind:value={aisle}
+        required
+      >
+        {#each Object.entries(StoreAisleLabels) as [key, label]}
+          <option value={key}>{label}</option>
+        {/each}
+      </Select>
+    </FormField>
 
     <!-- Unités -->
-    <div class="form-field">
-      <label class="form-label">
-        Unités disponibles <span class="required">*</span>
-      </label>
+    <FormField
+      name="units"
+      label="Unités disponibles"
+      required
+      error={errors.units}
+      variant="inverse"
+    >
       <div class="checkbox-grid">
         {#each Object.entries(UnitLabels) as [key, unitLabel]}
           <Checkbox
             checked={selectedUnits.has(key as Unit)}
             label={unitLabel}
-            onchange={() => toggleUnit(key as Unit)}
+            variant="inverse"
+            onChange={(isChecked) => toggleUnit(key as Unit, isChecked)}
           />
         {/each}
       </div>
-      {#if errors.units}
-        <span class="form-error">{errors.units}</span>
-      {/if}
-    </div>
+    </FormField>
 
     <!-- Image de l'ingrédient -->
-    <div class="form-field">
-      <label class="form-label">
-        Image de l'ingrédient (optionnel)
-      </label>
+    <FormField
+      name="imageUrl"
+      label="Image de l'ingrédient (optionnel)"
+      error={errors.imageUrl}
+      variant="inverse"
+    >
       <ImageUpload
         value={imageUrl}
         onUpload={(url) => {
@@ -295,25 +265,22 @@
         aspectRatio={1}
         cropShape="rect"
         maxSizeMB={5}
+        variant="inverse"
       />
-      {#if errors.imageUrl}
-        <span class="form-error">{errors.imageUrl}</span>
-      {/if}
-    </div>
+    </FormField>
 
     <!-- Mois de saison (uniquement pour les articles alimentaires) -->
     {#if !showFoodTypeSelector || articleType === 'food'}
-      <div class="form-field">
-        <label class="form-label">
-          Mois de disponibilité (optionnel)
-        </label>
-        <p class="form-hint">
-          Sélectionnez les mois où cet ingrédient est de saison
-        </p>
+      <FormField
+        name="seasonMonths"
+        label="Mois de disponibilité (optionnel)"
+        helper="Sélectionnez les mois où cet ingrédient est de saison"
+        variant="inverse"
+      >
         <div class="months-grid">
           {#each MONTHS as { value, label }}
             <Tag
-              variant={selectedMonths.has(value) ? 'success' : 'neutral'}
+              variant={selectedMonths.has(value) ? 'success-inverse' : 'neutral-inverse'}
               size="small"
               onclick={() => toggleMonth(value)}
             >
@@ -321,172 +288,57 @@
             </Tag>
           {/each}
         </div>
-      </div>
+      </FormField>
     {/if}
   </form>
 </Drawer>
 
 <style lang="scss">
   @use '../../styles/variables' as *;
-  $primary-color: $brand-primary;
-  $secondary-color: $brand-secondary;
-  $danger-color: $color-danger;
-  $warning-color: $color-warning;
-  $white: $color-white;
-  $text-dark: $color-gray-800;
-  $text-gray: $color-gray-600;
-  $border-color: $color-gray-200;
-  $spacing-base: 1rem;
 
   .ingredient-form {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 1.5;
-  }
-
-  .form-field {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-base * 0.5;
-  }
-
-  .form-label {
-    color: $text-dark;
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
-  .required {
-    color: $danger-color;
-  }
-
-  .form-input {
-    width: 100%;
-    padding: $spacing-base * 0.75;
-    border: 2px solid $border-color;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.2s;
-
-    &:focus {
-      outline: none;
-      border-color: $primary-color;
-    }
-
-    &--error {
-      border-color: $danger-color;
-    }
-  }
-
-  .form-select {
-    width: 100%;
-    padding: $spacing-base * 0.75;
-    border: 2px solid $border-color;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.2s;
-
-    &:focus {
-      outline: none;
-      border-color: $primary-color;
-    }
-  }
-
-  .form-error {
-    color: $danger-color;
-    font-size: 0.9rem;
-  }
-
-  .form-hint {
-    margin: 0;
-    color: $text-gray;
-    font-size: 0.9rem;
+    gap: $spacing-lg;
   }
 
   .checkbox-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: $spacing-base * 0.5;
-  }
-
-  .checkbox {
-    display: flex;
-    align-items: center;
-    gap: $spacing-base * 0.5;
-    padding: $spacing-base * 0.5;
-    border: 2px solid $border-color;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      border-color: $primary-color;
-      background: rgba($brand-primary, 0.05);
-    }
-
-    input {
-      cursor: pointer;
-    }
-
-    span {
-      font-size: 0.9rem;
-    }
+    gap: $spacing-sm;
   }
 
   .months-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: $spacing-base * 0.5;
-  }
-
-  .month-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: $spacing-base * 0.5;
-    border: 2px solid $border-color;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    input {
-      display: none;
-    }
-
-    span {
-      font-size: 0.85rem;
-    }
-
-    &:has(input:checked) {
-      background: $primary-color;
-      color: $white;
-      border-color: transparent;
-    }
-
-    &:hover {
-      border-color: $primary-color;
-    }
+    gap: $spacing-sm;
   }
 
   .duplicates-check {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
     padding: $spacing-base;
-    background: rgba($brand-primary, 0.1);
-    border-radius: 8px;
-    color: $primary-color;
-    font-size: 0.9rem;
+    background: $color-primary-alpha-10;
+    border-radius: $radius-lg;
+    color: $brand-primary;
+    font-size: $font-size-sm;
   }
 
   .duplicates {
     padding: $spacing-base;
     background: $color-warning-alpha-10;
-    border: 2px solid $warning-color;
-    border-radius: 8px;
+    border: $border-width-base solid $color-warning;
+    border-radius: $radius-lg;
 
     &__title {
-      margin: 0 0 $spacing-base * 0.5 0;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      margin: 0 0 $spacing-sm 0;
       color: $color-warning;
-      font-weight: 600;
-      font-size: 0.9rem;
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-sm;
     }
 
     &__list {
@@ -499,10 +351,10 @@
       display: flex;
       align-items: center;
       gap: $spacing-base;
-      padding: $spacing-base * 0.5;
-      background: $white;
-      border-radius: 6px;
-      margin-bottom: $spacing-base * 0.5;
+      padding: $spacing-sm;
+      background: $color-white;
+      border-radius: $radius-md;
+      margin-bottom: $spacing-sm;
 
       &:last-child {
         margin-bottom: 0;
@@ -511,29 +363,29 @@
 
     &__name {
       flex: 1;
-      font-weight: 600;
-      font-size: 0.9rem;
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-sm;
     }
 
     &__aisle {
-      color: $text-gray;
-      font-size: 0.85rem;
+      color: $color-text-secondary;
+      font-size: $font-size-xs;
     }
 
     &__similarity {
-      padding: $spacing-base * 0.25 $spacing-base * 0.5;
-      background: $warning-color;
-      color: $white;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      padding: $spacing-xs $spacing-sm;
+      background: $color-warning;
+      color: $color-white;
+      border-radius: $radius-sm;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
     }
 
     &__warning {
       margin: 0;
       color: $color-warning;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
     }
   }
 </style>

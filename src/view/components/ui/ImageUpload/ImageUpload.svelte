@@ -201,14 +201,14 @@
         />
         <div class="image-upload__preview-actions">
           <Button
-            variant="ghost"
+            variant={variant === 'inverse' ? 'ghost-inverse' : 'ghost'}
             size="medium"
             onclick={() => fileInput?.click()}
           >
             {IMAGE_UPLOAD_MESSAGES.change}
           </Button>
           <Button
-            variant="danger"
+            variant={variant === 'inverse' ? 'danger-inverse' : 'danger'}
             size="medium"
             onclick={handleRemove}
           >
@@ -271,14 +271,14 @@
 
       <div class="image-upload__cropper-actions">
         <Button
-          variant="ghost"
+          variant={variant === 'inverse' ? 'ghost-inverse' : 'ghost'}
           onclick={handleCancel}
           disabled={uploading}
         >
           {IMAGE_UPLOAD_MESSAGES.cancel}
         </Button>
         <Button
-          variant="primary"
+          variant={variant === 'inverse' ? 'primary-inverse' : 'primary'}
           onclick={handleCrop}
           disabled={uploading}
         >
@@ -340,7 +340,8 @@
       background: $color-primary-alpha-03;
       cursor: pointer;
       transition: all $transition-base $transition-ease;
-      padding: $spacing-xl;
+      padding: $spacing-lg;
+      box-sizing: border-box;
 
       &:hover {
         border-color: $brand-primary;
