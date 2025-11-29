@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { Input, Select, Button, SectionTitle, SelectableCard, Checkbox } from '../../components/ui';
+  import { Input, Select, Button, SectionTitle, SelectableCard, Checkbox, FormField } from '../../components/ui';
   import { IngredientDrawer } from '../ingredient-drawer';
   import { apiService } from '../../services/api.service';
   import type { RecipeFormData, RecipeIngredientInput } from '../../types/recipe.types';
   import type { Ingredient } from '../../types/ingredient.types';
   import { UnitLabels } from '../../types/ingredient.types';
+  import { addToList, removeFromList, updateInList } from '../../utils/listManagement';
 
   interface Props {
     formData: RecipeFormData;
@@ -61,8 +62,8 @@
       availableUnits: ingredient.units
     };
 
-    onUpdate({
-      ingredients: [newIngredient, ...formData.ingredients]
+    addToList(newIngredient, formData.ingredients, (updated) => {
+      onUpdate({ ingredients: updated });
     });
 
     // Réinitialiser le champ de recherche
@@ -70,15 +71,15 @@
   }
 
   function removeIngredient(index: number) {
-    const updated = [...formData.ingredients];
-    updated.splice(index, 1);
-    onUpdate({ ingredients: updated });
+    removeFromList(index, formData.ingredients, (updated) => {
+      onUpdate({ ingredients: updated });
+    });
   }
 
   function updateIngredient(index: number, updates: Partial<RecipeIngredientInput>) {
-    const updated = [...formData.ingredients];
-    updated[index] = { ...updated[index], ...updates };
-    onUpdate({ ingredients: updated });
+    updateInList(index, updates, formData.ingredients, (updated) => {
+      onUpdate({ ingredients: updated });
+    });
   }
 
   function handleIngredientCreated() {
@@ -89,16 +90,18 @@
 
 <div class="recipe-step2">
   <div class="recipe-step2__search">
-    <Input
-      id="ingredient-search"
-      label="Rechercher un ingrédient"
-      value={ingredientSearchQuery}
-      oninput={(e) => {
-        ingredientSearchQuery = e.currentTarget.value;
-        loadIngredients();
-      }}
-      placeholder="Tapez pour rechercher..."
-    />
+    <FormField name="ingredient-search" label="Rechercher un ingrédient" variant="inverse">
+      <Input
+        id="ingredient-search"
+        type="text"
+        value={ingredientSearchQuery}
+        oninput={(e) => {
+          ingredientSearchQuery = e.currentTarget.value;
+          loadIngredients();
+        }}
+        placeholder="Tapez pour rechercher..."
+      />
+    </FormField>
     <Button
       variant="outlined-inverse"
       onclick={() => { showIngredientDrawer = true; }}
@@ -221,7 +224,7 @@
     &__error {
       color: $color-danger;
       font-size: 0.9rem;
-      margin-top: $spacing-xxs;
+      margin-top: $spacing-2xs;
     }
 
     // Element: generic message (loading, no results)
@@ -235,7 +238,7 @@
     &__results {
       display: flex;
       flex-direction: column;
-      gap: $spacing-xxs;
+      gap: $spacing-2xs;
     }
 
     // Element: result-item (individual search result)

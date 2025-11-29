@@ -1,16 +1,19 @@
 <script lang="ts">
+  import { getFormFieldContext } from './formFieldContext';
   import FormField from './FormField.svelte';
 
   interface Props {
     id?: string;
+    name?: string;
     type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
     value?: string | number;
     placeholder?: string;
-    label?: string;
-    required?: boolean;
     disabled?: boolean;
+    required?: boolean;
+    label?: string;
     error?: string;
     hint?: string;
+    variant?: 'default' | 'inverse';
     oninput?: (e: Event) => void;
     onchange?: (e: Event) => void;
     onblur?: (e: Event) => void;
@@ -18,34 +21,79 @@
 
   let {
     id,
+    name,
     type = 'text',
     value = $bindable(''),
     placeholder = '',
-    label,
-    required = false,
     disabled = false,
+    required = false,
+    label,
     error = '',
     hint = '',
+    variant = 'default',
     oninput,
     onchange,
     onblur
   }: Props = $props();
+
+  // Récupérer le contexte du FormField parent (optionnel)
+  const ctx = getFormFieldContext();
+
+  // Déterminer si on doit wrapper avec FormField
+  const shouldWrapWithFormField = !ctx && (label || error || hint);
+
+  function handleInput(e: Event) {
+    const target = e.currentTarget as HTMLInputElement;
+
+    // Si on a un contexte FormField, l'utiliser
+    if (ctx) {
+      ctx.setValue(target.value);
+    } else {
+      // Sinon, mettre à jour la valeur directement
+      value = target.value;
+    }
+
+    oninput?.(e);
+  }
+
+  function handleBlur(e: Event) {
+    if (ctx) {
+      ctx.touched = true;
+    }
+    onblur?.(e);
+  }
 </script>
 
-<FormField {label} {required} {error} {hint}>
+{#if shouldWrapWithFormField}
+  <FormField {name} {label} helper={hint} {error} {required} bind:value {disabled} {variant}>
+    <input
+      {id}
+      {type}
+      {placeholder}
+      class="input"
+      oninput={oninput}
+      onchange={onchange}
+      onblur={onblur}
+    />
+  </FormField>
+{:else}
   <input
-    {id}
+    id={ctx?.id ?? id}
+    name={ctx?.name ?? name}
     {type}
     {placeholder}
-    {disabled}
+    value={ctx?.value ?? value}
+    disabled={ctx?.disabled ?? disabled}
+    required={ctx?.required ?? required}
     class="input"
-    class:input--error={error}
-    bind:value
-    {oninput}
-    {onchange}
-    {onblur}
+    class:input--error={ctx?.error}
+    aria-invalid={ctx?.error ? true : undefined}
+    aria-describedby={ctx?.describedBy || undefined}
+    oninput={handleInput}
+    onchange={onchange}
+    onblur={handleBlur}
   />
-</FormField>
+{/if}
 
 <style lang="scss">
   @use '../../../styles/variables' as *;

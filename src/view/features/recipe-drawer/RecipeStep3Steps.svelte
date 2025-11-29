@@ -2,6 +2,7 @@
   import { Input, Button } from '../../components/ui';
   import Textarea from '../../components/ui/form/Textarea.svelte';
   import type { RecipeFormData, StepInput } from '../../types/recipe.types';
+  import { appendToList, removeFromList, updateInList, moveUpInList, moveDownInList } from '../../utils/listManagement';
 
   interface Props {
     formData: RecipeFormData;
@@ -17,39 +18,33 @@
       description: '',
       durationMinutes: ''
     };
-    onUpdate({
-      steps: [...formData.steps, newStep]
+    appendToList(newStep, formData.steps, (updated) => {
+      onUpdate({ steps: updated });
     });
   }
 
   function removeStep(index: number) {
-    const updated = [...formData.steps];
-    updated.splice(index, 1);
-    onUpdate({ steps: updated });
+    removeFromList(index, formData.steps, (updated) => {
+      onUpdate({ steps: updated });
+    });
   }
 
   function moveStepUp(index: number) {
-    if (index === 0) return;
-    const updated = [...formData.steps];
-    const temp = updated[index];
-    updated[index] = updated[index - 1];
-    updated[index - 1] = temp;
-    onUpdate({ steps: updated });
+    moveUpInList(index, formData.steps, (updated) => {
+      onUpdate({ steps: updated });
+    });
   }
 
   function moveStepDown(index: number) {
-    if (index === formData.steps.length - 1) return;
-    const updated = [...formData.steps];
-    const temp = updated[index];
-    updated[index] = updated[index + 1];
-    updated[index + 1] = temp;
-    onUpdate({ steps: updated });
+    moveDownInList(index, formData.steps, (updated) => {
+      onUpdate({ steps: updated });
+    });
   }
 
   function updateStep(index: number, updates: Partial<StepInput>) {
-    const updated = [...formData.steps];
-    updated[index] = { ...updated[index], ...updates };
-    onUpdate({ steps: updated });
+    updateInList(index, updates, formData.steps, (updated) => {
+      onUpdate({ steps: updated });
+    });
   }
 </script>
 
@@ -139,7 +134,7 @@
     &__error {
       color: $color-danger;
       font-size: 0.9rem;
-      margin-top: $spacing-xxs;
+      margin-top: $spacing-2xs;
     }
 
     // Element: message (no steps)
@@ -177,7 +172,7 @@
     // Element: actions container
     &__actions {
       display: flex;
-      gap: $spacing-xxs;
+      gap: $spacing-2xs;
     }
 
     // Element: action-btn
@@ -187,7 +182,7 @@
       color: $color-gray-600;
       font-size: 1rem;
       cursor: pointer;
-      padding: $spacing-xxs $spacing-xxs;
+      padding: $spacing-2xs $spacing-2xs;
       border-radius: 6px;
       transition: all 0.2s;
       font-weight: 600;

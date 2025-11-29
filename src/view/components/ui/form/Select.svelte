@@ -1,15 +1,18 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import { getFormFieldContext } from './formFieldContext';
   import FormField from './FormField.svelte';
 
   interface Props {
     id?: string;
+    name?: string;
     value?: string | number;
-    label?: string;
-    required?: boolean;
     disabled?: boolean;
+    required?: boolean;
+    label?: string;
     error?: string;
     hint?: string;
+    variant?: 'default' | 'inverse';
     options?: Array<{ value: string | number; label: string }>;
     children?: Snippet;
     onchange?: (e: Event) => void;
@@ -17,26 +20,69 @@
 
   let {
     id,
+    name,
     value = $bindable(''),
-    label,
-    required = false,
     disabled = false,
+    required = false,
+    label,
     error = '',
     hint = '',
+    variant = 'default',
     options = [],
     children,
     onchange
   }: Props = $props();
+
+  // Récupérer le contexte du FormField parent (optionnel)
+  const ctx = getFormFieldContext();
+
+  // Déterminer si on doit wrapper avec FormField
+  const shouldWrapWithFormField = !ctx && (label || error || hint);
+
+  function handleChange(e: Event) {
+    const target = e.currentTarget as HTMLSelectElement;
+
+    // Si on a un contexte FormField, l'utiliser
+    if (ctx) {
+      ctx.setValue(target.value);
+      ctx.touched = true;
+    } else {
+      // Sinon, mettre à jour la valeur directement
+      value = target.value;
+    }
+
+    onchange?.(e);
+  }
 </script>
 
-<FormField {label} {required} {error} {hint}>
+{#if shouldWrapWithFormField}
+  <FormField {name} {label} helper={hint} {error} {required} bind:value {disabled} {variant}>
+    <select
+      {id}
+      class="select"
+      onchange={onchange}
+    >
+      {#if options.length > 0}
+        {#each options as option}
+          <option value={option.value}>{option.label}</option>
+        {/each}
+      {:else if children}
+        {@render children()}
+      {/if}
+    </select>
+  </FormField>
+{:else}
   <select
-    {id}
-    {disabled}
+    id={ctx?.id ?? id}
+    name={ctx?.name ?? name}
+    value={ctx?.value ?? value}
+    disabled={ctx?.disabled ?? disabled}
+    required={ctx?.required ?? required}
     class="select"
-    class:select--error={error}
-    bind:value
-    {onchange}
+    class:select--error={ctx?.error}
+    aria-invalid={ctx?.error ? true : undefined}
+    aria-describedby={ctx?.describedBy || undefined}
+    onchange={handleChange}
   >
     {#if options.length > 0}
       {#each options as option}
@@ -46,7 +92,7 @@
       {@render children()}
     {/if}
   </select>
-</FormField>
+{/if}
 
 <style lang="scss">
   @use '../../../styles/variables' as *;
