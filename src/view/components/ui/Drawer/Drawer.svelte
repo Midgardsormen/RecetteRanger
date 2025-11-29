@@ -198,8 +198,9 @@
 
     // Variant navigation
     &--navigation {
-      background: $brand-primary;
+      background: $drawer-body-background;
       padding: 0;
+      max-width: 320px; // Largeur réduite pour le menu de navigation
     }
 
     &__header {
@@ -249,7 +250,7 @@
       flex: 1;
       overflow-y: auto;
       padding: $spacing-lg $spacing-sm;
-      background-color: $color-background-light;
+      background-color: $drawer-body-background;
 
       // Réduire le padding sur mobile pour éviter le débordement des selects
       @media (min-width: $breakpoint-sm) {
@@ -260,6 +261,76 @@
         padding: 0;
         height: 100%;
         overflow-y: auto; // Scroll uniquement si nécessaire
+        background-color: $drawer-body-background;
+      }
+
+      // Styles inverses pour les form-fields dans le drawer
+      :global(.form-field__label) {
+        color: $color-text-inverse;
+      }
+
+      :global(.form-field__required) {
+        color: $color-danger-light;
+      }
+
+      :global(.form-field__hint) {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      :global(.form-field__error) {
+        color: $color-danger-light;
+      }
+
+      // Styles inverses pour les form-label dans le drawer
+      :global(.form-label) {
+        color: $color-text-inverse;
+      }
+
+      // Styles inverses pour les section-title dans le drawer
+      :global(.section-title:not(.section-title--inverse)) {
+        color: $color-text-inverse;
+      }
+
+      // Force le variant inverse pour ImageUpload dans le drawer
+      :global(.image-upload:not(.image-upload--inverse) .image-upload__preview-img) {
+        border-color: $color-white-alpha-30;
+      }
+
+      :global(.image-upload:not(.image-upload--inverse) .image-upload__dropzone) {
+        border-color: $color-white-alpha-30;
+        background: $color-white-alpha-10;
+      }
+
+      :global(.image-upload:not(.image-upload--inverse) .image-upload__dropzone:hover) {
+        border-color: $color-white;
+        background: $color-white-alpha-15;
+      }
+
+      :global(.image-upload:not(.image-upload--inverse) .image-upload__dropzone--dragging) {
+        border-color: $color-white;
+        background: $color-white-alpha-20;
+      }
+
+      :global(.image-upload:not(.image-upload--inverse) .image-upload__dropzone-icon) {
+        color: $color-white;
+      }
+
+      :global(.image-upload:not(.image-upload--inverse) .image-upload__dropzone-text) {
+        color: $color-white;
+      }
+
+      :global(.image-upload:not(.image-upload--inverse) .image-upload__dropzone-hint) {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      :global(.image-upload:not(.image-upload--inverse) .image-upload__cropper-container) {
+        border-color: $color-white-alpha-30;
+      }
+
+      :global(.image-upload:not(.image-upload--inverse) .image-upload__error) {
+        background: rgba(220, 38, 38, 0.2);
+        border-color: $color-danger-light;
+        color: $color-danger-light;
       }
 
       // Custom scrollbar

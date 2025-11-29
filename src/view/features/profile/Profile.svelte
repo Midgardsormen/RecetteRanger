@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
-  import { Input, Button, PageHero, PasswordInput, Card, Badge, Link, AuthorLink } from '../../components/ui';
+  import { Input, Button, PageHero, PasswordInput, Card, Badge, Link, AuthorLink, SectionTitle } from '../../components/ui';
   import { ImageUpload } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import { authStore } from '../../stores/auth.store';
@@ -239,7 +239,7 @@
         <div class="profile__content">
           <!-- Section Informations Personnelles -->
           <section class="profile__section">
-            <h2 class="profile__section-title">Informations personnelles</h2>
+            <SectionTitle>Informations personnelles</SectionTitle>
 
             {#if error}
               <div class="profile__message profile__message--error">{error}</div>
@@ -315,7 +315,7 @@
 
           <!-- Section Changement de Mot de Passe -->
           <section class="profile__section">
-            <h2 class="profile__section-title">Changer le mot de passe</h2>
+            <SectionTitle>Changer le mot de passe</SectionTitle>
 
             {#if passwordError}
               <div class="profile__message profile__message--error">{passwordError}</div>
@@ -490,14 +490,6 @@
       border-radius: 12px;
       padding: $spacing-base * 2;
       box-shadow: 0 2px 12px $shadow-light;
-    }
-
-    &__section-title {
-      margin: 0 0 $spacing-base * 1.5 0;
-      font-size: 1.5rem;
-      color: $text-dark;
-      border-bottom: 2px solid $border-color;
-      padding-bottom: $spacing-base;
     }
 
     &__message {

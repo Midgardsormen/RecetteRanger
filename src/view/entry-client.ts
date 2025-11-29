@@ -1,5 +1,6 @@
 import { mount } from 'svelte';
 import { pages } from './entry-pages';
+import './styles/_global.scss';
 
 /**
  * Client-side entry point

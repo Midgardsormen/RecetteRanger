@@ -116,52 +116,52 @@
 
     // Variants
     &--info {
-      background-color: rgba($color-info, 0.1);
-      border-left-color: $color-info;
-      color: darken($color-info, 20%);
+      background-color: mix($color-info, $color-white, 12%);
+      border-left-color: $color-info-dark;
+      color: $color-info-dark;
 
       .alert__icon {
-        color: $color-info;
+        color: $color-info-dark;
       }
     }
 
     &--success {
-      background-color: rgba($color-success, 0.1);
-      border-left-color: $color-success;
-      color: darken($color-success, 20%);
+      background-color: mix($color-success, $color-white, 12%);
+      border-left-color: $color-success-dark;
+      color: $color-success-dark;
 
       .alert__icon {
-        color: $color-success;
+        color: $color-success-dark;
       }
     }
 
     &--warning {
-      background-color: rgba($color-warning, 0.1);
-      border-left-color: $color-warning;
-      color: darken($color-warning, 30%);
+      background-color: mix($color-warning, $color-white, 12%);
+      border-left-color: $color-warning-dark;
+      color: $color-warning-dark;
 
       .alert__icon {
-        color: $color-warning;
+        color: $color-warning-dark;
       }
     }
 
     &--error {
-      background-color: rgba($color-danger, 0.1);
-      border-left-color: $color-danger;
-      color: darken($color-danger, 10%);
+      background-color: mix($color-danger, $color-white, 12%);
+      border-left-color: $color-danger-dark;
+      color: $color-danger-dark;
 
       .alert__icon {
-        color: $color-danger;
+        color: $color-danger-dark;
       }
     }
 
     &--neutral {
-      background-color: rgba($color-gray-500, 0.1);
-      border-left-color: $color-gray-500;
+      background-color: mix($color-gray-400, $color-white, 12%);
+      border-left-color: $color-gray-700;
       color: $color-gray-800;
 
       .alert__icon {
-        color: $color-gray-600;
+        color: $color-gray-700;
       }
     }
   }

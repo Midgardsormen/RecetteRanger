@@ -273,6 +273,24 @@
       }
     }
 
+    // TERTIARY - Pour fonds clairs avec fond crème
+    &--tertiary {
+      background: $color-button-tertiary-background;
+      color: $color-button-tertiary-text;
+      border: $border-width-base solid $color-button-tertiary-border;
+
+      &:hover:not(:disabled):not(.button--disabled) {
+        background: $color-button-tertiary-hover-background;
+        color: $color-button-tertiary-hover-text;
+        border-color: $color-button-tertiary-hover-border;
+      }
+
+      &:active:not(:disabled):not(.button--disabled) {
+        background: $color-button-tertiary-active-background;
+        color: $color-button-tertiary-active-text;
+      }
+    }
+
     &--full-width {
       width: 100%;
       max-width: none;

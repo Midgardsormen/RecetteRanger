@@ -34,7 +34,7 @@ $color-warning-dark: #c05621;
 
 $color-info: #4299e1;
 $color-info-light: #90cdf4;
-$color-info-dark: #2c5282;
+$color-info-dark: #0b5abd;
 
 // ============================================
 // TAG/BADGE COLORS (palette étendue)
@@ -412,6 +412,16 @@ $color-button-success-inverse-hover-background: $color-success-light;
 $color-button-success-inverse-hover-text: $color-success-dark;
 $color-button-success-inverse-hover-border: $color-success-light;
 
+// Tertiary Button (pour fonds clairs - avec fond crème)
+$color-button-tertiary-text: $brand-primary;
+$color-button-tertiary-background: $brand-cream;
+$color-button-tertiary-border: $brand-primary;
+$color-button-tertiary-hover-background: color.adjust($brand-cream, $lightness: -5%);
+$color-button-tertiary-hover-text: $brand-quaternary;
+$color-button-tertiary-hover-border: $brand-quaternary;
+$color-button-tertiary-active-background: color.adjust($brand-cream, $lightness: -8%);
+$color-button-tertiary-active-text: $brand-quaternary;
+
 // Disabled Button
 $color-button-disabled-text: $color-gray-400;
 $color-button-disabled-background: $color-gray-100;
@@ -779,6 +789,7 @@ $drawer-close-button-size: 40px;
 $drawer-scrollbar-width: 8px;
 $drawer-shadow-left: 4px 0 24px;
 $drawer-shadow-right: -4px 0 24px;
+$drawer-body-background: $brand-primary;
 
 // ============================================
 // LIST ITEM SPECIFIC

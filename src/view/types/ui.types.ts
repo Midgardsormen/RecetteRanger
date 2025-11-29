@@ -191,6 +191,7 @@ export interface BackButtonProps {
 export type ButtonVariant =
   | 'primary' | 'primary-inverse'
   | 'secondary' | 'secondary-inverse'
+  | 'tertiary'
   | 'outlined' | 'outlined-inverse'
   | 'ghost' | 'ghost-inverse'
   | 'danger' | 'danger-inverse'
@@ -297,6 +298,46 @@ export interface DrawerProps {
 }
 
 // ============================================
+// FORM DRAWER
+// ============================================
+
+export interface DuplicateItem {
+  id: string;
+  label: string;
+  similarity?: number;
+  [key: string]: any;
+}
+
+export interface FormDrawerProps {
+  isOpen?: boolean;
+  title: string;
+  mode?: 'create' | 'edit';
+  saving?: boolean;
+  errors?: Record<string, string>;
+  duplicates?: DuplicateItem[];
+  checkingDuplicates?: boolean;
+  duplicateMessage?: string;
+  onSave: () => void | Promise<void>;
+  onClose: () => void;
+  saveLabel?: string;
+  cancelLabel?: string;
+  children?: Snippet;
+}
+
+// ============================================
+// SECTION TITLE
+// ============================================
+
+export type SectionTitleLevel = 2 | 3 | 4;
+export type SectionTitleVariant = 'default' | 'inverse';
+
+export interface SectionTitleProps {
+  level?: SectionTitleLevel;
+  variant?: SectionTitleVariant;
+  children?: Snippet;
+}
+
+// ============================================
 // DROPDOWN
 // ============================================
 
@@ -399,6 +440,7 @@ export interface IconButtonProps {
 // ============================================
 
 export type ImageUploadCropShape = 'rect' | 'circle';
+export type ImageUploadVariant = 'default' | 'inverse';
 
 export interface ImageUploadProps {
   value?: string | null;
@@ -406,6 +448,7 @@ export interface ImageUploadProps {
   aspectRatio?: number;
   cropShape?: ImageUploadCropShape;
   maxSizeMB?: number;
+  variant?: ImageUploadVariant;
 }
 
 // ============================================

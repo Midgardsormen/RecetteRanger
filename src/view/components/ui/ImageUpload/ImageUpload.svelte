@@ -29,6 +29,7 @@
     aspectRatio = IMAGE_UPLOAD_DEFAULTS.aspectRatio,
     cropShape = IMAGE_UPLOAD_DEFAULTS.cropShape,
     maxSizeMB = IMAGE_UPLOAD_DEFAULTS.maxSizeMB,
+    variant = IMAGE_UPLOAD_DEFAULTS.variant,
   }: ImageUploadProps = $props();
 
   let fileInput = $state<HTMLInputElement | null>(null);
@@ -187,7 +188,7 @@
   }
 </script>
 
-<div class="image-upload">
+<div class="image-upload" class:image-upload--inverse={variant === 'inverse'}>
   {#if !showCropper}
     <!-- Preview ou zone de drop -->
     <div class="image-upload__preview">
@@ -223,6 +224,12 @@
           ondragleave={handleDragLeaveLocal}
           ondrop={handleDropLocal}
           onclick={() => fileInput?.click()}
+          onkeydown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              fileInput?.click();
+            }
+          }}
           role="button"
           tabindex="0"
         >
@@ -370,9 +377,10 @@
     }
 
     &__dropzone-text {
-      font-size: $font-size-base;
+      font-size: $font-size-sm;
       font-weight: $font-weight-semibold;
       color: $color-text-primary;
+      text-align: center;
     }
 
     &__dropzone-hint {
@@ -411,6 +419,52 @@
       border-radius: $radius-md;
       color: $color-danger;
       font-size: $font-size-sm;
+    }
+
+    // ============================================
+    // VARIANT: INVERSE (for dark backgrounds)
+    // ============================================
+    &--inverse {
+      .image-upload__preview-img {
+        border-color: $color-white-alpha-30;
+      }
+
+      .image-upload__dropzone {
+        border-color: $color-white-alpha-30;
+        background: $color-white-alpha-10;
+
+        &:hover {
+          border-color: $color-white;
+          background: $color-white-alpha-15;
+        }
+
+        &--dragging {
+          border-color: $color-white;
+          background: $color-white-alpha-20;
+        }
+      }
+
+      .image-upload__dropzone-icon {
+        color: $color-white;
+      }
+
+      .image-upload__dropzone-text {
+        color: $color-white;
+      }
+
+      .image-upload__dropzone-hint {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .image-upload__cropper-container {
+        border-color: $color-white-alpha-30;
+      }
+
+      .image-upload__error {
+        background: rgba(220, 38, 38, 0.2);
+        border-color: $color-danger-light;
+        color: $color-danger-light;
+      }
     }
   }
 </style>
