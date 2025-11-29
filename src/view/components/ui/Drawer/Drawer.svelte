@@ -359,7 +359,7 @@
     &__footer {
       display: flex;
       gap: $spacing-base;
-      padding: $spacing-lg;
+      padding: $spacing-sm;
       border-top: 1px solid $color-border-primary;
       background: $color-white;
       position: sticky;

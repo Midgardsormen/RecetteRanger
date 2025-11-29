@@ -13,6 +13,7 @@
     required?: boolean;
     disabled?: boolean;
     direction?: 'horizontal' | 'vertical';
+    variant?: 'default' | 'inverse';
   }
 
   let {
@@ -22,7 +23,8 @@
     name,
     required = false,
     disabled = false,
-    direction = 'horizontal'
+    direction = 'horizontal',
+    variant = 'default'
   }: Props = $props();
 
   function handleChange(optionValue: string) {
@@ -30,7 +32,13 @@
   }
 </script>
 
-<div class="radio-group" class:radio-group--vertical={direction === 'vertical'} role="radiogroup" aria-label={label}>
+<div
+  class="radio-group"
+  class:radio-group--vertical={direction === 'vertical'}
+  class:radio-group--inverse={variant === 'inverse'}
+  role="radiogroup"
+  aria-label={label}
+>
   {#if label}
     <div class="radio-group__label">
       {label}
@@ -79,6 +87,49 @@
 
     &__required {
       color: $color-label-required;
+    }
+
+    // Modifier: inverse variant (for dark backgrounds)
+    &--inverse {
+      .radio-group__label {
+        color: $color-text-inverse;
+      }
+
+      .radio-group__option {
+        border-color: $color-white-alpha-30;
+        background: $color-white-alpha-10;
+
+        &:hover:not(.radio-group__option--disabled) {
+          border-color: $color-white;
+          background: $color-white-alpha-20;
+        }
+      }
+
+      .radio-group__circle {
+        border-color: $color-white-alpha-30;
+        background: transparent;
+      }
+
+      .radio-group__input:checked + .radio-group__circle {
+        border-color: $color-white;
+        background: $color-white;
+
+        &::after {
+          background: $brand-primary;
+        }
+      }
+
+      .radio-group__input:focus + .radio-group__circle {
+        box-shadow: 0 0 0 3px $color-white-alpha-20;
+      }
+
+      .radio-group__option-label {
+        color: $color-white;
+      }
+
+      .radio-group__description {
+        color: $color-white-alpha-90;
+      }
     }
 
     &__options {

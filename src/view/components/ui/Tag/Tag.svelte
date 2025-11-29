@@ -210,6 +210,38 @@
       }
     }
 
+    &--success-inverse {
+      background: $brand-cream;
+      color: $brand-primary;
+      border-color: $brand-cream;
+      font-weight: $font-weight-semibold;
+
+      &:hover {
+        background: $brand-cream;
+        border-color: $brand-cream;
+      }
+
+      .tag__remove:hover {
+        background: $color-success-alpha-20;
+      }
+    }
+
+    &--neutral-inverse {
+      background: $color-white-alpha-10;
+      color: $color-white-alpha-90;
+      border-color: $color-white-alpha-30;
+      font-weight: $font-weight-medium;
+
+      &:hover {
+        background: $color-white-alpha-20;
+        border-color: $color-white-alpha-30;
+      }
+
+      .tag__remove:hover {
+        background: $color-white-alpha-30;
+      }
+    }
+
     // Extended color palette (soft style with light background)
     &--red {
       background: $brand-red-50;
@@ -452,15 +484,6 @@
     // Modifiers
     &--clickable {
       cursor: pointer;
-
-      &:hover {
-        transform: translateY(-1px);
-        box-shadow: $shadow-sm;
-      }
-
-      &:active {
-        transform: translateY(0);
-      }
 
       &:focus-visible {
         outline: $outline-width solid $brand-primary;
