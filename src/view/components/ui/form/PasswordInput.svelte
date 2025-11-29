@@ -1,48 +1,119 @@
 <script lang="ts">
+  import { getFormFieldContext } from './formFieldContext';
   import FormField from './FormField.svelte';
   import { Eye, EyeOff } from 'lucide-svelte';
 
   interface Props {
-    id: string;
-    label?: string;
+    id?: string;
+    name?: string;
     value?: string;
     placeholder?: string;
-    required?: boolean;
     disabled?: boolean;
+    required?: boolean;
+    label?: string;
     error?: string;
     hint?: string;
+    variant?: 'default' | 'inverse';
+    oninput?: (e: Event) => void;
+    onchange?: (e: Event) => void;
+    onblur?: (e: Event) => void;
   }
 
   let {
     id,
-    label,
+    name,
     value = $bindable(''),
     placeholder = '',
-    required = false,
     disabled = false,
-    error,
-    hint
+    required = false,
+    label,
+    error = '',
+    hint = '',
+    variant = 'default',
+    oninput,
+    onchange,
+    onblur
   }: Props = $props();
+
+  // Récupérer le contexte du FormField parent (optionnel)
+  const ctx = getFormFieldContext();
+
+  // Déterminer si on doit wrapper avec FormField
+  const shouldWrapWithFormField = !ctx && (label || error || hint);
 
   let showPassword = $state(false);
 
   function togglePasswordVisibility() {
     showPassword = !showPassword;
   }
+
+  function handleInput(e: Event) {
+    const target = e.currentTarget as HTMLInputElement;
+
+    // Si on a un contexte FormField, l'utiliser
+    if (ctx) {
+      ctx.setValue(target.value);
+    } else {
+      // Sinon, mettre à jour la valeur directement
+      value = target.value;
+    }
+
+    oninput?.(e);
+  }
+
+  function handleBlur(e: Event) {
+    if (ctx) {
+      ctx.touched = true;
+    }
+    onblur?.(e);
+  }
 </script>
 
-<FormField {label} {required} {error} {hint}>
+{#if shouldWrapWithFormField}
+  <FormField {name} {label} helper={hint} {error} {required} bind:value {disabled} {variant}>
+    <div class="password-input__wrapper">
+      <input
+        {id}
+        type={showPassword ? 'text' : 'password'}
+        {placeholder}
+        class="password-input__input"
+        oninput={oninput}
+        onchange={onchange}
+        onblur={onblur}
+      />
+      <button
+        type="button"
+        class="password-input__toggle"
+        onclick={togglePasswordVisibility}
+        aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+        aria-pressed={showPassword}
+        title={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+      >
+        {#if showPassword}
+          <EyeOff size={18} />
+        {:else}
+          <Eye size={18} />
+        {/if}
+      </button>
+    </div>
+  </FormField>
+{:else}
   <div class="password-input__wrapper">
     <input
-      {id}
+      id={ctx?.id ?? id}
+      name={ctx?.name ?? name}
       type={showPassword ? 'text' : 'password'}
-      bind:value
+      value={ctx?.value ?? value}
       {placeholder}
-      {required}
-      {disabled}
+      disabled={ctx?.disabled ?? disabled}
+      required={ctx?.required ?? required}
       class="password-input__input"
-      class:password-input__input--error={error}
-      aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
+      class:password-input__input--error={ctx?.error}
+      aria-invalid={ctx?.error ? true : undefined}
+      aria-describedby={ctx?.describedBy || undefined}
+      oninput={handleInput}
+      onchange={onchange}
+      onblur={handleBlur}
     />
     <button
       type="button"
@@ -59,7 +130,7 @@
       {/if}
     </button>
   </div>
-</FormField>
+{/if}
 
 <style lang="scss">
   @use '../../../styles/variables' as *;

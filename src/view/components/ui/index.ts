@@ -25,9 +25,10 @@ export { default as Filter } from './Filter';
 export { default as FilterGroup } from './FilterGroup';
 export { default as ArticleAutocomplete } from './ArticleAutocomplete';
 export { default as StoreAutocomplete } from './StoreAutocomplete';
+export { default as TagInput } from './TagInput';
 
 // Form Components
-export { Input, Select, Checkbox, FormField, PasswordInput, RadioGroup } from './form';
+export { Input, Select, Checkbox, FormField, FieldLabel, PasswordInput, RadioGroup } from './form';
 
 // Action Components
 export { default as Button } from './Button.svelte';
