@@ -55,14 +55,6 @@ export class IngredientService {
 
     const where: Prisma.ArticleWhereInput = {};
 
-    // Filtre par recherche textuelle
-    if (search) {
-      where.label = {
-        contains: search,
-        mode: 'insensitive',
-      };
-    }
-
     // Filtre par rayon
     if (aisle) {
       where.aisle = aisle;
@@ -96,7 +88,41 @@ export class IngredientService {
         break;
     }
 
-    // Récupération des résultats avec pagination
+    // Si recherche textuelle, récupérer tous les résultats (sans pagination) pour filtrer côté app
+    if (search) {
+      const normalizedSearch = normalizeString(search);
+
+      // Récupérer tous les articles qui correspondent aux autres filtres
+      const allIngredients = await this.prisma.article.findMany({
+        where,
+        orderBy,
+      });
+
+      // Filtrer avec normalisation des accents
+      const filteredIngredients = allIngredients.filter(ingredient => {
+        const normalizedLabel = normalizeString(ingredient.label);
+        return normalizedLabel.includes(normalizedSearch);
+      });
+
+      // Appliquer la pagination manuellement
+      const total = filteredIngredients.length;
+      const paginatedIngredients = filteredIngredients.slice(
+        page * limit,
+        (page + 1) * limit
+      );
+
+      return {
+        data: paginatedIngredients,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    }
+
+    // Pas de recherche textuelle : utiliser la pagination normale
     const [total, ingredients] = await Promise.all([
       this.prisma.article.count({ where }),
       this.prisma.article.findMany({

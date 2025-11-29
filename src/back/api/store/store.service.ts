@@ -1,6 +1,7 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { CreateStoreDto, UpdateStoreDto, SearchStoresDto } from './dto';
+import { normalizeString } from '../../shared/utils/string.utils';
 
 @Injectable()
 export class StoreService {
@@ -24,23 +25,45 @@ export class StoreService {
   async findAll(searchDto?: SearchStoresDto) {
     const { search, limit = 20, page = 1 } = searchDto || {};
 
-    const where: any = {};
-
+    // Si recherche textuelle, filtrer côté application avec normalisation
     if (search) {
-      where.name = {
-        contains: search,
-        mode: 'insensitive',
+      const normalizedSearch = normalizeString(search);
+
+      // Récupérer tous les magasins pour filtrer avec normalisation
+      const allStores = await this.prisma.store.findMany({
+        orderBy: { name: 'asc' },
+      });
+
+      // Filtrer avec normalisation des accents
+      const filteredStores = allStores.filter(store => {
+        const normalizedName = normalizeString(store.name);
+        return normalizedName.includes(normalizedSearch);
+      });
+
+      // Appliquer la pagination manuellement
+      const total = filteredStores.length;
+      const paginatedStores = filteredStores.slice(
+        (page - 1) * limit,
+        page * limit
+      );
+
+      return {
+        stores: paginatedStores,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       };
     }
 
+    // Pas de recherche : utiliser la pagination normale
     const [stores, total] = await Promise.all([
       this.prisma.store.findMany({
-        where,
         orderBy: { name: 'asc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
-      this.prisma.store.count({ where }),
+      this.prisma.store.count(),
     ]);
 
     return {

@@ -255,6 +255,7 @@
           variant="secondary"
           onclick={previousPage}
           disabled={currentPage === 0}
+          size="small"
         >
           ← Précédent
         </Button>
@@ -275,6 +276,7 @@
           variant="secondary"
           onclick={nextPage}
           disabled={currentPage >= totalPages - 1}
+          size="small"
         >
           Suivant →
         </Button>
