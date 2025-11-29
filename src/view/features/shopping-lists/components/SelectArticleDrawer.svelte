@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Drawer, Button } from '../../../components/ui';
+  import { Drawer, Button, SectionTitle } from '../../../components/ui';
   import { Input } from '../../../components/ui/form';
 import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDrawer.svelte';
   import { apiService } from '../../../services/api.service';
@@ -142,7 +142,7 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
       <p class="no-results">Aucun article trouvé</p>
     {:else if searchQuery && !selectedArticle}
       <div class="articles-list">
-        <h3 class="section-title">Sélectionnez un article</h3>
+        <SectionTitle level={3}>Sélectionnez un article</SectionTitle>
         {#each availableArticles as article}
           <button
             class="article-item"
@@ -168,7 +168,7 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
     {#if selectedArticle}
       <div class="quantity-form">
         <div class="selected-article-header">
-          <h3 class="section-title">Article sélectionné</h3>
+          <SectionTitle level={3}>Article sélectionné</SectionTitle>
           <button class="change-article-btn" onclick={cancelSelection}>
             Changer
           </button>
@@ -378,15 +378,6 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-  }
-
-  .section-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    margin: 0 0 0.5rem 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
   }
 
   .article-item {

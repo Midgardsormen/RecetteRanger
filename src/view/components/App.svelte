@@ -35,13 +35,11 @@
   </div>
 </main>
 
-<style>
+<style lang="scss">
+  @use '../styles/global' as *;
+
   :global(body) {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: $brand-primary;
-    min-height: 100vh;
   }
 
   main {

@@ -3,7 +3,7 @@
  * Constants and default values for the ImageUpload component
  */
 
-import type { ImageUploadCropShape } from '../../../types/ui.types';
+import type { ImageUploadCropShape, ImageUploadVariant } from '../../../types/ui.types';
 
 // ============================================
 // DEFAULT VALUES
@@ -14,6 +14,7 @@ export const IMAGE_UPLOAD_DEFAULTS = {
   cropShape: 'rect' as ImageUploadCropShape,
   maxSizeMB: 5,
   value: null,
+  variant: 'default' as ImageUploadVariant,
 } as const;
 
 // ============================================

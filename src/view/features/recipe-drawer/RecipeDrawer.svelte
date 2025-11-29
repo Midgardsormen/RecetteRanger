@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Drawer, ImageUpload, Input, Select, Button, Alert } from '../../components/ui';
+  import { Drawer, ImageUpload, Input, Select, Button, Alert, SectionTitle, SelectableCard, Checkbox } from '../../components/ui';
   import Textarea from '../../components/ui/form/Textarea.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
   import { apiService } from '../../services/api.service';
@@ -48,6 +48,7 @@
   let availableIngredients = $state<Ingredient[]>([]);
   let loadingIngredients = $state(false);
   let showIngredientDrawer = $state(false);
+  let ingredientSearchTimeout: ReturnType<typeof setTimeout>;
 
   // Validation et état
   let saving = $state(false);
@@ -395,7 +396,7 @@
   primaryAction={getPrimaryAction()}
   secondaryAction={getSecondaryAction()}
 >
-  <h2 class="recipe-drawer__section-title">{getSectionTitle()}</h2>
+  <SectionTitle>{getSectionTitle()}</SectionTitle>
 
   {#if currentStep === 1}
     <!-- ÉTAPE 1 : Informations générales -->
@@ -408,7 +409,18 @@
         required
         error={errors.label}
       />
-
+      <div class="form-field">
+        <label class="form-label">Photo de la recette (optionnel)</label>
+        <ImageUpload
+          value={formData.imageUrl}
+          onUpload={(url) => {
+            formData.imageUrl = url;
+          }}
+          aspectRatio={16 / 9}
+          cropShape="rect"
+          maxSizeMB={5}
+        />
+      </div>
       <Select
         id="category"
         label="Catégorie"
@@ -472,6 +484,9 @@
         required
         error={errors.servings}
       />
+      <Alert variant="info">
+        Créez la recette pour 1 personne. Les quantités seront ajustées automatiquement lors de la consultation.
+      </Alert>
 
       <Input
         id="sourceUrl"
@@ -481,9 +496,7 @@
         placeholder="https://exemple.com/recette"
       />
 
-      <Alert variant="info">
-        Créez la recette pour 1 personne. Les quantités seront ajustées automatiquement lors de la consultation.
-      </Alert>
+
 
       <!-- Matériel -->
       <div class="form-field">
@@ -501,7 +514,7 @@
             }}
           />
           <Button
-            variant="secondary"
+            variant="tertiary"
             onclick={addMateriel}
             disabled={!newMateriel.trim()}
           >
@@ -542,7 +555,7 @@
             }}
           />
           <Button
-            variant="secondary"
+            variant="tertiary"
             onclick={addAppareil}
             disabled={!newAppareil.trim()}
           >
@@ -567,18 +580,7 @@
         {/if}
       </div>
 
-      <div class="form-field">
-        <label class="form-label">Photo de la recette (optionnel)</label>
-        <ImageUpload
-          value={formData.imageUrl}
-          onUpload={(url) => {
-            formData.imageUrl = url;
-          }}
-          aspectRatio={16 / 9}
-          cropShape="rect"
-          maxSizeMB={5}
-        />
-      </div>
+
     </form>
   {:else if currentStep === 2}
     <!-- ÉTAPE 2 : Ingrédients -->
@@ -592,7 +594,7 @@
           placeholder="Tapez pour rechercher..."
         />
         <Button
-          variant="secondary"
+          variant="outlined-inverse"
           onclick={() => { showIngredientDrawer = true; }}
         >
           + Créer un ingrédient
@@ -609,7 +611,7 @@
         <p class="no-results">Aucun ingrédient trouvé</p>
       {:else if ingredientSearchQuery}
         <div class="ingredients-list">
-          <h3 class="section-title">Résultats de recherche</h3>
+          <SectionTitle level={3}>Résultats de recherche</SectionTitle>
           {#each availableIngredients as ingredient}
             <button
               class="ingredient-item"
@@ -630,19 +632,14 @@
 
       {#if formData.ingredients.length > 0}
         <div class="selected-ingredients">
-          <h3 class="section-title">Ingrédients sélectionnés ({formData.ingredients.length})</h3>
+          <SectionTitle level={3}>Ingrédients sélectionnés ({formData.ingredients.length})</SectionTitle>
           {#each formData.ingredients as ingredient, index}
-            <div class="selected-ingredient">
-              <div class="ingredient-header">
-                <span class="ingredient-label">{ingredient.ingredientLabel}</span>
-                <button
-                  class="remove-btn"
-                  onclick={() => removeIngredient(index)}
-                  type="button"
-                >
-                  ✕
-                </button>
-              </div>
+            <SelectableCard
+              title={ingredient.ingredientLabel}
+              variant="inverse"
+              removable={true}
+              onRemove={() => removeIngredient(index)}
+            >
               <div class="ingredient-details">
                 <Input
                   id={`quantity-${index}`}
@@ -673,17 +670,14 @@
                 bind:value={ingredient.note}
                 placeholder="Ex: coupé en dés"
               />
-              <div class="ingredient-scalable">
-                <input
-                  type="checkbox"
-                  id={`scalable-${index}`}
-                  bind:checked={ingredient.scalable}
-                />
-                <label for={`scalable-${index}`}>
-                  Quantité ajustable selon le nombre de personnes
-                </label>
-              </div>
-            </div>
+              <Checkbox
+                id={`scalable-${index}`}
+                bind:checked={ingredient.scalable}
+                label="Quantité ajustable selon le nombre de personnes"
+                variant="inverse"
+                size="md"
+              />
+            </SelectableCard>
           {/each}
         </div>
       {/if}
@@ -753,7 +747,7 @@
       {/each}
 
       <Button
-        variant="secondary"
+        variant="outlined-inverse"
         fullWidth
         onclick={addStep}
       >
@@ -781,17 +775,6 @@
   $text-gray: $color-gray-600;
   $border-color: $color-gray-200;
   $spacing-base: 1rem;
-
-  .recipe-drawer {
-    &__section-title {
-      margin: 0 0 $spacing-base * 1.5 0;
-      color: $primary-color;
-      font-size: 1.25rem;
-      font-weight: 700;
-      border-bottom: 2px solid rgba($primary-color, 0.2);
-      padding-bottom: $spacing-base * 0.75;
-    }
-  }
 
   .recipe-form {
     display: flex;
@@ -891,12 +874,6 @@
     gap: $spacing-base;
   }
 
-  .section-title {
-    margin: 0 0 $spacing-base 0;
-    color: $text-dark;
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
 
   .loading-text,
   .no-results {
@@ -959,75 +936,13 @@
     gap: $spacing-base;
   }
 
-  .selected-ingredient {
-    padding: $spacing-base;
-    background: rgba($brand-primary, 0.05);
-    border: 2px solid $border-color;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-base;
-  }
-
-  .ingredient-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .ingredient-label {
-    font-weight: 600;
-    color: $text-dark;
-  }
-
-  .remove-btn {
-    background: none;
-    border: none;
-    color: $danger-color;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s;
-
-    &:hover {
-      background: $color-danger-alpha-10;
-    }
-  }
-
   .ingredient-details {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto 1fr;
     gap: $spacing-base;
-  }
 
-  .ingredient-scalable {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem;
-    background: rgba($brand-primary, 0.05);
-    border-radius: 8px;
-    margin-top: 0.5rem;
-
-    input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: $primary-color;
-    }
-
-    label {
-      font-size: 0.9rem;
-      color: $text-dark;
-      cursor: pointer;
-      user-select: none;
+    :global(input[type="number"]) {
+      max-width: 100px;
     }
   }
 

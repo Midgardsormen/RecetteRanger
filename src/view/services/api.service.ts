@@ -78,7 +78,13 @@ class ApiService {
       throw new Error(error.message || 'Erreur lors de la connexion');
     }
 
-    return response.json();
+    const result = await response.json();
+
+    // Rafraîchir le token CSRF après login car l'identifiant de session a changé
+    // (de "anonymous-session" vers le JWT token)
+    await this.fetchCsrfToken();
+
+    return result;
   }
 
   async register(data: RegisterData): Promise<AuthResponse> {
@@ -94,7 +100,13 @@ class ApiService {
       throw new Error(error.message || 'Erreur lors de la création du compte');
     }
 
-    return response.json();
+    const result = await response.json();
+
+    // Rafraîchir le token CSRF après register car l'identifiant de session a changé
+    // (de "anonymous-session" vers le JWT token)
+    await this.fetchCsrfToken();
+
+    return result;
   }
 
   async logout(): Promise<void> {
