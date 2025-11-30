@@ -46,8 +46,9 @@
     if (ctx) {
       ctx.setValue(target.value);
       ctx.touched = true;
-    } else {
-      // Sinon, mettre à jour la valeur directement
+    }
+    // Sinon, toujours mettre à jour la valeur locale (nécessaire pour bind:value)
+    else {
       value = target.value;
     }
 

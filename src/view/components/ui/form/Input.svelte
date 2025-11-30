@@ -45,12 +45,13 @@
   function handleInput(e: Event) {
     const target = e.currentTarget as HTMLInputElement;
 
-    // Mettre à jour la valeur locale (pour le binding)
-    value = target.value;
-
-    // Si on a un contexte FormField, l'utiliser aussi
+    // Si on a un contexte FormField, l'utiliser
     if (ctx) {
       ctx.setValue(target.value);
+    }
+    // Sinon, toujours mettre à jour la valeur locale (nécessaire pour bind:value)
+    else {
+      value = target.value;
     }
 
     oninput?.(e);
@@ -70,10 +71,11 @@
       {id}
       {type}
       {placeholder}
+      value={value}
       class="input"
-      oninput={oninput}
+      oninput={handleInput}
       onchange={onchange}
-      onblur={onblur}
+      onblur={handleBlur}
     />
   </FormField>
 {:else}
