@@ -118,6 +118,7 @@ export interface PageHeroProps {
   title: string;
   subtitle?: string;
   actionLabel?: string;
+  actionIcon?: Snippet;
   onAction?: () => void;
   showSearch?: boolean;
   searchPlaceholder?: string;

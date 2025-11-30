@@ -21,6 +21,7 @@
     title,
     subtitle,
     actionLabel,
+    actionIcon,
     onAction,
     showSearch = PAGE_HERO_DEFAULTS.showSearch,
     searchPlaceholder = PAGE_HERO_DEFAULTS.searchPlaceholder,
@@ -53,6 +54,9 @@
       </div>
       {#if actionLabel && onAction}
         <Button variant="primary-inverse" onclick={onAction}>
+          {#if actionIcon}
+            {@render actionIcon()}
+          {/if}
           {actionLabel}
         </Button>
       {/if}
@@ -159,6 +163,13 @@
     @media (max-width: $breakpoint-sm) {
       flex-direction: column;
       align-items: stretch;
+    }
+
+    // Ajouter un espacement entre l'icône et le texte du bouton d'action
+    :global(.button) {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
     }
   }
 

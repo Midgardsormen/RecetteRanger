@@ -291,8 +291,14 @@
     gap: $spacing-base * 1.5;
     background: $white;
     border-radius: 16px;
-    padding: $spacing-base * 2;
+    padding: $spacing-base;
     box-shadow: 0 2px 12px $color-black-alpha-08;
+    min-width: 0; // Permet au calendrier de rétrécir
+    overflow: hidden;
+
+    @media (min-width: 768px) {
+      padding: $spacing-base * 2;
+    }
   }
 
   .calendar-header {
@@ -348,18 +354,41 @@
 
   .calendar-grid {
     display: grid;
-    gap: $spacing-base * 0.75;
+    gap: $spacing-base * 0.5;
+    min-width: 0;
+
+    @media (min-width: 768px) {
+      gap: $spacing-base * 0.75;
+    }
 
     &.day-view {
       grid-template-columns: 1fr;
     }
 
     &.week-view {
-      grid-template-columns: repeat(7, 1fr);
+      // Mobile: afficher moins de colonnes ou permettre le scroll horizontal
+      grid-template-columns: repeat(7, minmax(100px, 1fr));
+      overflow-x: auto;
+
+      @media (min-width: 768px) {
+        grid-template-columns: repeat(7, 1fr);
+        overflow-x: visible;
+      }
     }
 
     &.month-view {
-      grid-template-columns: repeat(7, 1fr);
+      // Mobile: vue jour par défaut ou grille compacte
+      grid-template-columns: 1fr;
+
+      @media (min-width: 768px) {
+        grid-template-columns: repeat(7, 1fr);
+      }
+
+      .day-header {
+        @media (max-width: 767px) {
+          display: none;
+        }
+      }
     }
   }
 
@@ -373,16 +402,23 @@
   }
 
   .calendar-day {
-    min-height: 120px;
-    padding: $spacing-base * 0.75;
+    min-height: 100px;
+    padding: $spacing-base * 0.5;
     border: 2px solid $border-color;
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s;
     background: $white;
     display: flex;
     flex-direction: column;
     gap: $spacing-base * 0.5;
+    min-width: 0;
+
+    @media (min-width: 768px) {
+      min-height: 120px;
+      padding: $spacing-base * 0.75;
+      border-radius: 12px;
+    }
 
     &:hover {
       border-color: $primary-color;
