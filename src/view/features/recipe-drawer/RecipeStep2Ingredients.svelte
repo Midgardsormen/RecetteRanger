@@ -90,18 +90,17 @@
 
 <div class="recipe-step2">
   <div class="recipe-step2__search">
-    <FormField name="ingredient-search" label="Rechercher un ingrédient" variant="inverse">
-      <Input
-        id="ingredient-search"
-        type="text"
-        value={ingredientSearchQuery}
-        oninput={(e) => {
-          ingredientSearchQuery = e.currentTarget.value;
-          loadIngredients();
-        }}
-        placeholder="Tapez pour rechercher..."
-      />
-    </FormField>
+    <Input
+      id="ingredient-search"
+      label="Rechercher un ingrédient"
+      type="text"
+      variant="inverse"
+      bind:value={ingredientSearchQuery}
+      oninput={() => {
+        loadIngredients();
+      }}
+      placeholder="Tapez pour rechercher..."
+    />
     <Button
       variant="outlined-inverse"
       onclick={() => { showIngredientDrawer = true; }}

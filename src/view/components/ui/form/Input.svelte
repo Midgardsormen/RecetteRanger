@@ -49,8 +49,8 @@
     if (ctx) {
       ctx.setValue(target.value);
     }
-    // Si pas de contexte et pas de handler oninput personnalisé, mettre à jour la valeur locale
-    else if (!oninput) {
+    // Sinon, toujours mettre à jour la valeur locale (nécessaire pour bind:value)
+    else {
       value = target.value;
     }
 
@@ -71,10 +71,11 @@
       {id}
       {type}
       {placeholder}
+      value={value}
       class="input"
-      oninput={oninput}
+      oninput={handleInput}
       onchange={onchange}
-      onblur={onblur}
+      onblur={handleBlur}
     />
   </FormField>
 {:else}

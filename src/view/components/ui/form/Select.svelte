@@ -47,8 +47,8 @@
       ctx.setValue(target.value);
       ctx.touched = true;
     }
-    // Si pas de contexte et pas de handler onchange personnalisé, mettre à jour la valeur locale
-    else if (!onchange) {
+    // Sinon, toujours mettre à jour la valeur locale (nécessaire pour bind:value)
+    else {
       value = target.value;
     }
 
