@@ -110,6 +110,31 @@
 
     if (!validation.isValid) {
       errors = validation.errors;
+
+      // Scroll vers la première erreur (en respectant l'ordre des champs dans le formulaire)
+      setTimeout(() => {
+        const fieldOrder = ['label', 'units', 'imageUrl'];
+        const firstErrorField = fieldOrder.find(field => errors[field as keyof ValidationErrors]);
+
+        if (firstErrorField) {
+          // Chercher le FormField qui a l'attribut data-field-name
+          const errorElement = document.querySelector(`[data-field-name="${firstErrorField}"]`);
+
+          if (errorElement) {
+            errorElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+
+            // Focus sur le champ si c'est un input
+            const inputElement = errorElement.querySelector('input, textarea, select');
+            if (inputElement instanceof HTMLElement) {
+              inputElement.focus();
+            }
+          }
+        }
+      }, 100);
+
       return;
     }
 
@@ -136,7 +161,11 @@
 
   // Computed property pour l'icône du titre
   const titleIcon = $derived(ingredient ? Pencil : Plus);
-  const titleText = $derived(ingredient ? "Modifier l'ingrédient" : "Ajouter un ingrédient");
+  const titleText = $derived(
+    ingredient
+      ? (showFoodTypeSelector ? "Modifier l'article" : "Modifier l'ingrédient")
+      : (showFoodTypeSelector ? "Ajouter un article" : "Ajouter un ingrédient")
+  );
 </script>
 
 <Drawer

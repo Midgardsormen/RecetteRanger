@@ -134,7 +134,13 @@
 
     &__options {
       display: flex;
+      flex-direction: column;
       gap: $spacing-base;
+
+      @media (min-width: 768px) {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
 
       &--vertical {
         flex-direction: column;

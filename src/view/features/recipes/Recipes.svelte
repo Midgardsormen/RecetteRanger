@@ -2,12 +2,12 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { RecipeDrawer } from '../recipe-drawer';
-  import { Card, Button, ConfirmModal, PageHero, Badge, IconButton, FilterGroup, AuthorLink, Drawer, SearchBar } from '../../components/ui';
+  import { Card, Button, ConfirmModal, PageHero, Badge, IconButton, FilterGroup, AuthorLink } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Recipe } from '../../types/recipe.types';
   import { RecipeCategory, RecipeCategoryLabels } from '../../types/recipe.types';
   import { UserRole } from '../../types/user.types';
-  import { BookOpen, Clock, Flame, Carrot, Pencil, Trash2, SlidersHorizontal } from 'lucide-svelte';
+  import { BookOpen, Clock, Flame, Carrot, Pencil, Trash2 } from 'lucide-svelte';
 
   // Recevoir les données du SSR
   let { recipes: initialRecipes = [], user = null }: { recipes?: Recipe[], user?: any } = $props();
@@ -30,9 +30,6 @@
   // Drawer pour ajouter/éditer une recette
   let isDrawerOpen = $state(false);
   let editingRecipe = $state<Recipe | null>(null);
-
-  // Drawer pour filtres (mobile only)
-  let isFilterDrawerOpen = $state(false);
 
   // Modal de confirmation de suppression
   let isConfirmModalOpen = $state(false);
@@ -171,66 +168,48 @@
     title="Mes recettes"
     actionLabel="+ Ajouter une recette"
     onAction={() => openDrawer()}
-    showSearch={false}
+    showSearch={true}
     searchPlaceholder="Rechercher une recette..."
     bind:searchValue={searchQuery}
     onSearchInput={handleSearchInput}
   >
     {#snippet filters()}
-      <!-- SearchBar + bouton Filtrer sur la même ligne (mobile) -->
-      <div class="recipes__search-with-filter">
-        <SearchBar
-          bind:value={searchQuery}
-          placeholder="Rechercher une recette..."
-          oninput={handleSearchInput}
-        />
-        <div class="recipes__filters-mobile">
-          <Button variant="outlined-inverse" onclick={() => isFilterDrawerOpen = true} ariaLabel="Filtrer les recettes">
-            <SlidersHorizontal size={20} />
-            <span class="recipes__filter-button-text">Filtrer</span>
-          </Button>
-        </div>
-      </div>
+      <FilterGroup
+        label="Affichage"
+        bind:value={filter}
+        onchange={handleFilterChange}
+        options={[
+          { value: 'all', label: 'Toutes les recettes' },
+          { value: 'mine', label: 'Mes recettes' }
+        ]}
+        inverse={true}
+      />
 
-      <!-- Filtres visibles seulement sur desktop -->
-      <div class="recipes__filters-desktop">
-        <FilterGroup
-          label="Affichage"
-          bind:value={filter}
-          onchange={handleFilterChange}
-          options={[
-            { value: 'all', label: 'Toutes les recettes' },
-            { value: 'mine', label: 'Mes recettes' }
-          ]}
-          inverse={true}
-        />
+      <FilterGroup
+        label="Catégorie"
+        bind:value={selectedCategory}
+        onchange={handleFilterChange}
+        options={[
+          { value: '', label: 'Toutes' },
+          ...Object.entries(RecipeCategoryLabels).map(([key, label]) => ({
+            value: key,
+            label
+          }))
+        ]}
+        inverse={true}
+      />
 
-        <FilterGroup
-          label="Catégorie"
-          bind:value={selectedCategory}
-          onchange={handleFilterChange}
-          options={[
-            { value: '', label: 'Toutes' },
-            ...Object.entries(RecipeCategoryLabels).map(([key, label]) => ({
-              value: key,
-              label
-            }))
-          ]}
-          inverse={true}
-        />
-
-        <FilterGroup
-          label="Trier par"
-          bind:value={sortBy}
-          onchange={handleFilterChange}
-          options={[
-            { value: 'alpha', label: 'Alphabétique' },
-            { value: 'date', label: 'Date d\'ajout' },
-            { value: 'popularity', label: 'Popularité' }
-          ]}
-          inverse={true}
-        />
-      </div>
+      <FilterGroup
+        label="Trier par"
+        bind:value={sortBy}
+        onchange={handleFilterChange}
+        options={[
+          { value: 'alpha', label: 'Alphabétique' },
+          { value: 'date', label: 'Date d\'ajout' },
+          { value: 'popularity', label: 'Popularité' }
+        ]}
+        inverse={true}
+      />
     {/snippet}
   </PageHero>
 
@@ -384,59 +363,6 @@
   onCancel={cancelDelete}
   variant={deleteError ? 'danger' : 'warning'}
 />
-
-<!-- Drawer de filtres (mobile only) -->
-<Drawer
-  isOpen={isFilterDrawerOpen}
-  title="Filtres"
-  position="right"
-  onClose={() => isFilterDrawerOpen = false}
->
-  <div class="recipes__filter-drawer-content">
-    <FilterGroup
-      label="Affichage"
-      bind:value={filter}
-      onchange={() => {
-        handleFilterChange();
-        isFilterDrawerOpen = false;
-      }}
-      options={[
-        { value: 'all', label: 'Toutes les recettes' },
-        { value: 'mine', label: 'Mes recettes' }
-      ]}
-    />
-
-    <FilterGroup
-      label="Catégorie"
-      bind:value={selectedCategory}
-      onchange={() => {
-        handleFilterChange();
-        isFilterDrawerOpen = false;
-      }}
-      options={[
-        { value: '', label: 'Toutes' },
-        ...Object.entries(RecipeCategoryLabels).map(([key, label]) => ({
-          value: key,
-          label
-        }))
-      ]}
-    />
-
-    <FilterGroup
-      label="Trier par"
-      bind:value={sortBy}
-      onchange={() => {
-        handleFilterChange();
-        isFilterDrawerOpen = false;
-      }}
-      options={[
-        { value: 'alpha', label: 'Alphabétique' },
-        { value: 'date', label: 'Date d\'ajout' },
-        { value: 'popularity', label: 'Popularité' }
-      ]}
-    />
-  </div>
-</Drawer>
 
 <!-- Drawer pour ajouter/éditer une recette -->
 <RecipeDrawer

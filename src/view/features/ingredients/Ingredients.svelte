@@ -330,7 +330,6 @@
   .ingredients {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 2;
 
     &__error {
       padding: $spacing-base;

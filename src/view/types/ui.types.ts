@@ -420,7 +420,8 @@ export type IconButtonVariant =
   | 'primary'
   | 'secondary'
   | 'ghost'
-  | 'ghost-inverse';
+  | 'ghost-inverse'
+  | 'outlined-inverse';
 
 export type IconButtonSize = 'small' | 'medium' | 'large';
 

@@ -311,8 +311,6 @@
   .articles {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 2;
-
     &__filter-group {
       display: flex;
       flex-direction: column;

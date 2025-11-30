@@ -12,6 +12,9 @@
   import Title from '../Title';
   import SearchBar from '../SearchBar';
   import Button from '../Button.svelte';
+  import IconButton from '../IconButton';
+  import Drawer from '../Drawer';
+  import { SlidersHorizontal } from 'lucide-svelte';
   import { PAGE_HERO_DEFAULTS, PAGE_HERO_CONFIG } from './PageHero.config';
 
   let {
@@ -27,6 +30,9 @@
     filters,
     children
   }: PageHeroProps = $props();
+
+  // Drawer pour les filtres en mobile
+  let isFilterDrawerOpen = $state(false);
 </script>
 
 <Hero
@@ -54,7 +60,26 @@
 
     {#if showSearch || progress || filters}
       <div class="page-hero__controls">
-        {#if showSearch}
+        {#if showSearch && filters}
+          <!-- SearchBar + bouton Filtrer sur la même ligne (mobile) -->
+          <div class="page-hero__search-with-filter">
+            <SearchBar
+              bind:value={searchValue}
+              placeholder={searchPlaceholder}
+              oninput={onSearchInput}
+            />
+            <div class="page-hero__filters-mobile">
+              <IconButton
+                variant="outlined-inverse"
+                size="large"
+                onclick={() => isFilterDrawerOpen = true}
+                ariaLabel="Filtrer"
+              >
+                <SlidersHorizontal size={24} />
+              </IconButton>
+            </div>
+          </div>
+        {:else if showSearch}
           <div class="page-hero__search">
             <SearchBar
               bind:value={searchValue}
@@ -69,7 +94,8 @@
           </div>
         {/if}
         {#if filters}
-          <div class="page-hero__filters">
+          <!-- Filtres visibles seulement sur desktop -->
+          <div class="page-hero__filters-desktop">
             {@render filters()}
           </div>
         {/if}
@@ -83,6 +109,28 @@
     {/if}
   </div>
 </Hero>
+
+<!-- Drawer pour les filtres en mobile -->
+{#if filters}
+  <Drawer
+    isOpen={isFilterDrawerOpen}
+    title="Filtres"
+    onClose={() => isFilterDrawerOpen = false}
+    position="right"
+    primaryAction={{
+      label: 'Appliquer',
+      onClick: () => isFilterDrawerOpen = false
+    }}
+    secondaryAction={{
+      label: 'Annuler',
+      onClick: () => isFilterDrawerOpen = false
+    }}
+  >
+    <div class="page-hero__filters-drawer">
+      {@render filters()}
+    </div>
+  </Drawer>
+{/if}
 
 <style lang="scss">
   @use '../../../styles/variables' as *;
@@ -179,10 +227,31 @@
     }
   }
 
-  .page-hero__filters {
+  // SearchBar avec bouton filtrer (mobile)
+  .page-hero__search-with-filter {
+    display: flex;
+    gap: $spacing-sm;
+    align-items: center;
+  }
+
+  // Bouton filtrer (visible seulement en mobile)
+  .page-hero__filters-mobile {
+    display: none;
+
+    @media (max-width: $breakpoint-md) {
+      display: block;
+    }
+  }
+
+  // Filtres desktop (cachés en mobile)
+  .page-hero__filters-desktop {
     display: flex;
     flex-wrap: wrap;
     gap: $spacing-sm;
+
+    @media (max-width: $breakpoint-md) {
+      display: none;
+    }
 
     // Override Select label color for dark background
     :global(label) {
@@ -190,6 +259,13 @@
       font-weight: $font-weight-semibold;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
+  }
+
+  // Filtres dans le drawer (mobile)
+  .page-hero__filters-drawer {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
   }
 
   .page-hero__content {

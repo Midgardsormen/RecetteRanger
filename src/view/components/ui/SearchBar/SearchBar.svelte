@@ -70,7 +70,7 @@
 
   .search-bar__input {
     flex: 1;
-    padding: $spacing-md $spacing-base;
+    padding: $spacing-sm $spacing-base;
     border: none;
     background: transparent;
     font-size: $font-size-base;

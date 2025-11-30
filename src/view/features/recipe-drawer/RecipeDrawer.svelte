@@ -189,8 +189,9 @@
   }
 
   function scrollToFirstError(fieldName: string) {
-    // Chercher l'élément par son ID ou son name
-    const element = document.getElementById(fieldName) ||
+    // Chercher le FormField par data-field-name, puis par ID ou name en fallback
+    const element = document.querySelector(`[data-field-name="${fieldName}"]`) ||
+                    document.getElementById(fieldName) ||
                     document.querySelector(`[name="${fieldName}"]`) ||
                     document.querySelector(`[id*="${fieldName}"]`);
 
@@ -215,11 +216,10 @@
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
 
-      // Focus sur l'élément si c'est un input
-      if (element instanceof HTMLInputElement ||
-          element instanceof HTMLSelectElement ||
-          element instanceof HTMLTextAreaElement) {
-        element.focus();
+      // Focus sur l'input à l'intérieur du FormField si disponible
+      const inputElement = element.querySelector('input, textarea, select');
+      if (inputElement instanceof HTMLElement) {
+        inputElement.focus();
       }
     }
   }

@@ -168,5 +168,20 @@
         background: $color-white-alpha-30;
       }
     }
+
+    &--outlined-inverse {
+      color: $color-white;
+      background: transparent;
+      border: 2px solid $color-white-alpha-30;
+
+      &:hover:not(:disabled) {
+        background: $color-white-alpha-10;
+        border-color: $color-white;
+      }
+
+      &:active:not(:disabled) {
+        background: $color-white-alpha-20;
+      }
+    }
   }
 </style>

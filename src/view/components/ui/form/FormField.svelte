@@ -81,7 +81,7 @@
   setFormFieldContext(context);
 </script>
 
-<div class="form-field" class:form-field--inverse={variant === 'inverse'}>
+<div class="form-field" class:form-field--inverse={variant === 'inverse'} data-field-name={name}>
   {#if label}
     <label for={fieldId} class="form-field__label">
       {label}
