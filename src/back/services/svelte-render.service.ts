@@ -99,12 +99,59 @@ export class SvelteRenderService {
 
     // Trouver l'entrée principale dans le manifest
     let entryScript = '/assets/main.js'; // Fallback
+    let cssLinks = '';
+
     if (this.manifest) {
-      // Le manifest Vite a cette structure: { "src/view/entry-client.ts": { "file": "assets/main-ABC123.js", ... } }
+      // Le manifest Vite a cette structure: { "src/view/entry-client.ts": { "file": "assets/main-ABC123.js", "css": [...], ... } }
       const mainEntry = this.manifest['src/view/entry-client.ts'];
       if (mainEntry && mainEntry.file) {
         entryScript = '/' + mainEntry.file;
         console.log('Using manifest entry:', entryScript);
+
+        // Collecter les CSS nécessaires pour cette page spécifique
+        const cssFiles = new Set<string>();
+
+        // 1. Ajouter le CSS de l'entrée principale (global styles)
+        if (mainEntry.css && Array.isArray(mainEntry.css)) {
+          mainEntry.css.forEach((cssFile: string) => cssFiles.add(cssFile));
+        }
+
+        // 2. Trouver et ajouter le CSS du chunk correspondant au composant
+        const componentChunkKey = this.findChunkKeyForComponent(componentName);
+        if (componentChunkKey && this.manifest[componentChunkKey]) {
+          const componentChunk = this.manifest[componentChunkKey];
+          if (componentChunk.css && Array.isArray(componentChunk.css)) {
+            componentChunk.css.forEach((cssFile: string) => cssFiles.add(cssFile));
+          }
+
+          // 3. Ajouter le CSS des imports du chunk (dépendances)
+          if (componentChunk.imports && Array.isArray(componentChunk.imports)) {
+            componentChunk.imports.forEach((importKey: string) => {
+              const importedChunk = this.manifest[importKey];
+              if (importedChunk && importedChunk.css && Array.isArray(importedChunk.css)) {
+                importedChunk.css.forEach((cssFile: string) => cssFiles.add(cssFile));
+              }
+            });
+          }
+        }
+
+        // 4. Ajouter le CSS des chunks partagés (components, ui-components)
+        const sharedChunks = ['_components-', '_ui-components-'];
+        for (const [key, entry] of Object.entries(this.manifest)) {
+          if (sharedChunks.some(prefix => key.startsWith(prefix))) {
+            if (entry && typeof entry === 'object' && 'css' in entry && Array.isArray(entry.css)) {
+              entry.css.forEach((cssFile: string) => cssFiles.add(cssFile));
+            }
+          }
+        }
+
+        // Générer les balises <link> pour les fichiers CSS nécessaires
+        if (cssFiles.size > 0) {
+          cssLinks = Array.from(cssFiles)
+            .map(cssFile => `<link rel="stylesheet" href="/${cssFile}">`)
+            .join('\n        ');
+          console.log(`[CSS] Injecting ${cssFiles.size} CSS files for page ${componentName}`);
+        }
       } else {
         console.warn('Manifest loaded but no entry found for src/view/entry-client.ts');
         console.log('Available manifest keys:', Object.keys(this.manifest));
@@ -114,7 +161,7 @@ export class SvelteRenderService {
     }
 
     return this.template
-      .replace('<!--head-->', '')
+      .replace('<!--head-->', cssLinks)
       .replace('<!--app-->', '<div id="app"></div>')
       .replace('<!--scripts-->', `
         <script>
@@ -122,6 +169,57 @@ export class SvelteRenderService {
         </script>
         <script type="module" src="${entryScript}"></script>
       `);
+  }
+
+  /**
+   * Trouve la clé du chunk correspondant au composant dans le manifest
+   */
+  private findChunkKeyForComponent(componentName: string): string | null {
+    if (!this.manifest) return null;
+
+    // Essayer de trouver le chunk par nom de fichier
+    // Ex: "Articles" -> chercher "_feature-articles-" ou "src/view/features/articles/Articles.svelte"
+    const possibleKeys = [
+      `src/view/features/${componentName.toLowerCase()}/${componentName}.svelte`,
+      `src/view/features/articles/${componentName}.svelte`,
+      `src/view/features/stores/${componentName}.svelte`,
+      `src/view/features/plannings/${componentName}.svelte`,
+      `src/view/features/shopping-lists/${componentName}.svelte`,
+      `src/view/features/recipes/${componentName}.svelte`,
+      `src/view/features/ingredients/${componentName}.svelte`,
+      `src/view/features/home/${componentName}.svelte`,
+      `src/view/features/auth/${componentName}.svelte`,
+      `src/view/features/profile/${componentName}.svelte`,
+      `src/view/features/users/${componentName}.svelte`,
+      `src/view/features/admin/${componentName}.svelte`,
+      `src/view/features/privacy/${componentName}.svelte`,
+      `src/view/features/legal/${componentName}.svelte`,
+    ];
+
+    // Vérifier les clés possibles
+    for (const key of possibleKeys) {
+      if (this.manifest[key]) {
+        console.log(`[CSS] Found component chunk for ${componentName}: ${key}`);
+        return key;
+      }
+    }
+
+    // Chercher dans les chunks avec underscore (chunks précompilés)
+    const chunkPattern = componentName.replace(/([A-Z])/g, '-$1').toLowerCase().substring(1);
+    for (const key of Object.keys(this.manifest)) {
+      // Ignorer les clés de déclaration CSS (qui finissent par !~{...}~.js)
+      if (key.includes('!~{') && key.includes('}~.js')) {
+        continue;
+      }
+
+      if (key.startsWith('_feature-') && key.includes(chunkPattern)) {
+        console.log(`[CSS] Found precompiled chunk for ${componentName}: ${key}`);
+        return key;
+      }
+    }
+
+    console.warn(`[CSS] No chunk found for component ${componentName}`);
+    return null;
   }
 
   private async renderDev(componentName: string, props: any): Promise<string> {
