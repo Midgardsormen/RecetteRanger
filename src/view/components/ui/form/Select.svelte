@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { getFormFieldContext } from './formFieldContext';
+  import { getFormFieldContext } from './context/formFieldContext';
   import FormField from './FormField.svelte';
 
   interface Props {

@@ -16,6 +16,9 @@
 
   let { isOpen = false, ingredient = null, showFoodTypeSelector = false, onSave, onClose }: Props = $props();
 
+  // Clé unique pour forcer la recréation du formulaire à chaque ouverture
+  let drawerOpenKey = $state('');
+
   // Formulaire
   let label = $state(ingredient?.label || '');
   let aisle = $state<StoreAisle>(ingredient?.aisle || StoreAisle.FRUITS_ET_LEGUMES);
@@ -36,6 +39,9 @@
   // Réinitialiser le formulaire quand l'ingrédient change ou quand le drawer s'ouvre
   $effect(() => {
     if (isOpen) {
+      // Générer une nouvelle clé unique à chaque ouverture
+      drawerOpenKey = `${Date.now()}-${ingredient?.id || 'new'}`;
+
       if (ingredient) {
         label = ingredient.label;
         aisle = ingredient.aisle;
@@ -148,18 +154,19 @@
     onClick: onClose
   }}
 >
-  <form class="ingredient-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-    <!-- Nom de l'ingrédient -->
-    <FormField
+  {#key drawerOpenKey}
+    <form class="ingredient-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+      <!-- Nom de l'ingrédient -->
+      <FormField
       name="label"
       label={showFoodTypeSelector ? "Nom de l'article" : "Nom de l'ingrédient"}
       required
       error={errors.label}
       variant="inverse"
+      bind:value={label}
     >
       <Input
         id="label"
-        bind:value={label}
         oninput={handleLabelInput}
         placeholder={articleType === 'food' ? "Ex: Tomate" : "Ex: Lessive"}
         required
@@ -217,10 +224,9 @@
     {/if}
 
     <!-- Catégorie -->
-    <FormField name="aisle" label="Catégorie" required variant="inverse">
+    <FormField name="aisle" label="Catégorie" required variant="inverse" bind:value={aisle}>
       <Select
         id="aisle"
-        bind:value={aisle}
         required
       >
         {#each Object.entries(StoreAisleLabels) as [key, label]}
@@ -291,6 +297,7 @@
       </FormField>
     {/if}
   </form>
+  {/key}
 </Drawer>
 
 <style lang="scss">
