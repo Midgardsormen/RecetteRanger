@@ -287,7 +287,7 @@
     <!-- Image de l'ingrédient -->
     <FormField
       name="imageUrl"
-      label="Image de l'ingrédient (optionnel)"
+      label={showFoodTypeSelector ? "Image de l'article (optionnel)" : "Image de l'ingrédient (optionnel)"}
       error={errors.imageUrl}
       variant="inverse"
     >
@@ -340,14 +340,34 @@
 
   .checkbox-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: $spacing-sm;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
   }
 
   .months-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: $spacing-sm;
+
+    // Agrandir les tags en mobile pour faciliter le clic
+    :global(.tag) {
+      padding: $spacing-sm $spacing-base;
+      font-size: $font-size-sm;
+      min-height: 44px; // Taille minimale recommandée pour les zones tactiles
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      @media (min-width: 768px) {
+        padding: $spacing-xs $spacing-sm;
+        font-size: $font-size-xs;
+        min-height: auto;
+      }
+    }
   }
 
   .duplicates-check {

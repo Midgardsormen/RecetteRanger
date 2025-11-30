@@ -137,7 +137,7 @@
 
 <Drawer
   {isOpen}
-  title={store ? '✏️ Modifier l\'enseigne' : '➕ Ajouter une enseigne'}
+  title={store ? 'Modifier l\'enseigne' : 'Ajouter une enseigne'}
   {onClose}
   primaryAction={{
     label: store ? 'Modifier' : 'Ajouter',

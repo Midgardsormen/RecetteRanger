@@ -232,6 +232,43 @@
     display: flex;
     gap: $spacing-sm;
     align-items: center;
+    width: 100%;
+
+    // Le SearchBar doit prendre l'espace disponible et pouvoir rétrécir
+    :global(.search-bar) {
+      flex: 1;
+      min-width: 0; // Permet au SearchBar de rétrécir en dessous de sa taille de contenu
+      background: rgba($color-white, 0.15);
+      border-color: rgba($color-white, 0.3);
+      backdrop-filter: blur(10px);
+
+      &:focus-within {
+        background: rgba($color-white, 0.2);
+        border-color: $color-white;
+        box-shadow: 0 0 0 3px rgba($color-white, 0.1);
+      }
+    }
+
+    :global(.search-bar__icon) {
+      color: rgba($color-white, 0.7);
+    }
+
+    :global(.search-bar__input) {
+      color: $color-white;
+
+      &::placeholder {
+        color: rgba($color-white, 0.6);
+      }
+    }
+
+    :global(.search-bar__clear) {
+      background: rgba($color-white, 0.2);
+      color: $color-white;
+
+      &:hover {
+        background: rgba($color-white, 0.3);
+      }
+    }
   }
 
   // Bouton filtrer (visible seulement en mobile)

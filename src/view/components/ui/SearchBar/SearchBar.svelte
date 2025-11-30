@@ -71,6 +71,7 @@
   .search-bar__input {
     flex: 1;
     padding: $spacing-sm $spacing-base;
+    padding-right: calc($spacing-base + 32px + $spacing-sm); // Espace pour le bouton clear (32px = taille du bouton small)
     border: none;
     background: transparent;
     font-size: $font-size-base;
@@ -92,7 +93,9 @@
   }
 
   .search-bar__clear-wrapper {
-    margin-right: $spacing-sm;
-    flex-shrink: 0;
+    position: absolute;
+    right: $spacing-sm;
+    top: 50%;
+    transform: translateY(-50%);
   }
 </style>
