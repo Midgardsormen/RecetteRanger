@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Drawer, Input } from '../../components/ui';
   import { apiService } from '../../services/api.service';
+  import { Palette } from 'lucide-svelte';
 
   interface Store {
     id: string;
@@ -22,7 +23,7 @@
   // Formulaire
   let name = $state(store?.name || '');
   let logoUrl = $state(store?.logoUrl || '');
-  let color = $state(store?.color || '$brand-primary');
+  let color = $state(store?.color || '#FF6B6B');
 
   // Détection de doublons
   let similarStores = $state<any[]>([]);
@@ -39,11 +40,11 @@
       if (store) {
         name = store.name;
         logoUrl = store.logoUrl || '';
-        color = store.color || '$brand-primary';
+        color = store.color || '#FF6B6B';
       } else {
         name = initialName || '';
         logoUrl = '';
-        color = '$brand-primary';
+        color = '#FF6B6B';
       }
       errors = {};
       similarStores = [];
@@ -117,7 +118,7 @@
       const data = {
         name: name.trim(),
         logoUrl: logoUrl.trim() || undefined,
-        color: color || '$brand-primary',
+        color: color || '#FF6B6B',
       };
 
       if (store) {
@@ -196,18 +197,23 @@
 
     <!-- Couleur -->
     <div class="form-field">
-      <label class="form-label" for="color">Couleur (pour l'UI)</label>
+      <label class="form-label" for="color">
+        Couleur de l'enseigne
+      </label>
       <div class="color-input">
-        <input
-          id="color"
-          type="color"
-          bind:value={color}
-          class="color-picker"
-        />
+        <div class="color-picker-wrapper" style="--picker-color: {color}">
+          <input
+            id="color"
+            type="color"
+            bind:value={color}
+            class="color-picker"
+          />
+          <Palette size={20} class="color-picker-icon" />
+        </div>
         <Input
           id="color-text"
           bind:value={color}
-          placeholder="$brand-primary"
+          placeholder="#FF6B6B"
           error={errors.color}
         />
       </div>
@@ -250,12 +256,33 @@
     align-items: center;
   }
 
-  .color-picker {
+  .color-picker-wrapper {
+    position: relative;
     width: 60px;
-    height: 40px;
+    height: 44px;
+    flex-shrink: 0;
     border: 2px solid $border-color;
     border-radius: 8px;
+    overflow: hidden;
     cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $primary-color;
+      transform: scale(1.05);
+    }
+  }
+
+  .color-picker {
+    width: 100%;
+    height: 100%;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
 
     &::-webkit-color-swatch-wrapper {
       padding: 0;
@@ -263,8 +290,29 @@
 
     &::-webkit-color-swatch {
       border: none;
-      border-radius: 6px;
     }
+  }
+
+  :global(.color-picker-icon) {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: $white;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .color-picker-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--picker-color, #FF6B6B);
+    z-index: 0;
   }
 
   .duplicates-check {
