@@ -36,6 +36,7 @@
       aspectRatio={16 / 9}
       cropShape="rect"
       maxSizeMB={5}
+      variant="inverse"
     />
   </FormField>
 

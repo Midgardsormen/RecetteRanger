@@ -133,13 +133,14 @@
     // Element: input-group (input + button)
     &__input-group {
       display: flex;
-      gap: $spacing-2xs;
-      align-items: flex-end;
-
+      flex-direction: column;
+      gap:$spacing-md ;
+      align-items: stretch;
       // Mobile first: stack on small screens
-      @media (max-width: $breakpoint-sm) {
-        flex-direction: column;
-        align-items: stretch;
+      @media (min-width: $breakpoint-sm) {
+        flex-direction: row;
+        align-items: flex-end;
+        gap: $spacing-2xs;
       }
     }
 

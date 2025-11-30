@@ -94,7 +94,7 @@
 </label>
 
 <style lang="scss">
-  @use '../../../styles/variables' as *;
+  @use '../../../../styles/variables' as *;
 
   // Base styles (mobile first)
   .checkbox {
