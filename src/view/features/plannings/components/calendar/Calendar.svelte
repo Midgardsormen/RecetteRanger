@@ -2,7 +2,7 @@
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../../../types/meal-plan.types';
   import { MealSlotColors } from '../../../../types/meal-plan.types';
   import { Button, IconButton, Badge } from '../../../../components/ui';
-  import { ArrowLeft, ArrowRight } from 'lucide-svelte';
+  import { ArrowLeft, ArrowRight, Pencil, Trash2 } from 'lucide-svelte';
 
   interface Props {
     view?: CalendarView;
