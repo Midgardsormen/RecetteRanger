@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Input, Select, Button, SectionTitle, SelectableCard, Checkbox, FormField } from '../../components/ui';
+  import { Input, Select, SectionTitle, SelectableCard, Checkbox, FormField } from '../../components/ui';
   import SearchBar from '../../components/ui/SearchBar/SearchBar.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
   import { apiService } from '../../services/api.service';
@@ -12,9 +12,10 @@
     formData: RecipeFormData;
     errors: Record<string, string>;
     onUpdate: (updates: Partial<RecipeFormData>) => void;
+    onRegisterSectionAction?: (callback: (() => void) | null) => void;
   }
 
-  let { formData, errors, onUpdate }: Props = $props();
+  let { formData, errors, onUpdate, onRegisterSectionAction }: Props = $props();
 
   // États pour l'étape 2
   let ingredientSearchQuery = $state('');
@@ -44,6 +45,19 @@
   // Charger les ingrédients au montage
   $effect(() => {
     loadIngredients();
+  });
+
+  // Enregistrer le callback pour ouvrir le drawer d'ingrédient
+  $effect(() => {
+    if (onRegisterSectionAction) {
+      onRegisterSectionAction(() => { showIngredientDrawer = true; });
+    }
+    // Cleanup : retirer le callback quand le composant est démonté
+    return () => {
+      if (onRegisterSectionAction) {
+        onRegisterSectionAction(null);
+      }
+    };
   });
 
   // Gestion des ingrédients
@@ -90,7 +104,11 @@
 </script>
 
 <div class="recipe-step2">
-  <div class="recipe-step2__search">
+  <FormField
+    name="ingredientSearch"
+    label="Rechercher un ingrédient"
+    variant="inverse"
+  >
     <SearchBar
       bind:value={ingredientSearchQuery}
       oninput={() => {
@@ -98,13 +116,7 @@
       }}
       placeholder="Rechercher un ingrédient..."
     />
-    <Button
-      variant="outlined-inverse"
-      onclick={() => { showIngredientDrawer = true; }}
-    >
-      + Créer un ingrédient
-    </Button>
-  </div>
+  </FormField>
 
   {#if errors.ingredients}
     <p class="recipe-step2__error">{errors.ingredients}</p>
@@ -208,13 +220,6 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
-
-    // Element: search
-    &__search {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-sm;
-    }
 
     // Element: error message
     &__error {

@@ -27,12 +27,6 @@
     return currentPage === itemHref || currentPage.startsWith(itemHref + '/');
   }
 
-  function handleNavClick() {
-    // Close drawer on mobile when clicking a link
-    if (onClose) {
-      onClose();
-    }
-  }
 </script>
 
 {#if isAuthenticated}
@@ -70,7 +64,6 @@
               class="mobile-nav__link"
               class:mobile-nav__link--active={isActive(item.href)}
               aria-current={isActive(item.href) ? 'page' : undefined}
-              onclick={handleNavClick}
             >
                 <span class="mobile-nav__label">{item.label}</span>
             </a>

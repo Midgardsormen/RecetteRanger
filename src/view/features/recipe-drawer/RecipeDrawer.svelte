@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Drawer, SectionTitle } from '../../components/ui';
+  import { Drawer, SectionTitle, Button } from '../../components/ui';
   import RecipeStep1General from './RecipeStep1General.svelte';
   import RecipeStep2Ingredients from './RecipeStep2Ingredients.svelte';
   import RecipeStep3Steps from './RecipeStep3Steps.svelte';
@@ -25,6 +25,9 @@
 
   // Clé unique pour forcer la recréation des composants à chaque ouverture
   let drawerOpenKey = $state('');
+
+  // Callback pour l'action de la section (bouton à droite du titre)
+  let sectionActionCallback = $state<(() => void) | null>(null);
 
   // État du formulaire
   let formData = $state<RecipeFormData>({
@@ -226,6 +229,11 @@
     formData = { ...formData, ...updates };
   }
 
+  // Fonction pour enregistrer le callback de l'action de section
+  function registerSectionAction(callback: (() => void) | null) {
+    sectionActionCallback = callback;
+  }
+
   async function handleSubmit() {
     if (!validateCurrentStep()) {
       return;
@@ -290,6 +298,11 @@
       : 'Étapes de préparation';
   }
 
+  // Vérifier si l'étape actuelle a une action (bouton à droite du titre)
+  function hasSectionAction(): boolean {
+    return currentStep === 2; // Seulement pour l'étape Ingrédients
+  }
+
   // Actions du drawer en fonction de l'étape
   function getPrimaryAction() {
     return currentStep === 3
@@ -336,7 +349,23 @@
   primaryAction={getPrimaryAction()}
   secondaryAction={getSecondaryAction()}
 >
-  <SectionTitle>{getSectionTitle()}</SectionTitle>
+  {#if hasSectionAction() && sectionActionCallback}
+    <SectionTitle>
+      <div class="recipe-drawer__section-header">
+        <span class="recipe-drawer__section-title">{getSectionTitle()}</span>
+        <Button
+          variant="outlined-inverse"
+          size="medium"
+          onclick={sectionActionCallback}
+          class="recipe-drawer__action-button"
+        >
+          + Créer
+        </Button>
+      </div>
+    </SectionTitle>
+  {:else}
+    <SectionTitle>{getSectionTitle()}</SectionTitle>
+  {/if}
 
   {#key drawerOpenKey}
     {#if currentStep === 1}
@@ -350,6 +379,7 @@
         {formData}
         {errors}
         onUpdate={updateFormData}
+        onRegisterSectionAction={registerSectionAction}
       />
     {:else if currentStep === 3}
       <RecipeStep3Steps
@@ -361,3 +391,25 @@
   {/key}
 </Drawer>
 
+<style lang="scss">
+  @use '../../styles/variables' as *;
+
+  .recipe-drawer {
+    &__section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: $spacing-sm;
+      width: 100%;
+    }
+
+    &__section-title {
+      flex: 1;
+      min-width: 0;
+    }
+
+    &__action-button {
+      width: auto;
+    }
+  }
+</style>
