@@ -23,17 +23,20 @@
   // Gestion des étapes
   let currentStep = $state<1 | 2 | 3>(1);
 
+  // Clé unique pour forcer la recréation des composants à chaque ouverture
+  let drawerOpenKey = $state('');
+
   // État du formulaire
   let formData = $state<RecipeFormData>({
     label: '',
-    category: RecipeCategory.PLAT,
-    difficulty: RecipeDifficulty.MEDIUM,
+    category: '' as any,
+    difficulty: '' as any,
     cookMinutes: 0,
     prepMinutes: 0,
     servings: 1,
     imageUrl: '',
     sourceUrl: '',
-    visibility: RecipeVisibility.PRIVATE,
+    visibility: '' as any,
     materiel: [],
     appareils: [],
     ingredients: [],
@@ -48,6 +51,8 @@
   $effect(() => {
     if (isOpen) {
       currentStep = 1;
+      // Générer une nouvelle clé unique à chaque ouverture
+      drawerOpenKey = `${Date.now()}-${recipe?.id || 'new'}`;
 
       if (recipe) {
         // Mode édition : charger les données de la recette
@@ -83,14 +88,14 @@
         // Mode création : formulaire vide
         formData = {
           label: '',
-          category: RecipeCategory.PLAT,
-          difficulty: RecipeDifficulty.MEDIUM,
+          category: '' as any,
+          difficulty: '' as any,
           cookMinutes: 0,
           prepMinutes: 0,
           servings: 1,
           imageUrl: '',
           sourceUrl: '',
-          visibility: RecipeVisibility.PRIVATE,
+          visibility: '' as any,
           materiel: [],
           appareils: [],
           ingredients: [],
@@ -120,36 +125,100 @@
   function validateCurrentStep(): boolean {
     errors = {};
     let isValid = true;
+    let firstErrorField: string | null = null;
 
     if (currentStep === 1) {
       if (formData.label.trim().length < 3) {
         errors.label = 'Le nom doit contenir au moins 3 caractères';
         isValid = false;
+        if (!firstErrorField) firstErrorField = 'label';
+      }
+      if (!formData.category) {
+        errors.category = 'La catégorie est requise';
+        isValid = false;
+        if (!firstErrorField) firstErrorField = 'category';
+      }
+      if (!formData.difficulty) {
+        errors.difficulty = 'La difficulté est requise';
+        isValid = false;
+        if (!firstErrorField) firstErrorField = 'difficulty';
+      }
+      if (!formData.visibility) {
+        errors.visibility = 'La visibilité est requise';
+        isValid = false;
+        if (!firstErrorField) firstErrorField = 'visibility';
       }
       if (formData.servings < 1) {
         errors.servings = 'Le nombre de personnes doit être au moins 1';
         isValid = false;
+        if (!firstErrorField) firstErrorField = 'servings';
       }
     } else if (currentStep === 2) {
       if (formData.ingredients.length === 0) {
         errors.ingredients = 'Ajoutez au moins un ingrédient';
         isValid = false;
+        firstErrorField = 'ingredients';
       }
     } else if (currentStep === 3) {
       if (formData.steps.length === 0) {
         errors.steps = 'Ajoutez au moins une étape';
         isValid = false;
+        firstErrorField = 'steps';
       }
       // Vérifier que toutes les étapes ont une description
       formData.steps.forEach((step, index) => {
         if (!step.description.trim()) {
           errors[`step-${index}`] = 'La description est requise';
           isValid = false;
+          if (!firstErrorField) firstErrorField = `step-description-${index}`;
         }
       });
     }
 
+    // Scroller jusqu'au premier champ en erreur
+    if (!isValid && firstErrorField) {
+      setTimeout(() => {
+        scrollToFirstError(firstErrorField);
+      }, 100);
+    }
+
     return isValid;
+  }
+
+  function scrollToFirstError(fieldName: string) {
+    // Chercher l'élément par son ID ou son name
+    const element = document.getElementById(fieldName) ||
+                    document.querySelector(`[name="${fieldName}"]`) ||
+                    document.querySelector(`[id*="${fieldName}"]`);
+
+    if (element) {
+      // Trouver le conteneur scrollable (drawer__body)
+      const drawerBody = element.closest('.drawer__body');
+
+      if (drawerBody) {
+        // Calculer la position de l'élément par rapport au conteneur
+        const elementRect = element.getBoundingClientRect();
+        const containerRect = drawerBody.getBoundingClientRect();
+        const scrollTop = drawerBody.scrollTop;
+        const targetScroll = scrollTop + (elementRect.top - containerRect.top) - 100; // -100px pour un peu d'espace en haut
+
+        // Scroller le conteneur avec animation smooth
+        drawerBody.scrollTo({
+          top: targetScroll,
+          behavior: 'smooth'
+        });
+      } else {
+        // Fallback si pas de drawer__body trouvé
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Focus sur l'élément si c'est un input
+      if (element instanceof HTMLInputElement ||
+          element instanceof HTMLSelectElement ||
+          element instanceof HTMLTextAreaElement) {
+        element.focus();
+      }
+    }
   }
 
   // Fonction pour mettre à jour formData
@@ -269,24 +338,26 @@
 >
   <SectionTitle>{getSectionTitle()}</SectionTitle>
 
-  {#if currentStep === 1}
-    <RecipeStep1General
-      {formData}
-      {errors}
-      onUpdate={updateFormData}
-    />
-  {:else if currentStep === 2}
-    <RecipeStep2Ingredients
-      {formData}
-      {errors}
-      onUpdate={updateFormData}
-    />
-  {:else if currentStep === 3}
-    <RecipeStep3Steps
-      {formData}
-      {errors}
-      onUpdate={updateFormData}
-    />
-  {/if}
+  {#key drawerOpenKey}
+    {#if currentStep === 1}
+      <RecipeStep1General
+        {formData}
+        {errors}
+        onUpdate={updateFormData}
+      />
+    {:else if currentStep === 2}
+      <RecipeStep2Ingredients
+        {formData}
+        {errors}
+        onUpdate={updateFormData}
+      />
+    {:else if currentStep === 3}
+      <RecipeStep3Steps
+        {formData}
+        {errors}
+        onUpdate={updateFormData}
+      />
+    {/if}
+  {/key}
 </Drawer>
 

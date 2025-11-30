@@ -39,6 +39,17 @@
   // Déterminer si on doit wrapper avec FormField
   const shouldWrapWithFormField = !ctx && (label || error || hint);
 
+  // Référence à l'élément select pour forcer la synchronisation
+  let selectElement: HTMLSelectElement | null = null;
+
+  // Synchroniser la valeur du select avec la prop value
+  $effect(() => {
+    const currentValue = ctx?.value ?? value;
+    if (selectElement && selectElement.value !== String(currentValue)) {
+      selectElement.value = String(currentValue);
+    }
+  });
+
   function handleChange(e: Event) {
     const target = e.currentTarget as HTMLSelectElement;
 
@@ -59,9 +70,11 @@
 {#if shouldWrapWithFormField}
   <FormField {name} {label} helper={hint} {error} {required} bind:value {disabled} {variant}>
     <select
+      bind:this={selectElement}
       {id}
+      value={value}
       class="select"
-      onchange={onchange}
+      onchange={handleChange}
     >
       {#if options.length > 0}
         {#each options as option}
@@ -74,6 +87,7 @@
   </FormField>
 {:else}
   <select
+    bind:this={selectElement}
     id={ctx?.id ?? id}
     name={ctx?.name ?? name}
     value={ctx?.value ?? value}

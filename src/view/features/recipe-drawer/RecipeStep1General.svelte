@@ -19,11 +19,11 @@
     variant="inverse"
     required
     error={errors.label}
+    bind:value={formData.label}
   >
     <Input
       id="label"
       type="text"
-      value={formData.label}
       oninput={(e) => onUpdate({ label: e.currentTarget.value })}
       placeholder="Ex: Poulet rôti aux herbes"
     />
@@ -39,36 +39,36 @@
     />
   </FormField>
 
-  <FormField name="category" label="Catégorie" variant="inverse" required>
+  <FormField name="category" label="Catégorie" variant="inverse" required bind:value={formData.category} error={errors.category}>
     <Select
       id="category"
-      value={formData.category}
       onchange={(e) => onUpdate({ category: e.currentTarget.value as RecipeCategory })}
     >
+      <option value="">Sélectionnez une catégorie</option>
       {#each Object.entries(RecipeCategoryLabels) as [key, label]}
         <option value={key}>{label}</option>
       {/each}
     </Select>
   </FormField>
 
-  <FormField name="difficulty" label="Difficulté" variant="inverse" required>
+  <FormField name="difficulty" label="Difficulté" variant="inverse" required bind:value={formData.difficulty} error={errors.difficulty}>
     <Select
       id="difficulty"
-      value={formData.difficulty}
       onchange={(e) => onUpdate({ difficulty: e.currentTarget.value as RecipeDifficulty })}
     >
+      <option value="">Sélectionnez une difficulté</option>
       {#each Object.entries(RecipeDifficultyLabels) as [key, label]}
         <option value={key}>{label}</option>
       {/each}
     </Select>
   </FormField>
 
-  <FormField name="visibility" label="Visibilité de la recette" variant="inverse" required>
+  <FormField name="visibility" label="Visibilité de la recette" variant="inverse" required bind:value={formData.visibility} error={errors.visibility}>
     <Select
       id="visibility"
-      value={formData.visibility}
       onchange={(e) => onUpdate({ visibility: e.currentTarget.value as RecipeVisibility })}
     >
+      <option value="">Sélectionnez la visibilité</option>
       {#each Object.entries(RecipeVisibilityLabels) as [key, label]}
         <option value={key}>{label}</option>
       {/each}
@@ -76,22 +76,20 @@
   </FormField>
 
   <div class="recipe-step1__row">
-    <FormField name="prepMinutes" label="Temps de préparation (min)" variant="inverse">
+    <FormField name="prepMinutes" label="Temps de préparation (min)" variant="inverse" bind:value={formData.prepMinutes}>
       <Input
         id="prepMinutes"
         type="number"
-        value={formData.prepMinutes}
         oninput={(e) => onUpdate({ prepMinutes: parseInt(e.currentTarget.value) || 0 })}
         min="0"
         placeholder="0"
       />
     </FormField>
 
-    <FormField name="cookMinutes" label="Temps de cuisson (min)" variant="inverse">
+    <FormField name="cookMinutes" label="Temps de cuisson (min)" variant="inverse" bind:value={formData.cookMinutes}>
       <Input
         id="cookMinutes"
         type="number"
-        value={formData.cookMinutes}
         oninput={(e) => onUpdate({ cookMinutes: parseInt(e.currentTarget.value) || 0 })}
         min="0"
         placeholder="0"
@@ -99,11 +97,10 @@
     </FormField>
   </div>
 
-  <FormField name="servings" label="Nombre de personnes" variant="inverse" required error={errors.servings}>
+  <FormField name="servings" label="Nombre de personnes" variant="inverse" required error={errors.servings} bind:value={formData.servings}>
     <Input
       id="servings"
       type="number"
-      value={formData.servings}
       oninput={(e) => onUpdate({ servings: parseInt(e.currentTarget.value) || 1 })}
       min="1"
       placeholder="1"
@@ -114,11 +111,10 @@
     Créez la recette pour 1 personne. Les quantités seront ajustées automatiquement lors de la consultation.
   </Alert>
 
-  <FormField name="sourceUrl" label="Lien source (optionnel)" variant="inverse">
+  <FormField name="sourceUrl" label="Lien source (optionnel)" variant="inverse" bind:value={formData.sourceUrl}>
     <Input
       id="sourceUrl"
       type="url"
-      value={formData.sourceUrl}
       oninput={(e) => onUpdate({ sourceUrl: e.currentTarget.value })}
       placeholder="https://exemple.com/recette"
     />

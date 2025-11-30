@@ -42,6 +42,17 @@
   // Déterminer si on doit wrapper avec FormField
   const shouldWrapWithFormField = !ctx && (label || error || hint);
 
+  // Référence à l'élément input pour forcer la synchronisation
+  let inputElement: HTMLInputElement | null = null;
+
+  // Synchroniser la valeur de l'input avec la prop value
+  $effect(() => {
+    const currentValue = ctx?.value ?? value;
+    if (inputElement && inputElement.value !== String(currentValue)) {
+      inputElement.value = String(currentValue);
+    }
+  });
+
   function handleInput(e: Event) {
     const target = e.currentTarget as HTMLInputElement;
 
@@ -68,6 +79,7 @@
 {#if shouldWrapWithFormField}
   <FormField {name} {label} helper={hint} {error} {required} bind:value {disabled} {variant}>
     <input
+      bind:this={inputElement}
       {id}
       {type}
       {placeholder}
@@ -80,6 +92,7 @@
   </FormField>
 {:else}
   <input
+    bind:this={inputElement}
     id={ctx?.id ?? id}
     name={ctx?.name ?? name}
     {type}

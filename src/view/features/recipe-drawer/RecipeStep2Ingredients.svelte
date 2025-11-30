@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Input, Select, Button, SectionTitle, SelectableCard, Checkbox, FormField } from '../../components/ui';
+  import SearchBar from '../../components/ui/SearchBar/SearchBar.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
   import { apiService } from '../../services/api.service';
   import type { RecipeFormData, RecipeIngredientInput } from '../../types/recipe.types';
@@ -90,16 +91,12 @@
 
 <div class="recipe-step2">
   <div class="recipe-step2__search">
-    <Input
-      id="ingredient-search"
-      label="Rechercher un ingrédient"
-      type="text"
-      variant="inverse"
+    <SearchBar
       bind:value={ingredientSearchQuery}
       oninput={() => {
         loadIngredients();
       }}
-      placeholder="Tapez pour rechercher..."
+      placeholder="Rechercher un ingrédient..."
     />
     <Button
       variant="outlined-inverse"
