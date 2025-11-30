@@ -12,6 +12,28 @@
 
   let { formData, errors, onUpdate }: Props = $props();
 
+  // Référence à un conteneur des étapes pour le scroll
+  let stepsContainer: HTMLDivElement | null = null;
+  let previousStepsLength = $state(0);
+
+  // Observer les changements de nombre d'étapes pour scroller automatiquement
+  $effect(() => {
+    const currentLength = formData.steps.length;
+
+    // Si une étape a été ajoutée
+    if (currentLength > previousStepsLength && stepsContainer) {
+      // Scroller vers le dernier enfant après un court délai
+      setTimeout(() => {
+        const lastChild = stepsContainer?.lastElementChild as HTMLElement;
+        if (lastChild) {
+          lastChild.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+
+    previousStepsLength = currentLength;
+  });
+
   // Gestion des étapes de préparation
   function addStep() {
     const newStep: StepInput = {
@@ -57,9 +79,10 @@
     <p class="recipe-step3__message">Aucune étape ajoutée</p>
   {/if}
 
-  {#each formData.steps as step, index}
-    <div class="recipe-step3__item">
-      <div class="recipe-step3__header">
+  <div class="recipe-step3__steps-container" bind:this={stepsContainer}>
+    {#each formData.steps as step, index}
+      <div class="recipe-step3__item">
+        <div class="recipe-step3__header">
         <span class="recipe-step3__number">Étape {index + 1}</span>
         <div class="recipe-step3__actions">
           <button
@@ -110,7 +133,8 @@
         placeholder="Ex: 10"
       />
     </div>
-  {/each}
+    {/each}
+  </div>
 
   <Button
     variant="outlined-inverse"
@@ -129,6 +153,14 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
+    padding-bottom: $spacing-3xl;
+
+    // Element: steps-container
+    &__steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-md;
+    }
 
     // Element: error message
     &__error {

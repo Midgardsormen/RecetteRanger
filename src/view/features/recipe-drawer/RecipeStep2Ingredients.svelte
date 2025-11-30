@@ -292,6 +292,7 @@
       display: flex;
       flex-direction: column;
       gap: $spacing-sm;
+      padding-bottom: $spacing-3xl;
     }
 
     // Element: ingredient-inputs (quantity and unit)
