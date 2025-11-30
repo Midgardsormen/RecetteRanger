@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { setFormFieldContext, type FormFieldContext } from './formFieldContext';
+  import { setFormFieldContext, type FormFieldContext } from './context/formFieldContext';
 
   interface Props {
     name: string;
@@ -81,7 +81,7 @@
   setFormFieldContext(context);
 </script>
 
-<div class="form-field" class:form-field--inverse={variant === 'inverse'}>
+<div class="form-field" class:form-field--inverse={variant === 'inverse'} data-field-name={name}>
   {#if label}
     <label for={fieldId} class="form-field__label">
       {label}

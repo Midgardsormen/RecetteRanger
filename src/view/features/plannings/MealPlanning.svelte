@@ -5,6 +5,7 @@
   import { Button, PageHero, ConfirmModal } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../types/meal-plan.types';
+  import { Settings } from 'lucide-svelte';
 
   let { user }: { user: any } = $props();
 
@@ -157,9 +158,13 @@
   <div class="meal-planning">
     <PageHero
       title="Planning des repas"
-      actionLabel="⚙️ Personnaliser les créneaux"
+      actionLabel="Personnaliser les créneaux"
       onAction={openSettings}
-    />
+    >
+      {#snippet actionIcon()}
+        <Settings size={18} />
+      {/snippet}
+    </PageHero>
 
     {#if loading}
       <div class="loading-container">

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ImageUploadProps } from '../../../types/ui.types';
   import type Cropper from 'cropperjs';
-  import { Camera, Download } from 'lucide-svelte';
+  import { Camera, Download, Upload } from 'lucide-svelte';
   import Button from '../Button.svelte';
   import {
     IMAGE_UPLOAD_DEFAULTS,
@@ -34,6 +34,7 @@
 
   let fileInput = $state<HTMLInputElement | null>(null);
   let imageElement = $state<HTMLImageElement | null>(null);
+  let cropperContainer = $state<HTMLDivElement | null>(null);
   let previewUrl = $state<string | null>(value);
   let cropper: Cropper | null = null;
   let showCropper = $state(false);
@@ -111,8 +112,36 @@
           initCropperInstance();
         };
       }
+
+      // Scroller jusqu'au cropper pour qu'il soit visible
+      scrollToCropper();
     }
   });
+
+  function scrollToCropper() {
+    if (!cropperContainer) return;
+
+    setTimeout(() => {
+      // Trouver le conteneur scrollable (drawer__body ou window)
+      const drawerBody = cropperContainer?.closest('.drawer__body');
+
+      if (drawerBody) {
+        // Scroller dans le drawer
+        const containerRect = drawerBody.getBoundingClientRect();
+        const cropperRect = cropperContainer.getBoundingClientRect();
+        const scrollTop = drawerBody.scrollTop;
+        const targetScroll = scrollTop + (cropperRect.top - containerRect.top) - 20; // -20px d'espace en haut
+
+        drawerBody.scrollTo({
+          top: targetScroll,
+          behavior: 'smooth'
+        });
+      } else {
+        // Fallback: scroller la window
+        cropperContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
 
   function initCropperInstance() {
     if (!imageElement || cropper) {
@@ -259,7 +288,7 @@
     />
   {:else}
     <!-- Cropper -->
-    <div class="image-upload__cropper">
+    <div class="image-upload__cropper" bind:this={cropperContainer}>
       <div class="image-upload__cropper-container">
         <img
           bind:this={imageElement}
@@ -282,6 +311,7 @@
           onclick={handleCrop}
           disabled={uploading}
         >
+          <Upload size={20} />
           {uploading ? IMAGE_UPLOAD_MESSAGES.uploading : IMAGE_UPLOAD_MESSAGES.validate}
         </Button>
       </div>

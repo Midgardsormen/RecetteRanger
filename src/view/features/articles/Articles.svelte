@@ -2,10 +2,10 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
-  import { ListItem, Button, Filter, ConfirmModal, PageHero } from '../../components/ui';
+  import { ListItem, Button, Filter, ConfirmModal, PageHero, Badge } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, SearchIngredientsDto } from '../../types/ingredient.types';
-  import { StoreAisle, Unit, StoreAisleLabels, UnitLabels } from '../../types/ingredient.types';
+  import { StoreAisle, Unit, StoreAisleLabels, StoreAisleColors, UnitLabels } from '../../types/ingredient.types';
   import { UserRole } from '../../types/user.types';
 
   // Recevoir les données du SSR
@@ -222,11 +222,19 @@
         <ListItem
           imageUrl={article.imageUrl}
           imagePlaceholder={article.isFood ? "🍽️" : "🧴"}
-          title={article.label}
-          subtitle={StoreAisleLabels[article.aisle]}
           onEdit={isAdmin() ? () => openDrawer(article) : undefined}
           onDelete={isAdmin() ? () => openDeleteConfirmation(article.id) : undefined}
-        />
+        >
+          {#snippet children()}
+            <h3 class="article-title">{article.label}</h3>
+          {/snippet}
+
+          {#snippet badge()}
+            <Badge variant={StoreAisleColors[article.aisle]} size="xs">
+              {StoreAisleLabels[article.aisle]}
+            </Badge>
+          {/snippet}
+        </ListItem>
       {/each}
     </div>
 
@@ -311,8 +319,6 @@
   .articles {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 2;
-
     &__filter-group {
       display: flex;
       flex-direction: column;
@@ -421,5 +427,17 @@
       font-size: 0.9rem;
       margin-top: $spacing-base;
     }
+  }
+
+  .article-title {
+    margin: 0;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: $line-height-normal;
   }
 </style>

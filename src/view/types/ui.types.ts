@@ -118,6 +118,7 @@ export interface PageHeroProps {
   title: string;
   subtitle?: string;
   actionLabel?: string;
+  actionIcon?: Snippet;
   onAction?: () => void;
   showSearch?: boolean;
   searchPlaceholder?: string;
@@ -420,7 +421,8 @@ export type IconButtonVariant =
   | 'primary'
   | 'secondary'
   | 'ghost'
-  | 'ghost-inverse';
+  | 'ghost-inverse'
+  | 'outlined-inverse';
 
 export type IconButtonSize = 'small' | 'medium' | 'large';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getFormFieldContext } from './formFieldContext';
+  import { getFormFieldContext } from './context/formFieldContext';
   import FormField from './FormField.svelte';
   import { Eye, EyeOff } from 'lucide-svelte';
 

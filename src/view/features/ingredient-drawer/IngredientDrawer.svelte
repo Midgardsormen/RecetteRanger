@@ -16,6 +16,9 @@
 
   let { isOpen = false, ingredient = null, showFoodTypeSelector = false, onSave, onClose }: Props = $props();
 
+  // Clé unique pour forcer la recréation du formulaire à chaque ouverture
+  let drawerOpenKey = $state('');
+
   // Formulaire
   let label = $state(ingredient?.label || '');
   let aisle = $state<StoreAisle>(ingredient?.aisle || StoreAisle.FRUITS_ET_LEGUMES);
@@ -36,6 +39,9 @@
   // Réinitialiser le formulaire quand l'ingrédient change ou quand le drawer s'ouvre
   $effect(() => {
     if (isOpen) {
+      // Générer une nouvelle clé unique à chaque ouverture
+      drawerOpenKey = `${Date.now()}-${ingredient?.id || 'new'}`;
+
       if (ingredient) {
         label = ingredient.label;
         aisle = ingredient.aisle;
@@ -104,6 +110,31 @@
 
     if (!validation.isValid) {
       errors = validation.errors;
+
+      // Scroll vers la première erreur (en respectant l'ordre des champs dans le formulaire)
+      setTimeout(() => {
+        const fieldOrder = ['label', 'units', 'imageUrl'];
+        const firstErrorField = fieldOrder.find(field => errors[field as keyof ValidationErrors]);
+
+        if (firstErrorField) {
+          // Chercher le FormField qui a l'attribut data-field-name
+          const errorElement = document.querySelector(`[data-field-name="${firstErrorField}"]`);
+
+          if (errorElement) {
+            errorElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+
+            // Focus sur le champ si c'est un input
+            const inputElement = errorElement.querySelector('input, textarea, select');
+            if (inputElement instanceof HTMLElement) {
+              inputElement.focus();
+            }
+          }
+        }
+      }, 100);
+
       return;
     }
 
@@ -130,7 +161,11 @@
 
   // Computed property pour l'icône du titre
   const titleIcon = $derived(ingredient ? Pencil : Plus);
-  const titleText = $derived(ingredient ? "Modifier l'ingrédient" : "Ajouter un ingrédient");
+  const titleText = $derived(
+    ingredient
+      ? (showFoodTypeSelector ? "Modifier l'article" : "Modifier l'ingrédient")
+      : (showFoodTypeSelector ? "Ajouter un article" : "Ajouter un ingrédient")
+  );
 </script>
 
 <Drawer
@@ -148,18 +183,19 @@
     onClick: onClose
   }}
 >
-  <form class="ingredient-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-    <!-- Nom de l'ingrédient -->
-    <FormField
+  {#key drawerOpenKey}
+    <form class="ingredient-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+      <!-- Nom de l'ingrédient -->
+      <FormField
       name="label"
       label={showFoodTypeSelector ? "Nom de l'article" : "Nom de l'ingrédient"}
       required
       error={errors.label}
       variant="inverse"
+      bind:value={label}
     >
       <Input
         id="label"
-        bind:value={label}
         oninput={handleLabelInput}
         placeholder={articleType === 'food' ? "Ex: Tomate" : "Ex: Lessive"}
         required
@@ -217,10 +253,9 @@
     {/if}
 
     <!-- Catégorie -->
-    <FormField name="aisle" label="Catégorie" required variant="inverse">
+    <FormField name="aisle" label="Catégorie" required variant="inverse" bind:value={aisle}>
       <Select
         id="aisle"
-        bind:value={aisle}
         required
       >
         {#each Object.entries(StoreAisleLabels) as [key, label]}
@@ -252,7 +287,7 @@
     <!-- Image de l'ingrédient -->
     <FormField
       name="imageUrl"
-      label="Image de l'ingrédient (optionnel)"
+      label={showFoodTypeSelector ? "Image de l'article (optionnel)" : "Image de l'ingrédient (optionnel)"}
       error={errors.imageUrl}
       variant="inverse"
     >
@@ -291,6 +326,7 @@
       </FormField>
     {/if}
   </form>
+  {/key}
 </Drawer>
 
 <style lang="scss">
@@ -304,14 +340,34 @@
 
   .checkbox-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: $spacing-sm;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
   }
 
   .months-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: $spacing-sm;
+
+    // Agrandir les tags en mobile pour faciliter le clic
+    :global(.tag) {
+      padding: $spacing-sm $spacing-base;
+      font-size: $font-size-sm;
+      min-height: 44px; // Taille minimale recommandée pour les zones tactiles
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      @media (min-width: 768px) {
+        padding: $spacing-xs $spacing-sm;
+        font-size: $font-size-xs;
+        min-height: auto;
+      }
+    }
   }
 
   .duplicates-check {

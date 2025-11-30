@@ -255,7 +255,6 @@
   .stores {
     display: flex;
     flex-direction: column;
-    gap: $spacing-lg;
 
     &__error {
       padding: $spacing-md;

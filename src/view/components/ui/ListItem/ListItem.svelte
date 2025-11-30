@@ -150,6 +150,8 @@
     border: $border-width-base solid $color-border-primary;
     border-radius: $radius-lg;
     transition: all $transition-base $transition-ease;
+    min-width: 0; // Permet au list-item de rétrécir dans son conteneur flex parent
+    width: 100%;
 
     &--clickable {
       cursor: pointer;
@@ -184,6 +186,8 @@
     align-items: center;
     gap: $spacing-base;
     padding: $spacing-md;
+    min-width: 0; // Permet au conteneur de rétrécir
+    width: 100%;
 
     @media (min-width: $breakpoint-sm) {
       padding: $spacing-base;
@@ -331,7 +335,12 @@
 
   .list-item__actions {
     display: flex;
-    gap: $spacing-sm;
+    gap: $spacing-xs;
+    flex-shrink: 0;
+
+    @media (min-width: $breakpoint-sm) {
+      gap: $spacing-sm;
+    }
   }
 
   .list-item__footer {
