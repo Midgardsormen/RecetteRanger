@@ -143,7 +143,7 @@
   {#if formData.ingredients.length > 0}
     <div class="recipe-step2__selected">
       <SectionTitle level={3}>Ingrédients sélectionnés ({formData.ingredients.length})</SectionTitle>
-      {#each formData.ingredients as ingredient, index}
+      {#each formData.ingredients as ingredient, index (ingredient.ingredientId)}
         <SelectableCard
           title={ingredient.ingredientLabel}
           variant="inverse"
