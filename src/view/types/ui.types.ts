@@ -424,11 +424,14 @@ export type IconButtonVariant =
   | 'ghost-inverse'
   | 'outlined-inverse';
 
-export type IconButtonSize = 'small' | 'medium' | 'large';
+export type IconButtonSize = 'small' | 'medium' | 'large' | 'x-large' | '2x-large';
+
+export type IconButtonShape = 'circle' | 'square' | 'rectangle';
 
 export interface IconButtonProps {
   variant?: IconButtonVariant;
   size?: IconButtonSize;
+  shape?: IconButtonShape;
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
   title?: string;
@@ -646,10 +649,13 @@ export type TitleLevel = 1 | 2 | 3 | 4 | 5 | 6;
 export type TitleTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 export type TitleAlign = 'left' | 'center' | 'right';
 
+export type TitleSize = 's' | 'm' | 'l';
+
 export interface TitleProps {
   level?: TitleLevel;
   as?: TitleTag;
   align?: TitleAlign;
+  size?: TitleSize;
   gradient?: boolean;
   children?: Snippet;
 }

@@ -294,7 +294,7 @@
     return currentStep === 1
       ? 'Informations générales'
       : currentStep === 2
-      ? 'Ingrédients'
+      ? 'Vos ingrédients'
       : 'Étapes de préparation';
   }
 
@@ -349,22 +349,24 @@
   primaryAction={getPrimaryAction()}
   secondaryAction={getSecondaryAction()}
 >
-  {#if hasSectionAction() && sectionActionCallback}
-    <SectionTitle>
-      <div class="recipe-drawer__section-header">
-        <span class="recipe-drawer__section-title">{getSectionTitle()}</span>
-        <Button
-          variant="outlined-inverse"
-          size="medium"
-          onclick={sectionActionCallback}
-          class="recipe-drawer__action-button"
-        >
-          + Créer
-        </Button>
-      </div>
-    </SectionTitle>
-  {:else}
-    <SectionTitle>{getSectionTitle()}</SectionTitle>
+  {#if currentStep > 1}
+    {#if hasSectionAction() && sectionActionCallback}
+      <SectionTitle>
+        <div class="recipe-drawer__section-header">
+          <span class="recipe-drawer__section-title">{getSectionTitle()}</span>
+          <Button
+            variant="outlined-inverse"
+            size="medium"
+            onclick={sectionActionCallback}
+            class="recipe-drawer__action-button"
+          >
+            + Créer
+          </Button>
+        </div>
+      </SectionTitle>
+    {:else}
+      <SectionTitle>{getSectionTitle()}</SectionTitle>
+    {/if}
   {/if}
 
   {#key drawerOpenKey}
@@ -401,6 +403,11 @@
       justify-content: space-between;
       gap: $spacing-sm;
       width: 100%;
+      :global{
+        .button{
+          width: auto;
+        }
+      }
     }
 
     &__section-title {

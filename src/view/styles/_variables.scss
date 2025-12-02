@@ -665,6 +665,30 @@ $title-size-4: $font-size-xl;   // 20px - h4
 $title-size-5: $font-size-lg;   // 18px - h5
 $title-size-6: $font-size-base; // 16px - h6
 
+// Title sizes - Small (s)
+$title-size-s-1-mobile: $font-size-2xl;   // 24px - h1 mobile
+$title-size-s-1-desktop: $font-size-3xl;  // 30px - h1 desktop
+$title-size-s-2-mobile: $font-size-xl;    // 20px - h2 mobile
+$title-size-s-2-desktop: $font-size-2xl;  // 24px - h2 desktop
+$title-size-s-3-mobile: $font-size-lg;    // 18px - h3 mobile
+$title-size-s-3-desktop: $font-size-xl;   // 20px - h3 desktop
+
+// Title sizes - Medium (m) - Default
+$title-size-m-1-mobile: $font-size-3xl;   // 30px - h1 mobile
+$title-size-m-1-desktop: $font-size-5xl;  // 48px - h1 desktop
+$title-size-m-2-mobile: $font-size-2xl;   // 24px - h2 mobile
+$title-size-m-2-desktop: $font-size-3xl;  // 30px - h2 desktop
+$title-size-m-3-mobile: $font-size-xl;    // 20px - h3 mobile
+$title-size-m-3-desktop: $font-size-2xl;  // 24px - h3 desktop
+
+// Title sizes - Large (l)
+$title-size-l-1-mobile: $font-size-4xl;   // 36px - h1 mobile
+$title-size-l-1-desktop: $font-size-6xl;  // 60px - h1 desktop
+$title-size-l-2-mobile: $font-size-3xl;   // 30px - h2 mobile
+$title-size-l-2-desktop: $font-size-4xl;  // 36px - h2 desktop
+$title-size-l-3-mobile: $font-size-2xl;   // 24px - h3 mobile
+$title-size-l-3-desktop: $font-size-3xl;  // 30px - h3 desktop
+
 // Font weights
 $font-weight-light: 300;
 $font-weight-normal: 400;
