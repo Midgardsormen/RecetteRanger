@@ -6,6 +6,7 @@
     level = TITLE_DEFAULTS.level,
     as,
     align = TITLE_DEFAULTS.align,
+    size = TITLE_DEFAULTS.size,
     gradient = TITLE_DEFAULTS.gradient,
     children
   }: TitleProps = $props();
@@ -16,7 +17,7 @@
 
 <svelte:element
   this={tag}
-  class="title title--level-{level} title--align-{align}"
+  class="title title--level-{level} title--align-{align} title--size-{size}"
   class:title--gradient={gradient}
 >
   {#if children}
@@ -98,6 +99,61 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+    }
+
+    // Sizes - Surcharge les tailles par défaut des levels
+    &--size-s {
+      &.title--level-1 {
+        font-size: $title-size-s-1-mobile;
+
+        @media (min-width: $breakpoint-md) {
+          font-size: $title-size-s-1-desktop;
+        }
+      }
+
+      &.title--level-2 {
+        font-size: $title-size-s-2-mobile;
+
+        @media (min-width: $breakpoint-md) {
+          font-size: $title-size-s-2-desktop;
+        }
+      }
+
+      &.title--level-3 {
+        font-size: $title-size-s-3-mobile;
+
+        @media (min-width: $breakpoint-md) {
+          font-size: $title-size-s-3-desktop;
+        }
+      }
+    }
+
+    // Size M = taille par défaut (pas de modification)
+
+    &--size-l {
+      &.title--level-1 {
+        font-size: $title-size-l-1-mobile;
+
+        @media (min-width: $breakpoint-md) {
+          font-size: $title-size-l-1-desktop;
+        }
+      }
+
+      &.title--level-2 {
+        font-size: $title-size-l-2-mobile;
+
+        @media (min-width: $breakpoint-md) {
+          font-size: $title-size-l-2-desktop;
+        }
+      }
+
+      &.title--level-3 {
+        font-size: $title-size-l-3-mobile;
+
+        @media (min-width: $breakpoint-md) {
+          font-size: $title-size-l-3-desktop;
+        }
+      }
     }
   }
 </style>

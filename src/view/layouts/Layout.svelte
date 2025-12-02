@@ -96,9 +96,7 @@
     flex-direction: column;
 
     // Element: main
-    &__main {
-      flex: 1;
-    }
+
     // Element: footer
     &__footer {
       background: $color-gray-800;
@@ -116,7 +114,10 @@
         padding: $spacing-lg;
       }
     }
-
+    &__main {
+      flex: 1;
+      padding-bottom: 80px;
+    }
     // Element: footer-text
     &__footer-text {
       margin: 0 0 $spacing-sm 0;

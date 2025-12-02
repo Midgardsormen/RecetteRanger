@@ -99,74 +99,152 @@
     }
 
     // Variants
-    // PRIMARY - Pour fonds clairs
+    // PRIMARY
     &--primary {
-      background: $color-button-primary-background;
-      color: $color-button-primary-text;
-      border: $border-width-base solid $color-button-primary-border;
+      background: $brand-primary;
+      color: $color-white;
+      border: $border-width-base solid $brand-primary;
+
       &:hover:not(:disabled):not(.button--disabled) {
-        background: $color-button-primary-hover-background;
-        color: $color-button-primary-hover-text;
-        border: $border-width-base solid $color-button-primary-hover-border;
+        background: darken($brand-primary, 10%);
+        border-color: darken($brand-primary, 10%);
       }
 
       &:active:not(:disabled):not(.button--disabled) {
-        background: $color-button-primary-active-background;
-        color: $color-button-primary-hover-text;
+        background: darken($brand-primary, 15%);
       }
     }
 
-    // PRIMARY INVERSE - Pour fonds foncés
+    // PRIMARY INVERSE
     &--primary-inverse {
-      background: $color-button-primary-inverse-background;
-      color: $color-button-primary-inverse-text;
+      background: $color-white;
+      color: $brand-primary;
+      border: $border-width-base solid $brand-primary;
 
       &:hover:not(:disabled):not(.button--disabled) {
-        background: $color-button-primary-inverse-hover-background;
-        color: $color-button-primary-inverse-hover-text;
+        background: lighten($brand-primary, 55%);
       }
 
       &:active:not(:disabled):not(.button--disabled) {
-        background: $color-button-primary-inverse-active-background;
-        color: $color-button-primary-inverse-hover-text;
+        background: lighten($brand-primary, 50%);
       }
     }
 
-    // SECONDARY - Pour fonds clairs
+    // SECONDARY
     &--secondary {
-      background: $color-button-secondary-background;
-      color: $color-button-secondary-text;
-      border: $border-width-base solid $color-button-secondary-border;
+      background: $brand-secondary;
+      color: $color-white;
+      border: $border-width-base solid $brand-secondary;
 
       &:hover:not(:disabled):not(.button--disabled) {
-        background: $color-button-secondary-hover-background;
-        color: $color-button-secondary-hover-text;
-        border-color: $color-button-secondary-hover-border;
+        background: darken($brand-secondary, 10%);
+        border-color: darken($brand-secondary, 10%);
       }
 
       &:active:not(:disabled):not(.button--disabled) {
-        background: $color-button-secondary-active-background;
-        color: $color-button-secondary-active-text;
-        border-color: $color-button-secondary-active-border;
+        background: darken($brand-secondary, 15%);
       }
     }
 
-    // SECONDARY INVERSE - Pour fonds foncés
+    // SECONDARY INVERSE
     &--secondary-inverse {
-      background: $color-button-secondary-inverse-background;
-      color: $color-button-secondary-inverse-text;
-      border: $border-width-base solid $color-button-secondary-inverse-border;
+      background: $color-white;
+      color: $brand-secondary;
+      border: $border-width-base solid $brand-secondary;
 
       &:hover:not(:disabled):not(.button--disabled) {
-        background: $color-button-secondary-inverse-hover-background;
-        color: $color-button-secondary-inverse-hover-text;
-        border-color: $color-button-secondary-inverse-hover-border;
+        background: lighten($brand-secondary, 45%);
       }
 
       &:active:not(:disabled):not(.button--disabled) {
-        background: $color-button-secondary-inverse-active-background;
-        color: $color-button-secondary-inverse-active-text;
-        border-color: $color-button-secondary-inverse-active-border;
+        background: lighten($brand-secondary, 40%);
+      }
+    }
+
+    // TERTIARY
+    &--tertiary {
+      background: $brand-tertiary;
+      color: $brand-cream;
+      border: $border-width-base solid $brand-cream;
+
+      &:hover:not(:disabled):not(.button--disabled) {
+        background: lighten($brand-tertiary, 10%);
+      }
+
+      &:active:not(:disabled):not(.button--disabled) {
+        background: lighten($brand-tertiary, 5%);
+      }
+    }
+
+    // TERTIARY INVERSE
+    &--tertiary-inverse {
+      background: $brand-cream;
+      color: $brand-tertiary;
+      border: $border-width-base solid $brand-tertiary;
+
+      &:hover:not(:disabled):not(.button--disabled) {
+        background: darken($brand-cream, 5%);
+      }
+
+      &:active:not(:disabled):not(.button--disabled) {
+        background: darken($brand-cream, 10%);
+      }
+    }
+
+    // ACCENT
+    &--accent {
+      background: $brand-red;
+      color: $color-white;
+      border: $border-width-base solid $brand-red;
+
+      &:hover:not(:disabled):not(.button--disabled) {
+        background: darken($brand-red, 10%);
+        border-color: darken($brand-red, 10%);
+      }
+
+      &:active:not(:disabled):not(.button--disabled) {
+        background: darken($brand-red, 15%);
+      }
+    }
+
+    // ACCENT INVERSE
+    &--accent-inverse {
+      background: $color-white;
+      color: $brand-red;
+      border: $border-width-base solid $brand-red;
+
+      &:hover:not(:disabled):not(.button--disabled) {
+        background: lighten($brand-red, 45%);
+      }
+
+      &:active:not(:disabled):not(.button--disabled) {
+        background: lighten($brand-red, 40%);
+      }
+    }
+
+    // SPECIAL
+    &--special {
+      background: $brand-cream;
+      color: $brand-red;
+      border: $border-width-base solid $brand-cream;
+      box-shadow:
+        1px 1px 0 $brand-red,
+        2px 2px 0 $brand-red,
+        3px 3px 0 $brand-red,
+        4px 4px 0 $brand-red;
+      font-weight: $font-weight-bold;
+
+      &:hover:not(:disabled):not(.button--disabled) {
+        transform: scale(1.05);
+        box-shadow:
+          1px 1px 0 darken($brand-red, 10%),
+          2px 2px 0 darken($brand-red, 10%),
+          3px 3px 0 darken($brand-red, 10%),
+          4px 4px 0 darken($brand-red, 10%);
+      }
+
+      &:active:not(:disabled):not(.button--disabled) {
+        transform: scale(0.98);
       }
     }
 
@@ -273,23 +351,7 @@
       }
     }
 
-    // TERTIARY - Pour fonds clairs avec fond crème
-    &--tertiary {
-      background: $color-button-tertiary-background;
-      color: $color-button-tertiary-text;
-      border: $border-width-base solid $color-button-tertiary-border;
 
-      &:hover:not(:disabled):not(.button--disabled) {
-        background: $color-button-tertiary-hover-background;
-        color: $color-button-tertiary-hover-text;
-        border-color: $color-button-tertiary-hover-border;
-      }
-
-      &:active:not(:disabled):not(.button--disabled) {
-        background: $color-button-tertiary-active-background;
-        color: $color-button-tertiary-active-text;
-      }
-    }
 
     &--full-width {
       width: 100%;

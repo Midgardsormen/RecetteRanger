@@ -3,7 +3,7 @@
  * Constants and default values for the IconButton component
  */
 
-import type { IconButtonVariant, IconButtonSize } from '../../../types/ui.types';
+import type { IconButtonVariant, IconButtonSize, IconButtonShape } from '../../../types/ui.types';
 
 // ============================================
 // DEFAULT VALUES
@@ -12,6 +12,7 @@ import type { IconButtonVariant, IconButtonSize } from '../../../types/ui.types'
 export const ICON_BUTTON_DEFAULTS = {
   variant: 'default' as IconButtonVariant,
   size: 'medium' as IconButtonSize,
+  shape: 'square' as IconButtonShape,
   disabled: false,
   type: 'button' as const,
 } as const;
@@ -32,5 +33,13 @@ export const ICON_BUTTON_SIZES = {
   large: {
     width: '44px',
     height: '44px',
+  },
+  'x-large': {
+    width: '56px',
+    height: '56px',
+  },
+  '2x-large': {
+    width: '64px',
+    height: '64px',
   },
 } as const;

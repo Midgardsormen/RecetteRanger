@@ -5,6 +5,7 @@
   let {
     variant = ICON_BUTTON_DEFAULTS.variant,
     size = ICON_BUTTON_DEFAULTS.size,
+    shape = ICON_BUTTON_DEFAULTS.shape,
     disabled = ICON_BUTTON_DEFAULTS.disabled,
     type = ICON_BUTTON_DEFAULTS.type,
     title,
@@ -15,7 +16,7 @@
 </script>
 
 <button
-  class="icon-button icon-button--{variant} icon-button--{size}"
+  class="icon-button icon-button--{variant} icon-button--{size} icon-button--{shape}"
   {type}
   {disabled}
   {onclick}
@@ -33,7 +34,6 @@
     align-items: center;
     justify-content: center;
     border: none;
-    border-radius: $radius-md;
     background: transparent;
     cursor: pointer;
     transition: all $transition-base $transition-ease;
@@ -70,7 +70,208 @@
       font-size: $font-size-lg;
     }
 
+    &--x-large {
+      width: 56px;
+      height: 56px;
+      font-size: $font-size-xl;
+    }
+
+    &--2x-large {
+      width: 64px;
+      height: 64px;
+      font-size: $font-size-2xl;
+    }
+
+    // Shapes
+    &--circle {
+      border-radius: 50%;
+    }
+
+    &--square {
+      border-radius: $radius-md;
+    }
+
+    &--rectangle {
+      border-radius: $radius-md;
+
+      &.icon-button--small {
+        width: 36px;
+      }
+
+      &.icon-button--medium {
+        width: 48px;
+      }
+
+      &.icon-button--large {
+        width: 56px;
+      }
+
+      &.icon-button--x-large {
+        width: 72px;
+      }
+
+      &.icon-button--2x-large {
+        width: 80px;
+      }
+    }
+
     // Variants
+    &--primary {
+      color: $color-white;
+      background: $brand-primary;
+      border: 2px solid $brand-primary;
+
+      &:hover:not(:disabled) {
+        background: darken($brand-primary, 10%);
+        border-color: darken($brand-primary, 10%);
+        transform: $transform-scale-hover;
+      }
+
+      &:active:not(:disabled) {
+        background: darken($brand-primary, 15%);
+        transform: $transform-scale-active;
+      }
+    }
+
+    &--primary-inverse {
+      color: $brand-primary;
+      background: $color-white;
+      border: 2px solid $brand-primary;
+
+      &:hover:not(:disabled) {
+        background: lighten($brand-primary, 55%);
+        transform: $transform-scale-hover;
+      }
+
+      &:active:not(:disabled) {
+        background: lighten($brand-primary, 50%);
+        transform: $transform-scale-active;
+      }
+    }
+
+    &--secondary {
+      color: $color-white;
+      background: $brand-secondary;
+      border: 2px solid $brand-secondary;
+
+      &:hover:not(:disabled) {
+        background: darken($brand-secondary, 10%);
+        border-color: darken($brand-secondary, 10%);
+        transform: $transform-scale-hover;
+      }
+
+      &:active:not(:disabled) {
+        background: darken($brand-secondary, 15%);
+        transform: $transform-scale-active;
+      }
+    }
+
+    &--secondary-inverse {
+      color: $brand-secondary;
+      background: $color-white;
+      border: 2px solid $brand-secondary;
+
+      &:hover:not(:disabled) {
+        background: lighten($brand-secondary, 45%);
+        transform: $transform-scale-hover;
+      }
+
+      &:active:not(:disabled) {
+        background: lighten($brand-secondary, 40%);
+        transform: $transform-scale-active;
+      }
+    }
+
+    &--tertiary {
+      color: $brand-cream;
+      background: $brand-tertiary;
+      border: 2px solid $brand-cream;
+
+      &:hover:not(:disabled) {
+        background: lighten($brand-tertiary, 10%);
+        transform: $transform-scale-hover;
+      }
+
+      &:active:not(:disabled) {
+        background: lighten($brand-tertiary, 5%);
+        transform: $transform-scale-active;
+      }
+    }
+
+    &--tertiary-inverse {
+      color: $brand-tertiary;
+      background: $brand-cream;
+      border: 2px solid $brand-tertiary;
+
+      &:hover:not(:disabled) {
+        background: darken($brand-cream, 5%);
+        transform: $transform-scale-hover;
+      }
+
+      &:active:not(:disabled) {
+        background: darken($brand-cream, 10%);
+        transform: $transform-scale-active;
+      }
+    }
+
+    &--accent {
+      color: $color-white;
+      background: $brand-red;
+      border: 2px solid $brand-red;
+
+      &:hover:not(:disabled) {
+        background: darken($brand-red, 10%);
+        border-color: darken($brand-red, 10%);
+        transform: $transform-scale-hover;
+      }
+
+      &:active:not(:disabled) {
+        background: darken($brand-red, 15%);
+        transform: $transform-scale-active;
+      }
+    }
+
+    &--accent-inverse {
+      color: $brand-red;
+      background: $color-white;
+      border: 2px solid $brand-red;
+
+      &:hover:not(:disabled) {
+        background: lighten($brand-red, 45%);
+        transform: $transform-scale-hover;
+      }
+
+      &:active:not(:disabled) {
+        background: lighten($brand-red, 40%);
+        transform: $transform-scale-active;
+      }
+    }
+
+    &--special {
+      color: $brand-red;
+      background: $brand-cream;
+      border: 2px solid $brand-cream;
+      box-shadow:
+        1px 1px 0 $brand-red,
+        2px 2px 0 $brand-red,
+        3px 3px 0 $brand-red,
+        4px 4px 0 $brand-red;
+
+      &:hover:not(:disabled) {
+        transform: $transform-scale-hover;
+        box-shadow:
+          1px 1px 0 darken($brand-red, 10%),
+          2px 2px 0 darken($brand-red, 10%),
+          3px 3px 0 darken($brand-red, 10%),
+          4px 4px 0 darken($brand-red, 10%);
+      }
+
+      &:active:not(:disabled) {
+        transform: $transform-scale-active;
+      }
+    }
+
+    // Anciens variants conservés pour compatibilité
     &--default {
       color: $color-text-secondary;
       background: $color-black-alpha-05;
@@ -105,34 +306,6 @@
 
       &:hover:not(:disabled) {
         background: $color-success-alpha-20;
-        transform: $transform-scale-hover;
-      }
-
-      &:active:not(:disabled) {
-        transform: $transform-scale-active;
-      }
-    }
-
-    &--primary {
-      color: $brand-primary;
-      background: $color-primary-alpha-10;
-
-      &:hover:not(:disabled) {
-        background: $color-primary-alpha-20;
-        transform: $transform-scale-hover;
-      }
-
-      &:active:not(:disabled) {
-        transform: $transform-scale-active;
-      }
-    }
-
-    &--secondary {
-      color: $brand-secondary;
-      background: $color-secondary-alpha-10;
-
-      &:hover:not(:disabled) {
-        background: $color-secondary-alpha-20;
         transform: $transform-scale-hover;
       }
 

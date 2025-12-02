@@ -7,6 +7,7 @@
    * Built on top of the Hero component with specific styling for page headers.
    */
 
+  import { onMount } from 'svelte';
   import type { PageHeroProps } from '../../../types/ui.types';
   import Hero from '../Hero';
   import Title from '../Title';
@@ -14,7 +15,7 @@
   import Button from '../Button.svelte';
   import IconButton from '../IconButton';
   import Drawer from '../Drawer';
-  import { SlidersHorizontal } from 'lucide-svelte';
+  import { SlidersHorizontal, Plus } from 'lucide-svelte';
   import { PAGE_HERO_DEFAULTS, PAGE_HERO_CONFIG } from './PageHero.config';
 
   let {
@@ -34,6 +35,65 @@
 
   // Drawer pour les filtres en mobile
   let isFilterDrawerOpen = $state(false);
+
+  // Bottom dynamique du bouton FAB en fonction de la position du footer
+  let fabBottom = $state(16); // $spacing-md par défaut
+
+  onMount(() => {
+    const footer = document.querySelector('.layout__footer');
+    if (!footer) return;
+
+    let rafId: number | null = null;
+    let isScrolling = false;
+
+    const updateFabPosition = () => {
+      const footerRect = footer.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      // Si le footer est visible dans le viewport
+      if (footerRect.top < viewportHeight) {
+        // Calculer combien de pixels du footer sont visibles
+        const footerVisibleHeight = viewportHeight - footerRect.top;
+        // Ajuster le bottom du FAB pour qu'il reste au-dessus du footer
+        fabBottom = footerVisibleHeight + 16; // 16px de marge
+      } else {
+        // Le footer n'est pas visible, position par défaut
+        fabBottom = 16;
+      }
+
+      isScrolling = false;
+    };
+
+    const onScroll = () => {
+      if (!isScrolling) {
+        isScrolling = true;
+        rafId = requestAnimationFrame(updateFabPosition);
+      }
+    };
+
+    // Observer avec IntersectionObserver pour détecter quand le footer entre dans le viewport
+    const observer = new IntersectionObserver(
+      () => {
+        updateFabPosition();
+      },
+      {
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], // Quelques seuils suffisent
+      }
+    );
+
+    observer.observe(footer);
+
+    // Mettre à jour au scroll avec requestAnimationFrame
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', updateFabPosition, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', updateFabPosition);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  });
 </script>
 
 <Hero
@@ -47,18 +107,23 @@
   <div class="page-hero">
     <div class="page-hero__header">
       <div class="page-hero__title-section">
-        <Title level={1} align="left">{title}</Title>
-        {#if subtitle}
-          <p class="page-hero__subtitle">{subtitle}</p>
-        {/if}
+        <div class="page-hero__title-wrapper">
+          <Title level={1} align="left" size="s">{title}</Title>
+          {#if subtitle}
+            <p class="page-hero__subtitle">{subtitle}</p>
+          {/if}
+        </div>
       </div>
       {#if actionLabel && onAction}
-        <Button variant="primary-inverse" onclick={onAction}>
-          {#if actionIcon}
-            {@render actionIcon()}
-          {/if}
-          {actionLabel}
-        </Button>
+        <!-- Button visible en desktop uniquement -->
+        <div class="page-hero__action-desktop">
+          <Button variant="primary-inverse" onclick={onAction}>
+            {#if actionIcon}
+              {@render actionIcon()}
+            {/if}
+            {actionLabel}
+          </Button>
+        </div>
       {/if}
     </div>
 
@@ -114,6 +179,22 @@
   </div>
 </Hero>
 
+<!-- Button mobile en position fixed avec bottom dynamique -->
+{#if actionLabel && onAction}
+  <div class="page-hero__action-mobile" style="bottom: {fabBottom}px;">
+    <Button
+      variant="tertiary"
+      size="medium"
+      onclick={onAction}
+    >
+      {#if actionIcon}
+        {@render actionIcon()}
+      {/if}
+      {actionLabel}
+    </Button>
+  </div>
+{/if}
+
 <!-- Drawer pour les filtres en mobile -->
 {#if filters}
   <Drawer
@@ -158,13 +239,10 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: $spacing-lg;
-    margin-bottom: $spacing-lg;
-
-    @media (max-width: $breakpoint-sm) {
-      flex-direction: column;
-      align-items: stretch;
+    margin-bottom: $spacing-md;
+    @media (min-width: $breakpoint-md) {
+       margin-bottom: $spacing-lg;
     }
-
     // Ajouter un espacement entre l'icône et le texte du bouton d'action
     :global(.button) {
       display: flex;
@@ -174,7 +252,53 @@
   }
 
   .page-hero__title-section {
+    // Mobile first: flexbox pour aligner titre et IconButton
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $spacing-base;
     flex: 1;
+    align-items: center;
+    // Desktop: comportement normal
+    @media (min-width: $breakpoint-sm) {
+      display: block;
+    }
+  }
+
+  .page-hero__title-wrapper {
+    flex: 1;
+    min-width: 0; // Permet au texte de se tronquer si nécessaire
+    
+  }
+
+  .page-hero__action-mobile {
+    // Mobile first: afficher le Button en position fixed avec bottom dynamique
+    position: fixed;
+    right: $spacing-sm;
+    z-index: 100;
+    display: flex;
+    flex-shrink: 0;
+
+    :global{
+      .button{
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    // Desktop: masquer le Button
+    @media (min-width: $breakpoint-sm) {
+      display: none;
+    }
+  }
+
+  .page-hero__action-desktop {
+    // Mobile first: masquer le Button complet
+    display: none;
+
+    // Desktop: afficher le Button complet
+    @media (min-width: $breakpoint-sm) {
+      display: block;
+    }
   }
 
   .page-hero__subtitle {

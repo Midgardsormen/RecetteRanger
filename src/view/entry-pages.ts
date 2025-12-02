@@ -17,7 +17,8 @@ export const pages = {
   Login: () => import('./features/auth/Login.svelte'),
   Register: () => import('./features/auth/Register.svelte'),
   PrivacyPolicy: () => import('./features/privacy/PrivacyPolicy.svelte'),
-  LegalNotice: () => import('./features/legal/LegalNotice.svelte')
+  LegalNotice: () => import('./features/legal/LegalNotice.svelte'),
+  ButtonsDemo: () => import('./features/demo/ButtonsDemo.svelte')
 };
 
 // Static imports for SSR (server-side rendering) - export les fragments autonomes
@@ -38,3 +39,4 @@ export { default as Login } from './features/auth/Login.svelte';
 export { default as Register } from './features/auth/Register.svelte';
 export { default as PrivacyPolicy } from './features/privacy/PrivacyPolicy.svelte';
 export { default as LegalNotice } from './features/legal/LegalNotice.svelte';
+export { default as ButtonsDemo } from './features/demo/ButtonsDemo.svelte';
