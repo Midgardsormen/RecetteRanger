@@ -460,6 +460,8 @@ export interface ImageUploadProps {
 // LIST ITEM
 // ============================================
 
+export type ListItemLayout = 'row' | 'column';
+
 export interface ListItemProps {
   imageUrl?: string;
   imagePlaceholder?: Snippet;
@@ -478,6 +480,7 @@ export interface ListItemProps {
   checked?: boolean;
   onCheck?: (checked: boolean) => void;
   showThumbnail?: boolean;
+  layout?: ListItemLayout;
 }
 
 // ============================================

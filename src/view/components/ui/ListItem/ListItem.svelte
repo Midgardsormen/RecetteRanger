@@ -22,7 +22,8 @@
     checkable = LIST_ITEM_DEFAULTS.checkable,
     checked = LIST_ITEM_DEFAULTS.checked,
     onCheck,
-    showThumbnail = LIST_ITEM_DEFAULTS.showThumbnail
+    showThumbnail = LIST_ITEM_DEFAULTS.showThumbnail,
+    layout = LIST_ITEM_DEFAULTS.layout
   }: ListItemProps = $props();
 </script>
 
@@ -31,6 +32,7 @@
   class:list-item--clickable={!!onClick}
   class:list-item--has-footer={!!footer}
   class:list-item--checked={checkable && checked}
+  class:list-item--column={layout === 'column'}
   onclick={() => handleClick(onClick)}
   role={onClick ? 'button' : undefined}
   tabindex={onClick ? 0 : undefined}
@@ -177,6 +179,20 @@
       .list-item__content {
         text-decoration: line-through;
         color: $color-text-tertiary;
+      }
+    }
+
+    &--column {
+      .list-item__main {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .list-item__side {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        align-self: stretch;
       }
     }
   }

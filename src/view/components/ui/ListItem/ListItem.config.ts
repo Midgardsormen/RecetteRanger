@@ -13,6 +13,7 @@ export const LIST_ITEM_DEFAULTS = {
   checked: false,
   showThumbnail: true,
   metadata: [],
+  layout: 'row' as const,
 } as const;
 
 // ============================================

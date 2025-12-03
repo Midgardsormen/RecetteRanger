@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { Drawer, Input, Select, Button, IconButton } from '../../../../components/ui';
+  import { Drawer, Input, Select, Button, IconButton, FormField } from '../../../../components/ui';
+  import { Checkbox } from '../../../../components/ui/form';
   import { RecipeDrawer } from '../../../recipe-drawer';
-  import { apiService } from '../../../../services/api.service';
-  import type { MealSlot, MealSlotConfig, MealPlanDay, MealPlanItem, CreateMealPlanItemDto } from '../../../../types/meal-plan.types';
+  import type { MealSlot, MealSlotConfig, MealPlanDay, MealPlanItem } from '../../../../types/meal-plan.types';
   import type { Recipe } from '../../../../types/recipe.types';
+  import { X } from 'lucide-svelte';
+  import { loadRecipes, validateForm, submitMealPlanItem } from './actions';
 
   interface Props {
     isOpen?: boolean;
@@ -69,23 +71,10 @@
   }
 
   // Charger les recettes
-  async function loadRecipes() {
-    if (recipeSearchQuery.length < 2) {
-      availableRecipes = [];
-      return;
-    }
-
+  async function handleLoadRecipes() {
     loadingRecipes = true;
     try {
-      const result = await apiService.searchRecipes({
-        search: recipeSearchQuery,
-        limit: 20,
-        userId: userId
-      });
-      availableRecipes = result.items || result.data || [];
-    } catch (err) {
-      console.error('Erreur lors du chargement des recettes:', err);
-      availableRecipes = [];
+      availableRecipes = await loadRecipes(recipeSearchQuery, userId);
     } finally {
       loadingRecipes = false;
     }
@@ -103,75 +92,33 @@
     servings = 1;
   }
 
-  function validate(): boolean {
-    errors = {};
-    let isValid = true;
-
-    if (isExceptional && !customSlotName.trim()) {
-      errors.customSlotName = 'Veuillez donner un nom au repas exceptionnel';
-      isValid = false;
-    }
-
-    if (servings < 1) {
-      errors.servings = 'Le nombre de personnes doit être au moins 1';
-      isValid = false;
-    }
-
-    return isValid;
-  }
-
   async function handleSubmit() {
-    if (!validate()) {
+    const validation = validateForm(isExceptional, customSlotName, servings);
+    errors = validation.errors;
+
+    if (!validation.isValid) {
       return;
     }
 
     saving = true;
 
     try {
-      if (editingItem) {
-        // Mode édition : mettre à jour l'item existant
-        const updateData = {
-          slot: selectedSlot,
-          customSlotName: isExceptional ? customSlotName : undefined,
+      await submitMealPlanItem(
+        editingItem,
+        mealPlanDay,
+        userId,
+        selectedDate,
+        {
+          selectedSlot,
+          customSlotName,
           isExceptional,
-          recipeId: selectedRecipe?.id,
+          selectedRecipe,
           servings,
-          note: note || undefined
-        };
-
-        await apiService.updateMealPlanItem(editingItem.id, updateData);
-        resetForm();
-        onSave();
-      } else {
-        // Mode ajout : créer un nouvel item
-        // S'assurer qu'on a un mealPlanDay
-        let dayId = mealPlanDay?.id;
-
-        if (!dayId) {
-          // Créer le jour s'il n'existe pas
-          const createdDay = await apiService.createMealPlanDay({
-            userId,
-            date: selectedDate.toISOString(),
-            items: []
-          });
-          dayId = createdDay.id;
+          note
         }
-
-        // Créer l'item
-        const itemData: CreateMealPlanItemDto = {
-          slot: selectedSlot,
-          customSlotName: isExceptional ? customSlotName : undefined,
-          isExceptional,
-          recipeId: selectedRecipe?.id,
-          servings,
-          note: note || undefined,
-          order: mealPlanDay?.items.filter(i => i.slot === selectedSlot).length || 0
-        };
-
-        await apiService.createMealPlanItem(dayId, itemData);
-        resetForm();
-        onSave();
-      }
+      );
+      resetForm();
+      onSave();
     } catch (err: any) {
       alert('Erreur : ' + err.message);
     } finally {
@@ -181,7 +128,7 @@
 
   function handleRecipeCreated() {
     showRecipeDrawer = false;
-    loadRecipes(); // Recharger la liste
+    handleLoadRecipes(); // Recharger la liste
   }
 
   // Effet pour réinitialiser le formulaire quand le drawer s'ouvre
@@ -210,115 +157,130 @@
     onClick: onClose
   }}
 >
-  <form class="meal-plan-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-    <div class="form-section">
-      <h3>Date</h3>
-      <p class="date-display">{selectedDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+  <form class="meal-plan-drawer" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+    <div class="meal-plan-drawer__date-section">
+      <p class="meal-plan-drawer__date-display">{selectedDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
     </div>
 
-    <div class="form-section">
-      <h3>Type de repas</h3>
+    <Checkbox
+      id="isExceptional"
+      bind:checked={isExceptional}
+      label="Repas exceptionnel (ex: anniversaire, goûter spécial)"
+      variant="inverse"
+    />
 
-      <div class="checkbox-field">
-        <input
-          type="checkbox"
-          id="isExceptional"
-          bind:checked={isExceptional}
-        />
-        <label for="isExceptional">Repas exceptionnel (ex: anniversaire, goûter spécial)</label>
-      </div>
-
-      {#if isExceptional}
+    {#if isExceptional}
+      <FormField
+        name="customSlotName"
+        label="Nom du repas"
+        variant="inverse"
+        required
+        bind:value={customSlotName}
+        error={errors.customSlotName}
+      >
         <Input
           id="customSlotName"
-          label="Nom du repas"
-          bind:value={customSlotName}
           placeholder="Ex: Goûter d'anniversaire"
-          required
-          error={errors.customSlotName}
         />
-      {:else}
-        <Select
-          id="slot"
-          label="Créneau"
-          bind:value={selectedSlot}
-          required
-        >
+      </FormField>
+    {:else}
+      <FormField
+        name="slot"
+        label="Créneau"
+        variant="inverse"
+        required
+        bind:value={selectedSlot}
+      >
+        <Select id="slot">
           {#each activeSlots as config}
             <option value={config.slot}>{config.label}</option>
           {/each}
         </Select>
-      {/if}
-    </div>
+      </FormField>
+    {/if}
 
-    <div class="form-section">
-      <h3>Recette</h3>
-
-      {#if selectedRecipe}
-        <div class="selected-recipe">
-          {#if selectedRecipe.imageUrl}
-            <img src={selectedRecipe.imageUrl} alt={selectedRecipe.label} class="recipe-image" />
-          {/if}
-          <div class="recipe-info">
-            <span class="recipe-name">{selectedRecipe.label}</span>
-            <Button variant="ghost" size="small" onclick={clearRecipe}>✕ Changer</Button>
-          </div>
-        </div>
-      {:else}
-        <div class="recipe-search">
-          <Input
-            id="recipe-search"
-            label="Rechercher une recette"
-            bind:value={recipeSearchQuery}
-            oninput={loadRecipes}
-            placeholder="Tapez pour rechercher..."
-          />
-          <Button
-            variant="secondary"
-            onclick={() => { showRecipeDrawer = true; }}
-          >
-            + Créer une recette
+    {#if selectedRecipe}
+      <div class="meal-plan-drawer__selected-recipe">
+        {#if selectedRecipe.imageUrl}
+          <img src={selectedRecipe.imageUrl} alt={selectedRecipe.label} class="meal-plan-drawer__recipe-image" />
+        {/if}
+        <div class="meal-plan-drawer__recipe-info">
+          <span class="meal-plan-drawer__recipe-name">{selectedRecipe.label}</span>
+          <Button variant="ghost-inverse" size="small" onclick={clearRecipe}>
+            <X size={16} />
+            Changer
           </Button>
         </div>
+      </div>
+    {:else}
+      <FormField
+        name="recipe-search"
+        label="Rechercher une recette"
+        variant="inverse"
+        bind:value={recipeSearchQuery}
+      >
+        <Input
+          id="recipe-search"
+          oninput={handleLoadRecipes}
+          placeholder="Tapez pour rechercher..."
+        />
+      </FormField>
 
-        {#if loadingRecipes}
-          <p class="loading-text">Chargement...</p>
-        {:else if recipeSearchQuery.length >= 2 && availableRecipes.length === 0}
-          <p class="no-results">Aucune recette trouvée</p>
-        {:else if availableRecipes.length > 0}
-          <div class="recipes-list">
-            {#each availableRecipes as recipe}
-              <button
-                class="recipe-item"
-                onclick={() => selectRecipe(recipe)}
-              >
-                {#if recipe.imageUrl}
-                  <img src={recipe.imageUrl} alt={recipe.label} class="recipe-thumb" />
-                {/if}
-                <span class="recipe-name">{recipe.label}</span>
-              </button>
-            {/each}
-          </div>
-        {/if}
+      <Button
+        variant="outlined-inverse"
+        onclick={() => { showRecipeDrawer = true; }}
+      >
+        + Créer une recette
+      </Button>
+
+      {#if loadingRecipes}
+        <p class="meal-plan-drawer__loading-text">Chargement...</p>
+      {:else if recipeSearchQuery.length >= 2 && availableRecipes.length === 0}
+        <p class="meal-plan-drawer__no-results">Aucune recette trouvée</p>
+      {:else if availableRecipes.length > 0}
+        <div class="meal-plan-drawer__recipes-list">
+          {#each availableRecipes as recipe}
+            <button
+              class="meal-plan-drawer__recipe-item"
+              onclick={() => selectRecipe(recipe)}
+            >
+              {#if recipe.imageUrl}
+                <img src={recipe.imageUrl} alt={recipe.label} class="meal-plan-drawer__recipe-thumb" />
+              {/if}
+              <span class="meal-plan-drawer__recipe-name">{recipe.label}</span>
+            </button>
+          {/each}
+        </div>
       {/if}
-    </div>
+    {/if}
 
-    <Input
-      id="servings"
+    <FormField
+      name="servings"
       label="Nombre de personnes"
-      type="number"
-      bind:value={servings}
-      min="1"
+      variant="inverse"
       required
+      bind:value={servings}
       error={errors.servings}
-    />
+    >
+      <Input
+        id="servings"
+        type="number"
+        min="1"
+        oninput={(e) => { servings = parseInt(e.currentTarget.value) || 1; }}
+      />
+    </FormField>
 
-    <Input
-      id="note"
+    <FormField
+      name="note"
       label="Note (optionnel)"
+      variant="inverse"
       bind:value={note}
-      placeholder="Ex: Prévoir du pain en accompagnement"
-    />
+    >
+      <Input
+        id="note"
+        placeholder="Ex: Prévoir du pain en accompagnement"
+      />
+    </FormField>
   </form>
 </Drawer>
 
@@ -332,163 +294,137 @@
 <style lang="scss">
   @use '../../../../styles/variables' as *;
 
-  $primary-color: $brand-primary;
-  $danger-color: $color-danger;
-  $white: $color-white;
-  $text-dark: $color-gray-800;
-  $text-gray: $color-gray-600;
-  $border-color: $color-gray-200;
-  $spacing-base: 1rem;
-
-  .meal-plan-form {
+  // Block: meal-plan-drawer
+  .meal-plan-drawer {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 2;
-  }
+    gap: $spacing-lg;
 
-  .form-section {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-base;
+    // Element: date-section
+    &__date-section {
+      margin-bottom: $spacing-sm;
+    }
 
-    h3 {
+    // Element: date-display
+    &__date-display {
+      padding: $spacing-base;
+      background: $color-white-alpha-10;
+      border: 1px solid $color-white-alpha-30;
+      border-radius: $radius-lg;
+      color: $color-white;
+      font-weight: $font-weight-semibold;
       margin: 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: $text-dark;
-    }
-  }
-
-  .date-display {
-    padding: $spacing-base;
-    background: rgba($brand-primary, 0.1);
-    border-radius: 8px;
-    color: $primary-color;
-    font-weight: 600;
-    margin: 0;
-    text-transform: capitalize;
-  }
-
-  .checkbox-field {
-    display: flex;
-    align-items: center;
-    gap: $spacing-base * 0.5;
-    padding: $spacing-base;
-    background: rgba($brand-primary, 0.05);
-    border-radius: 8px;
-
-    input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      accent-color: $primary-color;
+      text-align: center;
+      text-transform: capitalize;
     }
 
-    label {
-      font-size: 0.95rem;
-      color: $text-dark;
-      cursor: pointer;
-      user-select: none;
+    // Element: selected-recipe
+    &__selected-recipe {
+      display: flex;
+      gap: $spacing-base;
+      padding: $spacing-base;
+      background: $color-white-alpha-10;
+      border: 1px solid $color-white-alpha-30;
+      border-radius: $radius-lg;
+      align-items: center;
     }
-  }
 
-  .recipe-search {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-base;
-  }
-
-  .selected-recipe {
-    display: flex;
-    gap: $spacing-base;
-    padding: $spacing-base;
-    background: rgba($brand-primary, 0.1);
-    border-radius: 12px;
-    align-items: center;
-
-    .recipe-image {
+    // Element: recipe-image
+    &__recipe-image {
       width: 80px;
       height: 80px;
-      border-radius: 8px;
+      border-radius: $radius-md;
       object-fit: cover;
+      flex-shrink: 0;
     }
 
-    .recipe-info {
+    // Element: recipe-info
+    &__recipe-info {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: $spacing-base * 0.5;
+      gap: $spacing-sm;
+      min-width: 0;
     }
 
-    .recipe-name {
-      font-weight: 600;
-      color: $text-dark;
-      font-size: 1.1rem;
+    // Element: recipe-name
+    &__recipe-name {
+      font-weight: $font-weight-semibold;
+      color: $color-white;
+      font-size: $font-size-base;
     }
 
-    .clear-btn {
-      background: none;
-      border: none;
-      color: $danger-color;
-      cursor: pointer;
-      padding: $spacing-base * 0.5;
-      font-size: 0.9rem;
-      font-weight: 500;
-      align-self: flex-start;
-      border-radius: 6px;
-      transition: all 0.2s;
+    // Element: loading-text & no-results
+    &__loading-text,
+    &__no-results {
+      text-align: center;
+      color: $color-white-alpha-90;
+      padding: $spacing-lg;
+      font-style: italic;
+      font-size: $font-size-sm;
+    }
 
-      &:hover {
-        background: $color-danger-alpha-10;
+    // Element: recipes-list
+    &__recipes-list {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: $spacing-xs;
+      margin: -$spacing-xs;
+
+      // Custom scrollbar
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: $color-white-alpha-10;
+        border-radius: $radius-sm;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: $color-white-alpha-30;
+        border-radius: $radius-sm;
+
+        &:hover {
+          background: $color-white-alpha-30;
+        }
       }
     }
-  }
 
-  .loading-text,
-  .no-results {
-    text-align: center;
-    color: $text-gray;
-    padding: $spacing-base * 2;
-    font-style: italic;
-  }
+    // Element: recipe-item
+    &__recipe-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-base;
+      padding: $spacing-base;
+      background: $color-white-alpha-10;
+      border: 1px solid $color-white-alpha-30;
+      border-radius: $radius-md;
+      cursor: pointer;
+      transition: all $transition-base;
+      text-align: left;
+      width: 100%;
 
-  .recipes-list {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-base * 0.5;
-    max-height: 300px;
-    overflow-y: auto;
-  }
+      &:hover {
+        border-color: $color-white;
+        background: $color-white-alpha-15;
+      }
 
-  .recipe-item {
-    display: flex;
-    align-items: center;
-    gap: $spacing-base;
-    padding: $spacing-base;
-    background: $white;
-    border: 2px solid $border-color;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
-    width: 100%;
-
-    &:hover {
-      border-color: $primary-color;
-      background: rgba($brand-primary, 0.05);
+      &:active {
+        transform: scale(0.98);
+      }
     }
 
-    .recipe-thumb {
+    // Element: recipe-thumb
+    &__recipe-thumb {
       width: 50px;
       height: 50px;
-      border-radius: 6px;
+      border-radius: $radius-sm;
       object-fit: cover;
-    }
-
-    .recipe-name {
-      flex: 1;
-      font-weight: 500;
-      color: $text-dark;
+      flex-shrink: 0;
     }
   }
 </style>

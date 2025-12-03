@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../../../types/meal-plan.types';
   import { MealSlotColors } from '../../../../types/meal-plan.types';
-  import { Button, IconButton, Badge } from '../../../../components/ui';
+  import { Button, IconButton, Badge, ListItem } from '../../../../components/ui';
   import { ArrowLeft, ArrowRight, Pencil, Trash2 } from 'lucide-svelte';
 
   interface Props {
@@ -86,6 +86,29 @@
     return mealPlanDays.find(day => isSameDay(new Date(day.date), date));
   }
 
+  // Trier les items d'un repas selon l'ordre des créneaux dans slotConfigs
+  function sortMealItems(items: any[]): any[] {
+    if (!items || items.length === 0) return [];
+
+    return [...items].sort((a, b) => {
+      // Les repas exceptionnels à la fin
+      if (a.isExceptional && !b.isExceptional) return 1;
+      if (!a.isExceptional && b.isExceptional) return -1;
+      if (a.isExceptional && b.isExceptional) return 0;
+
+      // Sinon, trier selon l'ordre dans slotConfigs
+      const indexA = slotConfigs.findIndex(c => c.slot === a.slot);
+      const indexB = slotConfigs.findIndex(c => c.slot === b.slot);
+
+      // Si un slot n'est pas trouvé, le mettre à la fin
+      if (indexA === -1 && indexB === -1) return 0;
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+
+      return indexA - indexB;
+    });
+  }
+
   // Générer les dates à afficher selon la vue
   function getDatesToDisplay(): Date[] {
     if (view === 'day') {
@@ -154,30 +177,59 @@
   }
 
   const today = new Date();
+
+  // Référence pour le scroll horizontal en mode semaine
+  let weekGridElement: HTMLDivElement;
+
+  // Centrer sur le jour actuel au chargement en mode semaine
+  $effect(() => {
+    if (view === 'week' && weekGridElement) {
+      scrollToCurrentDay();
+    }
+  });
+
+  function scrollToCurrentDay() {
+    if (!weekGridElement) return;
+
+    const isMobile = window.innerWidth < 768;
+    if (!isMobile) return;
+
+    const dayIndex = dates.findIndex(date => isSameDay(date, currentDate));
+    if (dayIndex === -1) return;
+
+    // Calculer la position de scroll pour centrer le jour
+    const dayWidth = weekGridElement.scrollWidth / 7;
+    const scrollPosition = dayWidth * dayIndex;
+
+    weekGridElement.scrollTo({
+      left: scrollPosition,
+      behavior: 'smooth'
+    });
+  }
 </script>
 
 <div class="calendar">
-  <!-- Header avec navigation -->
+  <!-- Header avec navigation fusionnée -->
   <div class="calendar-header">
     <div class="calendar-nav">
       <IconButton variant="ghost" size="medium" onclick={goToPrevious} ariaLabel="Précédent">
         <ArrowLeft size={20} />
       </IconButton>
-      <Button variant="ghost" onclick={goToToday}>Aujourd'hui</Button>
+
+      <h2 class="calendar-title">
+        {#if view === 'day'}
+          Aujourd'hui
+        {:else if view === 'week'}
+          Semaine du {formatDate(dates[0])} au {formatDate(dates[6])}
+        {:else}
+          {formatMonthYear(currentDate)}
+        {/if}
+      </h2>
+
       <IconButton variant="ghost" size="medium" onclick={goToNext} ariaLabel="Suivant">
         <ArrowRight size={20} />
       </IconButton>
     </div>
-
-    <h2 class="calendar-title">
-      {#if view === 'day'}
-        {formatDate(currentDate, 'long')}
-      {:else if view === 'week'}
-        Semaine du {formatDate(dates[0])} au {formatDate(dates[6])}
-      {:else}
-        {formatMonthYear(currentDate)}
-      {/if}
-    </h2>
 
     <div class="view-switcher">
       <Button
@@ -205,7 +257,13 @@
   </div>
 
   <!-- Grid du calendrier -->
-  <div class="calendar-grid" class:day-view={view === 'day'} class:week-view={view === 'week'} class:month-view={view === 'month'}>
+  <div
+    class="calendar-grid"
+    class:day-view={view === 'day'}
+    class:week-view={view === 'week'}
+    class:month-view={view === 'month'}
+    bind:this={weekGridElement}
+  >
     {#if view === 'month'}
       <!-- En-têtes des jours de la semaine -->
       {#each Array.from({ length: 7 }, (_, i) => addDays(startOfWeek(currentDate), i)) as date}
@@ -217,6 +275,7 @@
       {@const mealPlan = getMealPlanForDate(date)}
       {@const isToday = isSameDay(date, today)}
       {@const isCurrentMonth = date.getMonth() === currentDate.getMonth()}
+      {@const sortedItems = mealPlan ? sortMealItems(mealPlan.items) : []}
 
       <div
         class="calendar-day"
@@ -234,36 +293,27 @@
 
         {#if mealPlan}
           <div class="meals-preview">
-            {#each mealPlan.items.slice(0, 3) as item}
-              <div class="meal-preview-item">
-                <div class="meal-info">
+            {#each sortedItems.slice(0, 3) as item}
+              <ListItem
+                title={item.recipe?.label || 'Sans recette'}
+                subtitle={item.servings ? `${item.servings} personne${item.servings > 1 ? 's' : ''}` : undefined}
+                showThumbnail={false}
+                layout="column"
+                onEdit={(e) => { e.stopPropagation(); onMealEdit?.(item); }}
+                onDelete={(e) => { e.stopPropagation(); onMealDelete?.(item); }}
+                onClick={(e) => { e.stopPropagation(); onMealEdit?.(item); }}
+              >
+                {#snippet badge()}
                   {#if item.isExceptional && item.customSlotName}
-                    <Badge variant="warning" size="small">{item.customSlotName}</Badge>
+                    <Badge variant="warning" size="xs">{item.customSlotName}</Badge>
                   {:else}
-                    <Badge variant={MealSlotColors[item.slot]} size="small">{slotConfigs.find(c => c.slot === item.slot)?.label || item.slot}</Badge>
+                    <Badge variant={MealSlotColors[item.slot]} size="xs">{slotConfigs.find(c => c.slot === item.slot)?.label || item.slot}</Badge>
                   {/if}
-                  {#if item.recipe}
-                    <span class="recipe-name">{item.recipe.label}</span>
-                  {/if}
-                </div>
-                <div class="meal-actions">
-                  <IconButton
-                    icon="✏️"
-                    onclick={(e) => { e.stopPropagation(); onMealEdit?.(item); }}
-                    size="small"
-                    variant="ghost"
-                  />
-                  <IconButton
-                    icon="🗑️"
-                    onclick={(e) => { e.stopPropagation(); onMealDelete?.(item); }}
-                    size="small"
-                    variant="danger"
-                  />
-                </div>
-              </div>
+                {/snippet}
+              </ListItem>
             {/each}
-            {#if mealPlan.items.length > 3}
-              <div class="more-meals">+{mealPlan.items.length - 3} repas</div>
+            {#if sortedItems.length > 3}
+              <div class="more-meals">+{sortedItems.length - 3} repas</div>
             {/if}
           </div>
         {/if}
@@ -303,31 +353,58 @@
 
   .calendar-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: $spacing-base;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
   }
 
   .calendar-nav {
     display: flex;
-    gap: $spacing-base * 0.5;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-base;
+    flex: 1;
+
+    @media (min-width: 768px) {
+      justify-content: flex-start;
+      flex: 0 1 auto;
+    }
   }
 
   .calendar-title {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
     color: $text-dark;
     margin: 0;
     text-transform: capitalize;
+    text-align: center;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    @media (min-width: 768px) {
+      font-size: $font-size-xl;
+    }
   }
 
   .view-switcher {
     display: flex;
-    gap: $spacing-base * 0.25;
+    gap: $spacing-xs;
     background: rgba($brand-primary, 0.1);
-    padding: $spacing-base * 0.25;
-    border-radius: 8px;
+    padding: $spacing-xs;
+    border-radius: $radius-md;
+    justify-content: center;
+
+    @media (min-width: 768px) {
+      justify-content: flex-end;
+    }
   }
 
   .view-btn {
@@ -366,13 +443,43 @@
     }
 
     &.week-view {
-      // Mobile: afficher moins de colonnes ou permettre le scroll horizontal
-      grid-template-columns: repeat(7, minmax(100px, 1fr));
+      // Mobile: 1 jour visible + 0.3 jour de preview à droite
+      display: flex;
       overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-left: 0;
+      gap: $spacing-base * 0.5;
+      padding-right: $spacing-base;
+
+      // Masquer la scrollbar mais garder le scroll
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .calendar-day {
+        // Chaque jour fait 83.33% de la largeur (1 jour + 0.2 du suivant = 1.2 jours visibles)
+        flex: 0 0 83.33%;
+        scroll-snap-align: start;
+
+        &:last-child {
+          // Le dernier jour peut prendre toute la largeur
+          flex: 0 0 100%;
+        }
+      }
 
       @media (min-width: 768px) {
+        // Desktop: grille normale avec 7 colonnes
+        display: grid;
         grid-template-columns: repeat(7, 1fr);
         overflow-x: visible;
+        scroll-snap-type: none;
+        gap: $spacing-base * 0.75;
+        padding-right: 0;
+
+        .calendar-day {
+          flex: unset;
+        }
       }
     }
 
