@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { Drawer, Input, Button } from '../../../components/ui';
-  import { apiService } from '../../../services/api.service';
+  import { Drawer, FormField, Input, Button } from '../../../components/ui';
+  import { Calendar, AlertCircle } from 'lucide-svelte';
+  import { initializeDates, validateGenerateForm, generateShoppingList } from './actions';
+  import { DESCRIPTION_TEXT, NAME_HINT_TEXT } from './config';
 
   interface Props {
     isOpen?: boolean;
@@ -15,59 +17,36 @@
   let toDate = $state('');
   let customName = $state('');
   let generating = $state(false);
-  let error = $state('');
+  let generalError = $state('');
 
-  // Initialiser les dates à aujourd'hui et dans 7 jours
+  // Réinitialiser le formulaire
   function resetForm() {
-    const today = new Date();
-    const nextWeek = new Date(today);
-    nextWeek.setDate(today.getDate() + 7);
-
-    fromDate = today.toISOString().split('T')[0];
-    toDate = nextWeek.toISOString().split('T')[0];
+    const dates = initializeDates();
+    fromDate = dates.fromDate;
+    toDate = dates.toDate;
     customName = '';
-    error = '';
-  }
-
-  function validate(): boolean {
-    error = '';
-
-    if (!fromDate || !toDate) {
-      error = 'Veuillez sélectionner les dates de début et de fin';
-      return false;
-    }
-
-    const from = new Date(fromDate);
-    const to = new Date(toDate);
-
-    if (from > to) {
-      error = 'La date de début doit être avant la date de fin';
-      return false;
-    }
-
-    return true;
+    generalError = '';
   }
 
   async function handleGenerate() {
-    if (!validate()) {
+    const validation = validateGenerateForm({ fromDate, toDate, customName });
+
+    if (!validation.isValid) {
+      generalError = validation.errors.general || '';
       return;
     }
 
     generating = true;
-    error = '';
+    generalError = '';
 
     try {
-      await apiService.generateShoppingList({
-        fromDate: new Date(fromDate).toISOString(),
-        toDate: new Date(toDate).toISOString(),
-        name: customName || undefined
-      });
+      await generateShoppingList({ fromDate, toDate, customName });
 
       // Succès
       onClose();
       onGenerate(); // Recharger la liste
     } catch (err: any) {
-      error = err.message || 'Erreur lors de la génération de la liste';
+      generalError = err.message || 'Erreur lors de la génération de la liste';
     } finally {
       generating = false;
     }
@@ -96,99 +75,161 @@
     onClick: onClose
   }}
 >
-  <form class="generate-form" onsubmit={(e) => { e.preventDefault(); handleGenerate(); }}>
-    <div class="form-section">
-      <p class="description">
-        Générez automatiquement une liste de courses à partir de votre planning de repas.
-        Les quantités seront calculées en fonction du nombre de personnes de chaque repas.
+  <form class="generate-shopping-list-drawer" onsubmit={(e) => { e.preventDefault(); handleGenerate(); }}>
+    <!-- Description -->
+    <div class="generate-shopping-list-drawer__description">
+      <Calendar size={20} />
+      <p class="generate-shopping-list-drawer__description-text">
+        {DESCRIPTION_TEXT}
       </p>
     </div>
 
-    {#if error}
-      <div class="error-message">
-        {error}
+    <!-- Erreur générale -->
+    {#if generalError}
+      <div class="generate-shopping-list-drawer__error">
+        <AlertCircle size={18} />
+        <span>{generalError}</span>
       </div>
     {/if}
 
-    <div class="form-section">
-      <h3>Période</h3>
-      <div class="date-inputs">
-        <Input
-          id="fromDate"
+    <!-- Période -->
+    <div class="generate-shopping-list-drawer__section">
+      <h3 class="generate-shopping-list-drawer__section-title">Période</h3>
+      <div class="generate-shopping-list-drawer__date-inputs">
+        <FormField
+          name="fromDate"
           label="Date de début"
-          type="date"
+          variant="inverse"
+          required
           bind:value={fromDate}
-          required
-        />
-        <Input
-          id="toDate"
+        >
+          <Input
+            id="fromDate"
+            type="date"
+          />
+        </FormField>
+
+        <FormField
+          name="toDate"
           label="Date de fin"
-          type="date"
-          bind:value={toDate}
+          variant="inverse"
           required
-        />
+          bind:value={toDate}
+        >
+          <Input
+            id="toDate"
+            type="date"
+          />
+        </FormField>
       </div>
     </div>
 
-    <div class="form-section">
+    <!-- Nom personnalisé -->
+    <FormField
+      name="customName"
+      label="Nom de la liste (optionnel)"
+      helper={NAME_HINT_TEXT}
+      variant="inverse"
+      bind:value={customName}
+    >
       <Input
         id="customName"
-        label="Nom de la liste (optionnel)"
-        bind:value={customName}
         placeholder="Ex: Courses de la semaine"
       />
-      <p class="hint">
-        Si vide, un nom sera généré automatiquement avec les dates
-      </p>
-    </div>
+    </FormField>
   </form>
 </Drawer>
 
 <style lang="scss">
-  @import '../../../styles/variables';
+  @use '../../../styles/variables' as *;
 
-  .generate-form {
+  // Block: generate-shopping-list-drawer
+  .generate-shopping-list-drawer {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-  }
+    gap: $spacing-lg;
 
-  .form-section {
-    h3 {
-      margin: 0 0 1rem 0;
-      font-size: 1.1rem;
-      color: var(--text-color);
+    // Element: description
+    &__description {
+      display: flex;
+      align-items: flex-start;
+      gap: $spacing-base;
+      padding: $spacing-base;
+      background: $color-white-alpha-10;
+      border: $border-width-base solid $color-white-alpha-30;
+      border-radius: $radius-lg;
+      color: $color-white-alpha-90;
+
+      :global(svg) {
+        flex-shrink: 0;
+        margin-top: $spacing-2xs;
+      }
     }
 
-    .description {
+    &__description-text {
       margin: 0;
-      color: var(--text-secondary);
-      line-height: 1.6;
+      line-height: $line-height-relaxed;
+      font-size: $font-size-sm;
+
+      @media (min-width: 768px) {
+        font-size: $font-size-base;
+      }
     }
 
-    .hint {
-      margin: 0.5rem 0 0 0;
-      font-size: 0.9rem;
-      color: var(--text-tertiary);
+    // Element: error
+    &__error {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-base;
+      background: $color-danger-alpha-10;
+      border: $border-width-base solid $color-danger;
+      border-radius: $radius-lg;
+      color: $color-danger-light;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+
+      :global(svg) {
+        flex-shrink: 0;
+      }
+
+      @media (min-width: 768px) {
+        font-size: $font-size-base;
+      }
     }
-  }
 
-  .date-inputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    // Element: section
+    &__section {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-base;
+    }
 
-    @media (max-width: 640px) {
+    // Element: section-title
+    &__section-title {
+      margin: 0;
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      color: $color-white;
+
+      @media (min-width: 768px) {
+        font-size: $font-size-lg;
+      }
+    }
+
+    // Element: date-inputs
+    &__date-inputs {
+      display: grid;
       grid-template-columns: 1fr;
-    }
-  }
+      gap: $spacing-base;
 
-  .error-message {
-    padding: 1rem;
-    background: $color-background-danger;
-    border: 1px solid $color-danger-light;
-    border-radius: 8px;
-    color: $color-danger-dark;
-    font-size: 0.95rem;
+      @media (min-width: 640px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (min-width: 768px) {
+        gap: $spacing-lg;
+      }
+    }
   }
 </style>

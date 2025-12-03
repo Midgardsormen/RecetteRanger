@@ -2,10 +2,10 @@
   import Layout from '../../layouts/Layout.svelte';
   import { Calendar } from './components/calendar';
   import { MealPlanDrawer } from './components/meal-plan-drawer';
-  import { Button, PageHero, ConfirmModal } from '../../components/ui';
-  import { apiService } from '../../services/api.service';
+  import { Button, PageHero, ConfirmModal, Spinner } from '../../components/ui';
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../types/meal-plan.types';
   import { Settings } from 'lucide-svelte';
+  import { loadMealPlanData, deleteMealPlanItem, findMealPlanDayForItem } from './actions';
 
   let { user }: { user: any } = $props();
 
@@ -30,58 +30,14 @@
 
     loading = true;
     try {
-      // Calculer la plage de dates en fonction de la vue
-      const { fromDate, toDate } = getDateRange();
-
-      // Charger les plannings et les configs en parallèle
-      const [days, configs] = await Promise.all([
-        apiService.getMealPlanDays({
-          userId: user.id,
-          fromDate: fromDate.toISOString(),
-          toDate: toDate.toISOString()
-        }),
-        apiService.getMealSlotConfigs(user.id)
-      ]);
-
+      const { days, configs } = await loadMealPlanData(user.id, currentDate, view);
       mealPlanDays = days;
       slotConfigs = configs;
-
-      // Si pas de configs, initialiser les configs par défaut
-      if (configs.length === 0) {
-        await apiService.initializeDefaultMealSlotConfigs(user.id);
-        const newConfigs = await apiService.getMealSlotConfigs(user.id);
-        slotConfigs = newConfigs;
-      }
     } catch (err) {
       console.error('Erreur lors du chargement des données:', err);
     } finally {
       loading = false;
     }
-  }
-
-  function getDateRange(): { fromDate: Date; toDate: Date } {
-    const from = new Date(currentDate);
-    const to = new Date(currentDate);
-
-    if (view === 'day') {
-      // Même jour
-      return { fromDate: from, toDate: to };
-    } else if (view === 'week') {
-      // Début et fin de semaine
-      const day = from.getDay();
-      const diff = from.getDate() - day + (day === 0 ? -6 : 1);
-      from.setDate(diff);
-      to.setDate(from.getDate() + 6);
-    } else {
-      // Mois entier + quelques jours avant/après pour remplir le calendrier
-      from.setDate(1);
-      from.setDate(from.getDate() - 7);
-      to.setMonth(to.getMonth() + 1);
-      to.setDate(0);
-      to.setDate(to.getDate() + 7);
-    }
-
-    return { fromDate: from, toDate: to };
   }
 
   function handleDateClick(date: Date) {
@@ -93,7 +49,7 @@
   function handleMealEdit(item: any) {
     editingMealItem = item;
     // Trouver le mealPlanDay correspondant pour avoir la date
-    const mealDay = mealPlanDays.find(d => d.items.some(i => i.id === item.id));
+    const mealDay = findMealPlanDayForItem(mealPlanDays, item.id);
     if (mealDay) {
       selectedDate = new Date(mealDay.date);
     }
@@ -116,7 +72,7 @@
     if (!mealToDelete) return;
 
     try {
-      await apiService.deleteMealPlanItem(mealToDelete.id);
+      await deleteMealPlanItem(mealToDelete.id);
       await loadData(); // Recharger les données
       isConfirmModalOpen = false;
       mealToDelete = null;
@@ -167,8 +123,8 @@
     </PageHero>
 
     {#if loading}
-      <div class="loading-container">
-        <div class="spinner"></div>
+      <div class="meal-planning__loading">
+        <Spinner size="lg" variant="primary" />
         <p>Chargement du planning...</p>
       </div>
     {:else}
@@ -211,36 +167,27 @@
 />
 
 <style lang="scss">
+  @use '../../styles/variables' as *;
+
+  // Block: meal-planning
   .meal-planning {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-  }
 
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    gap: 1.5rem;
+    // Element: loading
+    &__loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      gap: $spacing-lg;
 
-    p {
-      color: var(--text-secondary);
-      font-size: 1.1rem;
+      p {
+        color: $color-gray-600;
+        font-size: $font-size-lg;
+        text-align: center;
+      }
     }
-  }
-
-  .spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid var(--border-color);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
   }
 </style>
