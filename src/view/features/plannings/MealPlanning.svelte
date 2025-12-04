@@ -2,9 +2,11 @@
   import Layout from '../../layouts/Layout.svelte';
   import { Calendar } from './components/calendar';
   import { MealPlanDrawer } from './components/meal-plan-drawer';
-  import { Button, PageHero, ConfirmModal, Spinner } from '../../components/ui';
+  import { Button, PageHero, ConfirmModal, Spinner, IconButton, DropdownMenu } from '../../components/ui';
+  import { GenerateShoppingListDrawer } from '../shopping-lists/components';
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../types/meal-plan.types';
-  import { Settings } from 'lucide-svelte';
+  import type { DropdownMenuItem } from '../../types/ui.types';
+  import { Settings, ShoppingCart } from 'lucide-svelte';
   import { loadMealPlanData, deleteMealPlanItem, findMealPlanDayForItem } from './actions';
 
   let { user }: { user: any } = $props();
@@ -18,6 +20,7 @@
   let showMealDrawer = $state(false);
   let selectedDate = $state(new Date());
   let editingMealItem = $state<any>(null);
+  let showGenerateDrawer = $state(false);
 
   // Modal de confirmation de suppression
   let isConfirmModalOpen = $state(false);
@@ -102,6 +105,23 @@
     window.location.href = '/plannings/settings';
   }
 
+  function handleGenerateClick() {
+    showGenerateDrawer = true;
+  }
+
+  function handleListGenerated() {
+    // Optionnel : rediriger vers la liste ou afficher un message
+    showGenerateDrawer = false;
+  }
+
+  // Menu de configuration
+  const configMenuItems: DropdownMenuItem[] = [
+    {
+      label: 'Personnaliser les créneaux',
+      onClick: openSettings
+    }
+  ];
+
   // Charger les données au montage et quand l'utilisateur change
   $effect(() => {
     if (user) {
@@ -114,11 +134,11 @@
   <div class="meal-planning">
     <PageHero
       title="Planning des repas"
-      actionLabel="Personnaliser les créneaux"
-      onAction={openSettings}
+      actionLabel="+ Générer la liste de courses"
+      onAction={handleGenerateClick}
     >
       {#snippet actionIcon()}
-        <Settings size={18} />
+        <ShoppingCart size={18} />
       {/snippet}
     </PageHero>
 
@@ -138,7 +158,21 @@
         onDateNavigate={handleDateNavigate}
         onMealEdit={handleMealEdit}
         onMealDelete={openDeleteConfirmation}
-      />
+      >
+        {#snippet headerActions()}
+          <DropdownMenu items={configMenuItems} align="right">
+            {#snippet trigger()}
+              <IconButton
+                variant="ghost"
+                size="small"
+                ariaLabel="Paramètres"
+              >
+                <Settings size={18} />
+              </IconButton>
+            {/snippet}
+          </DropdownMenu>
+        {/snippet}
+      </Calendar>
     {/if}
   </div>
 </Layout>
@@ -152,6 +186,12 @@
   editingItem={editingMealItem}
   onClose={() => { showMealDrawer = false; editingMealItem = null; }}
   onSave={handleMealSaved}
+/>
+
+<GenerateShoppingListDrawer
+  isOpen={showGenerateDrawer}
+  onClose={() => { showGenerateDrawer = false; }}
+  onGenerate={handleListGenerated}
 />
 
 <!-- Modal de confirmation de suppression -->

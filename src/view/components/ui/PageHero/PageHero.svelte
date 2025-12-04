@@ -24,6 +24,7 @@
     actionLabel,
     actionIcon,
     onAction,
+    additionalActions,
     showSearch = PAGE_HERO_DEFAULTS.showSearch,
     searchPlaceholder = PAGE_HERO_DEFAULTS.searchPlaceholder,
     searchValue = $bindable(''),
@@ -114,17 +115,24 @@
           {/if}
         </div>
       </div>
-      {#if actionLabel && onAction}
-        <!-- Button visible en desktop uniquement -->
-        <div class="page-hero__action-desktop">
-          <Button variant="primary-inverse" onclick={onAction}>
-            {#if actionIcon}
-              {@render actionIcon()}
-            {/if}
-            {actionLabel}
-          </Button>
-        </div>
-      {/if}
+      <div class="page-hero__actions-desktop">
+        {#if additionalActions}
+          <div class="page-hero__additional-actions">
+            {@render additionalActions()}
+          </div>
+        {/if}
+        {#if actionLabel && onAction}
+          <!-- Button visible en desktop uniquement -->
+          <div class="page-hero__action-desktop">
+            <Button variant="primary-inverse" onclick={onAction}>
+              {#if actionIcon}
+                {@render actionIcon()}
+              {/if}
+              {actionLabel}
+            </Button>
+          </div>
+        {/if}
+      </div>
     </div>
 
     {#if showSearch || progress || filters}
@@ -291,14 +299,24 @@
     }
   }
 
-  .page-hero__action-desktop {
-    // Mobile first: masquer le Button complet
+  .page-hero__actions-desktop {
     display: none;
 
-    // Desktop: afficher le Button complet
     @media (min-width: $breakpoint-sm) {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: $spacing-base;
     }
+  }
+
+  .page-hero__additional-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .page-hero__action-desktop {
+    // Le bouton principal sera affiché dans le conteneur actions-desktop
   }
 
   .page-hero__subtitle {

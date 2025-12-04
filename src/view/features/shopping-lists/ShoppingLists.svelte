@@ -5,6 +5,7 @@
   import { apiService } from '../../services/api.service';
   import type { ShoppingList } from '../../types/shopping-list.types';
   import { Calendar, ShoppingCart, Trash2 } from 'lucide-svelte';
+  import { getStatusLabel, getStatusVariant } from './shopping-list.helpers';
 
   let { user }: { user: any } = $props();
 
@@ -69,26 +70,6 @@
     }
   }
 
-  function getStatusLabel(status: string): string {
-    const labels = {
-      DRAFT: 'Brouillon',
-      IN_PROGRESS: 'En cours',
-      COMPLETED: 'Terminée',
-      ARCHIVED: 'Archivée'
-    };
-    return labels[status] || status;
-  }
-
-  function getStatusVariant(status: string): 'neutral' | 'info' | 'success' | 'warning' {
-    const variants = {
-      DRAFT: 'neutral' as const,
-      IN_PROGRESS: 'info' as const,
-      COMPLETED: 'success' as const,
-      ARCHIVED: 'warning' as const
-    };
-    return variants[status] || 'neutral';
-  }
-
   // Charger les données au montage
   $effect(() => {
     if (user) {
@@ -106,21 +87,20 @@
     />
 
     {#if loading}
-      <div class="loading-container">
-        <div class="spinner"></div>
+      <div class="shopping-lists__loading">
+        <div class="shopping-lists__spinner"></div>
         <p>Chargement des listes...</p>
       </div>
     {:else if shoppingLists.length === 0}
-      <div class="empty-state">
-        <div class="empty-icon">
+      <div class="shopping-lists__empty">
+        <div class="shopping-lists__empty-icon">
           <ShoppingCart size={64} />
         </div>
         <h2>Aucune liste de courses</h2>
         <p>Générez une liste depuis votre planning de repas pour commencer !</p>
-        <Button onclick={handleGenerateClick}>Générer ma première liste</Button>
       </div>
     {:else}
-      <div class="lists-grid">
+      <div class="shopping-lists__grid">
         {#each shoppingLists as list}
           <Card
             title={list.name}
@@ -128,14 +108,14 @@
             onclick={() => handleListClick(list.id)}
           >
             {#snippet children()}
-              <div class="list-info">
+              <div class="shopping-lists__list-info">
                 {#if list.fromDate && list.toDate}
-                  <p class="date-range">
+                  <p class="shopping-lists__list-info-date">
                     <Calendar size={16} />
                     {new Date(list.fromDate).toLocaleDateString('fr-FR')} - {new Date(list.toDate).toLocaleDateString('fr-FR')}
                   </p>
                 {/if}
-                <p class="item-count">
+                <p class="shopping-lists__list-info-count">
                   {list.items.length} article{list.items.length > 1 ? 's' : ''}
                   {#if list.items.filter(i => i.checked).length > 0}
                     · {list.items.filter(i => i.checked).length} coché{list.items.filter(i => i.checked).length > 1 ? 's' : ''}
@@ -144,7 +124,7 @@
               </div>
             {/snippet}
             {#snippet footer()}
-              <div class="list-footer">
+              <div class="shopping-lists__list-footer">
                 <Badge variant={getStatusVariant(list.status)} size="small" pill>
                   {getStatusLabel(list.status)}
                 </Badge>
@@ -189,101 +169,103 @@
   .shopping-lists {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-  }
 
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    gap: 1.5rem;
+    &__loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      gap: $spacing-lg;
 
-    p {
-      color: var(--text-secondary);
-      font-size: 1.1rem;
+      p {
+        color: $color-text-secondary;
+        font-size: $font-size-lg;
+      }
     }
-  }
 
-  .spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid var(--border-color);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    &__spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid $color-border-primary;
+      border-top-color: $brand-primary;
+      border-radius: $radius-full;
+      animation: spin 1s linear infinite;
+    }
+
+    &__empty {
+      text-align: center;
+      padding: $spacing-3xl $spacing-xl;
+      background: $color-white;
+      border-radius: $radius-xl;
+      box-shadow: $shadow-md;
+
+      &-icon {
+        color: $color-text-tertiary;
+        margin-bottom: $spacing-base;
+      }
+
+      h2 {
+        margin: 0 0 $spacing-sm 0;
+        color: $color-text-primary;
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-bold;
+      }
+
+      p {
+        margin: 0 0 $spacing-xl 0;
+        color: $color-text-secondary;
+        font-size: $font-size-base;
+      }
+    }
+
+    &__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: $spacing-lg;
+
+      @media (min-width: $breakpoint-md) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (min-width: $breakpoint-lg) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    &__list-info {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      p {
+        margin: 0;
+        font-size: $font-size-base;
+        color: $color-text-secondary;
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+      }
+
+      &-date {
+        font-weight: $font-weight-medium;
+      }
+
+      &-count {
+        color: $color-text-tertiary;
+        font-size: $font-size-sm;
+      }
+    }
+
+    &__list-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: $spacing-base;
+    }
   }
 
   @keyframes spin {
     to { transform: rotate(360deg); }
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px $color-black-alpha-10;
-
-    .empty-icon {
-      color: $color-text-tertiary;
-      margin-bottom: 1rem;
-    }
-
-    h2 {
-      margin: 0 0 0.5rem 0;
-      color: var(--text-color);
-    }
-
-    p {
-      margin: 0 0 2rem 0;
-      color: var(--text-secondary);
-    }
-  }
-
-  .lists-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-
-    @media (min-width: 768px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (min-width: 1024px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  .list-info {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
-
-    p {
-      margin: 0;
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: $spacing-xs;
-    }
-
-    .date-range {
-      font-weight: 500;
-    }
-
-    .item-count {
-      color: var(--text-tertiary);
-      font-size: 0.9rem;
-    }
-  }
-
-  .list-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: $spacing-base;
   }
 </style>

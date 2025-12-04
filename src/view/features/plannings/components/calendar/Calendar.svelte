@@ -14,6 +14,7 @@
     onDateNavigate?: (date: Date) => void;
     onMealEdit?: (item: any) => void;
     onMealDelete?: (item: any) => void;
+    headerActions?: import('svelte').Snippet;
   }
 
   let {
@@ -25,7 +26,8 @@
     onViewChange,
     onDateNavigate,
     onMealEdit,
-    onMealDelete
+    onMealDelete,
+    headerActions
   }: Props = $props();
 
   // Fonctions utilitaires de date
@@ -231,28 +233,35 @@
       </IconButton>
     </div>
 
-    <div class="view-switcher">
-      <Button
-        variant={view === 'day' ? 'primary' : 'outlined'}
-        size="small"
-        onclick={() => handleViewChange('day')}
-      >
-        Jour
-      </Button>
-      <Button
-        variant={view === 'week' ? 'primary' : 'outlined'}
-        size="small"
-        onclick={() => handleViewChange('week')}
-      >
-        Semaine
-      </Button>
-      <Button
-        variant={view === 'month' ? 'primary' : 'outlined'}
-        size="small"
-        onclick={() => handleViewChange('month')}
-      >
-        Mois
-      </Button>
+    <div class="view-switcher-container">
+      <div class="view-switcher">
+        <Button
+          variant={view === 'day' ? 'primary' : 'outlined'}
+          size="small"
+          onclick={() => handleViewChange('day')}
+        >
+          Jour
+        </Button>
+        <Button
+          variant={view === 'week' ? 'primary' : 'outlined'}
+          size="small"
+          onclick={() => handleViewChange('week')}
+        >
+          Semaine
+        </Button>
+        <Button
+          variant={view === 'month' ? 'primary' : 'outlined'}
+          size="small"
+          onclick={() => handleViewChange('month')}
+        >
+          Mois
+        </Button>
+      </div>
+      {#if headerActions}
+        <div class="header-actions">
+          {@render headerActions()}
+        </div>
+      {/if}
     </div>
   </div>
 
@@ -338,7 +347,7 @@
   .calendar {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 1.5;
+    gap: $spacing-base;
     background: $white;
     border-radius: 16px;
     padding: $spacing-base;
@@ -394,17 +403,25 @@
     }
   }
 
+  .view-switcher-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-sm;
+  }
+
   .view-switcher {
     display: flex;
-    gap: $spacing-xs;
+    gap: $spacing-2xs;
     background: rgba($brand-primary, 0.1);
-    padding: $spacing-xs;
+    padding: $spacing-2xs;
     border-radius: $radius-md;
-    justify-content: center;
+  }
 
-    @media (min-width: 768px) {
-      justify-content: flex-end;
-    }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
   }
 
   .view-btn {
