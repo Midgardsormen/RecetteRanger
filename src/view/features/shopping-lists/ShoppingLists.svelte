@@ -1,7 +1,7 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
   import { Button, IconButton, Badge, PageHero, Card, ConfirmModal } from '../../components/ui';
-  import { GenerateShoppingListDrawer } from './components';
+  import { CreateShoppingListDrawer, GenerateShoppingListDrawer } from './components';
   import { apiService } from '../../services/api.service';
   import type { ShoppingList } from '../../types/shopping-list.types';
   import { Calendar, ShoppingCart, Trash2 } from 'lucide-svelte';
@@ -12,6 +12,7 @@
   // État
   let shoppingLists = $state<ShoppingList[]>([]);
   let loading = $state(true);
+  let showCreateDrawer = $state(false);
   let showGenerateDrawer = $state(false);
 
   // Modal de confirmation de suppression
@@ -34,8 +35,8 @@
     }
   }
 
-  function handleGenerateClick() {
-    showGenerateDrawer = true;
+  function handleCreateClick() {
+    showCreateDrawer = true;
   }
 
   function handleListClick(listId: string) {
@@ -82,8 +83,8 @@
   <div class="shopping-lists">
     <PageHero
       title="Mes listes de courses"
-      actionLabel="+ Générer depuis le planning"
-      onAction={handleGenerateClick}
+      actionLabel="+ Nouvelle liste"
+      onAction={handleCreateClick}
     />
 
     {#if loading}
@@ -144,6 +145,13 @@
     {/if}
   </div>
 </Layout>
+
+<CreateShoppingListDrawer
+  isOpen={showCreateDrawer}
+  onClose={() => { showCreateDrawer = false; }}
+  onCreate={loadShoppingLists}
+  onOpenGenerateDrawer={() => { showGenerateDrawer = true; }}
+/>
 
 <GenerateShoppingListDrawer
   isOpen={showGenerateDrawer}

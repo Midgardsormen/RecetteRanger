@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { Drawer, Button, SectionTitle } from '../../../components/ui';
-  import { Input } from '../../../components/ui/form';
-import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDrawer.svelte';
+  import { Drawer, Button, SectionTitle, Input, FormField } from '../../../components/ui';
+  import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDrawer.svelte';
   import { apiService } from '../../../services/api.service';
 
   interface Props {
@@ -22,6 +21,12 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
   let unit = $state('');
 
   // Rechercher les articles
+  function handleSearchInput(e: Event) {
+    const target = e.currentTarget as HTMLInputElement;
+    searchQuery = target.value;
+    loadArticles();
+  }
+
   async function loadArticles() {
     if (!searchQuery || searchQuery.length < 2) {
       availableArticles = [];
@@ -116,24 +121,29 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
   }}
 >
   <div class="select-article-drawer">
-    <!-- Recherche -->
-    <div class="form-field">
-      <label class="form-label">Rechercher un article</label>
-      <div class="search-actions">
-        <Input
-          id="article-search"
-          bind:value={searchQuery}
-          oninput={loadArticles}
-          placeholder="Tapez pour rechercher..."
-        />
+    <!-- Titre avec bouton Créer -->
+    <SectionTitle level={3}>
+      <div class="select-article-drawer__section-header">
+        <span class="select-article-drawer__section-title">Articles disponibles</span>
         <Button
-          variant="secondary"
+          variant="outlined-inverse"
+          size="medium"
           onclick={() => { showAddArticleDrawer = true; }}
         >
           + Créer
         </Button>
       </div>
-    </div>
+    </SectionTitle>
+
+    <!-- Recherche -->
+    <FormField label="Rechercher un article">
+      <Input
+        id="article-search"
+        value={searchQuery}
+        oninput={handleSearchInput}
+        placeholder="Tapez pour rechercher..."
+      />
+    </FormField>
 
     <!-- Résultats de recherche -->
     {#if loadingArticles}
@@ -187,25 +197,23 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
         </div>
 
         <div class="quantity-fields">
-          <div class="form-field">
+          <FormField label="Quantité (optionnel)">
             <Input
               id="quantity"
-              label="Quantité (optionnel)"
               type="number"
               step="0.01"
               bind:value={quantity}
               placeholder="Ex: 2, 500, 1.5"
             />
-          </div>
+          </FormField>
 
-          <div class="form-field">
+          <FormField label="Unité (optionnel)">
             <Input
               id="unit"
-              label="Unité (optionnel)"
               bind:value={unit}
               placeholder="Ex: kg, g, l, unité(s)"
             />
-          </div>
+          </FormField>
         </div>
 
         <p class="hint-text">Vous pouvez laisser vide et définir la quantité plus tard</p>
@@ -228,46 +236,23 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
   .select-article-drawer {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-  }
+    gap: $spacing-xl;
 
-  .form-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+    &__section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: $spacing-sm;
+      width: 100%;
 
-  .form-label {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--text-color);
-  }
-
-  .radio-group {
-    display: flex;
-    gap: 1.5rem;
-  }
-
-  .radio-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    font-size: 0.95rem;
-    color: var(--text-color);
-
-    input[type="radio"] {
-      cursor: pointer;
+      :global(.button) {
+        width: auto;
+      }
     }
-  }
 
-  .search-actions {
-    display: flex;
-    gap: 0.75rem;
-    align-items: flex-start;
-
-    :global(input) {
+    &__section-title {
       flex: 1;
+      min-width: 0;
     }
   }
 
@@ -275,9 +260,10 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
   .no-results,
   .hint-text {
     text-align: center;
-    color: var(--text-secondary);
-    padding: 2rem;
-    font-size: 0.95rem;
+    color: $color-text-inverse;
+    opacity: 0.7;
+    padding: $spacing-xl;
+    font-size: $font-size-base;
   }
 
   .hint-text {
@@ -287,32 +273,32 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
   .quantity-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 2px solid var(--border-color);
+    gap: $spacing-lg;
+    margin-top: $spacing-xl;
+    padding-top: $spacing-xl;
+    border-top: 2px solid $color-white-alpha-20;
   }
 
   .selected-article-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: $spacing-sm;
   }
 
   .change-article-btn {
     background: none;
     border: none;
-    color: $brand-primary;
-    font-size: 0.9rem;
-    font-weight: 500;
+    color: $color-white;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    transition: all 0.2s;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-sm;
+    transition: all $transition-base;
 
     &:hover {
-      background: rgba($brand-primary, 0.1);
+      background: $color-white-alpha-20;
       text-decoration: underline;
     }
   }
@@ -320,31 +306,31 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
   .selected-article-info {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: $color-gray-50;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
+    gap: $spacing-lg;
+    padding: $spacing-lg;
+    background: $color-white-alpha-10;
+    border-radius: $radius-lg;
+    border: 1px solid $color-white-alpha-20;
   }
 
   .selected-article-image {
     width: 56px;
     height: 56px;
-    border-radius: 8px;
+    border-radius: $radius-lg;
     object-fit: cover;
   }
 
   .selected-article-placeholder {
     width: 56px;
     height: 56px;
-    border-radius: 8px;
+    border-radius: $radius-lg;
     background: $brand-primary;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-    font-weight: bold;
+    color: $color-white;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
     text-transform: uppercase;
   }
 
@@ -353,23 +339,24 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
   }
 
   .selected-article-name {
-    margin: 0 0 0.25rem 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-color);
+    margin: 0 0 $spacing-xs 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-inverse;
   }
 
   .selected-article-aisle {
     margin: 0;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
+    font-size: $font-size-sm;
+    color: $color-text-inverse;
+    opacity: 0.7;
   }
 
   .quantity-fields {
     display: flex;
-    gap: 1rem;
+    gap: $spacing-lg;
 
-    .form-field {
+    :global(.form-field) {
       flex: 1;
     }
   }
@@ -377,24 +364,24 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
   .articles-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: $spacing-sm;
   }
 
   .article-item {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.75rem;
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    gap: $spacing-lg;
+    padding: $spacing-md;
+    background: $color-white-alpha-10;
+    border: 1px solid $color-white-alpha-20;
+    border-radius: $radius-lg;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all $transition-base;
     text-align: left;
 
     &:hover {
-      border-color: $brand-primary;
-      background: rgba($brand-primary, 0.05);
+      border-color: $color-white;
+      background: $color-white-alpha-20;
       transform: translateX(4px);
     }
 
@@ -407,21 +394,21 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
   .article-image {
     width: 48px;
     height: 48px;
-    border-radius: 8px;
+    border-radius: $radius-lg;
     object-fit: cover;
   }
 
   .article-placeholder {
     width: 48px;
     height: 48px;
-    border-radius: 8px;
+    border-radius: $radius-lg;
     background: $brand-primary;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-    font-weight: bold;
+    color: $color-white;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
     text-transform: uppercase;
   }
 
@@ -429,17 +416,18 @@ import IngredientDrawer from '../../../features/ingredient-drawer/IngredientDraw
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: $spacing-xs;
   }
 
   .article-name {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--text-color);
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $color-text-inverse;
   }
 
   .article-aisle {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
+    font-size: $font-size-sm;
+    color: $color-text-inverse;
+    opacity: 0.7;
   }
 </style>
