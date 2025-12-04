@@ -120,6 +120,7 @@ export interface PageHeroProps {
   actionLabel?: string;
   actionIcon?: Snippet;
   onAction?: () => void;
+  additionalActions?: Snippet;
   showSearch?: boolean;
   searchPlaceholder?: string;
   searchValue?: string;
@@ -350,6 +351,28 @@ export interface DropdownProps {
   isOpen?: boolean;
   align?: DropdownAlign;
   minWidth?: string;
+}
+
+// ============================================
+// DROPDOWN MENU
+// ============================================
+
+export interface DropdownMenuItem {
+  label: string;
+  href?: string;
+  icon?: Snippet;
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
+export interface DropdownMenuProps {
+  trigger?: Snippet;
+  items: DropdownMenuItem[];
+  isOpen?: boolean;
+  align?: DropdownAlign;
+  minWidth?: string;
+  iconButton?: boolean;
+  autoAlign?: boolean;
 }
 
 // ============================================

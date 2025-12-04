@@ -4,13 +4,23 @@
   import { Button, IconButton, Input, ArticleAutocomplete, StoreAutocomplete, ProgressBar, Dot, ConfirmModal, Breadcrumb, PageHero, FilterGroup, ListItem } from '../../components/ui';
   import { SelectArticleDrawer } from './components';
   import { StoreDrawer } from '../stores';
-  import { apiService } from '../../services/api.service';
   import type { ShoppingList, ShoppingListItem } from '../../types/shopping-list.types';
-  import { getAisleLabel } from '../../utils/aisle-labels';
   import { StoreAisleColors } from '../../types/ingredient.types';
   import { getBadgeColor } from '../../helpers/color.helper';
   import { draggable, droppable, type DragDropState, dndState } from '@thisux/sveltednd';
   import { Check, X, Pencil, GripVertical, Printer } from 'lucide-svelte';
+
+  // Import actions, config, and helpers
+  import * as actions from './shopping-list-detail.actions';
+  import { AUTO_SCROLL_CONFIG, ANIMATION_CONFIG } from './shopping-list-detail.config';
+  import {
+    formatQuantity,
+    filterItemsByStore,
+    groupItemsByAisle,
+    groupItemsByStoreAndAisle,
+    getAvailableStores,
+    calculateStats
+  } from './shopping-list.helpers';
 
   interface Store {
     id: string;
@@ -61,7 +71,7 @@
 
     loading = true;
     try {
-      const list = await apiService.getShoppingList(listId);
+      const list = await actions.loadShoppingList(listId);
       shoppingList = list;
     } catch (err: any) {
       error = err.message || 'Erreur lors du chargement de la liste';
@@ -72,18 +82,9 @@
 
   // Cocher/décocher un item
   async function toggleItem(item: ShoppingListItem) {
+    if (!shoppingList) return;
     try {
-      await apiService.updateShoppingListItem(item.id, {
-        checked: !item.checked
-      });
-
-      // Mettre à jour localement
-      if (shoppingList) {
-        const index = shoppingList.items.findIndex(i => i.id === item.id);
-        if (index !== -1) {
-          shoppingList.items[index].checked = !item.checked;
-        }
-      }
+      await actions.toggleItem(item, shoppingList);
     } catch (err: any) {
       globalError = err.message || 'Une erreur est survenue';
     }
@@ -107,15 +108,10 @@
   }
 
   async function confirmDelete() {
-    if (!itemToDelete) return;
+    if (!itemToDelete || !shoppingList) return;
 
     try {
-      await apiService.deleteShoppingListItem(itemToDelete);
-
-      // Retirer localement
-      if (shoppingList) {
-        shoppingList.items = shoppingList.items.filter(i => i.id !== itemToDelete);
-      }
+      await actions.deleteItem(itemToDelete, shoppingList);
       isConfirmModalOpen = false;
       itemToDelete = null;
       deleteError = '';
@@ -129,17 +125,7 @@
     if (!shoppingList) return;
 
     try {
-      const newItem = await apiService.createShoppingListItem(shoppingList.id, {
-        label: article.label,
-        ingredientId: article.id,
-        aisle: article.aisle,
-        quantity: quantity,
-        unit: unit,
-        isManual: true,
-        checked: false
-      });
-
-      shoppingList.items.push(newItem);
+      await actions.addArticleToList(shoppingList, article, quantity, unit);
     } catch (err: any) {
       globalError = err.message || 'Une erreur est survenue';
     }
@@ -149,24 +135,13 @@
   async function addManualItem() {
     if (!newItemLabel.trim() || !shoppingList) return;
 
-    
     try {
-      const newItem = await apiService.createShoppingListItem(shoppingList.id, {
-        label: newItemLabel.trim(),
-        ingredientId: selectedArticleId,
-        aisle: selectedArticleAisle,
-        isManual: true,
-        checked: false
-      });
-
-      shoppingList.items.push(newItem);
+      await actions.addManualItem(shoppingList, newItemLabel, selectedArticleId, selectedArticleAisle);
       newItemLabel = '';
       selectedArticleId = null;
       selectedArticleAisle = null;
     } catch (err: any) {
       globalError = err.message || 'Une erreur est survenue';
-    } finally {
-      
     }
   }
 
@@ -189,21 +164,7 @@
     if (!shoppingList) return;
 
     try {
-      const quantity = editQuantity.trim() ? parseFloat(editQuantity.trim()) : null;
-      const unit = editUnit.trim() || null;
-
-      await apiService.updateShoppingListItem(itemId, {
-        quantity: quantity,
-        unit: unit
-      });
-
-      // Mettre à jour localement
-      const index = shoppingList.items.findIndex(i => i.id === itemId);
-      if (index !== -1) {
-        shoppingList.items[index].quantity = quantity;
-        shoppingList.items[index].unit = unit;
-      }
-
+      await actions.updateItemQuantity(itemId, editQuantity, editUnit, shoppingList);
       // Fermer l'édition
       cancelEditingItem();
     } catch (err: any) {
@@ -228,17 +189,7 @@
     if (!shoppingList) return;
 
     try {
-      const updatedItem = await apiService.updateShoppingListItem(itemId, {
-        storeId: store?.id || null
-      });
-
-      // Mettre à jour localement
-      const index = shoppingList.items.findIndex(i => i.id === itemId);
-      if (index !== -1) {
-        shoppingList.items[index].storeId = updatedItem.storeId;
-        shoppingList.items[index].store = updatedItem.store;
-      }
-
+      await actions.updateItemStore(itemId, store?.id || null, shoppingList);
       // Fermer l'édition
       cancelEditingStore();
     } catch (err: any) {
@@ -259,28 +210,10 @@
 
     // Recharger la liste pour récupérer les nouvelles données
     if (currentEditingItemId && newStoreName) {
-      // Petit délai pour laisser la base de données se synchroniser
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      // Rechercher la nouvelle enseigne créée
       try {
-        const result = await apiService.searchStores({
-          search: newStoreName,
-          limit: 1,
-        });
-
-        if (result.stores && result.stores.length > 0) {
-          const newStore = result.stores[0];
-          // Assigner automatiquement la nouvelle enseigne à l'item
-          await saveItemStore(currentEditingItemId, newStore);
-
-          // Recharger toute la liste de courses pour avoir les données à jour
-          await loadShoppingList();
-        } else {
-          console.warn('Enseigne créée mais non trouvée:', newStoreName);
-        }
+        await actions.handleStoreCreated(currentEditingItemId, newStoreName, loadShoppingList);
       } catch (err) {
-        console.error('Erreur lors de la récupération de la nouvelle enseigne:', err);
+        console.error('Erreur lors de la gestion de la nouvelle enseigne:', err);
       }
     }
 
@@ -302,8 +235,7 @@
   let autoScrollInterval: ReturnType<typeof setInterval> | null = null;
 
   function performScroll(mouseY: number) {
-    const scrollZone = 100; // Zone de 100px en haut et en bas
-    const maxScrollSpeed = 15;
+    const { scrollZone, maxScrollSpeed } = AUTO_SCROLL_CONFIG;
     const viewportHeight = window.innerHeight;
 
     // Curseur dans la zone haute
@@ -335,7 +267,7 @@
       if (!autoScrollInterval) {
         autoScrollInterval = setInterval(() => {
           performScroll(currentMouseY);
-        }, 16); // ~60fps
+        }, AUTO_SCROLL_CONFIG.scrollInterval);
       }
     } else {
       // Arrêter tout
@@ -359,95 +291,30 @@
 
   // Drag and drop handlers
   async function handleDropOnAisle(state: DragDropState<ShoppingListItem>, targetStoreKey: string, targetAisleKey: string) {
-    const { draggedItem } = state;
-    if (!draggedItem || !shoppingList) return;
-
-    // Determine the new store ID and aisle
-    let newStoreId: string | null = null;
-    let newAisle: string | null = null;
-
-    // Decode store key
-    if (targetStoreKey !== 'NO_STORE') {
-      newStoreId = targetStoreKey;
-    }
-
-    // Decode aisle key
-    if (targetAisleKey !== 'NON_CLASSE') {
-      newAisle = targetAisleKey;
-    }
-
-    // Check if anything changed
-    const currentStoreId = draggedItem.storeId || null;
-    const currentAisle = draggedItem.aisle || null;
-
-    if (currentStoreId === newStoreId && currentAisle === newAisle) {
-      return; // No change needed
-    }
+    if (!shoppingList) return;
 
     try {
-      // Animation flash sur l'enseigne si changement d'enseigne
-      if (currentStoreId !== newStoreId && targetStoreKey !== 'NO_STORE') {
-        flashingStore = targetStoreKey;
+      await actions.handleDropOnAisle(state, targetStoreKey, targetAisleKey, shoppingList, (storeKey) => {
+        flashingStore = storeKey;
         setTimeout(() => {
           flashingStore = null;
-        }, 800);
-      }
-
-      // Update the item on the backend
-      const updatedItem = await apiService.updateShoppingListItem(draggedItem.id, {
-        storeId: newStoreId,
-        aisle: newAisle
+        }, ANIMATION_CONFIG.flashDuration);
       });
-
-      // Update locally
-      const index = shoppingList.items.findIndex(i => i.id === draggedItem.id);
-      if (index !== -1) {
-        shoppingList.items[index].storeId = updatedItem.storeId;
-        shoppingList.items[index].store = updatedItem.store;
-        shoppingList.items[index].aisle = updatedItem.aisle;
-      }
     } catch (err: any) {
       globalError = err.message || 'Erreur lors du déplacement';
     }
   }
 
   async function handleDropOnStore(state: DragDropState<ShoppingListItem>, targetStoreKey: string) {
-    const { draggedItem } = state;
-    if (!draggedItem || !shoppingList) return;
-
-    // Determine the new store ID (keep the same aisle)
-    let newStoreId: string | null = null;
-
-    if (targetStoreKey !== 'NO_STORE') {
-      newStoreId = targetStoreKey;
-    }
-
-    const currentStoreId = draggedItem.storeId || null;
-
-    if (currentStoreId === newStoreId) {
-      return; // No change needed
-    }
+    if (!shoppingList) return;
 
     try {
-      // Animation flash sur l'enseigne
-      if (targetStoreKey !== 'NO_STORE') {
-        flashingStore = targetStoreKey;
+      await actions.handleDropOnStore(state, targetStoreKey, shoppingList, (storeKey) => {
+        flashingStore = storeKey;
         setTimeout(() => {
           flashingStore = null;
-        }, 800);
-      }
-
-      // Update the item on the backend
-      const updatedItem = await apiService.updateShoppingListItem(draggedItem.id, {
-        storeId: newStoreId
+        }, ANIMATION_CONFIG.flashDuration);
       });
-
-      // Update locally
-      const index = shoppingList.items.findIndex(i => i.id === draggedItem.id);
-      if (index !== -1) {
-        shoppingList.items[index].storeId = updatedItem.storeId;
-        shoppingList.items[index].store = updatedItem.store;
-      }
     } catch (err: any) {
       globalError = err.message || 'Erreur lors du déplacement';
     }
@@ -456,17 +323,7 @@
   // Filtrer les items selon l'enseigne sélectionnée
   let filteredItems = $derived(() => {
     if (!shoppingList) return [];
-
-    if (selectedStoreFilter === 'all') {
-      return shoppingList.items;
-    }
-
-    return shoppingList.items.filter(item => {
-      if (selectedStoreFilter === 'none') {
-        return !item.storeId;
-      }
-      return item.storeId === selectedStoreFilter;
-    });
+    return filterItemsByStore(shoppingList.items, selectedStoreFilter);
   });
 
   // Grouper les items par enseigne puis par rayon
@@ -474,104 +331,16 @@
     const items = filteredItems();
 
     if (groupBy === 'aisle') {
-      // Ancien comportement : grouper uniquement par rayon
-      const grouped = new Map<string, { key: string; label: string; color?: string; items: ShoppingListItem[] }>();
-
-      for (const item of items) {
-        const groupKey = item.aisle || 'NON_CLASSE';
-        const groupLabel = getAisleLabel(groupKey);
-
-        if (!grouped.has(groupKey)) {
-          grouped.set(groupKey, { key: groupKey, label: groupLabel, items: [] });
-        }
-        grouped.get(groupKey)!.items.push(item);
-      }
-
-      return grouped;
+      return groupItemsByAisle(items);
     } else {
-      // Nouveau comportement : grouper par enseigne puis par rayon
-      const storeGroups = new Map<string, {
-        key: string;
-        label: string;
-        color?: string;
-        aisles: Map<string, { key: string; label: string; items: ShoppingListItem[] }>;
-      }>();
-
-      for (const item of items) {
-        // Premier niveau : enseigne
-        let storeKey: string;
-        let storeLabel: string;
-        let storeColor: string | undefined;
-
-        if (item.store) {
-          storeKey = item.store.id;
-          storeLabel = item.store.name;
-          storeColor = item.store.color || undefined;
-        } else {
-          storeKey = 'NO_STORE';
-          storeLabel = 'Sans enseigne';
-        }
-
-        if (!storeGroups.has(storeKey)) {
-          storeGroups.set(storeKey, {
-            key: storeKey,
-            label: storeLabel,
-            color: storeColor,
-            aisles: new Map()
-          });
-        }
-
-        // Deuxième niveau : rayon
-        const storeGroup = storeGroups.get(storeKey)!;
-        const aisleKey = item.aisle || 'NON_CLASSE';
-        const aisleLabel = getAisleLabel(aisleKey);
-
-        if (!storeGroup.aisles.has(aisleKey)) {
-          storeGroup.aisles.set(aisleKey, {
-            key: aisleKey,
-            label: aisleLabel,
-            items: []
-          });
-        }
-
-        storeGroup.aisles.get(aisleKey)!.items.push(item);
-      }
-
-      // Trier les enseignes : ordre alphabétique, "Sans enseigne" à la fin
-      const sortedStoreGroups = new Map(
-        Array.from(storeGroups.entries()).sort(([keyA, groupA], [keyB, groupB]) => {
-          // "Sans enseigne" toujours en dernier
-          if (keyA === 'NO_STORE') return 1;
-          if (keyB === 'NO_STORE') return -1;
-
-          // Sinon, tri alphabétique par label
-          return groupA.label.localeCompare(groupB.label, 'fr');
-        })
-      );
-
-      return sortedStoreGroups;
+      return groupItemsByStoreAndAisle(items);
     }
   });
 
   // Liste des enseignes disponibles pour le filtre
   let availableStores = $derived(() => {
-    if (!shoppingList) return [];
-
-    const storesMap = new Map<string, Store>();
-    for (const item of shoppingList.items) {
-      if (item.store) {
-        storesMap.set(item.store.id, item.store);
-      }
-    }
-
-    return Array.from(storesMap.values());
+    return getAvailableStores(shoppingList);
   });
-
-
-  function formatQuantity(item: ShoppingListItem): string {
-    if (!item.quantity) return '';
-    return `${item.quantity}${item.unit ? ' ' + item.unit : ''}`;
-  }
 
   function goBack() {
     window.location.href = '/shopping-lists';
@@ -579,13 +348,7 @@
 
   // Statistiques
   let stats = $derived(() => {
-    if (!shoppingList) return { total: 0, checked: 0, percentage: 0 };
-
-    const total = shoppingList.items.length;
-    const checked = shoppingList.items.filter(i => i.checked).length;
-    const percentage = total > 0 ? Math.round((checked / total) * 100) : 0;
-
-    return { total, checked, percentage };
+    return calculateStats(shoppingList);
   });
 
   // Charger au montage
@@ -597,13 +360,13 @@
 <Layout title={shoppingList?.name || 'Liste de courses'} currentPage="/shopping-lists" {user}>
   <div class="shopping-list-detail">
     {#if loading}
-      <div class="loading-container">
-        <div class="spinner"></div>
+      <div class="shopping-list-detail__loading">
+        <div class="shopping-list-detail__spinner"></div>
         <p>Chargement de la liste...</p>
       </div>
     {:else if error}
-      <div class="error-container">
-        <p class="error">{error}</p>
+      <div class="shopping-list-detail__error">
+        <p class="shopping-list-detail__error-message">{error}</p>
         <Button onclick={goBack}>Retour aux listes</Button>
       </div>
     {:else if shoppingList}
@@ -658,27 +421,27 @@
         {/snippet}
       </PageHero>
 
-      <div class="print-button-container no-print">
+      <div class="shopping-list-detail__print-button no-print">
         <Button onclick={handlePrint} variant="secondary-full" size="medium">
           <Printer size={18} /> Imprimer
         </Button>
       </div>
 
       {#if globalError}
-        <div class="error-banner">
+        <div class="shopping-list-detail__error-banner">
           <span>{globalError}</span>
           <button onclick={() => { globalError = ''; }}>✕</button>
         </div>
       {/if}
 
-      <div class="items-container">
+      <div class="shopping-list-detail__items">
         {#if groupBy === 'aisle'}
           <!-- Groupement simple par rayon -->
           {#each Array.from(groupedItems()) as [groupKey, group]}
-            <div class="group-section">
-              <h2 class="group-title">{group.label}</h2>
+            <div class="shopping-list-detail__group">
+              <h2 class="shopping-list-detail__group-title">{group.label}</h2>
               <div
-                class="items-grid"
+                class="shopping-list-detail__group-items"
                 use:droppable={{
                   container: `aisle-${groupKey}`,
                   callbacks: {
@@ -805,8 +568,8 @@
           <!-- Groupement double niveau : enseigne → rayon -->
           {#each Array.from(groupedItems()) as [storeKey, storeGroup]}
             <div
-              class="store-group"
-              class:store-group--flashing={flashingStore === storeKey}
+              class="shopping-list-detail__store"
+              class:shopping-list-detail__store--flashing={flashingStore === storeKey}
               style="{storeGroup.color ? `border-left: 4px solid ${storeGroup.color};` : ''}"
               use:droppable={{
                 container: `store-${storeKey}`,
@@ -815,18 +578,18 @@
                 }
               }}
             >
-              <h2 class="store-title">{storeGroup.label}</h2>
+              <h2 class="shopping-list-detail__store-title">{storeGroup.label}</h2>
 
               {#each Array.from(storeGroup.aisles) as [aisleKey, aisleGroup]}
-                <div class="aisle-subgroup">
-                  <h3 class="aisle-subtitle">
+                <div class="shopping-list-detail__store-aisle">
+                  <h3 class="shopping-list-detail__store-aisle-title">
                     {#if aisleKey !== 'NON_CLASSE'}
                       <Dot color={getBadgeColor(StoreAisleColors[aisleKey])} size="small" />
                     {/if}
                     {aisleGroup.label}
                   </h3>
                   <div
-                    class="items-grid"
+                    class="shopping-list-detail__store-aisle-items"
                     use:droppable={{
                       container: `store-${storeKey}-aisle-${aisleKey}`,
                       callbacks: {
@@ -991,186 +754,189 @@
   .shopping-list-detail {
     display: flex;
     flex-direction: column;
-    gap: $spacing-lg;
-  }
 
-  .loading-container,
-  .error-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    gap: 1.5rem;
+    &__loading,
+    &__error {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      gap: $spacing-lg;
 
-    p {
-      color: var(--text-secondary);
-      font-size: 1.1rem;
+      p {
+        color: $color-text-secondary;
+        font-size: $font-size-lg;
+      }
     }
-  }
 
-  .spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid var(--border-color);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    &__spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid $color-border-primary;
+      border-top-color: $brand-primary;
+      border-radius: $radius-full;
+      animation: spin 1s linear infinite;
+    }
+
+    &__error-message {
+      color: $color-danger-dark;
+    }
+
+    &__error-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $spacing-base;
+      background: $color-background-danger;
+      border: $border-width-base solid $color-danger;
+      border-radius: $radius-lg;
+      color: $color-danger;
+      margin: $spacing-base 0;
+      font-weight: $font-weight-medium;
+
+      button {
+        background: none;
+        border: none;
+        color: $color-danger;
+        cursor: pointer;
+        font-size: $font-size-xl;
+        padding: 0 $spacing-sm;
+        line-height: 1;
+
+        &:hover {
+          opacity: $opacity-70;
+        }
+      }
+    }
+
+    &__items {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xl;
+    }
+
+    &__group {
+      padding-left: $spacing-sm;
+
+      &-title {
+        margin: 0 0 $spacing-base 0;
+        font-size: $font-size-xl;
+        color: $color-text-primary;
+        padding-bottom: $spacing-sm;
+        border-bottom: $border-width-base solid $color-border-primary;
+      }
+
+      &-items {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: $spacing-base;
+        min-height: 60px;
+        transition: all $transition-base ease;
+        border-radius: $radius-md;
+        padding: $spacing-xs;
+
+        @media (min-width: $breakpoint-md) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (min-width: $breakpoint-lg) {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        // Drop zone visual feedback
+        &[data-drop-target="true"] {
+          background: $color-primary-alpha-10;
+          border: $border-width-base dashed $brand-primary;
+          padding: $spacing-sm;
+        }
+      }
+    }
+
+    &__store {
+      padding-left: $spacing-sm;
+      margin-bottom: $spacing-xl;
+      transition: all $transition-base ease;
+
+      // Drop zone visual feedback
+      &[data-drop-target="true"] {
+        background: $color-primary-alpha-05;
+        border-left-width: 6px;
+        padding: $spacing-sm;
+        border-radius: $radius-lg;
+      }
+
+      // Animation flash quand un article est déposé
+      &--flashing {
+        animation: storeFlash 0.8s ease-out;
+
+        .shopping-list-detail__store-title {
+          animation: storeTitlePulse 0.8s ease-out;
+        }
+      }
+
+      &-title {
+        margin: 0 0 $spacing-lg 0;
+        font-size: $font-size-2xl;
+        color: $color-text-primary;
+        padding-bottom: $spacing-md;
+        border-bottom: $border-width-thick solid $color-border-primary;
+        font-weight: $font-weight-bold;
+        transition: all $transition-slow ease;
+      }
+
+      &-aisle {
+        margin-bottom: $spacing-lg;
+
+        &-title {
+          margin: 0 0 $spacing-md 0;
+          font-size: $font-size-lg;
+          color: $color-text-secondary;
+          padding-bottom: $spacing-sm;
+          padding-left: $spacing-sm;
+          border-bottom: $border-width-thin solid $color-border-primary;
+          font-weight: $font-weight-semibold;
+          display: flex;
+          align-items: center;
+          gap: $spacing-sm;
+        }
+
+        &-items {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: $spacing-base;
+          padding-left: $spacing-base;
+          min-height: 60px;
+          transition: all $transition-base ease;
+          border-radius: $radius-md;
+
+          @media (min-width: $breakpoint-md) {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          @media (min-width: $breakpoint-lg) {
+            grid-template-columns: repeat(3, 1fr);
+          }
+
+          // Drop zone visual feedback for aisle subgroups
+          &[data-drop-target="true"] {
+            background: $color-primary-alpha-10;
+            border: $border-width-base dashed $brand-primary;
+            padding: $spacing-sm;
+          }
+        }
+      }
+    }
+
+    &__print-button {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: $spacing-md;
+    }
   }
 
   @keyframes spin {
     to { transform: rotate(360deg); }
-  }
-
-  .error {
-    color: $color-danger-dark;
-  }
-
-
-  .error-banner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: $color-background-danger;
-    border: 2px solid $color-danger;
-    border-radius: 8px;
-    color: $color-danger;
-    margin: 1rem 0;
-    font-weight: 500;
-
-    button {
-      background: none;
-      border: none;
-      color: $color-danger;
-      cursor: pointer;
-      font-size: 1.2rem;
-      padding: 0 0.5rem;
-      line-height: 1;
-
-      &:hover {
-        opacity: 0.7;
-      }
-    }
-  }
-
-  .items-container {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-
-  .group-section {
-    padding-left: 0.5rem;
-
-    .group-title {
-      margin: 0 0 1rem 0;
-      font-size: 1.3rem;
-      color: var(--text-color);
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--border-color);
-    }
-
-    .items-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: $spacing-base;
-      min-height: 60px;
-      transition: all 0.2s ease;
-      border-radius: 6px;
-      padding: 0.25rem;
-
-      @media (min-width: 768px) {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      @media (min-width: 1024px) {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      // Drop zone visual feedback
-      &[data-drop-target="true"] {
-        background: rgba($brand-primary, 0.1);
-        border: 2px dashed $brand-primary;
-        padding: 0.5rem;
-      }
-    }
-  }
-
-  .store-group {
-    padding-left: 0.5rem;
-    margin-bottom: 2rem;
-    transition: all 0.2s ease;
-
-    // Drop zone visual feedback
-    &[data-drop-target="true"] {
-      background: rgba($brand-primary, 0.05);
-      border-left-width: 6px;
-      padding: 0.5rem;
-      border-radius: 8px;
-    }
-
-    // Animation flash quand un article est déposé
-    &--flashing {
-      animation: storeFlash 0.8s ease-out;
-
-      .store-title {
-        animation: storeTitlePulse 0.8s ease-out;
-      }
-    }
-
-    .store-title {
-      margin: 0 0 1.5rem 0;
-      font-size: 1.5rem;
-      color: var(--text-color);
-      padding-bottom: 0.75rem;
-      border-bottom: 3px solid var(--border-color);
-      font-weight: 700;
-      transition: all 0.3s ease;
-    }
-
-    .aisle-subgroup {
-      margin-bottom: 1.5rem;
-
-      .aisle-subtitle {
-        margin: 0 0 0.75rem 0;
-        font-size: 1.1rem;
-        color: var(--text-secondary);
-        padding-bottom: 0.5rem;
-        padding-left: 0.5rem;
-        border-bottom: 1px solid var(--border-color);
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .items-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: $spacing-base;
-        padding-left: 1rem;
-        min-height: 60px;
-        transition: all 0.2s ease;
-        border-radius: 6px;
-
-        @media (min-width: 768px) {
-          grid-template-columns: repeat(2, 1fr);
-        }
-
-        @media (min-width: 1024px) {
-          grid-template-columns: repeat(3, 1fr);
-        }
-
-        // Drop zone visual feedback for aisle subgroups
-        &[data-drop-target="true"] {
-          background: rgba($brand-primary, 0.1);
-          border: 2px dashed $brand-primary;
-          padding: 0.5rem;
-        }
-      }
-    }
   }
 
   // Styles for item content (inside ListItem children snippet)
@@ -1180,7 +946,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.2s;
+    transition: color $transition-base;
 
     &:hover {
       color: $brand-primary;
@@ -1204,107 +970,107 @@
 
   .item-quantity-display {
     cursor: pointer;
-    padding: 0.25rem 0;
-    transition: opacity 0.2s;
+    padding: $spacing-xs 0;
+    transition: opacity $transition-base;
     display: flex;
     align-items: center;
     gap: $spacing-xs;
 
     &:hover {
-      opacity: 0.7;
+      opacity: $opacity-70;
     }
 
     :global(.edit-icon) {
       color: $color-text-tertiary;
-      opacity: 0.5;
+      opacity: $opacity-50;
       flex-shrink: 0;
-      transition: opacity 0.2s;
+      transition: opacity $transition-base;
       align-self: flex-start;
       margin-top: -2px;
     }
 
     &:hover :global(.edit-icon) {
-      opacity: 0.8;
+      opacity: $opacity-80;
     }
   }
 
   .item-quantity {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    font-weight: 600;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    font-weight: $font-weight-semibold;
   }
 
   .item-quantity-empty {
-    font-size: 0.85rem;
-    color: var(--text-tertiary);
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
     font-style: italic;
-    opacity: 0.7;
+    opacity: $opacity-70;
   }
 
   .item-edit-form {
     display: flex;
-    gap: 0.5rem;
+    gap: $spacing-sm;
     align-items: center;
-    margin-top: 0.5rem;
+    margin-top: $spacing-sm;
     flex-wrap: wrap;
 
     .edit-actions {
       display: flex;
-      gap: 0.25rem;
+      gap: $spacing-xs;
       margin-left: auto;
     }
   }
 
   .item-store-display {
     cursor: pointer;
-    padding: 0.25rem 0;
-    transition: opacity 0.2s;
+    padding: $spacing-xs 0;
+    transition: opacity $transition-base;
     display: flex;
     align-items: center;
     gap: $spacing-xs;
 
     &:hover {
-      opacity: 0.7;
+      opacity: $opacity-70;
     }
 
     :global(.edit-icon) {
       color: $color-text-tertiary;
-      opacity: 0.5;
+      opacity: $opacity-50;
       flex-shrink: 0;
-      transition: opacity 0.2s;
+      transition: opacity $transition-base;
       align-self: flex-start;
       margin-top: -2px;
     }
 
     &:hover :global(.edit-icon) {
-      opacity: 0.8;
+      opacity: $opacity-80;
     }
   }
 
   .item-store {
-    font-size: 0.85rem;
+    font-size: $font-size-sm;
     color: $brand-primary;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
   }
 
   .item-store-empty {
-    font-size: 0.85rem;
-    color: var(--text-tertiary);
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
     font-style: italic;
-    opacity: 0.7;
+    opacity: $opacity-70;
   }
 
   .item-store-edit {
     display: flex;
-    gap: 0.5rem;
+    gap: $spacing-sm;
     align-items: center;
-    margin-top: 0.5rem;
+    margin-top: $spacing-sm;
   }
 
   .item-note {
     margin: 0;
-    font-size: 0.85rem;
-    color: var(--text-tertiary);
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
     font-style: italic;
   }
 
@@ -1317,13 +1083,13 @@
   // Animations pour le feedback de déplacement d'article
   @keyframes storeFlash {
     0% {
-      background: rgba($brand-primary, 0.15);
+      background: $color-primary-alpha-15;
       transform: scale(1);
     }
     50% {
-      background: rgba($brand-primary, 0.25);
+      background: $color-primary-alpha-25;
       transform: scale(1.01);
-      box-shadow: 0 4px 20px rgba($brand-primary, 0.3);
+      box-shadow: 0 4px 20px $color-primary-alpha-30;
     }
     100% {
       background: transparent;
@@ -1335,7 +1101,7 @@
   @keyframes storeTitlePulse {
     0% {
       transform: scale(1);
-      color: var(--text-color);
+      color: $color-text-primary;
     }
     50% {
       transform: scale(1.05);
@@ -1343,14 +1109,8 @@
     }
     100% {
       transform: scale(1);
-      color: var(--text-color);
+      color: $color-text-primary;
     }
-  }
-
-  .print-button-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: $spacing-md;
   }
 
   // Styles d'impression
@@ -1359,7 +1119,7 @@
     :global(.layout__footer),
     :global(header),
     :global(nav),
-    .error-banner,
+    .shopping-list-detail__error-banner,
     :global(.breadcrumb),
     :global(.page-hero__actions),
     :global(.page-hero__filters),

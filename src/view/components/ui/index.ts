@@ -15,6 +15,7 @@ export { default as Tile } from './Tile';
 export { default as ListItem } from './ListItem';
 export { default as Accordion } from './Accordion.svelte';
 export { default as Dropdown } from './Dropdown';
+export { default as DropdownMenu } from './DropdownMenu';
 export { default as Hero } from './Hero';
 export { default as PageHero } from './PageHero';
 
