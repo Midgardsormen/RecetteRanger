@@ -77,9 +77,9 @@
         type={showPassword ? 'text' : 'password'}
         {placeholder}
         class="password-input__input"
-        oninput={oninput}
+        oninput={handleInput}
         onchange={onchange}
-        onblur={onblur}
+        onblur={handleBlur}
       />
       <button
         type="button"
