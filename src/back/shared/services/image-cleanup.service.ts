@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+// import { InjectRepository } from '@nestjs/typeorm';
+// import { Repository } from 'typeorm';
 import { CloudinaryService } from '../../services/cloudinary.service';
-import { Ingredient } from '../../modules/ingredients/ingredient.entity';
-import { Recipe } from '../../modules/recettes/recipe.entity';
+// import { Ingredient } from '../../modules/ingredients/ingredient.entity';
+// import { Recipe } from '../../modules/recettes/recipe.entity';
 import { extractPublicId } from '../utils/cloudinary-url.util';
-import { logInfo, logError } from '../utils/logger.util';
+import { logError } from '../utils/logger.util';
+
+// Fonction helper pour les logs info
+function logInfo(message: string): void {
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(message);
+  }
+}
 
 /**
  * ImageCleanupService
@@ -25,48 +32,49 @@ import { logInfo, logError } from '../utils/logger.util';
 @Injectable()
 export class ImageCleanupService {
   constructor(
-    @InjectRepository(Ingredient)
-    private ingredientRepository: Repository<Ingredient>,
-    @InjectRepository(Recipe)
-    private recipeRepository: Repository<Recipe>,
+    // @InjectRepository(Ingredient)
+    // private ingredientRepository: Repository<Ingredient>,
+    // @InjectRepository(Recipe)
+    // private recipeRepository: Repository<Recipe>,
     private cloudinaryService: CloudinaryService,
   ) {}
 
   /**
    * Récupère tous les public_ids référencés en base de données
+   *
+   * TODO: Implémenter avec Prisma au lieu de TypeORM
    */
   private async getReferencedPublicIds(): Promise<Set<string>> {
     const publicIds = new Set<string>();
 
-    // Récupérer les images des ingrédients
-    const ingredients = await this.ingredientRepository.find({
-      select: ['imageUrl'],
-      where: { imageUrl: Not(null) },
-    });
-
-    for (const ingredient of ingredients) {
-      if (ingredient.imageUrl) {
-        const publicId = extractPublicId(ingredient.imageUrl);
-        if (publicId) {
-          publicIds.add(publicId);
-        }
-      }
-    }
-
-    // Récupérer les images des recettes
-    const recipes = await this.recipeRepository.find({
-      select: ['imageUrl'],
-      where: { imageUrl: Not(null) },
-    });
-
-    for (const recipe of recipes) {
-      if (recipe.imageUrl) {
-        const publicId = extractPublicId(recipe.imageUrl);
-        if (publicId) {
-          publicIds.add(publicId);
-        }
-      }
-    }
+    // TODO: Remplacer par des appels Prisma
+    // const ingredients = await this.prisma.ingredient.findMany({
+    //   select: { imageUrl: true },
+    //   where: { imageUrl: { not: null } },
+    // });
+    //
+    // for (const ingredient of ingredients) {
+    //   if (ingredient.imageUrl) {
+    //     const publicId = extractPublicId(ingredient.imageUrl);
+    //     if (publicId) {
+    //       publicIds.add(publicId);
+    //     }
+    //   }
+    // }
+    //
+    // const recipes = await this.prisma.recipe.findMany({
+    //   select: { imageUrl: true },
+    //   where: { imageUrl: { not: null } },
+    // });
+    //
+    // for (const recipe of recipes) {
+    //   if (recipe.imageUrl) {
+    //     const publicId = extractPublicId(recipe.imageUrl);
+    //     if (publicId) {
+    //       publicIds.add(publicId);
+    //     }
+    //   }
+    // }
 
     return publicIds;
   }
@@ -149,9 +157,4 @@ export class ImageCleanupService {
   //     createdAt: new Date(resource.created_at),
   //   }));
   // }
-}
-
-// Helper pour les imports (à ajouter dans TypeORM)
-function Not(value: any): any {
-  return { $ne: value };
 }
