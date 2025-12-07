@@ -21,6 +21,7 @@ export { default as PageHero } from './PageHero';
 
 // Input Components
 export { default as ImageUpload } from './ImageUpload/ImageUpload.svelte';
+export { default as OptimizedImage } from './OptimizedImage';
 export { default as SearchBar } from './SearchBar';
 export { default as Filter } from './Filter';
 export { default as FilterGroup } from './FilterGroup';

@@ -227,6 +227,7 @@
           alt="Preview"
           class="image-upload__preview-img"
           class:image-upload__preview-img--circle={cropShape === 'circle'}
+          style="--preview-aspect-ratio: {aspectRatio}"
         />
         <div class="image-upload__preview-actions">
           <Button
@@ -339,8 +340,10 @@
     }
 
     &__preview-img {
-      width: 200px;
+      width: auto;
+      max-width: 400px;
       height: 200px;
+      aspect-ratio: var(--preview-aspect-ratio, 1);
       object-fit: cover;
       border-radius: $radius-lg;
       border: $border-width-base solid $color-border-primary;

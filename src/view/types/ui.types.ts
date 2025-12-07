@@ -488,6 +488,7 @@ export type ListItemLayout = 'row' | 'column';
 export interface ListItemProps {
   imageUrl?: string;
   imagePlaceholder?: Snippet;
+  imageAspectRatio?: 'square' | '16:9' | '4:3' | 'free';
   title: string;
   subtitle?: string;
   metadata?: string[];
@@ -698,4 +699,40 @@ export interface AlertProps {
   closable?: boolean;
   onClose?: () => void;
   children?: Snippet;
+}
+
+// ============================================
+// OPTIMIZED IMAGE
+// ============================================
+
+export interface OptimizedImageProps {
+  /** URL de l'image (Cloudinary ou autre) */
+  src: string;
+
+  /** Texte alternatif pour l'accessibilité */
+  alt: string;
+
+  /** Aspect ratio de l'image */
+  aspectRatio?: 'square' | '16:9' | '4:3' | 'free';
+
+  /** Attribut sizes pour le responsive (ex: "(max-width: 768px) 100vw, 50vw") */
+  sizes?: string;
+
+  /** Mode de chargement (lazy par défaut pour économiser la bande passante) */
+  loading?: 'lazy' | 'eager';
+
+  /** Force le chargement eager (utile pour les images above-the-fold) */
+  eager?: boolean;
+
+  /** Placeholder personnalisé pendant le chargement */
+  placeholder?: Snippet;
+
+  /** Mode d'ajustement de l'image */
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+
+  /** Coins arrondis */
+  rounded?: boolean;
+
+  /** Classes CSS additionnelles */
+  className?: string;
 }

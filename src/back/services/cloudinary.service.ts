@@ -21,11 +21,11 @@ export class CloudinaryService {
         {
           folder,
           resource_type: 'auto',
-          transformation: [
-            { width: 1000, height: 1000, crop: 'limit' }, // Limite la taille max
-            { quality: 'auto:good' }, // Optimisation automatique
-            { fetch_format: 'auto' }, // Format optimal (WebP si supporté)
-          ],
+          // IMPORTANT: Ne pas appliquer de transformations à l'upload
+          // Les transformations seront appliquées à la volée via les URLs
+          // Cela permet de maximiser le cache et éviter les transformations inutiles
+          format: 'jpg', // Forcer JPG pour réduire le poids (WebP sera servi via f_auto)
+          quality: 'auto:eco', // Quality eco par défaut
         },
         (error, result) => {
           if (error) return reject(error);

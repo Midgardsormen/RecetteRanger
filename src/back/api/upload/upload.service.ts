@@ -1,6 +1,12 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { CloudinaryService } from '../../services/cloudinary.service';
 import { logError } from '../../shared/utils/logger.util';
+import {
+  generateOptimizedUrl,
+  ImageSize,
+  AspectRatio,
+} from '../../shared/utils/cloudinary-url.util';
 
 export interface ProcessedImage {
   filename: string;
@@ -19,7 +25,14 @@ export interface ImageProcessingOptions {
 
 @Injectable()
 export class UploadService {
-  constructor(private readonly cloudinaryService: CloudinaryService) {}
+  private readonly cloudName: string;
+
+  constructor(
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly configService: ConfigService,
+  ) {
+    this.cloudName = this.configService.get<string>('CLOUDINARY_CLOUD_NAME') || '';
+  }
 
   /**
    * Vérifie les magic bytes pour détecter le vrai type de fichier
@@ -123,6 +136,11 @@ export class UploadService {
    * Process une image et l'upload sur Cloudinary
    * IMPORTANT : Cette méthode ne fait pas de validation, elle doit être appelée
    * uniquement depuis uploadIngredientImage qui fait les validations
+   *
+   * Stratégie d'optimisation :
+   * - Utilise les tailles standardisées (320, 800, 1200) pour maximiser le cache
+   * - Force f_auto,q_auto:eco pour minimiser la bande passante
+   * - Aspect ratio carré (1:1) pour les ingrédients
    */
   private async processIngredientImage(
     file: any
@@ -132,55 +150,65 @@ export class UploadService {
     original: ProcessedImage;
   }> {
     try {
-      // Upload l'image sur Cloudinary
+      // Upload l'image sur Cloudinary (format JPG forcé dans CloudinaryService)
       const result = await this.cloudinaryService.uploadImage(
         file,
         'recette-ranger/ingredients'
       );
 
-      // Cloudinary permet de générer des URLs avec transformations à la volée
-      const baseUrl = result.url;
       const publicId = result.publicId;
 
-      // Construction des URLs avec transformations Cloudinary
-      // Thumbnail : 200x200, crop carré
-      const thumbnailUrl = baseUrl.replace(
-        '/upload/',
-        '/upload/w_200,h_200,c_fill,q_auto,f_auto/'
+      // Génération des URLs optimisées avec les tailles standardisées
+      // Thumbnail : 320x320 (SMALL) - pour les listes
+      const thumbnailUrl = generateOptimizedUrl(
+        publicId,
+        {
+          width: ImageSize.SMALL,
+          aspectRatio: AspectRatio.SQUARE,
+        },
+        this.cloudName
       );
 
-      // Medium : 600x600, préserve le ratio
-      const mediumUrl = baseUrl.replace(
-        '/upload/',
-        '/upload/w_600,h_600,c_limit,q_auto,f_auto/'
+      // Medium : 800x800 (LARGE) - pour les vues détaillées
+      const mediumUrl = generateOptimizedUrl(
+        publicId,
+        {
+          width: ImageSize.LARGE,
+          aspectRatio: AspectRatio.SQUARE,
+        },
+        this.cloudName
       );
 
-      // Original optimisé : max 1200x1200
-      const originalUrl = baseUrl.replace(
-        '/upload/',
-        '/upload/w_1200,h_1200,c_limit,q_auto:good,f_auto/'
+      // Original optimisé : 1200x1200 (XLARGE) - taille max
+      const originalUrl = generateOptimizedUrl(
+        publicId,
+        {
+          width: ImageSize.XLARGE,
+          aspectRatio: AspectRatio.SQUARE,
+        },
+        this.cloudName
       );
 
       return {
         thumbnail: {
           filename: publicId,
           url: thumbnailUrl,
-          width: 200,
-          height: 200,
+          width: ImageSize.SMALL,
+          height: ImageSize.SMALL,
           size: 0, // Cloudinary ne retourne pas la taille
         },
         medium: {
           filename: publicId,
           url: mediumUrl,
-          width: 600,
-          height: 600,
+          width: ImageSize.LARGE,
+          height: ImageSize.LARGE,
           size: 0,
         },
         original: {
           filename: publicId,
           url: originalUrl,
-          width: 1200,
-          height: 1200,
+          width: ImageSize.XLARGE,
+          height: ImageSize.XLARGE,
           size: 0,
         },
       };
