@@ -183,6 +183,7 @@
           <ListItem
             title={store.name}
             imageUrl={store.logoUrl}
+            imageAspectRatio="free"
             imagePlaceholder={store.name.charAt(0).toUpperCase()}
             onEdit={isAdmin() ? () => openDrawer(store) : undefined}
             onDelete={isAdmin() ? () => openDeleteConfirmation(store.id) : undefined}

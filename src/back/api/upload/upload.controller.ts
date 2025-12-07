@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CacheControlInterceptor } from '../../shared/interceptors/cache-control.interceptor';
 import { UploadService } from './upload.service';
 
 @Controller('api/upload')
@@ -18,7 +19,7 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post('ingredient-image')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file'), CacheControlInterceptor)
   async uploadIngredientImage(
     @UploadedFile(
       new ParseFilePipe({

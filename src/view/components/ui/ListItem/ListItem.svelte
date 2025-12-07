@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ListItemProps } from '../../../types/ui.types';
   import IconButton from '../IconButton';
+  import OptimizedImage from '../OptimizedImage';
   import { Pencil, Trash2, FileText } from 'lucide-svelte';
   import { LIST_ITEM_DEFAULTS, LIST_ITEM_METADATA_LIMIT, LIST_ITEM_ARIA_LABELS } from './ListItem.config';
   import { handleClick, handleEdit, handleDelete, handleCheck } from './ListItem.actions';
@@ -8,6 +9,7 @@
   let {
     imageUrl,
     imagePlaceholder,
+    imageAspectRatio = 'square',
     title,
     subtitle,
     metadata = LIST_ITEM_DEFAULTS.metadata,
@@ -60,7 +62,15 @@
     {#if showThumbnail}
       <div class="list-item__thumbnail">
         {#if imageUrl}
-          <img src={imageUrl} alt={title} class="list-item__image" />
+          <OptimizedImage
+            src={imageUrl}
+            alt={title || 'Image'}
+            aspectRatio="free"
+            sizes="(max-width: 640px) 33vw, 33vw"
+            loading="lazy"
+            objectFit="contain"
+            className="list-item__image"
+          />
         {:else if imagePlaceholder}
           <div class="list-item__placeholder">
             {@render imagePlaceholder()}
@@ -238,36 +248,40 @@
     }
   }
 
-  .list-item__thumbnail {
-    flex-shrink: 0;
-    max-width: $list-item-thumbnail-max-width-sm;
-    max-height: $list-item-thumbnail-max-height-sm;
-    border-radius: $radius-lg;
-    overflow: visible;
-    background: $color-primary-alpha-10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
+.list-item__thumbnail {
+  flex: 0 1 auto;              // largeur = contenu, pas 33% forcé
+  max-width: 33.333%;          // mais jamais plus d'un tiers
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: $radius-lg;
+  background: $color-primary-alpha-10;
+  overflow: hidden;
 
-    @media (min-width: $breakpoint-sm) {
-      max-width: $list-item-thumbnail-max-width;
-      max-height: $list-item-thumbnail-max-height;
-    }
+  height: 60px;
+
+  @media (min-width: $breakpoint-sm) {
+    height: 80px;
   }
+}
 
-  .list-item__image {
-    max-width: $list-item-image-max-width-sm;
-    max-height: $list-item-image-max-height-sm;
-    width: auto;
-    height: auto;
-    object-fit: contain;
+/* wrapper OptimizedImage dans ce contexte */
+.list-item__image {
+  height: 100%;
+  width: auto;                 // pas de 100%, on laisse l'image décider
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    @media (min-width: $breakpoint-sm) {
-      max-width: $list-item-image-max-width;
-      max-height: $list-item-image-max-height;
-    }
-  }
+/* l'<img> interne */
+.list-item__image :global(.optimized-image__img) {
+  height: 100%;                // 60/80px de haut
+  width: auto;                 // largeur = hauteur * ratio
+  max-width: 100%;             // ne dépasse pas le max-width du thumbnail
+  object-fit: contain;
+}
+
 
   .list-item__placeholder,
   .list-item__placeholder-icon {
