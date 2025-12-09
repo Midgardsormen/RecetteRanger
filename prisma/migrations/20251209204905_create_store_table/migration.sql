@@ -1,20 +1,49 @@
--- CreateTable
-CREATE TABLE "Store" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "logoUrl" VARCHAR(2048),
-    "color" TEXT DEFAULT '#667eea',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+-- CreateTable (if not exists)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_name='Store'
+  ) THEN
+    CREATE TABLE "Store" (
+      "id" TEXT NOT NULL,
+      "name" TEXT NOT NULL,
+      "logoUrl" VARCHAR(2048),
+      "color" TEXT DEFAULT '#667eea',
+      "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
-);
+      CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
+    );
+  END IF;
+END$$;
 
--- CreateIndex
-CREATE UNIQUE INDEX "Store_name_key" ON "Store"("name");
+-- CreateIndex (if not exists)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_indexes
+    WHERE tablename = 'Store'
+    AND indexname = 'Store_name_key'
+  ) THEN
+    CREATE UNIQUE INDEX "Store_name_key" ON "Store"("name");
+  END IF;
+END$$;
 
--- CreateIndex
-CREATE INDEX "Store_name_idx" ON "Store"("name");
+-- CreateIndex (if not exists)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_indexes
+    WHERE tablename = 'Store'
+    AND indexname = 'Store_name_idx'
+  ) THEN
+    CREATE INDEX "Store_name_idx" ON "Store"("name");
+  END IF;
+END$$;
 
 -- AlterTable ShoppingListItem to add storeId column if migration hasn't been applied yet
 DO $$
