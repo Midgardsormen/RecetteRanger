@@ -33,6 +33,9 @@ pnpm-debug.log*
 # Testing
 coverage/
 .nyc_output/
+test-css-optimization.js
+check-meal-dates.js
+temp_*.js
 
 # Uploaded files
 public/uploads/

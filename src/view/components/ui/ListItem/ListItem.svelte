@@ -73,7 +73,11 @@
           />
         {:else if imagePlaceholder}
           <div class="list-item__placeholder">
-            {@render imagePlaceholder()}
+            {#if typeof imagePlaceholder === 'string'}
+              {imagePlaceholder}
+            {:else}
+              {@render imagePlaceholder()}
+            {/if}
           </div>
         {:else}
           <div class="list-item__placeholder-icon">

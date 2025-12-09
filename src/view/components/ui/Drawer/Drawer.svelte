@@ -250,11 +250,13 @@
       flex: 1;
       overflow-y: auto;
       padding: $spacing-lg $spacing-sm;
+      padding-bottom: 70px;
       background-color: $drawer-body-background;
 
       // Réduire le padding sur mobile pour éviter le débordement des selects
       @media (min-width: $breakpoint-sm) {
         padding: $spacing-xl $spacing-sm;
+        padding-bottom: 70px;
       }
       // Full body variant (for navigation)
       &--full {

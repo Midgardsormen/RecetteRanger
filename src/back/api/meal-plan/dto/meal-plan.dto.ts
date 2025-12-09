@@ -9,7 +9,7 @@ export class MealPlanItemDto {
 
   @ApiProperty({
     description: 'Créneau du repas',
-    enum: ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'OTHER']
+    enum: ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'AFTERNOON_SNACK', 'OTHER']
   })
   slot: string;
 

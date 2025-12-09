@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "MealSlot" ADD VALUE 'AFTERNOON_SNACK';
