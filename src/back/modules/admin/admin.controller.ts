@@ -37,8 +37,8 @@ export class AdminController {
       throw new ForbiddenException('Accès réservé aux administrateurs');
     }
 
-    // Réinitialiser les créneaux pour l'utilisateur connecté
-    await this.mealPlanService.initializeDefaultSlotConfigs(req.user.id);
+    // Réinitialiser les créneaux pour l'utilisateur connecté avec forceReset = true
+    await this.mealPlanService.initializeDefaultSlotConfigs(req.user.id, true);
 
     return {
       success: true,

@@ -266,7 +266,7 @@ export class MealPlanService {
   }
 
   // Méthode utilitaire pour initialiser les configurations par défaut
-  async initializeDefaultSlotConfigs(userId: string) {
+  async initializeDefaultSlotConfigs(userId: string, forceReset = false) {
     const defaultConfigs = [
       { slot: 'BREAKFAST' as const, label: 'Petit-déjeuner', order: 0, isEnabled: true },
       { slot: 'SNACK' as const, label: 'Collation', order: 1, isEnabled: true },
@@ -278,7 +278,15 @@ export class MealPlanService {
 
     const existingConfigs = await this.findAllSlotConfigs(userId);
 
-    if (existingConfigs.length === 0) {
+    // Si forceReset = true, supprimer les anciens créneaux
+    if (forceReset && existingConfigs.length > 0) {
+      await this.prisma.mealSlotConfig.deleteMany({
+        where: { userId },
+      });
+    }
+
+    // Créer les nouveaux créneaux seulement s'il n'y en a pas ou si on a fait un reset
+    if (existingConfigs.length === 0 || forceReset) {
       for (const config of defaultConfigs) {
         await this.createSlotConfig(userId, config);
       }
