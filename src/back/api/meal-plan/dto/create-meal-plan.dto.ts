@@ -5,11 +5,11 @@ import { Type } from 'class-transformer';
 export class CreateMealPlanItemDto {
   @ApiProperty({
     description: 'Créneau du repas',
-    enum: ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'OTHER'],
+    enum: ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'AFTERNOON_SNACK', 'OTHER'],
     example: 'LUNCH'
   })
-  @IsEnum(['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'OTHER'])
-  slot: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK' | 'OTHER';
+  @IsEnum(['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'AFTERNOON_SNACK', 'OTHER'])
+  slot: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK' | 'AFTERNOON_SNACK' | 'OTHER';
 
   @ApiProperty({ description: 'Nom personnalisé pour le repas exceptionnel', required: false, example: 'Goûter d\'anniversaire' })
   @IsOptional()

@@ -487,7 +487,7 @@ export type ListItemLayout = 'row' | 'column';
 
 export interface ListItemProps {
   imageUrl?: string;
-  imagePlaceholder?: Snippet;
+  imagePlaceholder?: string | Snippet;
   imageAspectRatio?: 'square' | '16:9' | '4:3' | 'free';
   title: string;
   subtitle?: string;

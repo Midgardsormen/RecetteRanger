@@ -10,7 +10,7 @@ export class MealSlotConfigDto {
 
   @ApiProperty({
     description: 'Créneau du repas',
-    enum: ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'OTHER']
+    enum: ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'AFTERNOON_SNACK', 'OTHER']
   })
   slot: string;
 
@@ -33,11 +33,11 @@ export class MealSlotConfigDto {
 export class CreateMealSlotConfigDto {
   @ApiProperty({
     description: 'Créneau du repas',
-    enum: ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'OTHER'],
+    enum: ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'AFTERNOON_SNACK', 'OTHER'],
     example: 'BREAKFAST'
   })
-  @IsEnum(['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'OTHER'])
-  slot: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK' | 'OTHER';
+  @IsEnum(['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'AFTERNOON_SNACK', 'OTHER'])
+  slot: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK' | 'AFTERNOON_SNACK' | 'OTHER';
 
   @ApiProperty({ description: 'Label personnalisé', example: 'Petit-déjeuner' })
   @IsString()

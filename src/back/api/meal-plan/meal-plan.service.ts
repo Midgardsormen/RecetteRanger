@@ -268,9 +268,12 @@ export class MealPlanService {
   // Méthode utilitaire pour initialiser les configurations par défaut
   async initializeDefaultSlotConfigs(userId: string) {
     const defaultConfigs = [
-      { slot: 'BREAKFAST' as const, label: 'Petit-déjeuner', order: 0 },
-      { slot: 'LUNCH' as const, label: 'Déjeuner', order: 1 },
-      { slot: 'DINNER' as const, label: 'Dîner', order: 2 },
+      { slot: 'BREAKFAST' as const, label: 'Petit-déjeuner', order: 0, isEnabled: true },
+      { slot: 'SNACK' as const, label: 'Collation', order: 1, isEnabled: true },
+      { slot: 'LUNCH' as const, label: 'Déjeuner', order: 2, isEnabled: true },
+      { slot: 'AFTERNOON_SNACK' as const, label: 'Goûter', order: 3, isEnabled: true },
+      { slot: 'DINNER' as const, label: 'Dîner', order: 4, isEnabled: true },
+      { slot: 'OTHER' as const, label: 'Autre', order: 5, isEnabled: true },
     ];
 
     const existingConfigs = await this.findAllSlotConfigs(userId);

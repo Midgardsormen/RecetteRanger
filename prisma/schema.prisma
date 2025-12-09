@@ -87,6 +87,7 @@ enum MealSlot {
   LUNCH
   DINNER
   SNACK
+  AFTERNOON_SNACK
   OTHER
 }
 
