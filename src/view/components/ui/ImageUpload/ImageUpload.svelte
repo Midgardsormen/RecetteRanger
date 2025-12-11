@@ -176,8 +176,8 @@
       // Convertir en Blob
       const blob = await canvasToBlob(canvas);
 
-      // Upload vers le backend
-      const data = await uploadImage(blob, IMAGE_UPLOAD_FILE.outputFilename);
+      // Upload vers le backend avec le ratio d'aspect
+      const data = await uploadImage(blob, IMAGE_UPLOAD_FILE.outputFilename, aspectRatio);
 
       // Nettoyer Cropper
       cropper = destroyCropper(cropper);
@@ -340,9 +340,9 @@
     }
 
     &__preview-img {
-      width: auto;
+      width: 100%;
       max-width: 400px;
-      height: 200px;
+      height: auto;
       aspect-ratio: var(--preview-aspect-ratio, 1);
       object-fit: cover;
       border-radius: $radius-lg;

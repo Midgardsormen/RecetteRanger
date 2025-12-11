@@ -67,7 +67,10 @@ export class UploadService {
    * La validation de taille et mimetype est faite par ParseFilePipe dans le controller
    * Ici on fait la validation magic bytes (défense en profondeur)
    */
-  async uploadIngredientImage(file: Express.Multer.File): Promise<{
+  async uploadIngredientImage(
+    file: Express.Multer.File,
+    aspectRatio?: string,
+  ): Promise<{
     thumbnail: ProcessedImage;
     medium: ProcessedImage;
     original: ProcessedImage;
@@ -93,7 +96,15 @@ export class UploadService {
       throw new BadRequestException('Type de fichier invalide (mimetype falsifié).');
     }
 
-    return this.processIngredientImage(file);
+    // Déterminer le ratio d'aspect
+    let ratio: AspectRatio = AspectRatio.SQUARE; // Par défaut : carré
+    if (aspectRatio === '16:9' || aspectRatio === AspectRatio.WIDE) {
+      ratio = AspectRatio.WIDE;
+    } else if (aspectRatio === '4:3' || aspectRatio === AspectRatio.STANDARD) {
+      ratio = AspectRatio.STANDARD;
+    }
+
+    return this.processIngredientImage(file, ratio);
   }
 
   /**
@@ -140,10 +151,11 @@ export class UploadService {
    * Stratégie d'optimisation :
    * - Utilise les tailles standardisées (320, 800, 1200) pour maximiser le cache
    * - Force f_auto,q_auto:eco pour minimiser la bande passante
-   * - Aspect ratio carré (1:1) pour les ingrédients
+   * - Aspect ratio configurable : carré (1:1) pour les ingrédients, 16:9 pour les recettes
    */
   private async processIngredientImage(
-    file: any
+    file: any,
+    aspectRatio: AspectRatio = AspectRatio.SQUARE,
   ): Promise<{
     thumbnail: ProcessedImage;
     medium: ProcessedImage;
@@ -158,33 +170,41 @@ export class UploadService {
 
       const publicId = result.publicId;
 
+      // Calcul des hauteurs selon le ratio
+      const calculateHeight = (width: number): number => {
+        if (aspectRatio === AspectRatio.SQUARE) return width;
+        if (aspectRatio === AspectRatio.WIDE) return Math.round(width * (9 / 16));
+        if (aspectRatio === AspectRatio.STANDARD) return Math.round(width * (3 / 4));
+        return width;
+      };
+
       // Génération des URLs optimisées avec les tailles standardisées
-      // Thumbnail : 320x320 (SMALL) - pour les listes
+      // Thumbnail : 320px width (SMALL) - pour les listes
       const thumbnailUrl = generateOptimizedUrl(
         publicId,
         {
           width: ImageSize.SMALL,
-          aspectRatio: AspectRatio.SQUARE,
+          aspectRatio,
         },
         this.cloudName
       );
 
-      // Medium : 800x800 (LARGE) - pour les vues détaillées
+      // Medium : 800px width (LARGE) - pour les vues détaillées
       const mediumUrl = generateOptimizedUrl(
         publicId,
         {
           width: ImageSize.LARGE,
-          aspectRatio: AspectRatio.SQUARE,
+          aspectRatio,
         },
         this.cloudName
       );
 
-      // Original optimisé : 1200x1200 (XLARGE) - taille max
+      // Original optimisé : 1200px width (XLARGE) - taille max
       const originalUrl = generateOptimizedUrl(
         publicId,
         {
           width: ImageSize.XLARGE,
-          aspectRatio: AspectRatio.SQUARE,
+          aspectRatio,
         },
         this.cloudName
       );
@@ -194,21 +214,21 @@ export class UploadService {
           filename: publicId,
           url: thumbnailUrl,
           width: ImageSize.SMALL,
-          height: ImageSize.SMALL,
+          height: calculateHeight(ImageSize.SMALL),
           size: 0, // Cloudinary ne retourne pas la taille
         },
         medium: {
           filename: publicId,
           url: mediumUrl,
           width: ImageSize.LARGE,
-          height: ImageSize.LARGE,
+          height: calculateHeight(ImageSize.LARGE),
           size: 0,
         },
         original: {
           filename: publicId,
           url: originalUrl,
           width: ImageSize.XLARGE,
-          height: ImageSize.XLARGE,
+          height: calculateHeight(ImageSize.XLARGE),
           size: 0,
         },
       };

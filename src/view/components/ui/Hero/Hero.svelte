@@ -69,7 +69,7 @@
       background-size: cover;
       background-position: center;
       background-blend-mode: overlay;
-      padding: $spacing-lg;
+      padding: $spacing-md $spacing-sm;
       box-shadow: $shadow-hero-grid;
 
       // Tablet and up: two columns

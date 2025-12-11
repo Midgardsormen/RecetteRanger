@@ -112,10 +112,20 @@ export function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
  * Upload image blob to server
  * Utilise apiService.uploadFormData pour inclure le token CSRF
  */
-export async function uploadImage(blob: Blob, filename: string): Promise<any> {
+export async function uploadImage(blob: Blob, filename: string, aspectRatio: number): Promise<any> {
   const formData = new FormData();
   // Le backend attend le champ 'file' (cf. FileInterceptor('file') dans le controller)
   formData.append('file', blob, filename);
+
+  // Convertir le nombre en string ratio (ex: 1.777... -> "16:9", 1 -> "1:1")
+  let ratioString = '1:1'; // Par défaut carré
+  if (Math.abs(aspectRatio - 16/9) < 0.01) {
+    ratioString = '16:9';
+  } else if (Math.abs(aspectRatio - 4/3) < 0.01) {
+    ratioString = '4:3';
+  }
+
+  formData.append('aspectRatio', ratioString);
 
   try {
     // Utilise la méthode uploadFormData qui gère automatiquement le CSRF
