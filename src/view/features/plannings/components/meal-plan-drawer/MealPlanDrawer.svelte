@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Drawer, Input, Select, Button, IconButton, FormField } from '../../../../components/ui';
-  import { Checkbox } from '../../../../components/ui/form';
+  import { Checkbox, Textarea } from '../../../../components/ui/form';
   import { RecipeDrawer } from '../../../recipe-drawer';
   import type { MealSlot, MealSlotConfig, MealPlanDay, MealPlanItem } from '../../../../types/meal-plan.types';
   import type { Recipe } from '../../../../types/recipe.types';
@@ -213,25 +213,25 @@
         </div>
       </div>
     {:else}
-      <FormField
-        name="recipe-search"
-        label="Rechercher une recette"
-        variant="inverse"
-        bind:value={recipeSearchQuery}
-      >
+      <div class="meal-plan-drawer__search-section">
+        <div class="meal-plan-drawer__search-header">
+          <span class="meal-plan-drawer__search-label">Rechercher une recette</span>
+          <Button
+            variant="outlined-inverse"
+            size="small"
+            onclick={() => { showRecipeDrawer = true; }}
+          >
+            + Ajouter une recette
+          </Button>
+        </div>
         <Input
           id="recipe-search"
+          bind:value={recipeSearchQuery}
           oninput={handleLoadRecipes}
           placeholder="Tapez pour rechercher..."
+          variant="inverse"
         />
-      </FormField>
-
-      <Button
-        variant="outlined-inverse"
-        onclick={() => { showRecipeDrawer = true; }}
-      >
-        + Créer une recette
-      </Button>
+      </div>
 
       {#if loadingRecipes}
         <p class="meal-plan-drawer__loading-text">Chargement...</p>
@@ -276,9 +276,10 @@
       variant="inverse"
       bind:value={note}
     >
-      <Input
+      <Textarea
         id="note"
         placeholder="Ex: Prévoir du pain en accompagnement"
+        rows={3}
       />
     </FormField>
   </form>
@@ -316,6 +317,28 @@
       margin: 0;
       text-align: center;
       text-transform: capitalize;
+    }
+
+    // Element: search-section
+    &__search-section {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+    }
+
+    // Element: search-header
+    &__search-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: $spacing-sm;
+    }
+
+    // Element: search-label
+    &__search-label {
+      color: $color-white;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
     }
 
     // Element: selected-recipe

@@ -491,7 +491,7 @@
 
       &:hover:not(:disabled) {
         border-color: $brand-primary;
-        background: rgba($brand-primary, 0.05);
+        background: $brand-cream;
         transform: translateY(-2px);
         box-shadow: $shadow-md;
       }

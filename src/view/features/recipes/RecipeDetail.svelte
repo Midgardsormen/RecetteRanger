@@ -1,6 +1,6 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { IconButton, Tag, Hero, StepItem, Breadcrumb, AuthorLink, Link } from '../../components/ui';
+  import { IconButton, Tag, Hero, StepItem, Breadcrumb, AuthorLink, Link, Tabs } from '../../components/ui';
   import { Users, Clock, Utensils, ChefHat, Carrot, Zap, ExternalLink } from 'lucide-svelte';
   import type { Recipe } from '../../types/recipe.types';
   import { RecipeCategoryLabels, RecipeDifficultyLabels } from '../../types/recipe.types';
@@ -14,6 +14,13 @@
 
   // Nombre de personnes (par défaut 4)
   let servings = $state(4);
+
+  // Configuration des onglets pour mobile
+  const tabs = [
+    { id: 'ingredients', label: 'Ingrédients', icon: Carrot },
+    { id: 'steps', label: 'Préparation', icon: ChefHat }
+  ];
+  let activeTab = $state('ingredients');
 
   // Calculer le multiplicateur de quantités
   let multiplier = $derived(servings / (recipe.servings || 1));
@@ -132,27 +139,28 @@
               </div>
             {/if}
           </div>
-
-          <div class="time-breakdown">
-            {#if recipe.prepMinutes > 0}
-              <div class="time-item">
-                <span class="time-label">Préparation</span>
-                <span class="time-value">{formatTime(recipe.prepMinutes)}</span>
-              </div>
-            {/if}
-            {#if recipe.cookMinutes > 0}
-              <div class="time-item">
-                <span class="time-label">Cuisson</span>
-                <span class="time-value">{formatTime(recipe.cookMinutes)}</span>
-              </div>
-            {/if}
-            {#if recipe.restMinutes > 0}
-              <div class="time-item">
-                <span class="time-label">Repos</span>
-                <span class="time-value">{formatTime(recipe.restMinutes)}</span>
-              </div>
-            {/if}
-          </div>
+          {#if recipe.prepMinutes > 0 || recipe.cookMinutes > 0 || recipe.restMinutes > 0}
+            <div class="time-breakdown">
+              {#if recipe.prepMinutes > 0}
+                <div class="time-item">
+                  <span class="time-label">Préparation</span>
+                  <span class="time-value">{formatTime(recipe.prepMinutes)}</span>
+                </div>
+              {/if}
+              {#if recipe.cookMinutes > 0}
+                <div class="time-item">
+                  <span class="time-label">Cuisson</span>
+                  <span class="time-value">{formatTime(recipe.cookMinutes)}</span>
+                </div>
+              {/if}
+              {#if recipe.restMinutes > 0}
+                <div class="time-item">
+                  <span class="time-label">Repos</span>
+                  <span class="time-value">{formatTime(recipe.restMinutes)}</span>
+                </div>
+              {/if}
+            </div>
+          {/if}
         </div>
       </Hero>
 
@@ -183,7 +191,8 @@
       </div>
     {/if}
 
-    <div class="recipe-content">
+    <!-- Version Desktop : Grille côte à côte -->
+    <div class="recipe-content recipe-content--desktop">
       <!-- Section Ingrédients -->
       <div class="section ingredients-section">
         <h2><Carrot size={24} style="display: inline-block; vertical-align: middle; margin-right: 8px;" /> Ingrédients</h2>
@@ -192,8 +201,8 @@
             {#each recipe.ingredients as item}
               <li class="ingredient-item">
                 <span class="ingredient-checkbox">
-                  <input type="checkbox" id="ingredient-{item.id}" />
-                  <label for="ingredient-{item.id}"></label>
+                  <input type="checkbox" id="ingredient-desktop-{item.id}" />
+                  <label for="ingredient-desktop-{item.id}"></label>
                 </span>
                 <span class="ingredient-content">
                   {#if item.quantity}
@@ -234,6 +243,61 @@
         {/if}
       </div>
     </div>
+
+    <!-- Version Mobile : Avec onglets -->
+    <div class="recipe-content recipe-content--mobile">
+      <Tabs {tabs} bind:activeTab>
+        {#snippet children(tabId)}
+          {#if tabId === 'ingredients'}
+            <div class="section ingredients-section">
+              {#if recipe.ingredients && recipe.ingredients.length > 0}
+                <ul class="ingredients-list">
+                  {#each recipe.ingredients as item}
+                    <li class="ingredient-item">
+                      <span class="ingredient-checkbox">
+                        <input type="checkbox" id="ingredient-mobile-{item.id}" />
+                        <label for="ingredient-mobile-{item.id}"></label>
+                      </span>
+                      <span class="ingredient-content">
+                        {#if item.quantity}
+                          <strong>{adjustQuantity(item.quantity, item.scalable)} {item.unit ? UnitLabels[item.unit] || item.unit : ''}</strong>
+                        {/if}
+                        <span class="ingredient-name">{item.ingredient?.label || 'Ingrédient'}</span>
+                        {#if item.note}
+                          <span class="ingredient-note">({item.note})</span>
+                        {/if}
+                      </span>
+                    </li>
+                  {/each}
+                </ul>
+              {:else}
+                <p class="empty-message">Aucun ingrédient défini</p>
+              {/if}
+            </div>
+          {:else if tabId === 'steps'}
+            <div class="section steps-section">
+              {#if recipe.steps && recipe.steps.length > 0}
+                <div class="steps-list">
+                  {#each recipe.steps as step}
+                    <StepItem
+                      stepNumber={step.stepNumber}
+                      description={step.description}
+                      duration={step.durationMinutes && step.durationMinutes > 0 ? formatTime(step.durationMinutes) : undefined}
+                      badgeColor="quaternary"
+                      badgeSize="medium"
+                      badgeVariant="filled"
+                      badgeShape="circle"
+                    />
+                  {/each}
+                </div>
+              {:else}
+                <p class="empty-message">Aucune étape définie</p>
+              {/if}
+            </div>
+          {/if}
+        {/snippet}
+      </Tabs>
+    </div>
   {/if}
 </div>
 </Layout>
@@ -243,7 +307,7 @@
   .recipe-detail {
     display: flex;
     flex-direction: column;
-    gap: $spacing-lg;
+    gap: $spacing-sm;
   }
 
   .loading,
@@ -280,14 +344,15 @@
 
   .recipe-image {
     width: 100%;
-    height: 300px;
+    height: auto;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     border-radius: 12px;
   }
 
   .recipe-image-placeholder {
     width: 100%;
-    height: 300px;
+    aspect-ratio: 16 / 9;
     background: var(--background-color);
     border-radius: 12px;
     display: flex;
@@ -493,20 +558,31 @@
   }
 
   .recipe-content {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2.5rem;
-    margin-top: 2.5rem;
+    // Modifier: desktop (grille côte à côte)
+    &--desktop {
+      display: none;
 
-    @media (max-width: 968px) {
-      grid-template-columns: 1fr;
+      @media (min-width: 969px) {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2.5rem;
+      }
+    }
+
+    // Modifier: mobile (avec onglets)
+    &--mobile {
+      display: block;
+
+      @media (min-width: 969px) {
+        display: none;
+      }
     }
   }
 
   .section {
     background: var(--surface-color);
     border-radius: 16px;
-    padding: 2rem;
+    padding: $spacing-md $spacing-sm;
     box-shadow: 0 2px 12px $color-black-alpha-08;
   }
 
@@ -535,7 +611,7 @@
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-    padding: 1rem;
+    padding: $spacing-md $spacing-sm;
     border-radius: 8px;
     transition: background-color 0.2s;
 

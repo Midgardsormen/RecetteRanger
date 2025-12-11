@@ -7,6 +7,7 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -37,9 +38,10 @@ export class UploadController {
       }),
     )
     file: Express.Multer.File,
+    @Body('aspectRatio') aspectRatio?: string,
   ) {
     // Validation 3: Magic bytes + traitement
-    const result = await this.uploadService.uploadIngredientImage(file);
+    const result = await this.uploadService.uploadIngredientImage(file, aspectRatio);
 
     return {
       message: 'Image uploadée et traitée avec succès',

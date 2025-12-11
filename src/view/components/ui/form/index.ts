@@ -11,3 +11,4 @@ export { default as FormField } from './FormField.svelte';
 export { default as FieldLabel } from './FieldLabel.svelte';
 export { default as PasswordInput } from './PasswordInput.svelte';
 export { default as RadioGroup } from './RadioGroup.svelte';
+export { default as Textarea } from './Textarea.svelte';
