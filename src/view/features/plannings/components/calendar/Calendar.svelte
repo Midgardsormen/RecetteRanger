@@ -308,9 +308,9 @@
                 subtitle={item.servings ? `${item.servings} personne${item.servings > 1 ? 's' : ''}` : undefined}
                 showThumbnail={false}
                 layout="column"
-                onEdit={(e) => { e.stopPropagation(); onMealEdit?.(item); }}
-                onDelete={(e) => { e.stopPropagation(); onMealDelete?.(item); }}
-                onClick={(e) => { e.stopPropagation(); onMealEdit?.(item); }}
+                onEdit={() => onMealEdit?.(item)}
+                onDelete={() => onMealDelete?.(item)}
+                onClick={() => onMealEdit?.(item)}
               >
                 {#snippet badge()}
                   {#if item.isExceptional && item.customSlotName}
