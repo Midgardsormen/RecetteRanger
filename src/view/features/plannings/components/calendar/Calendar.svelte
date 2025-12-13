@@ -180,18 +180,18 @@
 
   const today = new Date();
 
-  // Référence pour le scroll horizontal en mode semaine
-  let weekGridElement: HTMLDivElement;
+  // Référence pour le scroll horizontal en mode semaine et mois
+  let calendarGridElement: HTMLDivElement;
 
-  // Centrer sur le jour actuel au chargement en mode semaine
+  // Centrer sur le jour actuel au chargement
   $effect(() => {
-    if (view === 'week' && weekGridElement) {
+    if (calendarGridElement && currentDate) {
       scrollToCurrentDay();
     }
   });
 
   function scrollToCurrentDay() {
-    if (!weekGridElement) return;
+    if (!calendarGridElement) return;
 
     const isMobile = window.innerWidth < 768;
     if (!isMobile) return;
@@ -199,14 +199,27 @@
     const dayIndex = dates.findIndex(date => isSameDay(date, currentDate));
     if (dayIndex === -1) return;
 
-    // Calculer la position de scroll pour centrer le jour
-    const dayWidth = weekGridElement.scrollWidth / 7;
-    const scrollPosition = dayWidth * dayIndex;
+    if (view === 'week') {
+      // En mode semaine : scroll horizontal
+      const dayWidth = calendarGridElement.scrollWidth / 7;
+      const scrollPosition = dayWidth * dayIndex;
 
-    weekGridElement.scrollTo({
-      left: scrollPosition,
-      behavior: 'smooth'
-    });
+      calendarGridElement.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
+    } else if (view === 'month') {
+      // En mode mois : scroll vertical vers le jour
+      const dayElements = calendarGridElement.querySelectorAll('.calendar-day');
+      const targetDayElement = dayElements[dayIndex] as HTMLElement;
+
+      if (targetDayElement) {
+        targetDayElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }
   }
 </script>
 
@@ -234,6 +247,14 @@
     </div>
 
     <div class="view-switcher-container">
+      <Button
+        variant="ghost"
+        size="small"
+        onclick={goToToday}
+      >
+        Aujourd'hui
+      </Button>
+
       <div class="view-switcher">
         <Button
           variant={view === 'day' ? 'primary' : 'outlined'}
@@ -271,7 +292,7 @@
     class:day-view={view === 'day'}
     class:week-view={view === 'week'}
     class:month-view={view === 'month'}
-    bind:this={weekGridElement}
+    bind:this={calendarGridElement}
   >
     {#if view === 'month'}
       <!-- En-têtes des jours de la semaine -->
@@ -501,11 +522,16 @@
     }
 
     &.month-view {
-      // Mobile: vue jour par défaut ou grille compacte
+      // Mobile: vue jour par défaut ou grille compacte avec scroll
       grid-template-columns: 1fr;
+      max-height: 70vh;
+      overflow-y: auto;
+      scroll-behavior: smooth;
 
       @media (min-width: 768px) {
         grid-template-columns: repeat(7, 1fr);
+        max-height: none;
+        overflow-y: visible;
       }
 
       .day-header {

@@ -45,6 +45,7 @@
 
   function handleDateClick(date: Date) {
     selectedDate = date;
+    currentDate = date; // Garder le calendrier centré sur cette date
     editingMealItem = null;
     showMealDrawer = true;
   }
@@ -55,6 +56,7 @@
     const mealDay = findMealPlanDayForItem(mealPlanDays, item.id);
     if (mealDay) {
       selectedDate = new Date(mealDay.date);
+      currentDate = new Date(mealDay.date); // Garder le calendrier centré sur cette date
     }
     showMealDrawer = true;
   }
