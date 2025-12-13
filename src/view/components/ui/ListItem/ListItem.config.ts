@@ -14,6 +14,7 @@ export const LIST_ITEM_DEFAULTS = {
   showThumbnail: true,
   metadata: [],
   layout: 'row' as const,
+  size: 'default' as const,
 } as const;
 
 // ============================================
