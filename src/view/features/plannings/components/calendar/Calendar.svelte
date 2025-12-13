@@ -14,7 +14,7 @@
     onDateNavigate?: (date: Date) => void;
     onMealEdit?: (item: any) => void;
     onMealDelete?: (item: any) => void;
-    headerActions?: import('svelte').Snippet;
+    showHeader?: boolean;
   }
 
   let {
@@ -27,7 +27,7 @@
     onDateNavigate,
     onMealEdit,
     onMealDelete,
-    headerActions
+    showHeader = true
   }: Props = $props();
 
   // Fonctions utilitaires de date
@@ -224,67 +224,64 @@
 </script>
 
 <div class="calendar">
-  <!-- Header avec navigation fusionnée -->
-  <div class="calendar-header">
-    <div class="calendar-nav">
-      <IconButton variant="ghost" size="medium" onclick={goToPrevious} ariaLabel="Précédent">
-        <ArrowLeft size={20} />
-      </IconButton>
+  <!-- Header avec navigation fusionnée (affiché si showHeader est true) -->
+  {#if showHeader}
+    <div class="calendar-header">
+      <div class="calendar-nav">
+        <IconButton variant="ghost" size="medium" onclick={goToPrevious} ariaLabel="Précédent">
+          <ArrowLeft size={20} />
+        </IconButton>
 
-      <h2 class="calendar-title">
-        {#if view === 'day'}
-          Aujourd'hui
-        {:else if view === 'week'}
-          Semaine du {formatDate(dates[0])} au {formatDate(dates[6])}
-        {:else}
-          {formatMonthYear(currentDate)}
-        {/if}
-      </h2>
+        <h2 class="calendar-title">
+          {#if view === 'day'}
+            Aujourd'hui
+          {:else if view === 'week'}
+            Semaine du {formatDate(dates[0])} au {formatDate(dates[6])}
+          {:else}
+            {formatMonthYear(currentDate)}
+          {/if}
+        </h2>
 
-      <IconButton variant="ghost" size="medium" onclick={goToNext} ariaLabel="Suivant">
-        <ArrowRight size={20} />
-      </IconButton>
-    </div>
-
-    <div class="view-switcher-container">
-      <Button
-        variant="ghost"
-        size="small"
-        onclick={goToToday}
-      >
-        Aujourd'hui
-      </Button>
-
-      <div class="view-switcher">
-        <Button
-          variant={view === 'day' ? 'primary' : 'outlined'}
-          size="small"
-          onclick={() => handleViewChange('day')}
-        >
-          Jour
-        </Button>
-        <Button
-          variant={view === 'week' ? 'primary' : 'outlined'}
-          size="small"
-          onclick={() => handleViewChange('week')}
-        >
-          Semaine
-        </Button>
-        <Button
-          variant={view === 'month' ? 'primary' : 'outlined'}
-          size="small"
-          onclick={() => handleViewChange('month')}
-        >
-          Mois
-        </Button>
+        <IconButton variant="ghost" size="medium" onclick={goToNext} ariaLabel="Suivant">
+          <ArrowRight size={20} />
+        </IconButton>
       </div>
-      {#if headerActions}
-        <div class="header-actions">
-          {@render headerActions()}
+
+      <div class="view-switcher-container">
+        <Button
+          variant="ghost"
+          size="small"
+          onclick={goToToday}
+        >
+          Aujourd'hui
+        </Button>
+
+        <div class="view-switcher">
+          <Button
+            variant={view === 'day' ? 'primary' : 'outlined'}
+            size="small"
+            onclick={() => handleViewChange('day')}
+          >
+            Jour
+          </Button>
+          <Button
+            variant={view === 'week' ? 'primary' : 'outlined'}
+            size="small"
+            onclick={() => handleViewChange('week')}
+          >
+            Semaine
+          </Button>
+          <Button
+            variant={view === 'month' ? 'primary' : 'outlined'}
+            size="small"
+            onclick={() => handleViewChange('month')}
+          >
+            Mois
+          </Button>
         </div>
-      {/if}
+      </div>
     </div>
-  </div>
+  {/if}
 
   <!-- Grid du calendrier -->
   <div
