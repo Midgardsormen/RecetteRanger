@@ -64,6 +64,10 @@ export interface MealPlanItem {
   isExceptional: boolean;
   recipe: Recipe | null;
   recipeId: string | null;
+  ingredient: any | null; // Article type (will be imported later)
+  ingredientId: string | null;
+  quantity: number | null;
+  unit: string | null;
   servings: number;
   note: string | null;
   order: number;
@@ -81,6 +85,9 @@ export interface CreateMealPlanItemDto {
   customSlotName?: string;
   isExceptional?: boolean;
   recipeId?: string;
+  ingredientId?: string;
+  quantity?: number;
+  unit?: string;
   servings?: number;
   note?: string;
   order?: number;
@@ -91,6 +98,9 @@ export interface UpdateMealPlanItemDto {
   customSlotName?: string;
   isExceptional?: boolean;
   recipeId?: string;
+  ingredientId?: string;
+  quantity?: number;
+  unit?: string;
   servings?: number;
   note?: string;
   order?: number;

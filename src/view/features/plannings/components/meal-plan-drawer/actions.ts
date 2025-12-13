@@ -27,6 +27,29 @@ export async function loadRecipes(
 }
 
 /**
+ * Charge les ingrédients correspondant à la recherche
+ */
+export async function loadIngredients(
+  searchQuery: string
+): Promise<any[]> {
+  if (searchQuery.length < 2) {
+    return [];
+  }
+
+  try {
+    const result = await apiService.searchIngredients({
+      search: searchQuery,
+      limit: 20,
+      isFood: true
+    });
+    return result.data || [];
+  } catch (err) {
+    console.error('Erreur lors du chargement des ingrédients:', err);
+    return [];
+  }
+}
+
+/**
  * Valide les données du formulaire
  */
 export function validateForm(
@@ -63,6 +86,9 @@ export async function submitMealPlanItem(
     customSlotName: string;
     isExceptional: boolean;
     selectedRecipe: Recipe | null;
+    selectedIngredient: any | null;
+    quantity: number | null;
+    unit: string | null;
     servings: number;
     note: string;
   }
@@ -74,6 +100,9 @@ export async function submitMealPlanItem(
       customSlotName: formData.isExceptional ? formData.customSlotName : undefined,
       isExceptional: formData.isExceptional,
       recipeId: formData.selectedRecipe?.id,
+      ingredientId: formData.selectedIngredient?.id,
+      quantity: formData.quantity,
+      unit: formData.unit,
       servings: formData.servings,
       note: formData.note || undefined
     };
@@ -118,6 +147,9 @@ export async function submitMealPlanItem(
       customSlotName: formData.isExceptional ? formData.customSlotName : undefined,
       isExceptional: formData.isExceptional,
       recipeId: formData.selectedRecipe?.id,
+      ingredientId: formData.selectedIngredient?.id,
+      quantity: formData.quantity,
+      unit: formData.unit,
       servings: formData.servings,
       note: formData.note || undefined,
       order: mealPlanDay?.items.filter(i => i.slot === formData.selectedSlot).length || 0

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Drawer, Input, Select, Button, IconButton, FormField } from '../../../../components/ui';
-  import { Checkbox, Textarea } from '../../../../components/ui/form';
+  import { Checkbox, Textarea, RadioGroup } from '../../../../components/ui/form';
   import { RecipeDrawer } from '../../../recipe-drawer';
   import type { MealSlot, MealSlotConfig, MealPlanDay, MealPlanItem } from '../../../../types/meal-plan.types';
   import type { Recipe } from '../../../../types/recipe.types';
   import { X } from 'lucide-svelte';
-  import { loadRecipes, validateForm, submitMealPlanItem } from './actions';
+  import { loadRecipes, loadIngredients, validateForm, submitMealPlanItem } from './actions';
 
   interface Props {
     isOpen?: boolean;
@@ -31,7 +31,11 @@
 
   // État du formulaire
   let selectedSlot = $state<MealSlot>('LUNCH' as MealSlot);
+  let itemType = $state<'recipe' | 'ingredient'>('recipe'); // Type d'item (recette ou ingrédient)
   let selectedRecipe = $state<Recipe | null>(null);
+  let selectedIngredient = $state<any | null>(null);
+  let quantity = $state<number | null>(null);
+  let unit = $state<string | null>(null);
   let servings = $state(1);
   let note = $state('');
   let isExceptional = $state(false);
@@ -43,6 +47,11 @@
   let loadingRecipes = $state(false);
   let showRecipeDrawer = $state(false);
 
+  // Recherche d'ingrédients
+  let ingredientSearchQuery = $state('');
+  let availableIngredients = $state<any[]>([]);
+  let loadingIngredients = $state(false);
+
   // État
   let saving = $state(false);
   let errors = $state<Record<string, string>>({});
@@ -53,6 +62,10 @@
       // Mode édition : remplir avec les données existantes
       selectedSlot = editingItem.slot;
       selectedRecipe = editingItem.recipe || null;
+      selectedIngredient = editingItem.ingredient || null;
+      quantity = editingItem.quantity || null;
+      unit = editingItem.unit || null;
+      itemType = editingItem.ingredient ? 'ingredient' : 'recipe';
       servings = editingItem.servings;
       note = editingItem.note || '';
       isExceptional = editingItem.isExceptional;
@@ -60,13 +73,18 @@
     } else {
       // Mode ajout : valeurs par défaut
       selectedSlot = 'LUNCH' as MealSlot;
+      itemType = 'recipe';
       selectedRecipe = null;
+      selectedIngredient = null;
+      quantity = null;
+      unit = null;
       servings = 1;
       note = '';
       isExceptional = false;
       customSlotName = '';
     }
     recipeSearchQuery = '';
+    ingredientSearchQuery = '';
     errors = {};
   }
 
@@ -92,6 +110,30 @@
     servings = 1;
   }
 
+  // Charger les ingrédients
+  async function handleLoadIngredients() {
+    loadingIngredients = true;
+    try {
+      availableIngredients = await loadIngredients(ingredientSearchQuery);
+    } finally {
+      loadingIngredients = false;
+    }
+  }
+
+  function selectIngredient(ingredient: any) {
+    selectedIngredient = ingredient;
+    quantity = 1;
+    unit = ingredient.units && ingredient.units.length > 0 ? ingredient.units[0] : 'unité';
+    ingredientSearchQuery = '';
+    availableIngredients = [];
+  }
+
+  function clearIngredient() {
+    selectedIngredient = null;
+    quantity = null;
+    unit = null;
+  }
+
   async function handleSubmit() {
     const validation = validateForm(isExceptional, customSlotName, servings);
     errors = validation.errors;
@@ -112,7 +154,10 @@
           selectedSlot,
           customSlotName,
           isExceptional,
-          selectedRecipe,
+          selectedRecipe: itemType === 'recipe' ? selectedRecipe : null,
+          selectedIngredient: itemType === 'ingredient' ? selectedIngredient : null,
+          quantity,
+          unit,
           servings,
           note
         }
@@ -199,6 +244,18 @@
       </FormField>
     {/if}
 
+    <RadioGroup
+      name="itemType"
+      label="Type d'élément"
+      bind:value={itemType}
+      options={[
+        { value: 'recipe', label: 'Recette' },
+        { value: 'ingredient', label: 'Ingrédient simple' }
+      ]}
+      variant="inverse"
+    />
+
+    {#if itemType === 'recipe'}
     {#if selectedRecipe}
       <div class="meal-plan-drawer__selected-recipe">
         {#if selectedRecipe.imageUrl}
@@ -253,7 +310,97 @@
         </div>
       {/if}
     {/if}
+    {/if}
 
+    {#if itemType === 'ingredient'}
+      {#if selectedIngredient}
+        <div class="meal-plan-drawer__selected-recipe">
+          {#if selectedIngredient.imageUrl}
+            <img src={selectedIngredient.imageUrl} alt={selectedIngredient.label} class="meal-plan-drawer__recipe-image" />
+          {/if}
+          <div class="meal-plan-drawer__recipe-info">
+            <span class="meal-plan-drawer__recipe-name">{selectedIngredient.label}</span>
+            <Button variant="ghost-inverse" size="small" onclick={clearIngredient}>
+              <X size={16} />
+              Changer
+            </Button>
+          </div>
+        </div>
+      {:else}
+        <div class="meal-plan-drawer__search-section">
+          <span class="meal-plan-drawer__search-label">Rechercher un ingrédient</span>
+          <Input
+            id="ingredient-search"
+            bind:value={ingredientSearchQuery}
+            oninput={handleLoadIngredients}
+            placeholder="Tapez pour rechercher..."
+            variant="inverse"
+          />
+        </div>
+
+        {#if loadingIngredients}
+          <p class="meal-plan-drawer__loading-text">Chargement...</p>
+        {:else if ingredientSearchQuery.length >= 2 && availableIngredients.length === 0}
+          <p class="meal-plan-drawer__no-results">Aucun ingrédient trouvé</p>
+        {:else if availableIngredients.length > 0}
+          <div class="meal-plan-drawer__recipes-list">
+            {#each availableIngredients as ingredient}
+              <button
+                class="meal-plan-drawer__recipe-item"
+                onclick={() => selectIngredient(ingredient)}
+              >
+                {#if ingredient.imageUrl}
+                  <img src={ingredient.imageUrl} alt={ingredient.label} class="meal-plan-drawer__recipe-thumb" />
+                {/if}
+                <span class="meal-plan-drawer__recipe-name">{ingredient.label}</span>
+              </button>
+            {/each}
+          </div>
+        {/if}
+      {/if}
+
+      {#if selectedIngredient}
+        <FormField
+          name="quantity"
+          label="Quantité"
+          variant="inverse"
+          required
+          bind:value={quantity}
+        >
+          <Input
+            id="quantity"
+            type="number"
+            min="0"
+            step="0.1"
+            oninput={(e) => { quantity = parseFloat(e.currentTarget.value) || null; }}
+          />
+        </FormField>
+
+        <FormField
+          name="unit"
+          label="Unité"
+          variant="inverse"
+          required
+          bind:value={unit}
+        >
+          <Select id="unit">
+            {#if selectedIngredient.units && selectedIngredient.units.length > 0}
+              {#each selectedIngredient.units as u}
+                <option value={u}>{u}</option>
+              {/each}
+            {:else}
+              <option value="unité">unité</option>
+              <option value="g">g</option>
+              <option value="kg">kg</option>
+              <option value="ml">ml</option>
+              <option value="l">l</option>
+            {/if}
+          </Select>
+        </FormField>
+      {/if}
+    {/if}
+
+    {#if itemType === 'recipe'}
     <FormField
       name="servings"
       label="Nombre de personnes"
@@ -269,6 +416,7 @@
         oninput={(e) => { servings = parseInt(e.currentTarget.value) || 1; }}
       />
     </FormField>
+    {/if}
 
     <FormField
       name="note"

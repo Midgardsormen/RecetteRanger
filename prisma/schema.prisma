@@ -220,6 +220,7 @@ model Article {
 
   recipeLinks       RecipeIngredient[]
   shoppingListItems ShoppingListItem[]
+  mealPlanItems     MealPlanItem[]
 
   @@unique([label, aisle])
   @@index([aisle, label])
@@ -264,6 +265,10 @@ model MealPlanItem {
   isExceptional  Boolean     @default(false) // Indique si c'est un repas exceptionnel
   recipe         Recipe?     @relation(fields: [recipeId], references: [id])
   recipeId       String?
+  ingredient     Article?    @relation(fields: [ingredientId], references: [id])
+  ingredientId   String?
+  quantity       Decimal?    @db.Decimal(10, 3) // Quantité pour les ingrédients directs
+  unit           String? // Unité pour les ingrédients directs
   servings       Int         @default(1)
   note           String?
   order          Int         @default(0) // Ordre d'affichage pour plusieurs recettes dans le même slot

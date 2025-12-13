@@ -31,6 +31,9 @@ export class MealPlanService {
                 create: createMealPlanDayDto.items.map(item => ({
                   slot: item.slot,
                   recipeId: item.recipeId,
+                  ingredientId: item.ingredientId,
+                  quantity: item.quantity,
+                  unit: item.unit,
                   servings: item.servings || 1,
                   note: item.note,
                 })),
@@ -78,6 +81,7 @@ export class MealPlanService {
                 },
               },
             },
+            ingredient: true, // Inclure l'ingrédient direct si présent
           },
           orderBy: { order: 'asc' },
         },
@@ -145,6 +149,9 @@ export class MealPlanService {
           customSlotName: createMealPlanItemDto.customSlotName,
           isExceptional: createMealPlanItemDto.isExceptional || false,
           recipeId: createMealPlanItemDto.recipeId,
+          ingredientId: createMealPlanItemDto.ingredientId,
+          quantity: createMealPlanItemDto.quantity,
+          unit: createMealPlanItemDto.unit,
           servings: createMealPlanItemDto.servings || 1,
           note: createMealPlanItemDto.note,
           order: createMealPlanItemDto.order || 0,
@@ -159,6 +166,7 @@ export class MealPlanService {
               },
             },
           },
+          ingredient: true, // Inclure l'ingrédient direct si présent
         },
       });
     } catch (error) {
