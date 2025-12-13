@@ -1,6 +1,6 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { Calendar } from './components/calendar';
+  import { Calendar, CalendarControls } from './components/calendar';
   import { MealPlanDrawer } from './components/meal-plan-drawer';
   import { Button, PageHero, ConfirmModal, Spinner, IconButton, DropdownMenu } from '../../components/ui';
   import { GenerateShoppingListDrawer } from '../shopping-lists/components';
@@ -45,6 +45,7 @@
 
   function handleDateClick(date: Date) {
     selectedDate = date;
+    currentDate = date; // Garder le calendrier centré sur cette date
     editingMealItem = null;
     showMealDrawer = true;
   }
@@ -55,6 +56,7 @@
     const mealDay = findMealPlanDayForItem(mealPlanDays, item.id);
     if (mealDay) {
       selectedDate = new Date(mealDay.date);
+      currentDate = new Date(mealDay.date); // Garder le calendrier centré sur cette date
     }
     showMealDrawer = true;
   }
@@ -122,6 +124,50 @@
     }
   ];
 
+  // Fonctions utilitaires de date pour CalendarControls
+  function startOfWeek(date: Date): Date {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(d.setDate(diff));
+  }
+
+  function startOfMonth(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  }
+
+  function endOfMonth(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  }
+
+  function addDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
+  // Calculer les dates à afficher selon la vue
+  let dates = $derived.by(() => {
+    if (view === 'day') {
+      return [currentDate];
+    } else if (view === 'week') {
+      const start = startOfWeek(currentDate);
+      return Array.from({ length: 7 }, (_, i) => addDays(start, i));
+    } else {
+      const start = startOfWeek(startOfMonth(currentDate));
+      const end = endOfMonth(currentDate);
+      const datesList: Date[] = [];
+      let current = start;
+
+      while (current <= end || datesList.length < 35) {
+        datesList.push(new Date(current));
+        current = addDays(current, 1);
+      }
+
+      return datesList;
+    }
+  });
+
   // Charger les données au montage et quand l'utilisateur change
   $effect(() => {
     if (user) {
@@ -140,6 +186,16 @@
       {#snippet actionIcon()}
         <ShoppingCart size={18} />
       {/snippet}
+      {#snippet children()}
+        <CalendarControls
+          bind:view
+          bind:currentDate
+          {dates}
+          onViewChange={handleViewChange}
+          onDateNavigate={handleDateNavigate}
+          settingsMenuItems={configMenuItems}
+        />
+      {/snippet}
     </PageHero>
 
     {#if loading}
@@ -153,26 +209,13 @@
         bind:currentDate
         {mealPlanDays}
         {slotConfigs}
+        showHeader={false}
         onDateClick={handleDateClick}
         onViewChange={handleViewChange}
         onDateNavigate={handleDateNavigate}
         onMealEdit={handleMealEdit}
         onMealDelete={openDeleteConfirmation}
-      >
-        {#snippet headerActions()}
-          <DropdownMenu items={configMenuItems} align="right">
-            {#snippet trigger()}
-              <IconButton
-                variant="ghost"
-                size="small"
-                ariaLabel="Paramètres"
-              >
-                <Settings size={18} />
-              </IconButton>
-            {/snippet}
-          </DropdownMenu>
-        {/snippet}
-      </Calendar>
+      />
     {/if}
   </div>
 </Layout>

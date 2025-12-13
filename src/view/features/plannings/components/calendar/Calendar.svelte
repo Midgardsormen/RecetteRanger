@@ -14,7 +14,7 @@
     onDateNavigate?: (date: Date) => void;
     onMealEdit?: (item: any) => void;
     onMealDelete?: (item: any) => void;
-    headerActions?: import('svelte').Snippet;
+    showHeader?: boolean;
   }
 
   let {
@@ -27,7 +27,7 @@
     onDateNavigate,
     onMealEdit,
     onMealDelete,
-    headerActions
+    showHeader = true
   }: Props = $props();
 
   // Fonctions utilitaires de date
@@ -180,18 +180,18 @@
 
   const today = new Date();
 
-  // Référence pour le scroll horizontal en mode semaine
-  let weekGridElement: HTMLDivElement;
+  // Référence pour le scroll horizontal en mode semaine et mois
+  let calendarGridElement: HTMLDivElement;
 
-  // Centrer sur le jour actuel au chargement en mode semaine
+  // Centrer sur le jour actuel au chargement
   $effect(() => {
-    if (view === 'week' && weekGridElement) {
+    if (calendarGridElement && currentDate) {
       scrollToCurrentDay();
     }
   });
 
   function scrollToCurrentDay() {
-    if (!weekGridElement) return;
+    if (!calendarGridElement) return;
 
     const isMobile = window.innerWidth < 768;
     if (!isMobile) return;
@@ -199,71 +199,89 @@
     const dayIndex = dates.findIndex(date => isSameDay(date, currentDate));
     if (dayIndex === -1) return;
 
-    // Calculer la position de scroll pour centrer le jour
-    const dayWidth = weekGridElement.scrollWidth / 7;
-    const scrollPosition = dayWidth * dayIndex;
+    if (view === 'week') {
+      // En mode semaine : scroll horizontal
+      const dayWidth = calendarGridElement.scrollWidth / 7;
+      const scrollPosition = dayWidth * dayIndex;
 
-    weekGridElement.scrollTo({
-      left: scrollPosition,
-      behavior: 'smooth'
-    });
+      calendarGridElement.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
+    } else if (view === 'month') {
+      // En mode mois : scroll vertical vers le jour
+      const dayElements = calendarGridElement.querySelectorAll('.calendar-day');
+      const targetDayElement = dayElements[dayIndex] as HTMLElement;
+
+      if (targetDayElement) {
+        targetDayElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }
   }
 </script>
 
 <div class="calendar">
-  <!-- Header avec navigation fusionnée -->
-  <div class="calendar-header">
-    <div class="calendar-nav">
-      <IconButton variant="ghost" size="medium" onclick={goToPrevious} ariaLabel="Précédent">
-        <ArrowLeft size={20} />
-      </IconButton>
+  <!-- Header avec navigation fusionnée (affiché si showHeader est true) -->
+  {#if showHeader}
+    <div class="calendar-header">
+      <div class="calendar-nav">
+        <IconButton variant="ghost" size="medium" onclick={goToPrevious} ariaLabel="Précédent">
+          <ArrowLeft size={20} />
+        </IconButton>
 
-      <h2 class="calendar-title">
-        {#if view === 'day'}
-          Aujourd'hui
-        {:else if view === 'week'}
-          Semaine du {formatDate(dates[0])} au {formatDate(dates[6])}
-        {:else}
-          {formatMonthYear(currentDate)}
-        {/if}
-      </h2>
+        <h2 class="calendar-title">
+          {#if view === 'day'}
+            Aujourd'hui
+          {:else if view === 'week'}
+            Semaine du {formatDate(dates[0])} au {formatDate(dates[6])}
+          {:else}
+            {formatMonthYear(currentDate)}
+          {/if}
+        </h2>
 
-      <IconButton variant="ghost" size="medium" onclick={goToNext} ariaLabel="Suivant">
-        <ArrowRight size={20} />
-      </IconButton>
-    </div>
-
-    <div class="view-switcher-container">
-      <div class="view-switcher">
-        <Button
-          variant={view === 'day' ? 'primary' : 'outlined'}
-          size="small"
-          onclick={() => handleViewChange('day')}
-        >
-          Jour
-        </Button>
-        <Button
-          variant={view === 'week' ? 'primary' : 'outlined'}
-          size="small"
-          onclick={() => handleViewChange('week')}
-        >
-          Semaine
-        </Button>
-        <Button
-          variant={view === 'month' ? 'primary' : 'outlined'}
-          size="small"
-          onclick={() => handleViewChange('month')}
-        >
-          Mois
-        </Button>
+        <IconButton variant="ghost" size="medium" onclick={goToNext} ariaLabel="Suivant">
+          <ArrowRight size={20} />
+        </IconButton>
       </div>
-      {#if headerActions}
-        <div class="header-actions">
-          {@render headerActions()}
+
+      <div class="view-switcher-container">
+        <Button
+          variant="ghost"
+          size="small"
+          onclick={goToToday}
+        >
+          Aujourd'hui
+        </Button>
+
+        <div class="view-switcher">
+          <Button
+            variant={view === 'day' ? 'primary' : 'outlined'}
+            size="small"
+            onclick={() => handleViewChange('day')}
+          >
+            Jour
+          </Button>
+          <Button
+            variant={view === 'week' ? 'primary' : 'outlined'}
+            size="small"
+            onclick={() => handleViewChange('week')}
+          >
+            Semaine
+          </Button>
+          <Button
+            variant={view === 'month' ? 'primary' : 'outlined'}
+            size="small"
+            onclick={() => handleViewChange('month')}
+          >
+            Mois
+          </Button>
         </div>
-      {/if}
+      </div>
     </div>
-  </div>
+  {/if}
 
   <!-- Grid du calendrier -->
   <div
@@ -271,7 +289,7 @@
     class:day-view={view === 'day'}
     class:week-view={view === 'week'}
     class:month-view={view === 'month'}
-    bind:this={weekGridElement}
+    bind:this={calendarGridElement}
   >
     {#if view === 'month'}
       <!-- En-têtes des jours de la semaine -->
@@ -308,9 +326,9 @@
                 subtitle={item.servings ? `${item.servings} personne${item.servings > 1 ? 's' : ''}` : undefined}
                 showThumbnail={false}
                 layout="column"
-                onEdit={(e) => { e.stopPropagation(); onMealEdit?.(item); }}
-                onDelete={(e) => { e.stopPropagation(); onMealDelete?.(item); }}
-                onClick={(e) => { e.stopPropagation(); onMealEdit?.(item); }}
+                onEdit={() => onMealEdit?.(item)}
+                onDelete={() => onMealDelete?.(item)}
+                onClick={() => onMealEdit?.(item)}
               >
                 {#snippet badge()}
                   {#if item.isExceptional && item.customSlotName}
@@ -501,11 +519,16 @@
     }
 
     &.month-view {
-      // Mobile: vue jour par défaut ou grille compacte
+      // Mobile: vue jour par défaut ou grille compacte avec scroll
       grid-template-columns: 1fr;
+      max-height: 70vh;
+      overflow-y: auto;
+      scroll-behavior: smooth;
 
       @media (min-width: 768px) {
         grid-template-columns: repeat(7, 1fr);
+        max-height: none;
+        overflow-y: visible;
       }
 
       .day-header {
