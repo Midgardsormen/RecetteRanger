@@ -320,12 +320,13 @@
 
         {#if mealPlan}
           <div class="meals-preview">
-            {#each sortedItems.slice(0, 3) as item}
+            {#each sortedItems as item}
               <ListItem
                 title={item.ingredient ? item.ingredient.label : (item.recipe?.label || 'Sans recette')}
                 subtitle={item.ingredient ? `${item.quantity || ''} ${item.unit || ''}`.trim() : (item.servings ? `${item.servings} personne${item.servings > 1 ? 's' : ''}` : undefined)}
                 showThumbnail={false}
                 layout="column"
+                size="compact"
                 onEdit={() => onMealEdit?.(item)}
                 onDelete={() => onMealDelete?.(item)}
                 onClick={() => onMealEdit?.(item)}
@@ -339,9 +340,6 @@
                 {/snippet}
               </ListItem>
             {/each}
-            {#if sortedItems.length > 3}
-              <div class="more-meals">+{sortedItems.length - 3} repas</div>
-            {/if}
           </div>
         {/if}
       </div>
@@ -611,7 +609,7 @@
   .meals-preview {
     display: flex;
     flex-direction: column;
-    gap: $spacing-base * 0.4;
+    gap: $spacing-xs;
     flex: 1;
   }
 

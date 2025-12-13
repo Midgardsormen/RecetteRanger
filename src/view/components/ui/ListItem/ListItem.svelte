@@ -25,7 +25,8 @@
     checked = LIST_ITEM_DEFAULTS.checked,
     onCheck,
     showThumbnail = LIST_ITEM_DEFAULTS.showThumbnail,
-    layout = LIST_ITEM_DEFAULTS.layout
+    layout = LIST_ITEM_DEFAULTS.layout,
+    size = LIST_ITEM_DEFAULTS.size
   }: ListItemProps = $props();
 </script>
 
@@ -35,6 +36,7 @@
   class:list-item--has-footer={!!footer}
   class:list-item--checked={checkable && checked}
   class:list-item--column={layout === 'column'}
+  class:list-item--compact={size === 'compact'}
   onclick={() => handleClick(onClick)}
   role={onClick ? 'button' : undefined}
   tabindex={onClick ? 0 : undefined}
@@ -385,6 +387,56 @@
 
     @media (min-width: $breakpoint-sm) {
       padding: $spacing-sm $spacing-base $spacing-base $spacing-base;
+    }
+  }
+
+  // ============================================
+  // COMPACT SIZE VARIANT
+  // ============================================
+
+  .list-item--compact {
+    .list-item__main {
+      padding: $spacing-xs;
+      gap: $spacing-xs;
+
+      @media (min-width: $breakpoint-sm) {
+        padding: $spacing-sm;
+        gap: $spacing-sm;
+      }
+    }
+
+    .list-item__title {
+      font-size: $font-size-xs;
+      min-height: auto;
+      -webkit-line-clamp: 1; // Une seule ligne en mode compact
+
+      @media (min-width: $breakpoint-sm) {
+        font-size: $font-size-sm;
+      }
+    }
+
+    .list-item__subtitle {
+      font-size: $font-size-2xs;
+
+      @media (min-width: $breakpoint-sm) {
+        font-size: $font-size-xs;
+      }
+    }
+
+    .list-item__content {
+      gap: $spacing-2xs;
+    }
+
+    .list-item__side {
+      gap: $spacing-xs;
+    }
+
+    .list-item__actions {
+      gap: $spacing-2xs;
+
+      @media (min-width: $breakpoint-sm) {
+        gap: $spacing-xs;
+      }
     }
   }
 </style>

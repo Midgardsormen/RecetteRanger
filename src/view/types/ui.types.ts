@@ -484,6 +484,7 @@ export interface ImageUploadProps {
 // ============================================
 
 export type ListItemLayout = 'row' | 'column';
+export type ListItemSize = 'default' | 'compact';
 
 export interface ListItemProps {
   imageUrl?: string;
@@ -505,6 +506,7 @@ export interface ListItemProps {
   onCheck?: (checked: boolean) => void;
   showThumbnail?: boolean;
   layout?: ListItemLayout;
+  size?: ListItemSize;
 }
 
 // ============================================
