@@ -22,6 +22,15 @@ export class MealPlanItemDto {
   @ApiProperty({ description: 'ID de la recette', nullable: true })
   recipeId: string | null;
 
+  @ApiProperty({ description: 'ID de l\'ingrédient (pour un ingrédient direct)', nullable: true })
+  ingredientId: string | null;
+
+  @ApiProperty({ description: 'Quantité de l\'ingrédient', nullable: true })
+  quantity: number | null;
+
+  @ApiProperty({ description: 'Unité de l\'ingrédient', nullable: true })
+  unit: string | null;
+
   @ApiProperty({ description: 'Nombre de portions', default: 1 })
   servings: number;
 

@@ -322,8 +322,8 @@
           <div class="meals-preview">
             {#each sortedItems.slice(0, 3) as item}
               <ListItem
-                title={item.recipe?.label || 'Sans recette'}
-                subtitle={item.servings ? `${item.servings} personne${item.servings > 1 ? 's' : ''}` : undefined}
+                title={item.ingredient ? item.ingredient.label : (item.recipe?.label || 'Sans recette')}
+                subtitle={item.ingredient ? `${item.quantity || ''} ${item.unit || ''}`.trim() : (item.servings ? `${item.servings} personne${item.servings > 1 ? 's' : ''}` : undefined)}
                 showThumbnail={false}
                 layout="column"
                 onEdit={() => onMealEdit?.(item)}

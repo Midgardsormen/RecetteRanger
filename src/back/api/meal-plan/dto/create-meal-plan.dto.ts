@@ -26,6 +26,21 @@ export class CreateMealPlanItemDto {
   @IsString()
   recipeId?: string;
 
+  @ApiProperty({ description: 'ID de l\'ingrédient (pour un ingrédient direct)', required: false })
+  @IsOptional()
+  @IsString()
+  ingredientId?: string;
+
+  @ApiProperty({ description: 'Quantité de l\'ingrédient', required: false, example: 2 })
+  @IsOptional()
+  @IsNumber()
+  quantity?: number;
+
+  @ApiProperty({ description: 'Unité de l\'ingrédient', required: false, example: 'unité' })
+  @IsOptional()
+  @IsString()
+  unit?: string;
+
   @ApiProperty({ description: 'Nombre de portions', default: 1, example: 4 })
   @IsOptional()
   @IsNumber()
