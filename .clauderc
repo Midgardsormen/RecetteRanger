@@ -1,0 +1,79 @@
+# Configuration pour Claude Code - RecetteRanger
+
+## Règles de développement
+
+### Base de données (Prisma)
+- **TOUJOURS** utiliser `npx prisma migrate dev --name <description>` pour les modifications du schéma
+- **JAMAIS** utiliser `npx prisma db push` (sauf si explicitement demandé pour du prototypage)
+- Raison: Le projet a un environnement de production sur Render avec PostgreSQL
+
+### Architecture
+- Stack: NestJS (backend) + Svelte 5 (frontend) + Prisma + PostgreSQL
+- Frontend: Svelte 5 avec runes ($state, $effect, $derived)
+- Backend: NestJS avec architecture modulaire
+- Base de données: PostgreSQL en production (Neon sur Render)
+
+### Style de code
+- Utiliser les conventions BEM pour le CSS
+- Svelte 5: utiliser les runes, pas les anciens réactifs
+- TypeScript strict mode activé
+- Langue: Français pour les messages utilisateur, commentaires en français
+
+### Checklist qualité pour chaque composant/feature
+
+#### 1. Réutilisation de composants
+- **TOUJOURS** vérifier si un composant UI existant peut être réutilisé (src/view/components/ui)
+- Ne pas créer de nouveaux composants si un équivalent existe déjà
+- Composants UI disponibles: Button, Drawer, Modal, Card, FormField, Input, Select, etc.
+
+#### 2. Icônes
+- **UNIQUEMENT** utiliser les icônes de la bibliothèque `lucide-svelte`
+- Import: `import { IconName } from 'lucide-svelte';`
+- Ne jamais utiliser d'autres bibliothèques d'icônes
+
+#### 3. CSS et styles
+- **TOUJOURS** utiliser SASS (fichiers .scss dans les balises `<style lang="scss">`)
+- **TOUJOURS** suivre la convention BEM (Block__Element--Modifier)
+- **TOUJOURS** adopter une approche mobile-first (media queries min-width, pas max-width)
+- **TOUJOURS** utiliser les variables du fichier `_variables.scss`:
+  - Couleurs: `$brand-primary`, `$color-success`, etc.
+  - Espacements: `$spacing-xs`, `$spacing-base`, `$spacing-lg`, etc.
+  - Typographie: `$font-size-base`, `$font-weight-medium`, etc.
+  - Bordures: `$radius-md`, `$radius-lg`, etc.
+  - Transitions: `$transition-base`, etc.
+
+#### 4. Organisation du code (découpage de l'intelligence)
+- **Découpez la logique métier** en fichiers séparés dans le MÊME dossier que le composant:
+  - `actions.ts` - Fonctions qui appellent des APIs ou effectuent des actions
+  - `config.ts` - Configuration, constantes, options
+  - `utils.ts` - Fonctions utilitaires SPÉCIFIQUES à ce composant
+- **Exceptions** - Placez dans des dossiers partagés:
+  - `src/view/utils/` - Utilitaires partagés entre plusieurs composants
+  - `src/view/types/` - Types TypeScript partagés
+
+Exemple de structure:
+```
+features/
+  mon-feature/
+    MonFeature.svelte
+    actions.ts          ← Logique API et actions
+    config.ts           ← Configuration
+    components/
+      MonSousComposant.svelte
+```
+
+#### 5. Formulaires
+- **TOUJOURS** utiliser le composant `FormField` pour les champs de formulaire
+- FormField gère automatiquement: labels, validation, messages d'erreur, états
+- Import: `import { FormField } from '../../components/ui/form';`
+
+### Déploiement
+- Production: Render (backend + PostgreSQL)
+- Les migrations Prisma sont appliquées automatiquement via `prisma migrate deploy`
+- Build client: `npm run build:client`
+- Build serveur: `npm run build:server`
+
+### Git
+- Branch principale: `main`
+- Créer des branches feature pour les nouvelles fonctionnalités
+- Messages de commit en anglais, suivant le format: `feat:`, `fix:`, `refactor:`, etc.
