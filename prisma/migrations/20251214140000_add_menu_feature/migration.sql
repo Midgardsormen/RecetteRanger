@@ -42,7 +42,7 @@ ALTER TABLE "MenuItem" ADD CONSTRAINT "MenuItem_menuId_fkey" FOREIGN KEY ("menuI
 ALTER TABLE "MenuItem" ADD CONSTRAINT "MenuItem_recipeId_fkey" FOREIGN KEY ("recipeId") REFERENCES "Recipe"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MenuItem" ADD CONSTRAINT "MenuItem_ingredientId_fkey" FOREIGN KEY ("ingredientId") REFERENCES "Article"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "MenuItem" ADD CONSTRAINT "MenuItem_ingredientId_fkey" FOREIGN KEY ("ingredientId") REFERENCES "Ingredient"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AlterTable
 ALTER TABLE "MealPlanItem" ADD COLUMN "menuId" TEXT;
