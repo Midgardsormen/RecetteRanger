@@ -186,6 +186,7 @@ export class SvelteRenderService {
       `src/view/features/plannings/${componentName}.svelte`,
       `src/view/features/shopping-lists/${componentName}.svelte`,
       `src/view/features/recipes/${componentName}.svelte`,
+      `src/view/features/menus/${componentName}.svelte`,
       `src/view/features/ingredients/${componentName}.svelte`,
       `src/view/features/home/${componentName}.svelte`,
       `src/view/features/auth/${componentName}.svelte`,

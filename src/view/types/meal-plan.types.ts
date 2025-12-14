@@ -1,4 +1,5 @@
 import type { Recipe } from './recipe.types';
+import type { Menu } from './menu.types';
 
 export enum MealSlot {
   BREAKFAST = 'BREAKFAST',
@@ -66,6 +67,8 @@ export interface MealPlanItem {
   recipeId: string | null;
   ingredient: any | null; // Article type (will be imported later)
   ingredientId: string | null;
+  menu: Menu | null;
+  menuId: string | null;
   quantity: number | null;
   unit: string | null;
   servings: number;
@@ -86,6 +89,7 @@ export interface CreateMealPlanItemDto {
   isExceptional?: boolean;
   recipeId?: string;
   ingredientId?: string;
+  menuId?: string;
   quantity?: number;
   unit?: string;
   servings?: number;
@@ -99,6 +103,7 @@ export interface UpdateMealPlanItemDto {
   isExceptional?: boolean;
   recipeId?: string;
   ingredientId?: string;
+  menuId?: string;
   quantity?: number;
   unit?: string;
   servings?: number;
@@ -136,6 +141,8 @@ export interface MealTemplateItem {
   recipeId: string | null;
   ingredient: any | null;
   ingredientId: string | null;
+  menu: Menu | null;
+  menuId: string | null;
   quantity: number | null;
   unit: string | null;
   servings: number;
@@ -160,6 +167,7 @@ export interface CreateMealTemplateItemDto {
   isExceptional?: boolean;
   recipeId?: string;
   ingredientId?: string;
+  menuId?: string;
   quantity?: number;
   unit?: string;
   servings?: number;

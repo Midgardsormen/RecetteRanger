@@ -247,6 +247,41 @@ class ApiService {
     });
   }
 
+  // ===== Menus API =====
+
+  async createMenu(data: any) {
+    return this.authenticatedFetch('/api/menus', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getMenu(id: string) {
+    return this.authenticatedFetch(`/api/menus/${id}`, {
+      method: 'GET',
+    });
+  }
+
+  async updateMenu(id: string, data: any) {
+    return this.authenticatedFetch(`/api/menus/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteMenu(id: string) {
+    return this.authenticatedFetch(`/api/menus/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async searchMenus(searchParams: any) {
+    return this.authenticatedFetch('/api/menus/search', {
+      method: 'POST',
+      body: JSON.stringify(searchParams),
+    });
+  }
+
   // ==================== Meal Planning ====================
 
   // MealPlanDay

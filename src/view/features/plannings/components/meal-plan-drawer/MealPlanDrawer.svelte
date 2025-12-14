@@ -4,6 +4,7 @@
   import { RecipeDrawer } from '../../../recipe-drawer';
   import type { MealSlot, MealSlotConfig, MealPlanDay, MealPlanItem, MealTemplate } from '../../../../types/meal-plan.types';
   import type { Recipe } from '../../../../types/recipe.types';
+  import type { Menu } from '../../../../types/menu.types';
   import { X, Save, Copy } from 'lucide-svelte';
   import { loadRecipes, loadIngredients, validateForm, submitMealPlanItem } from './actions';
   import { apiService } from '../../../../services/api.service';
@@ -32,9 +33,10 @@
 
   // État du formulaire
   let selectedSlot = $state<MealSlot>('LUNCH' as MealSlot);
-  let itemType = $state<'recipe' | 'ingredient'>('recipe'); // Type d'item (recette ou ingrédient)
+  let itemType = $state<'recipe' | 'ingredient' | 'menu'>('recipe'); // Type d'item (recette, ingrédient ou menu)
   let selectedRecipe = $state<Recipe | null>(null);
   let selectedIngredient = $state<any | null>(null);
+  let selectedMenu = $state<Menu | null>(null);
   let quantity = $state<number | null>(null);
   let unit = $state<string | null>(null);
   let servings = $state(1);
@@ -52,6 +54,11 @@
   let ingredientSearchQuery = $state('');
   let availableIngredients = $state<any[]>([]);
   let loadingIngredients = $state(false);
+
+  // Recherche de menus
+  let menuSearchQuery = $state('');
+  let availableMenus = $state<Menu[]>([]);
+  let loadingMenus = $state(false);
 
   // État
   let saving = $state(false);
@@ -73,9 +80,10 @@
       selectedSlot = editingItem.slot;
       selectedRecipe = editingItem.recipe || null;
       selectedIngredient = editingItem.ingredient || null;
+      selectedMenu = editingItem.menu || null;
       quantity = editingItem.quantity || null;
       unit = editingItem.unit || null;
-      itemType = editingItem.ingredient ? 'ingredient' : 'recipe';
+      itemType = editingItem.menu ? 'menu' : (editingItem.ingredient ? 'ingredient' : 'recipe');
       servings = editingItem.servings;
       note = editingItem.note || '';
       isExceptional = editingItem.isExceptional;
@@ -86,6 +94,7 @@
       itemType = 'recipe';
       selectedRecipe = null;
       selectedIngredient = null;
+      selectedMenu = null;
       quantity = null;
       unit = null;
       servings = 1;
@@ -95,6 +104,7 @@
     }
     recipeSearchQuery = '';
     ingredientSearchQuery = '';
+    menuSearchQuery = '';
     errors = {};
   }
 
@@ -144,6 +154,34 @@
     unit = null;
   }
 
+  // Charger les menus
+  async function handleLoadMenus() {
+    loadingMenus = true;
+    try {
+      const result = await apiService.searchMenus({
+        search: menuSearchQuery,
+        sortBy: 'alpha',
+        limit: 20,
+        page: 0
+      });
+      availableMenus = result.data || result.items || [];
+    } finally {
+      loadingMenus = false;
+    }
+  }
+
+  function selectMenu(menu: Menu) {
+    selectedMenu = menu;
+    servings = menu.servings; // Initialiser avec le nombre de portions du menu
+    menuSearchQuery = '';
+    availableMenus = [];
+  }
+
+  function clearMenu() {
+    selectedMenu = null;
+    servings = 1;
+  }
+
   async function handleSubmit() {
     const validation = validateForm(isExceptional, customSlotName, servings);
     errors = validation.errors;
@@ -166,6 +204,7 @@
           isExceptional,
           selectedRecipe: itemType === 'recipe' ? selectedRecipe : null,
           selectedIngredient: itemType === 'ingredient' ? selectedIngredient : null,
+          selectedMenu: itemType === 'menu' ? selectedMenu : null,
           quantity,
           unit,
           servings,
@@ -220,20 +259,29 @@
       itemType = 'recipe';
       selectedRecipe = firstItem.recipe as Recipe;
       selectedIngredient = null;
+      selectedMenu = null;
       quantity = null;
       unit = null;
     } else if (firstItem.ingredientId && firstItem.ingredient) {
       itemType = 'ingredient';
       selectedIngredient = firstItem.ingredient;
       selectedRecipe = null;
+      selectedMenu = null;
       quantity = firstItem.quantity;
       unit = firstItem.unit;
+    } else if (firstItem.menuId && firstItem.menu) {
+      itemType = 'menu';
+      selectedMenu = firstItem.menu;
+      selectedRecipe = null;
+      selectedIngredient = null;
+      quantity = null;
+      unit = null;
     }
   }
 
   async function openSaveTemplateModal() {
     // Valider qu'il y a bien un repas configuré
-    if (!selectedRecipe && !selectedIngredient) {
+    if (!selectedRecipe && !selectedIngredient && !selectedMenu) {
       alert('Veuillez d\'abord configurer un repas avant de le sauvegarder comme template');
       return;
     }
@@ -262,6 +310,7 @@
           isExceptional,
           recipeId: itemType === 'recipe' ? selectedRecipe?.id : null,
           ingredientId: itemType === 'ingredient' ? selectedIngredient?.id : null,
+          menuId: itemType === 'menu' ? selectedMenu?.id : null,
           quantity: itemType === 'ingredient' ? quantity : null,
           unit: itemType === 'ingredient' ? unit : null,
           servings,
@@ -300,10 +349,10 @@
 
 <Drawer
   {isOpen}
-  title={editingItem ? 'Éditer le repas' : 'Ajouter un repas'}
+  title={editingItem ? 'Éditer le créneau' : 'Compléter un créneau'}
   onClose={onClose}
   primaryAction={{
-    label: editingItem ? 'Modifier le repas' : 'Ajouter le repas',
+    label: editingItem ? 'Modifier le planning' : 'Ajouter au planning',
     onClick: handleSubmit,
     disabled: saving,
     loading: saving
@@ -385,6 +434,7 @@
       bind:value={itemType}
       options={[
         { value: 'recipe', label: 'Recette' },
+        { value: 'menu', label: 'Menu/Repas composé' },
         { value: 'ingredient', label: 'Ingrédient simple' }
       ]}
       variant="inverse"
@@ -535,7 +585,55 @@
       {/if}
     {/if}
 
-    {#if itemType === 'recipe'}
+    {#if itemType === 'menu'}
+      {#if selectedMenu}
+        <div class="meal-plan-drawer__selected-recipe">
+          {#if selectedMenu.imageUrl}
+            <img src={selectedMenu.imageUrl} alt={selectedMenu.name} class="meal-plan-drawer__recipe-image" />
+          {/if}
+          <div class="meal-plan-drawer__recipe-info">
+            <span class="meal-plan-drawer__recipe-name">{selectedMenu.name}</span>
+            <Button variant="ghost-inverse" size="small" onclick={clearMenu}>
+              <X size={16} />
+              Changer
+            </Button>
+          </div>
+        </div>
+      {:else}
+        <div class="meal-plan-drawer__search-section">
+          <span class="meal-plan-drawer__search-label">Rechercher un menu</span>
+          <Input
+            id="menu-search"
+            bind:value={menuSearchQuery}
+            oninput={handleLoadMenus}
+            placeholder="Tapez pour rechercher..."
+            variant="inverse"
+          />
+        </div>
+
+        {#if loadingMenus}
+          <p class="meal-plan-drawer__loading-text">Chargement...</p>
+        {:else if menuSearchQuery.length >= 2 && availableMenus.length === 0}
+          <p class="meal-plan-drawer__no-results">Aucun menu trouvé</p>
+        {:else if availableMenus.length > 0}
+          <div class="meal-plan-drawer__recipes-list">
+            {#each availableMenus as menu}
+              <button
+                class="meal-plan-drawer__recipe-item"
+                onclick={() => selectMenu(menu)}
+              >
+                {#if menu.imageUrl}
+                  <img src={menu.imageUrl} alt={menu.name} class="meal-plan-drawer__recipe-thumb" />
+                {/if}
+                <span class="meal-plan-drawer__recipe-name">{menu.name}</span>
+              </button>
+            {/each}
+          </div>
+        {/if}
+      {/if}
+    {/if}
+
+    {#if itemType === 'recipe' || itemType === 'menu'}
     <FormField
       name="servings"
       label="Nombre de personnes"
@@ -567,7 +665,7 @@
     </FormField>
 
     <!-- Bouton "Sauvegarder comme template" -->
-    {#if !editingItem && (selectedRecipe || selectedIngredient)}
+    {#if !editingItem && (selectedRecipe || selectedIngredient || selectedMenu)}
       <div class="meal-plan-drawer__save-template">
         <Button
           variant="outlined-inverse"

@@ -178,14 +178,30 @@ export class ShoppingListService {
       },
       include: {
         items: {
-          where: {
-            recipeId: { not: null }, // Uniquement les items avec recette
-          },
           include: {
             recipe: {
               include: {
                 ingredients: {
                   include: {
+                    ingredient: true,
+                  },
+                },
+              },
+            },
+            ingredient: true, // Ingrédients directs
+            menu: {
+              include: {
+                items: {
+                  include: {
+                    recipe: {
+                      include: {
+                        ingredients: {
+                          include: {
+                            ingredient: true,
+                          },
+                        },
+                      },
+                    },
                     ingredient: true,
                   },
                 },
@@ -232,6 +248,121 @@ export class ShoppingListService {
     // Parcourir tous les repas
     for (const day of futureMealPlanDays) {
       for (const mealItem of day.items) {
+        // Traiter les ingrédients directs
+        if (mealItem.ingredient) {
+          const key = `${mealItem.ingredientId}`;
+          const unit = mealItem.unit || 'unité';
+          const quantity = mealItem.quantity ? parseFloat(mealItem.quantity.toString()) : 1;
+
+          if (!ingredientMap.has(key)) {
+            ingredientMap.set(key, {
+              ingredientId: mealItem.ingredientId!,
+              label: mealItem.ingredient.label,
+              aisle: mealItem.ingredient.aisle,
+              quantities: new Map(),
+            });
+          }
+
+          const ingredient = ingredientMap.get(key)!;
+
+          if (!ingredient.quantities.has(unit)) {
+            ingredient.quantities.set(unit, { amount: 0, mealPlanItemIds: [] });
+          }
+
+          const quantityData = ingredient.quantities.get(unit)!;
+          quantityData.amount += quantity;
+          quantityData.mealPlanItemIds.push(mealItem.id);
+          continue;
+        }
+
+        // Traiter les menus
+        if (mealItem.menu) {
+          const menuServings = mealItem.servings;
+          const menuDefaultServings = mealItem.menu.servings;
+          const menuRatio = menuServings / menuDefaultServings;
+
+          for (const menuItem of mealItem.menu.items) {
+            // Traiter les recettes du menu
+            if (menuItem.recipe) {
+              const recipeServings = menuItem.servings;
+              const recipeDefaultServings = menuItem.recipe.servings;
+              const recipeRatio = (recipeServings / recipeDefaultServings) * menuRatio;
+
+              for (const recipeIngredient of menuItem.recipe.ingredients) {
+                const key = `${recipeIngredient.ingredientId}`;
+
+                // Traiter les ingrédients NON-scalables
+                if (!recipeIngredient.scalable) {
+                  if (!nonScalableIngredients.has(key)) {
+                    nonScalableIngredients.set(key, {
+                      ingredientId: recipeIngredient.ingredientId,
+                      label: recipeIngredient.ingredient.label,
+                      aisle: recipeIngredient.ingredient.aisle,
+                      mealPlanItemIds: [mealItem.id],
+                    });
+                  } else {
+                    nonScalableIngredients.get(key)!.mealPlanItemIds.push(mealItem.id);
+                  }
+                  continue;
+                }
+
+                if (!recipeIngredient.quantity || !recipeIngredient.unit) {
+                  continue;
+                }
+
+                const unit = recipeIngredient.unit;
+                const scaledQuantity = parseFloat(recipeIngredient.quantity.toString()) * recipeRatio;
+
+                if (!ingredientMap.has(key)) {
+                  ingredientMap.set(key, {
+                    ingredientId: recipeIngredient.ingredientId,
+                    label: recipeIngredient.ingredient.label,
+                    aisle: recipeIngredient.ingredient.aisle,
+                    quantities: new Map(),
+                  });
+                }
+
+                const ingredient = ingredientMap.get(key)!;
+
+                if (!ingredient.quantities.has(unit)) {
+                  ingredient.quantities.set(unit, { amount: 0, mealPlanItemIds: [] });
+                }
+
+                const quantityData = ingredient.quantities.get(unit)!;
+                quantityData.amount += scaledQuantity;
+                quantityData.mealPlanItemIds.push(mealItem.id);
+              }
+            }
+            // Traiter les ingrédients directs du menu
+            else if (menuItem.ingredient) {
+              const key = `${menuItem.ingredientId}`;
+              const unit = menuItem.unit || 'unité';
+              const quantity = menuItem.quantity ? parseFloat(menuItem.quantity.toString()) * menuRatio : 1 * menuRatio;
+
+              if (!ingredientMap.has(key)) {
+                ingredientMap.set(key, {
+                  ingredientId: menuItem.ingredientId!,
+                  label: menuItem.ingredient.label,
+                  aisle: menuItem.ingredient.aisle,
+                  quantities: new Map(),
+                });
+              }
+
+              const ingredient = ingredientMap.get(key)!;
+
+              if (!ingredient.quantities.has(unit)) {
+                ingredient.quantities.set(unit, { amount: 0, mealPlanItemIds: [] });
+              }
+
+              const quantityData = ingredient.quantities.get(unit)!;
+              quantityData.amount += quantity;
+              quantityData.mealPlanItemIds.push(mealItem.id);
+            }
+          }
+          continue;
+        }
+
+        // Traiter les recettes directes
         if (!mealItem.recipe) continue;
 
         const servings = mealItem.servings;

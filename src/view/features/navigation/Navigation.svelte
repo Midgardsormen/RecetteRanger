@@ -4,7 +4,7 @@
   let { currentPage = '', isOpen = false, onClose, user = null }: { currentPage?: string; isOpen?: boolean; onClose?: () => void; user?: any } = $props();
 
   const navItems = [
-    { href: '/', label: 'Accueil', icon: '🏠' },
+    { href: '/menus', label: 'Menus', icon: '🍽️' },
     { href: '/recettes', label: 'Recettes', icon: '📖' },
     { href: '/ingredients', label: 'Ingrédients', icon: '🥗' },
     { href: '/articles', label: 'Articles', icon: '🧴' },
@@ -21,9 +21,6 @@
 
   // Check if a nav item is active (exact match or starts with the href for sub-pages)
   function isActive(itemHref: string): boolean {
-    if (itemHref === '/') {
-      return currentPage === '/';
-    }
     return currentPage === itemHref || currentPage.startsWith(itemHref + '/');
   }
 
