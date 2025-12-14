@@ -87,6 +87,7 @@ export async function submitMealPlanItem(
     isExceptional: boolean;
     selectedRecipe: Recipe | null;
     selectedIngredient: any | null;
+    selectedMenu: any | null;
     quantity: number | null;
     unit: string | null;
     servings: number;
@@ -101,6 +102,7 @@ export async function submitMealPlanItem(
       isExceptional: formData.isExceptional,
       recipeId: formData.selectedRecipe?.id,
       ingredientId: formData.selectedIngredient?.id,
+      menuId: formData.selectedMenu?.id,
       quantity: formData.quantity,
       unit: formData.unit,
       servings: formData.servings,
@@ -148,6 +150,7 @@ export async function submitMealPlanItem(
       isExceptional: formData.isExceptional,
       recipeId: formData.selectedRecipe?.id,
       ingredientId: formData.selectedIngredient?.id,
+      menuId: formData.selectedMenu?.id,
       quantity: formData.quantity,
       unit: formData.unit,
       servings: formData.servings,

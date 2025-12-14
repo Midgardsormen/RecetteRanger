@@ -13,6 +13,7 @@ import { MealPlanModule } from './api/meal-plan/meal-plan.module';
 import { ShoppingListModule } from './api/shopping-list/shopping-list.module';
 import { UploadModule } from './api/upload/upload.module';
 import { StoreModule } from './api/store/store.module';
+import { MenuModule } from './api/menu/menu.module';
 import { CsrfMiddleware } from './shared/middleware/csrf.middleware';
 import { RobotsHeaderMiddleware } from './shared/middleware/robots-header.middleware';
 
@@ -28,6 +29,7 @@ import { StoresModule } from './modules/stores/stores.module';
 import { UsersModule } from './modules/users/users.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { DemoModule } from './modules/demo/demo.module';
+import { MenusModule } from './modules/menus/menus.module';
 
 @Module({
   imports: [
@@ -49,6 +51,7 @@ import { DemoModule } from './modules/demo/demo.module';
     ShoppingListModule,
     UploadModule,
     StoreModule,
+    MenuModule,
     // Modules SSR
     HomeModule,
     IngredientsModule,
@@ -61,6 +64,7 @@ import { DemoModule } from './modules/demo/demo.module';
     UsersModule,
     AdminModule,
     DemoModule,
+    MenusModule,
   ],
   controllers: [AppController],
   providers: [

@@ -4,6 +4,8 @@ export const pages = {
   Home: () => import('./features/home/Home.svelte'),
   Recipes: () => import('./features/recipes/Recipes.svelte'),
   RecipeDetail: () => import('./features/recipes/RecipeDetail.svelte'),
+  Menus: () => import('./features/menus/Menus.svelte'),
+  MenuDetail: () => import('./features/menus/MenuDetail.svelte'),
   Ingredients: () => import('./features/ingredients/Ingredients.svelte'),
   Articles: () => import('./features/articles/Articles.svelte'),
   Stores: () => import('./features/stores/Stores.svelte'),
@@ -25,6 +27,8 @@ export const pages = {
 export { default as Home } from './features/home/Home.svelte';
 export { default as Recipes } from './features/recipes/Recipes.svelte';
 export { default as RecipeDetail } from './features/recipes/RecipeDetail.svelte';
+export { default as Menus } from './features/menus/Menus.svelte';
+export { default as MenuDetail } from './features/menus/MenuDetail.svelte';
 export { default as Ingredients } from './features/ingredients/Ingredients.svelte';
 export { default as Articles } from './features/articles/Articles.svelte';
 export { default as Stores } from './features/stores/Stores.svelte';

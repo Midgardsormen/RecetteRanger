@@ -43,10 +43,11 @@
   - Transitions: `$transition-base`, etc.
 
 #### 4. Organisation du code (découpage de l'intelligence)
-- **Découpez la logique métier** en fichiers séparés dans le MÊME dossier que le composant:
-  - `actions.ts` - Fonctions qui appellent des APIs ou effectuent des actions
-  - `config.ts` - Configuration, constantes, options
-  - `utils.ts` - Fonctions utilitaires SPÉCIFIQUES à ce composant
+- **Découpez la logique métier** en fichiers séparés dans le MÊME dossier que le composant
+- **Nomenclature** - Utiliser kebab-case avec préfixe du composant:
+  - `mon-composant.actions.ts` - Fonctions qui appellent des APIs ou effectuent des actions
+  - `mon-composant.config.ts` - Configuration, constantes, options
+  - `mon-composant.utils.ts` - Fonctions utilitaires SPÉCIFIQUES à ce composant
 - **Exceptions** - Placez dans des dossiers partagés:
   - `src/view/utils/` - Utilitaires partagés entre plusieurs composants
   - `src/view/types/` - Types TypeScript partagés
@@ -54,12 +55,14 @@
 Exemple de structure:
 ```
 features/
-  mon-feature/
-    MonFeature.svelte
-    actions.ts          ← Logique API et actions
-    config.ts           ← Configuration
+  composed-meals/
+    ComposedMeals.svelte
+    composed-meals.actions.ts      ← Logique API et actions
+    composed-meals.config.ts       ← Configuration
     components/
-      MonSousComposant.svelte
+      ComposedMealDrawer.svelte
+      composed-meal-drawer.actions.ts
+      composed-meal-drawer.config.ts
 ```
 
 #### 5. Formulaires

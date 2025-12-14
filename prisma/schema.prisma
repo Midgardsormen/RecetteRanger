@@ -159,6 +159,7 @@ model User {
   shoppingLists   ShoppingList[]
   mealSlotConfigs MealSlotConfig[]
   mealTemplates   MealTemplate[]
+  menus           Menu[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -188,6 +189,7 @@ model Recipe {
   ingredients       RecipeIngredient[]
   mealPlanItems     MealPlanItem[]
   mealTemplateItems MealTemplateItem[]
+  menuItems         MenuItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -224,6 +226,7 @@ model Article {
   shoppingListItems ShoppingListItem[]
   mealPlanItems     MealPlanItem[]
   mealTemplateItems MealTemplateItem[]
+  menuItems         MenuItem[]
 
   @@unique([label, aisle])
   @@index([aisle, label])
@@ -270,6 +273,8 @@ model MealPlanItem {
   recipeId       String?
   ingredient     Article?    @relation(fields: [ingredientId], references: [id])
   ingredientId   String?
+  menu           Menu?       @relation(fields: [menuId], references: [id])
+  menuId         String?
   quantity       Decimal?    @db.Decimal(10, 3) // Quantité pour les ingrédients directs
   unit           String? // Unité pour les ingrédients directs
   servings       Int         @default(1)
@@ -330,6 +335,45 @@ model MealTemplateItem {
   order          Int          @default(0) // Ordre d'affichage
 
   @@index([templateId])
+}
+
+// ====== Menus Composés ======
+
+model Menu {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  name        String // Ex: "Goûter d'automne", "Brunch du dimanche"
+  description String? // Description optionnelle
+  imageUrl    String?  @db.VarChar(2048)
+  servings    Int      @default(1) // Nombre de portions par défaut
+
+  items         MenuItem[]
+  mealPlanItems MealPlanItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model MenuItem {
+  id     String @id @default(cuid())
+  menu   Menu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menuId String
+
+  // Item peut être soit une recette, soit un ingrédient
+  recipe       Recipe?  @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  recipeId     String?
+  ingredient   Article? @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
+  ingredientId String?
+
+  quantity Decimal? @db.Decimal(10, 3) // Quantité pour les ingrédients
+  unit     String? // Unité pour les ingrédients
+  servings Int      @default(1) // Nombre de portions pour les recettes
+  order    Int      @default(0) // Ordre d'affichage dans le menu
+
+  @@index([menuId])
 }
 
 model Store {
