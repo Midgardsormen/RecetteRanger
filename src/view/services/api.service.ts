@@ -339,6 +339,50 @@ class ApiService {
     });
   }
 
+  // MealTemplate
+  async createMealTemplate(data: any) {
+    return this.authenticatedFetch('/api/meal-plans/templates', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getMealTemplates(userId: string) {
+    return this.authenticatedFetch(`/api/meal-plans/templates?userId=${userId}`);
+  }
+
+  async getMealTemplate(id: string) {
+    return this.authenticatedFetch(`/api/meal-plans/templates/${id}`);
+  }
+
+  async updateMealTemplate(id: string, data: any) {
+    return this.authenticatedFetch(`/api/meal-plans/templates/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteMealTemplate(id: string) {
+    return this.authenticatedFetch(`/api/meal-plans/templates/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Duplication & Template Application
+  async duplicateMeals(userId: string, data: any) {
+    return this.authenticatedFetch(`/api/meal-plans/duplicate?userId=${userId}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async applyTemplate(userId: string, data: any) {
+    return this.authenticatedFetch(`/api/meal-plans/apply-template?userId=${userId}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   // ==================== Shopping Lists ====================
 
   // ShoppingList

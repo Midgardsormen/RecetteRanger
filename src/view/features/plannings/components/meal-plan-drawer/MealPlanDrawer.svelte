@@ -2,10 +2,11 @@
   import { Drawer, Input, Select, Button, IconButton, FormField } from '../../../../components/ui';
   import { Checkbox, Textarea, RadioGroup } from '../../../../components/ui/form';
   import { RecipeDrawer } from '../../../recipe-drawer';
-  import type { MealSlot, MealSlotConfig, MealPlanDay, MealPlanItem } from '../../../../types/meal-plan.types';
+  import type { MealSlot, MealSlotConfig, MealPlanDay, MealPlanItem, MealTemplate } from '../../../../types/meal-plan.types';
   import type { Recipe } from '../../../../types/recipe.types';
-  import { X } from 'lucide-svelte';
+  import { X, Save, Copy } from 'lucide-svelte';
   import { loadRecipes, loadIngredients, validateForm, submitMealPlanItem } from './actions';
+  import { apiService } from '../../../../services/api.service';
 
   interface Props {
     isOpen?: boolean;
@@ -55,6 +56,15 @@
   // État
   let saving = $state(false);
   let errors = $state<Record<string, string>>({});
+
+  // Templates
+  let availableTemplates = $state<MealTemplate[]>([]);
+  let selectedTemplateId = $state<string>('');
+  let loadingTemplates = $state(false);
+  let showSaveTemplateModal = $state(false);
+  let templateName = $state('');
+  let templateDescription = $state('');
+  let savingTemplate = $state(false);
 
   // Réinitialiser le formulaire
   function resetForm() {
@@ -176,10 +186,111 @@
     handleLoadRecipes(); // Recharger la liste
   }
 
+  // ===== Templates =====
+  async function loadTemplates() {
+    loadingTemplates = true;
+    try {
+      const response = await apiService.getMealTemplates(userId);
+      availableTemplates = response;
+    } catch (err: any) {
+      console.error('Erreur lors du chargement des templates:', err);
+      alert('Erreur lors du chargement des templates');
+    } finally {
+      loadingTemplates = false;
+    }
+  }
+
+  async function applyTemplate(templateId: string) {
+    if (!templateId) return;
+
+    const template = availableTemplates.find(t => t.id === templateId);
+    if (!template || template.items.length === 0) return;
+
+    // Appliquer le premier item du template (pour un repas unique)
+    // Note: Pour un vrai template multi-repas, il faudrait une logique différente
+    const firstItem = template.items[0];
+
+    selectedSlot = firstItem.slot as MealSlot;
+    customSlotName = firstItem.customSlotName || '';
+    isExceptional = firstItem.isExceptional;
+    servings = firstItem.servings;
+    note = firstItem.note || '';
+
+    if (firstItem.recipeId && firstItem.recipe) {
+      itemType = 'recipe';
+      selectedRecipe = firstItem.recipe as Recipe;
+      selectedIngredient = null;
+      quantity = null;
+      unit = null;
+    } else if (firstItem.ingredientId && firstItem.ingredient) {
+      itemType = 'ingredient';
+      selectedIngredient = firstItem.ingredient;
+      selectedRecipe = null;
+      quantity = firstItem.quantity;
+      unit = firstItem.unit;
+    }
+  }
+
+  async function openSaveTemplateModal() {
+    // Valider qu'il y a bien un repas configuré
+    if (!selectedRecipe && !selectedIngredient) {
+      alert('Veuillez d\'abord configurer un repas avant de le sauvegarder comme template');
+      return;
+    }
+
+    showSaveTemplateModal = true;
+    templateName = '';
+    templateDescription = '';
+  }
+
+  async function saveAsTemplate() {
+    if (!templateName.trim()) {
+      alert('Veuillez saisir un nom pour le template');
+      return;
+    }
+
+    savingTemplate = true;
+    try {
+      const templateData = {
+        userId,
+        name: templateName.trim(),
+        description: templateDescription.trim() || null,
+        isFavorite: false,
+        items: [{
+          slot: selectedSlot,
+          customSlotName: isExceptional ? customSlotName : null,
+          isExceptional,
+          recipeId: itemType === 'recipe' ? selectedRecipe?.id : null,
+          ingredientId: itemType === 'ingredient' ? selectedIngredient?.id : null,
+          quantity: itemType === 'ingredient' ? quantity : null,
+          unit: itemType === 'ingredient' ? unit : null,
+          servings,
+          note: note || null,
+          order: 0
+        }]
+      };
+
+      await apiService.createMealTemplate(templateData);
+      alert('Template sauvegardé avec succès !');
+      showSaveTemplateModal = false;
+      templateName = '';
+      templateDescription = '';
+
+      // Recharger les templates
+      await loadTemplates();
+    } catch (err: any) {
+      console.error('Erreur lors de la sauvegarde du template:', err);
+      alert('Erreur lors de la sauvegarde du template: ' + err.message);
+    } finally {
+      savingTemplate = false;
+    }
+  }
+
   // Effet pour réinitialiser le formulaire quand le drawer s'ouvre
   $effect(() => {
     if (isOpen) {
       resetForm();
+      loadTemplates(); // Charger les templates disponibles
     }
   });
 
@@ -206,6 +317,30 @@
     <div class="meal-plan-drawer__date-section">
       <p class="meal-plan-drawer__date-display">{selectedDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
     </div>
+
+    <!-- Sélecteur de template -->
+    {#if !editingItem && availableTemplates.length > 0}
+      <div class="meal-plan-drawer__template-section">
+        <FormField
+          name="template"
+          label="Charger un template"
+          variant="inverse"
+          bind:value={selectedTemplateId}
+        >
+          <Select
+            id="template"
+            onchange={(e) => applyTemplate(e.currentTarget.value)}
+          >
+            <option value="">-- Choisir un template --</option>
+            {#each availableTemplates as template}
+              <option value={template.id}>
+                {template.isFavorite ? '⭐ ' : ''}{template.name}
+              </option>
+            {/each}
+          </Select>
+        </FormField>
+      </div>
+    {/if}
 
     <Checkbox
       id="isExceptional"
@@ -430,8 +565,74 @@
         rows={3}
       />
     </FormField>
+
+    <!-- Bouton "Sauvegarder comme template" -->
+    {#if !editingItem && (selectedRecipe || selectedIngredient)}
+      <div class="meal-plan-drawer__save-template">
+        <Button
+          variant="outlined-inverse"
+          size="medium"
+          onclick={openSaveTemplateModal}
+          type="button"
+        >
+          <Save size={16} />
+          Sauvegarder comme template
+        </Button>
+      </div>
+    {/if}
   </form>
 </Drawer>
+
+<!-- Modal pour sauvegarder un template -->
+{#if showSaveTemplateModal}
+  <div class="template-modal-overlay" onclick={() => { showSaveTemplateModal = false; }}>
+    <div class="template-modal" onclick={(e) => e.stopPropagation()}>
+      <div class="template-modal__header">
+        <h3>Sauvegarder comme template</h3>
+        <Button variant="ghost" size="small" onclick={() => { showSaveTemplateModal = false; }}>
+          <X size={20} />
+        </Button>
+      </div>
+      <div class="template-modal__body">
+        <FormField
+          name="templateName"
+          label="Nom du template"
+          required
+          bind:value={templateName}
+        >
+          <Input
+            id="templateName"
+            placeholder="Ex: Mon petit-déj habituel"
+            autofocus
+          />
+        </FormField>
+        <FormField
+          name="templateDescription"
+          label="Description (optionnel)"
+          bind:value={templateDescription}
+        >
+          <Textarea
+            id="templateDescription"
+            placeholder="Ex: Petit-déjeuner équilibré pour tous les jours"
+            rows={3}
+          />
+        </FormField>
+      </div>
+      <div class="template-modal__footer">
+        <Button variant="ghost" onclick={() => { showSaveTemplateModal = false; }}>
+          Annuler
+        </Button>
+        <Button
+          variant="primary"
+          onclick={saveAsTemplate}
+          disabled={savingTemplate}
+        >
+          {savingTemplate ? 'Sauvegarde...' : 'Sauvegarder'}
+        </Button>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <!-- Drawer de création de recette imbriqué -->
 <RecipeDrawer
@@ -596,6 +797,65 @@
       border-radius: $radius-sm;
       object-fit: cover;
       flex-shrink: 0;
+    }
+
+    // Element: save-template
+    &__save-template {
+      padding-top: $spacing-base;
+      border-top: 1px solid $color-white-alpha-30;
+    }
+  }
+
+  // Template Modal
+  .template-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: $spacing-lg;
+  }
+
+  .template-modal {
+    background: $color-white;
+    border-radius: $radius-lg;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $spacing-lg;
+      border-bottom: 1px solid $color-gray-200;
+
+      h3 {
+        margin: 0;
+        font-size: $font-size-xl;
+        font-weight: $font-weight-semibold;
+        color: $color-gray-900;
+      }
+    }
+
+    &__body {
+      padding: $spacing-lg;
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-lg;
+    }
+
+    &__footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-base;
+      padding: $spacing-lg;
+      border-top: 1px solid $color-gray-200;
     }
   }
 </style>

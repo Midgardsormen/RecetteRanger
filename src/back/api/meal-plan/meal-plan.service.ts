@@ -3,6 +3,9 @@ import { PrismaService } from '../../shared/prisma/prisma.service';
 import { CreateMealPlanDayDto, CreateMealPlanItemDto } from './dto/create-meal-plan.dto';
 import { UpdateMealPlanDayDto, UpdateMealPlanItemDto } from './dto/update-meal-plan.dto';
 import { CreateMealSlotConfigDto, UpdateMealSlotConfigDto } from './dto/meal-slot-config.dto';
+import { CreateMealTemplateDto } from './dto/create-meal-template.dto';
+import { UpdateMealTemplateDto } from './dto/update-meal-template.dto';
+import { DuplicateMealsDto, ApplyTemplateDto } from './dto/duplicate-meals.dto';
 
 @Injectable()
 export class MealPlanService {
@@ -299,5 +302,336 @@ export class MealPlanService {
         await this.createSlotConfig(userId, config);
       }
     }
+  }
+
+  // ====== MealTemplate CRUD ======
+
+  async createTemplate(createMealTemplateDto: CreateMealTemplateDto) {
+    try {
+      return await this.prisma.mealTemplate.create({
+        data: {
+          userId: createMealTemplateDto.userId,
+          name: createMealTemplateDto.name,
+          description: createMealTemplateDto.description,
+          isFavorite: createMealTemplateDto.isFavorite || false,
+          items: createMealTemplateDto.items
+            ? {
+                create: createMealTemplateDto.items.map(item => ({
+                  slot: item.slot,
+                  customSlotName: item.customSlotName,
+                  isExceptional: item.isExceptional || false,
+                  recipeId: item.recipeId,
+                  ingredientId: item.ingredientId,
+                  quantity: item.quantity,
+                  unit: item.unit,
+                  servings: item.servings || 1,
+                  note: item.note,
+                  order: item.order || 0,
+                })),
+              }
+            : undefined,
+        },
+        include: {
+          items: {
+            include: {
+              recipe: {
+                include: {
+                  ingredients: {
+                    include: {
+                      ingredient: true,
+                    },
+                  },
+                },
+              },
+              ingredient: true,
+            },
+            orderBy: { order: 'asc' },
+          },
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Un template avec ce nom existe déjà pour cet utilisateur');
+      }
+      throw error;
+    }
+  }
+
+  async findAllTemplates(userId: string) {
+    return this.prisma.mealTemplate.findMany({
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            recipe: {
+              include: {
+                ingredients: {
+                  include: {
+                    ingredient: true,
+                  },
+                },
+              },
+            },
+            ingredient: true,
+          },
+          orderBy: { order: 'asc' },
+        },
+      },
+      orderBy: [
+        { isFavorite: 'desc' }, // Favoris en premier
+        { createdAt: 'desc' },  // Plus récents ensuite
+      ],
+    });
+  }
+
+  async findOneTemplate(id: string) {
+    const template = await this.prisma.mealTemplate.findUnique({
+      where: { id },
+      include: {
+        items: {
+          include: {
+            recipe: {
+              include: {
+                ingredients: {
+                  include: {
+                    ingredient: true,
+                  },
+                },
+              },
+            },
+            ingredient: true,
+          },
+          orderBy: { order: 'asc' },
+        },
+      },
+    });
+
+    if (!template) {
+      throw new NotFoundException(`Template avec l'ID ${id} non trouvé`);
+    }
+
+    return template;
+  }
+
+  async updateTemplate(id: string, updateMealTemplateDto: UpdateMealTemplateDto) {
+    try {
+      // Ne pas permettre de mettre à jour les items via cette méthode
+      // Les items seront gérés séparément si besoin
+      const { items, ...updateData } = updateMealTemplateDto;
+
+      return await this.prisma.mealTemplate.update({
+        where: { id },
+        data: updateData,
+        include: {
+          items: {
+            include: {
+              recipe: {
+                include: {
+                  ingredients: {
+                    include: {
+                      ingredient: true,
+                    },
+                  },
+                },
+              },
+              ingredient: true,
+            },
+            orderBy: { order: 'asc' },
+          },
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Template avec l'ID ${id} non trouvé`);
+      }
+      if (error.code === 'P2002') {
+        throw new ConflictException('Un template avec ce nom existe déjà pour cet utilisateur');
+      }
+      throw error;
+    }
+  }
+
+  async removeTemplate(id: string) {
+    try {
+      return await this.prisma.mealTemplate.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Template avec l'ID ${id} non trouvé`);
+      }
+      throw error;
+    }
+  }
+
+  // ====== Duplication et application de templates ======
+
+  async duplicateMealsToMultipleDates(userId: string, duplicateMealsDto: DuplicateMealsDto) {
+    const { sourceDate, targetDates, conflictMode } = duplicateMealsDto;
+
+    // Normaliser la date source
+    const normalizedSourceDate = this.normalizeToMidnightUTC(sourceDate);
+
+    // Récupérer le jour source
+    const sourceDay = await this.prisma.mealPlanDay.findFirst({
+      where: {
+        userId,
+        date: normalizedSourceDate,
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!sourceDay) {
+      throw new NotFoundException('Aucun repas trouvé pour la date source');
+    }
+
+    const results = [];
+
+    for (const targetDate of targetDates) {
+      const normalizedTargetDate = this.normalizeToMidnightUTC(targetDate);
+
+      // Vérifier s'il existe déjà un jour pour cette date
+      const existingDay = await this.prisma.mealPlanDay.findFirst({
+        where: {
+          userId,
+          date: normalizedTargetDate,
+        },
+      });
+
+      if (existingDay) {
+        if (conflictMode === 'skip') {
+          results.push({ date: targetDate, status: 'skipped', reason: 'Date already has meals' });
+          continue;
+        } else if (conflictMode === 'replace') {
+          // Supprimer le jour existant (cascade sur les items)
+          await this.prisma.mealPlanDay.delete({
+            where: { id: existingDay.id },
+          });
+        }
+      }
+
+      // Créer le nouveau jour avec les items dupliqués
+      const newDay = await this.prisma.mealPlanDay.create({
+        data: {
+          userId,
+          date: normalizedTargetDate,
+          items: {
+            create: sourceDay.items.map(item => ({
+              slot: item.slot,
+              customSlotName: item.customSlotName,
+              isExceptional: item.isExceptional,
+              recipeId: item.recipeId,
+              ingredientId: item.ingredientId,
+              quantity: item.quantity,
+              unit: item.unit,
+              servings: item.servings,
+              note: item.note,
+              order: item.order,
+            })),
+          },
+        },
+        include: {
+          items: {
+            include: {
+              recipe: {
+                include: {
+                  ingredients: {
+                    include: {
+                      ingredient: true,
+                    },
+                  },
+                },
+              },
+              ingredient: true,
+            },
+          },
+        },
+      });
+
+      results.push({ date: targetDate, status: 'success', day: newDay });
+    }
+
+    return results;
+  }
+
+  async applyTemplateToMultipleDates(userId: string, applyTemplateDto: ApplyTemplateDto) {
+    const { templateId, targetDates, conflictMode } = applyTemplateDto;
+
+    // Récupérer le template
+    const template = await this.findOneTemplate(templateId);
+
+    if (template.userId !== userId) {
+      throw new NotFoundException('Template non trouvé ou non autorisé');
+    }
+
+    const results = [];
+
+    for (const targetDate of targetDates) {
+      const normalizedTargetDate = this.normalizeToMidnightUTC(targetDate);
+
+      // Vérifier s'il existe déjà un jour pour cette date
+      const existingDay = await this.prisma.mealPlanDay.findFirst({
+        where: {
+          userId,
+          date: normalizedTargetDate,
+        },
+      });
+
+      if (existingDay) {
+        if (conflictMode === 'skip') {
+          results.push({ date: targetDate, status: 'skipped', reason: 'Date already has meals' });
+          continue;
+        } else if (conflictMode === 'replace') {
+          // Supprimer le jour existant (cascade sur les items)
+          await this.prisma.mealPlanDay.delete({
+            where: { id: existingDay.id },
+          });
+        }
+      }
+
+      // Créer le nouveau jour avec les items du template
+      const newDay = await this.prisma.mealPlanDay.create({
+        data: {
+          userId,
+          date: normalizedTargetDate,
+          items: {
+            create: template.items.map(item => ({
+              slot: item.slot,
+              customSlotName: item.customSlotName,
+              isExceptional: item.isExceptional,
+              recipeId: item.recipeId,
+              ingredientId: item.ingredientId,
+              quantity: item.quantity,
+              unit: item.unit,
+              servings: item.servings,
+              note: item.note,
+              order: item.order,
+            })),
+          },
+        },
+        include: {
+          items: {
+            include: {
+              recipe: {
+                include: {
+                  ingredients: {
+                    include: {
+                      ingredient: true,
+                    },
+                  },
+                },
+              },
+              ingredient: true,
+            },
+          },
+        },
+      });
+
+      results.push({ date: targetDate, status: 'success', day: newDay });
+    }
+
+    return results;
   }
 }
