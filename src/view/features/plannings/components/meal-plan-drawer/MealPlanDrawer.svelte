@@ -300,10 +300,10 @@
 
 <Drawer
   {isOpen}
-  title={editingItem ? 'Éditer le repas' : 'Ajouter un repas'}
+  title={editingItem ? 'Éditer le créneau' : 'Compléter un créneau'}
   onClose={onClose}
   primaryAction={{
-    label: editingItem ? 'Modifier le repas' : 'Ajouter le repas',
+    label: editingItem ? 'Modifier le planning' : 'Ajouter au planning',
     onClick: handleSubmit,
     disabled: saving,
     loading: saving
