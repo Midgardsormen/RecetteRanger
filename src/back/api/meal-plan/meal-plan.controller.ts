@@ -5,6 +5,10 @@ import { CreateMealPlanDayDto, CreateMealPlanItemDto } from './dto/create-meal-p
 import { UpdateMealPlanDayDto, UpdateMealPlanItemDto } from './dto/update-meal-plan.dto';
 import { MealPlanDayDto, MealPlanItemDto } from './dto/meal-plan.dto';
 import { CreateMealSlotConfigDto, UpdateMealSlotConfigDto, MealSlotConfigDto } from './dto/meal-slot-config.dto';
+import { CreateMealTemplateDto } from './dto/create-meal-template.dto';
+import { UpdateMealTemplateDto } from './dto/update-meal-template.dto';
+import { MealTemplateDto } from './dto/meal-template.dto';
+import { DuplicateMealsDto, ApplyTemplateDto } from './dto/duplicate-meals.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('meal-plans')
@@ -190,5 +194,90 @@ export class MealPlanController {
   @ApiResponse({ status: 201, description: 'Configurations initialisées' })
   initializeDefaultSlotConfigs(@Query('userId') userId: string) {
     return this.mealPlanService.initializeDefaultSlotConfigs(userId);
+  }
+
+  // MealTemplate endpoints
+  @Post('templates')
+  @ApiOperation({ summary: 'Créer un template de repas' })
+  @ApiResponse({
+    status: 201,
+    description: 'Template créé avec succès',
+    type: MealTemplateDto
+  })
+  @ApiResponse({ status: 409, description: 'Un template avec ce nom existe déjà' })
+  createTemplate(@Body() createMealTemplateDto: CreateMealTemplateDto) {
+    return this.mealPlanService.createTemplate(createMealTemplateDto);
+  }
+
+  @Get('templates')
+  @ApiOperation({ summary: 'Récupérer les templates de repas d\'un utilisateur' })
+  @ApiQuery({ name: 'userId', description: 'ID de l\'utilisateur' })
+  @ApiResponse({
+    status: 200,
+    description: 'Liste des templates',
+    type: [MealTemplateDto]
+  })
+  findAllTemplates(@Query('userId') userId: string) {
+    return this.mealPlanService.findAllTemplates(userId);
+  }
+
+  @Get('templates/:id')
+  @ApiOperation({ summary: 'Récupérer un template par ID' })
+  @ApiParam({ name: 'id', description: 'ID du template' })
+  @ApiResponse({
+    status: 200,
+    description: 'Template trouvé',
+    type: MealTemplateDto
+  })
+  @ApiResponse({ status: 404, description: 'Template non trouvé' })
+  findOneTemplate(@Param('id') id: string) {
+    return this.mealPlanService.findOneTemplate(id);
+  }
+
+  @Patch('templates/:id')
+  @ApiOperation({ summary: 'Mettre à jour un template' })
+  @ApiParam({ name: 'id', description: 'ID du template' })
+  @ApiResponse({
+    status: 200,
+    description: 'Template mis à jour',
+    type: MealTemplateDto
+  })
+  @ApiResponse({ status: 404, description: 'Template non trouvé' })
+  updateTemplate(@Param('id') id: string, @Body() updateMealTemplateDto: UpdateMealTemplateDto) {
+    return this.mealPlanService.updateTemplate(id, updateMealTemplateDto);
+  }
+
+  @Delete('templates/:id')
+  @ApiOperation({ summary: 'Supprimer un template' })
+  @ApiParam({ name: 'id', description: 'ID du template' })
+  @ApiResponse({ status: 200, description: 'Template supprimé' })
+  @ApiResponse({ status: 404, description: 'Template non trouvé' })
+  removeTemplate(@Param('id') id: string) {
+    return this.mealPlanService.removeTemplate(id);
+  }
+
+  // Duplication and Template Application endpoints
+  @Post('duplicate')
+  @ApiOperation({ summary: 'Dupliquer les repas d\'un jour vers plusieurs dates' })
+  @ApiQuery({ name: 'userId', description: 'ID de l\'utilisateur' })
+  @ApiResponse({
+    status: 201,
+    description: 'Repas dupliqués avec succès',
+  })
+  @ApiResponse({ status: 404, description: 'Aucun repas trouvé pour la date source' })
+  duplicateMeals(@Query('userId') userId: string, @Body() duplicateMealsDto: DuplicateMealsDto) {
+    return this.mealPlanService.duplicateMealsToMultipleDates(userId, duplicateMealsDto);
+  }
+
+  @Post('apply-template')
+  @ApiOperation({ summary: 'Appliquer un template à plusieurs dates' })
+  @ApiQuery({ name: 'userId', description: 'ID de l\'utilisateur' })
+  @ApiResponse({
+    status: 201,
+    description: 'Template appliqué avec succès',
+  })
+  @ApiResponse({ status: 404, description: 'Template non trouvé' })
+  applyTemplate(@Query('userId') userId: string, @Body() applyTemplateDto: ApplyTemplateDto) {
+    return this.mealPlanService.applyTemplateToMultipleDates(userId, applyTemplateDto);
   }
 }

@@ -124,3 +124,81 @@ export interface CalendarDate {
   isCurrentMonth: boolean;
   mealPlanDay?: MealPlanDay;
 }
+
+// Meal Templates
+export interface MealTemplateItem {
+  id: string;
+  templateId: string;
+  slot: MealSlot;
+  customSlotName: string | null;
+  isExceptional: boolean;
+  recipe: Recipe | null;
+  recipeId: string | null;
+  ingredient: any | null;
+  ingredientId: string | null;
+  quantity: number | null;
+  unit: string | null;
+  servings: number;
+  note: string | null;
+  order: number;
+}
+
+export interface MealTemplate {
+  id: string;
+  userId: string;
+  name: string;
+  description: string | null;
+  isFavorite: boolean;
+  items: MealTemplateItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateMealTemplateItemDto {
+  slot: MealSlot;
+  customSlotName?: string;
+  isExceptional?: boolean;
+  recipeId?: string;
+  ingredientId?: string;
+  quantity?: number;
+  unit?: string;
+  servings?: number;
+  note?: string;
+  order?: number;
+}
+
+export interface CreateMealTemplateDto {
+  userId: string;
+  name: string;
+  description?: string;
+  isFavorite?: boolean;
+  items?: CreateMealTemplateItemDto[];
+}
+
+export interface UpdateMealTemplateDto {
+  name?: string;
+  description?: string;
+  isFavorite?: boolean;
+}
+
+// Duplication
+export type ConflictMode = 'skip' | 'replace';
+
+export interface DuplicateMealsDto {
+  sourceDate: string;
+  targetDates: string[];
+  conflictMode: ConflictMode;
+}
+
+export interface ApplyTemplateDto {
+  templateId: string;
+  targetDates: string[];
+  conflictMode: ConflictMode;
+}
+
+export interface DuplicationResult {
+  date: string;
+  status: 'success' | 'skipped';
+  reason?: string;
+  day?: MealPlanDay;
+}

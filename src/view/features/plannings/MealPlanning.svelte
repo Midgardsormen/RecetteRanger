@@ -2,6 +2,7 @@
   import Layout from '../../layouts/Layout.svelte';
   import { Calendar, CalendarControls } from './components/calendar';
   import { MealPlanDrawer } from './components/meal-plan-drawer';
+  import { DuplicateMealsDrawer } from './components/duplicate-meals-drawer';
   import { Button, PageHero, ConfirmModal, Spinner, IconButton, DropdownMenu } from '../../components/ui';
   import { GenerateShoppingListDrawer } from '../shopping-lists/components';
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../types/meal-plan.types';
@@ -21,6 +22,9 @@
   let selectedDate = $state(new Date());
   let editingMealItem = $state<any>(null);
   let showGenerateDrawer = $state(false);
+  let showDuplicateDrawer = $state(false);
+  let duplicateSourceDate = $state<Date | null>(null);
+  let duplicateSourceMealPlan = $state<MealPlanDay | null>(null);
 
   // Modal de confirmation de suppression
   let isConfirmModalOpen = $state(false);
@@ -47,7 +51,21 @@
     selectedDate = date;
     currentDate = date; // Garder le calendrier centré sur cette date
     editingMealItem = null;
+
+    // Si le jour a des repas, proposer d'ajouter ou de dupliquer
+    const mealDay = mealPlanDays.find(d => new Date(d.date).toDateString() === date.toDateString());
+
+    // Toujours ouvrir le drawer d'ajout de repas
     showMealDrawer = true;
+  }
+
+  function handleDuplicateClick(date: Date) {
+    const mealDay = mealPlanDays.find(d => new Date(d.date).toDateString() === date.toDateString());
+    if (mealDay && mealDay.items.length > 0) {
+      duplicateSourceDate = date;
+      duplicateSourceMealPlan = mealDay;
+      showDuplicateDrawer = true;
+    }
   }
 
   function handleMealEdit(item: any) {
@@ -114,6 +132,13 @@
   function handleListGenerated() {
     // Optionnel : rediriger vers la liste ou afficher un message
     showGenerateDrawer = false;
+  }
+
+  function handleDuplicateSuccess() {
+    showDuplicateDrawer = false;
+    duplicateSourceDate = null;
+    duplicateSourceMealPlan = null;
+    loadData(); // Recharger les données
   }
 
   // Menu de configuration
@@ -215,6 +240,7 @@
         onDateNavigate={handleDateNavigate}
         onMealEdit={handleMealEdit}
         onMealDelete={openDeleteConfirmation}
+        onDayDuplicate={handleDuplicateClick}
       />
     {/if}
   </div>
@@ -235,6 +261,15 @@
   isOpen={showGenerateDrawer}
   onClose={() => { showGenerateDrawer = false; }}
   onGenerate={handleListGenerated}
+/>
+
+<DuplicateMealsDrawer
+  isOpen={showDuplicateDrawer}
+  sourceDate={duplicateSourceDate}
+  sourceMealPlan={duplicateSourceMealPlan}
+  userId={user?.id}
+  onClose={() => { showDuplicateDrawer = false; duplicateSourceDate = null; duplicateSourceMealPlan = null; }}
+  onSuccess={handleDuplicateSuccess}
 />
 
 <!-- Modal de confirmation de suppression -->

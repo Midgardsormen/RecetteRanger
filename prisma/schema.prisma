@@ -158,6 +158,7 @@ model User {
   mealDays        MealPlanDay[]
   shoppingLists   ShoppingList[]
   mealSlotConfigs MealSlotConfig[]
+  mealTemplates   MealTemplate[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -183,9 +184,10 @@ model Recipe {
   ownerId    String?
   visibility RecipeVisibility @default(PRIVATE)
 
-  steps         Step[]
-  ingredients   RecipeIngredient[]
-  mealPlanItems MealPlanItem[]
+  steps             Step[]
+  ingredients       RecipeIngredient[]
+  mealPlanItems     MealPlanItem[]
+  mealTemplateItems MealTemplateItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -221,6 +223,7 @@ model Article {
   recipeLinks       RecipeIngredient[]
   shoppingListItems ShoppingListItem[]
   mealPlanItems     MealPlanItem[]
+  mealTemplateItems MealTemplateItem[]
 
   @@unique([label, aisle])
   @@index([aisle, label])
@@ -290,6 +293,43 @@ model MealSlotConfig {
 
   @@unique([userId, slot])
   @@index([userId])
+}
+
+model MealTemplate {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  name        String // Ex: "Mon petit-déj habituel", "Semaine type"
+  description String? // Description optionnelle
+  isFavorite  Boolean  @default(false) // Pour marquer les templates favoris
+
+  items MealTemplateItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model MealTemplateItem {
+  id             String       @id @default(cuid())
+  template       MealTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  templateId     String
+  slot           MealSlot
+  customSlotName String? // Nom personnalisé pour les repas exceptionnels
+  isExceptional  Boolean      @default(false) // Indique si c'est un repas exceptionnel
+  recipe         Recipe?      @relation(fields: [recipeId], references: [id])
+  recipeId       String?
+  ingredient     Article?     @relation(fields: [ingredientId], references: [id])
+  ingredientId   String?
+  quantity       Decimal?     @db.Decimal(10, 3) // Quantité pour les ingrédients directs
+  unit           String? // Unité pour les ingrédients directs
+  servings       Int          @default(1)
+  note           String?
+  order          Int          @default(0) // Ordre d'affichage
+
+  @@index([templateId])
 }
 
 model Store {

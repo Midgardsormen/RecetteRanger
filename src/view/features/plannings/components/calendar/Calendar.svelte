@@ -2,7 +2,7 @@
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../../../types/meal-plan.types';
   import { MealSlotColors } from '../../../../types/meal-plan.types';
   import { Button, IconButton, Badge, ListItem } from '../../../../components/ui';
-  import { ArrowLeft, ArrowRight, Pencil, Trash2 } from 'lucide-svelte';
+  import { ArrowLeft, ArrowRight, Pencil, Trash2, Copy } from 'lucide-svelte';
 
   interface Props {
     view?: CalendarView;
@@ -14,6 +14,7 @@
     onDateNavigate?: (date: Date) => void;
     onMealEdit?: (item: any) => void;
     onMealDelete?: (item: any) => void;
+    onDayDuplicate?: (date: Date) => void;
     showHeader?: boolean;
   }
 
@@ -27,6 +28,7 @@
     onDateNavigate,
     onMealEdit,
     onMealDelete,
+    onDayDuplicate,
     showHeader = true
   }: Props = $props();
 
@@ -311,11 +313,26 @@
         class:has-meals={mealPlan && mealPlan.items.length > 0}
         onclick={() => handleDateClick(date)}
       >
-        <div class="day-number">
-          {#if view === 'week' || view === 'day'}
-            <span class="day-name">{formatDayName(date)}</span>
+        <div class="day-header-row">
+          <div class="day-number">
+            {#if view === 'week' || view === 'day'}
+              <span class="day-name">{formatDayName(date)}</span>
+            {/if}
+            {date.getDate()}
+          </div>
+          {#if mealPlan && mealPlan.items.length > 0 && onDayDuplicate}
+            <IconButton
+              variant="ghost"
+              size="small"
+              onclick={(e: MouseEvent) => {
+                e.stopPropagation();
+                onDayDuplicate?.(date);
+              }}
+              ariaLabel="Dupliquer ce jour"
+            >
+              <Copy size={16} />
+            </IconButton>
           {/if}
-          {date.getDate()}
         </div>
 
         {#if mealPlan}
@@ -588,6 +605,13 @@
     &.has-meals {
       background: rgba($brand-primary, 0.03);
     }
+  }
+
+  .day-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $spacing-xs;
   }
 
   .day-number {
