@@ -67,6 +67,23 @@ features/
 - FormField gère automatiquement: labels, validation, messages d'erreur, états
 - Import: `import { FormField } from '../../components/ui/form';`
 
+#### 6. Overlays (Modal, Drawer, Popup, etc.)
+- **TOUJOURS** bloquer le scroll du body quand un overlay est ouvert
+- **TOUJOURS** compenser la largeur de la scrollbar pour éviter le flickering
+- Exemple d'implémentation:
+  ```typescript
+  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+  document.body.style.overflow = 'hidden';
+  if (scrollbarWidth > 0) {
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+  ```
+- Restaurer au cleanup:
+  ```typescript
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
+  ```
+
 ### Déploiement
 - Production: Render (backend + PostgreSQL)
 - Les migrations Prisma sont appliquées automatiquement via `prisma migrate deploy`

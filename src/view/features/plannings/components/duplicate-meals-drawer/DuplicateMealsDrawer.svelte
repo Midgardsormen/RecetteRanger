@@ -421,7 +421,6 @@
       &:hover:not(:disabled) {
         background: $color-white-alpha-20;
         border-color: $color-white;
-        transform: scale(1.05);
       }
 
       &.selected {
