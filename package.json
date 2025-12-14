@@ -10,7 +10,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:prod": "npm run migrate:fix && npm run migrate:deploy && node dist/main",
-    "migrate:fix": "npx prisma migrate resolve --applied 20251209204215_add_account_status || true && npx prisma migrate resolve --rolled-back 20251209204905_create_store_table || true && npx prisma migrate resolve --rolled-back 20251214100000_add_meal_templates_and_duplication || true",
+    "migrate:fix": "npx prisma migrate resolve --applied 20251209204215_add_account_status || true && npx prisma migrate resolve --rolled-back 20251209204905_create_store_table || true && npx prisma migrate resolve --rolled-back 20251214100000_add_meal_templates_and_duplication || true && npx prisma migrate resolve --rolled-back 20251214140000_add_menu_feature || true",
     "migrate:deploy": "npx prisma migrate deploy",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "nest start --watch",
