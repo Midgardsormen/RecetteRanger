@@ -47,5 +47,5 @@ ALTER TABLE "MealTemplateItem" ADD CONSTRAINT "MealTemplateItem_templateId_fkey"
 -- AddForeignKey
 ALTER TABLE "MealTemplateItem" ADD CONSTRAINT "MealTemplateItem_recipeId_fkey" FOREIGN KEY ("recipeId") REFERENCES "Recipe"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
--- AddForeignKey
-ALTER TABLE "MealTemplateItem" ADD CONSTRAINT "MealTemplateItem_ingredientId_fkey" FOREIGN KEY ("ingredientId") REFERENCES "Article"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- AddForeignKey (Article FK removed - table may not exist in production yet)
+-- Will be added in a future migration once Article table is confirmed to exist
