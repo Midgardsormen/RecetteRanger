@@ -18,6 +18,7 @@
       quantity?: number;
       unit?: string;
       servings?: number;
+      availableUnits?: string[];
     }>;
   }
 
@@ -67,7 +68,11 @@
             ingredientLabel: item.ingredient?.label || '',
             quantity: item.quantity ? Number(item.quantity) : undefined,
             unit: item.unit || undefined,
-            servings: item.servings
+            servings: item.servings,
+            // Récupérer les unités disponibles de l'ingrédient si c'est un ingrédient
+            availableUnits: item.ingredient?.units && item.ingredient.units.length > 0
+              ? item.ingredient.units
+              : (item.ingredientId ? ['unité'] : undefined)
           })) || []
         };
       } else {

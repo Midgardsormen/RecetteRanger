@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Button, FormField, SearchBar, SectionTitle } from '../../components/ui';
+  import { Button, FormField, SearchBar, SectionTitle, SelectableCard, Input, Select } from '../../components/ui';
   import { apiService } from '../../services/api.service';
-  import { Trash2, UtensilsCrossed, Carrot } from 'lucide-svelte';
+  import { UtensilsCrossed, Carrot } from 'lucide-svelte';
   import type { Recipe } from '../../types/recipe.types';
   import type { Article } from '../../types/article.types';
 
@@ -15,6 +15,7 @@
         quantity?: number;
         unit?: string;
         servings?: number;
+        availableUnits?: string[]; // Unités disponibles pour l'ingrédient
       }>;
     };
     errors: Record<string, string>;
@@ -77,7 +78,8 @@
         ingredientId: ingredient.id,
         ingredientLabel: ingredient.label,
         quantity: 1,
-        unit: ingredient.units?.[0] || 'pce'
+        unit: ingredient.units?.[0] || 'unité',
+        availableUnits: ingredient.units && ingredient.units.length > 0 ? ingredient.units : ['unité']
       }
     ];
     searchQuery = '';
@@ -163,73 +165,45 @@
     {:else}
       <div class="menu-step2__items">
         {#each formData.items as item, index}
-          <div class="menu-step2__item">
-            <div class="menu-step2__item-icon">
-              {#if item.recipeId}
-                <UtensilsCrossed size={18} />
-              {:else}
-                <Carrot size={18} />
-              {/if}
-            </div>
-
-            <div class="menu-step2__item-content">
-              <div class="menu-step2__item-label">
-                {item.recipeLabel || item.ingredientLabel}
+          <SelectableCard
+            title={item.recipeLabel || item.ingredientLabel || ''}
+            variant="inverse"
+            removable={true}
+            onRemove={() => removeItem(index)}
+          >
+            {#if item.recipeId}
+              <Input
+                id={`servings-${index}`}
+                label="Portions"
+                type="number"
+                min="1"
+                value={item.servings?.toString() || '1'}
+                oninput={(e) => updateItemServings(index, Number(e.currentTarget.value))}
+              />
+            {:else}
+              <div class="menu-step2__ingredient-inputs">
+                <Input
+                  id={`quantity-${index}`}
+                  label="Quantité"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={item.quantity?.toString() || ''}
+                  oninput={(e) => updateItemQuantity(index, Number(e.currentTarget.value))}
+                />
+                <Select
+                  id={`unit-${index}`}
+                  label="Unité"
+                  value={item.unit || ''}
+                  onchange={(e) => updateItemUnit(index, e.currentTarget.value)}
+                >
+                  {#each (item.availableUnits || ['unité']) as unit}
+                    <option value={unit}>{unit}</option>
+                  {/each}
+                </Select>
               </div>
-
-              {#if item.recipeId}
-                <div class="menu-step2__item-details">
-                  <FormField label="Portions" inline={true}>
-                    <input
-                      type="number"
-                      value={item.servings}
-                      oninput={(e) => updateItemServings(index, Number(e.currentTarget.value))}
-                      min="1"
-                      class="menu-step2__item-input"
-                    />
-                  </FormField>
-                </div>
-              {:else}
-                <div class="menu-step2__item-details">
-                  <FormField label="Quantité" inline={true}>
-                    <input
-                      type="number"
-                      value={item.quantity}
-                      oninput={(e) => updateItemQuantity(index, Number(e.currentTarget.value))}
-                      min="0"
-                      step="0.1"
-                      class="menu-step2__item-input"
-                    />
-                  </FormField>
-                  <FormField label="Unité" inline={true}>
-                    <select
-                      value={item.unit}
-                      onchange={(e) => updateItemUnit(index, e.currentTarget.value)}
-                      class="menu-step2__item-input"
-                    >
-                      <option value="unité">unité</option>
-                      <option value="g">g</option>
-                      <option value="kg">kg</option>
-                      <option value="ml">ml</option>
-                      <option value="l">l</option>
-                      <option value="cuillère à soupe">cuillère à soupe</option>
-                      <option value="cuillère à café">cuillère à café</option>
-                      <option value="tasse">tasse</option>
-                      <option value="pincée">pincée</option>
-                    </select>
-                  </FormField>
-                </div>
-              {/if}
-            </div>
-
-            <button
-              class="menu-step2__item-remove"
-              onclick={() => removeItem(index)}
-              aria-label="Supprimer"
-            >
-              <Trash2 size={18} />
-            </button>
-          </div>
+            {/if}
+          </SelectableCard>
         {/each}
       </div>
     {/if}
@@ -329,85 +303,14 @@
       gap: $spacing-sm;
     }
 
-    &__item {
-      display: flex;
-      align-items: flex-start;
+    // Element: ingredient-inputs (quantity and unit)
+    &__ingredient-inputs {
+      display: grid;
+      grid-template-columns: auto 1fr;
       gap: $spacing-sm;
-      padding: $spacing-base;
-      background: $color-gray-50;
-      border-radius: $radius-md;
-      border: 1px solid $color-gray-200;
-    }
 
-    &__item-icon {
-      display: flex;
-      align-items: center;
-      padding-top: $spacing-2xs;
-      color: $color-gray-600;
-    }
-
-    &__item-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-xs;
-    }
-
-    &__item-label {
-      font-weight: $font-weight-medium;
-      color: $color-gray-800;
-    }
-
-    &__item-details {
-      display: flex;
-      align-items: center;
-      gap: $spacing-sm;
-      flex-wrap: wrap;
-    }
-
-    &__item-input {
-      width: 80px;
-      padding: $spacing-2xs $spacing-xs;
-      border: 1px solid $color-gray-300;
-      border-radius: $radius-sm;
-      font-size: $font-size-sm;
-
-      &:focus {
-        outline: none;
-        border-color: $brand-primary;
-      }
-
-      &[type="number"] {
-        width: 70px;
-      }
-    }
-
-    // Select pour les unités
-    select.menu-step2__item-input {
-      width: auto;
-      min-width: 100px;
-    }
-
-    &__item-unit {
-      font-size: $font-size-sm;
-      color: $color-gray-600;
-    }
-
-    &__item-remove {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      background: transparent;
-      border: none;
-      border-radius: $radius-sm;
-      cursor: pointer;
-      color: $color-danger;
-      transition: all $transition-base;
-
-      &:hover {
-        background: $color-background-danger;
+      :global(input[type="number"]) {
+        max-width: 100px;
       }
     }
   }
