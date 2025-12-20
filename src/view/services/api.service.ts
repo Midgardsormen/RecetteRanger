@@ -411,6 +411,13 @@ class ApiService {
     });
   }
 
+  async duplicateSingleMeal(userId: string, data: { sourceMealItemId: string; targetDates: string[] }) {
+    return this.authenticatedFetch(`/api/meal-plans/duplicate-meal?userId=${userId}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   async applyTemplate(userId: string, data: any) {
     return this.authenticatedFetch(`/api/meal-plans/apply-template?userId=${userId}`, {
       method: 'POST',

@@ -8,7 +8,7 @@ import { CreateMealSlotConfigDto, UpdateMealSlotConfigDto, MealSlotConfigDto } f
 import { CreateMealTemplateDto } from './dto/create-meal-template.dto';
 import { UpdateMealTemplateDto } from './dto/update-meal-template.dto';
 import { MealTemplateDto } from './dto/meal-template.dto';
-import { DuplicateMealsDto, ApplyTemplateDto } from './dto/duplicate-meals.dto';
+import { DuplicateMealsDto, ApplyTemplateDto, DuplicateSingleMealDto } from './dto/duplicate-meals.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('meal-plans')
@@ -279,5 +279,17 @@ export class MealPlanController {
   @ApiResponse({ status: 404, description: 'Template non trouvé' })
   applyTemplate(@Query('userId') userId: string, @Body() applyTemplateDto: ApplyTemplateDto) {
     return this.mealPlanService.applyTemplateToMultipleDates(userId, applyTemplateDto);
+  }
+
+  @Post('duplicate-meal')
+  @ApiOperation({ summary: 'Dupliquer un repas vers plusieurs dates' })
+  @ApiQuery({ name: 'userId', description: 'ID de l\'utilisateur' })
+  @ApiResponse({
+    status: 201,
+    description: 'Repas dupliqué avec succès',
+  })
+  @ApiResponse({ status: 404, description: 'Repas source non trouvé' })
+  duplicateSingleMeal(@Query('userId') userId: string, @Body() duplicateSingleMealDto: DuplicateSingleMealDto) {
+    return this.mealPlanService.duplicateSingleMeal(userId, duplicateSingleMealDto);
   }
 }

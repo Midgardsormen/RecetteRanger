@@ -497,6 +497,7 @@ export interface ListItemProps {
   footer?: Snippet;
   onEdit?: () => void;
   onDelete?: () => void;
+  onDuplicate?: () => void;
   onClick?: () => void;
   children?: Snippet;
   draggable?: boolean;

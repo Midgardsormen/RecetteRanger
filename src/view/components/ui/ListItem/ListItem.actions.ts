@@ -37,6 +37,16 @@ export function handleDelete(e: Event, onDelete?: () => void): void {
 }
 
 /**
+ * Handle duplicate button click with event propagation stop
+ */
+export function handleDuplicate(e: Event, onDuplicate?: () => void): void {
+  e.stopPropagation();
+  if (onDuplicate) {
+    onDuplicate();
+  }
+}
+
+/**
  * Handle checkbox change with event propagation stop
  */
 export function handleCheck(e: Event, onCheck?: (checked: boolean) => void): void {
