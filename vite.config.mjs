@@ -29,6 +29,8 @@ export default defineConfig({
           'feature-home': ['./src/view/features/home/Home.svelte'],
           'feature-recipes': ['./src/view/features/recipes/Recipes.svelte'],
           'feature-recipe-detail': ['./src/view/features/recipes/RecipeDetail.svelte'],
+          'feature-menus': ['./src/view/features/menus/Menus.svelte'],
+          'feature-menu-detail': ['./src/view/features/menus/MenuDetail.svelte'],
           'feature-ingredients': ['./src/view/features/ingredients/Ingredients.svelte'],
           'feature-articles': ['./src/view/features/articles/Articles.svelte'],
           'feature-stores': ['./src/view/features/stores/Stores.svelte'],
