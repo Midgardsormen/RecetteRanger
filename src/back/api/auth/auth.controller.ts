@@ -32,12 +32,15 @@ export class AuthController {
   ) {
     const result = await this.authService.register(registerDto);
 
+    const isProd = process.env.NODE_ENV === 'production';
+
     // Définir le token dans un cookie HTTP-only
     res.cookie('access_token', result.access_token, {
       httpOnly: true, // Inaccessible depuis JavaScript
-      secure: process.env.NODE_ENV === 'production', // HTTPS uniquement en production
+      secure: isProd, // HTTPS uniquement en production
       sameSite: 'lax', // Protection CSRF
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+      ...(isProd && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
     });
 
     // Retourner uniquement les infos utilisateur (pas le token)
@@ -63,12 +66,15 @@ export class AuthController {
       const result = await this.authService.login(loginDto);
       console.log('[AUTH] Login successful for user:', result.user.id);
 
+      const isProd = process.env.NODE_ENV === 'production';
+
       // Définir le token dans un cookie HTTP-only
       res.cookie('access_token', result.access_token, {
         httpOnly: true, // Inaccessible depuis JavaScript
-        secure: process.env.NODE_ENV === 'production', // HTTPS uniquement en production
+        secure: isProd, // HTTPS uniquement en production
         sameSite: 'lax', // Protection CSRF
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+        ...(isProd && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
       });
 
       // Retourner uniquement les infos utilisateur (pas le token)

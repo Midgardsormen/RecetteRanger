@@ -50,6 +50,9 @@ const {
     sameSite: 'lax', // 'strict' empêcherait l'envoi du cookie lors de navigations externes
     secure: isProd,
     path: '/',
+    // En production, on peut spécifier le domaine via variable d'environnement
+    // Exemple: COOKIE_DOMAIN=recetteranger.fr
+    ...(isProd && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
   },
 
   size: 64,
@@ -83,9 +86,15 @@ export class CsrfMiddleware implements NestMiddleware {
       console.log('[CSRF] Cookies:', Object.keys(req.cookies || {}));
       console.log('[CSRF] CSRF cookie value:', req.cookies?.['psifi.x-csrf-token'] ? 'present' : 'missing');
       console.log('[CSRF] Session ID:', req.cookies?.access_token ? 'authenticated' : 'anonymous');
+      console.log('[CSRF] All headers:', JSON.stringify(req.headers, null, 2));
     }
 
-    return doubleCsrfProtection(req, res, next);
+    try {
+      return doubleCsrfProtection(req, res, next);
+    } catch (error) {
+      console.error('[CSRF] Validation failed:', error);
+      throw error;
+    }
   }
 }
 
