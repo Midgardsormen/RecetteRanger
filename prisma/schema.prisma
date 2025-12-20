@@ -328,6 +328,8 @@ model MealTemplateItem {
   recipeId       String?
   ingredient     Article?     @relation(fields: [ingredientId], references: [id])
   ingredientId   String?
+  menu           Menu?        @relation(fields: [menuId], references: [id])
+  menuId         String?
   quantity       Decimal?     @db.Decimal(10, 3) // Quantité pour les ingrédients directs
   unit           String? // Unité pour les ingrédients directs
   servings       Int          @default(1)
@@ -348,8 +350,9 @@ model Menu {
   imageUrl    String?  @db.VarChar(2048)
   servings    Int      @default(1) // Nombre de portions par défaut
 
-  items         MenuItem[]
-  mealPlanItems MealPlanItem[]
+  items             MenuItem[]
+  mealPlanItems     MealPlanItem[]
+  mealTemplateItems MealTemplateItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

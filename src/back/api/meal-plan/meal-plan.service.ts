@@ -35,6 +35,7 @@ export class MealPlanService {
                   slot: item.slot,
                   recipeId: item.recipeId,
                   ingredientId: item.ingredientId,
+                  menuId: item.menuId,
                   quantity: item.quantity,
                   unit: item.unit,
                   servings: item.servings || 1,
@@ -85,6 +86,16 @@ export class MealPlanService {
               },
             },
             ingredient: true, // Inclure l'ingrédient direct si présent
+            menu: {
+              include: {
+                items: {
+                  include: {
+                    recipe: true,
+                    ingredient: true,
+                  },
+                },
+              },
+            },
           },
           orderBy: { order: 'asc' },
         },
@@ -153,6 +164,7 @@ export class MealPlanService {
           isExceptional: createMealPlanItemDto.isExceptional || false,
           recipeId: createMealPlanItemDto.recipeId,
           ingredientId: createMealPlanItemDto.ingredientId,
+          menuId: createMealPlanItemDto.menuId,
           quantity: createMealPlanItemDto.quantity,
           unit: createMealPlanItemDto.unit,
           servings: createMealPlanItemDto.servings || 1,
@@ -170,6 +182,16 @@ export class MealPlanService {
             },
           },
           ingredient: true, // Inclure l'ingrédient direct si présent
+          menu: {
+            include: {
+              items: {
+                include: {
+                  recipe: true,
+                  ingredient: true,
+                },
+              },
+            },
+          },
         },
       });
     } catch (error) {
@@ -322,6 +344,7 @@ export class MealPlanService {
                   isExceptional: item.isExceptional || false,
                   recipeId: item.recipeId,
                   ingredientId: item.ingredientId,
+                  menuId: item.menuId,
                   quantity: item.quantity,
                   unit: item.unit,
                   servings: item.servings || 1,
@@ -344,6 +367,16 @@ export class MealPlanService {
                 },
               },
               ingredient: true,
+              menu: {
+                include: {
+                  items: {
+                    include: {
+                      recipe: true,
+                      ingredient: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: { order: 'asc' },
           },
@@ -435,6 +468,16 @@ export class MealPlanService {
                 },
               },
               ingredient: true,
+              menu: {
+                include: {
+                  items: {
+                    include: {
+                      recipe: true,
+                      ingredient: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: { order: 'asc' },
           },
@@ -524,6 +567,7 @@ export class MealPlanService {
               isExceptional: item.isExceptional,
               recipeId: item.recipeId,
               ingredientId: item.ingredientId,
+              menuId: item.menuId,
               quantity: item.quantity,
               unit: item.unit,
               servings: item.servings,
@@ -545,6 +589,16 @@ export class MealPlanService {
                 },
               },
               ingredient: true,
+              menu: {
+                include: {
+                  items: {
+                    include: {
+                      recipe: true,
+                      ingredient: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -603,6 +657,7 @@ export class MealPlanService {
               isExceptional: item.isExceptional,
               recipeId: item.recipeId,
               ingredientId: item.ingredientId,
+              menuId: item.menuId,
               quantity: item.quantity,
               unit: item.unit,
               servings: item.servings,
@@ -624,6 +679,16 @@ export class MealPlanService {
                 },
               },
               ingredient: true,
+              menu: {
+                include: {
+                  items: {
+                    include: {
+                      recipe: true,
+                      ingredient: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
