@@ -163,7 +163,10 @@ export class ShoppingListService {
   async generateFromMealPlan(userId: string, generateDto: GenerateShoppingListDto) {
     const fromDate = new Date(generateDto.fromDate);
     const toDate = new Date(generateDto.toDate);
+
+    // Normaliser "now" à minuit pour ne comparer que les jours (pas les heures)
     const now = new Date();
+    now.setHours(0, 0, 0, 0);
 
     console.log('🔍 [Shopping List] Génération pour:', { userId, fromDate, toDate });
 
@@ -225,7 +228,7 @@ export class ShoppingListService {
       }))
     })));
 
-    // Filtrer pour ne garder que les repas futurs
+    // Filtrer pour ne garder que les repas futurs (ou d'aujourd'hui)
     const futureMealPlanDays = mealPlanDays.filter(day => new Date(day.date) >= now);
     console.log('🔍 [Shopping List] Jours futurs:', futureMealPlanDays.length);
 

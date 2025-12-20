@@ -3,11 +3,22 @@
 
   let { currentPage = '', isOpen = false, onClose, user = null }: { currentPage?: string; isOpen?: boolean; onClose?: () => void; user?: any } = $props();
 
-  const navItems = [
-    { href: '/menus', label: 'Menus', icon: '🍽️' },
-    { href: '/recettes', label: 'Recettes', icon: '📖' },
+  // Desktop navigation items (with gap after index 2)
+  const desktopNavItems = [
     { href: '/ingredients', label: 'Ingrédients', icon: '🥗' },
-    { href: '/articles', label: 'Articles', icon: '🧴' },
+    { href: '/recettes', label: 'Recettes', icon: '📖' },
+    { href: '/menus', label: 'Menus', icon: '🍽️' },
+    { href: '/stores', label: 'Enseignes', icon: '🏪' },
+    { href: '/plannings', label: 'Plannings', icon: '📅' },
+    { href: '/shopping-lists', label: 'Liste de course', icon: '🛒' }
+  ];
+
+  // Mobile navigation items (includes home)
+  const mobileNavItems = [
+    { href: '/', label: 'Accueil', icon: '🏠' },
+    { href: '/ingredients', label: 'Ingrédients', icon: '🥗' },
+    { href: '/recettes', label: 'Recettes', icon: '📖' },
+    { href: '/menus', label: 'Menus', icon: '🍽️' },
     { href: '/stores', label: 'Enseignes', icon: '🏪' },
     { href: '/plannings', label: 'Plannings', icon: '📅' },
     { href: '/shopping-lists', label: 'Liste de course', icon: '🛒' }
@@ -30,8 +41,8 @@
   <!-- Desktop horizontal navigation (visible >= 1024px) -->
   <nav class="nav-horizontal">
     <ul class="nav-horizontal__list">
-      {#each navItems as item, index}
-        <li class="nav-horizontal__item" class:nav-horizontal__item--gap={index === 2}>
+      {#each desktopNavItems as item, index}
+        <li class="nav-horizontal__item" class:nav-horizontal__item--gap={index === 3}>
           <a
             href={item.href}
             class="nav-horizontal__link"
@@ -54,7 +65,7 @@
   >
     <nav class="mobile-nav">
       <ul class="mobile-nav__list">
-        {#each navItems as item}
+        {#each mobileNavItems as item}
           <li class="mobile-nav__item">
             <a
               href={item.href}
@@ -100,6 +111,10 @@
       gap: $spacing-sm;
       max-width: $max-width-container;
       margin: 0 auto;
+    }
+
+    &__item--gap {
+      grid-column-start: 5;
     }
 
     &__link {

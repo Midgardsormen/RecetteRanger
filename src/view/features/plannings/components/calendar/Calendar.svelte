@@ -339,8 +339,8 @@
           <div class="meals-preview">
             {#each sortedItems as item}
               <ListItem
-                title={item.ingredient ? item.ingredient.label : (item.recipe?.label || 'Sans recette')}
-                subtitle={item.ingredient ? `${item.quantity || ''} ${item.unit || ''}`.trim() : (item.servings ? `${item.servings} personne${item.servings > 1 ? 's' : ''}` : undefined)}
+                title={item.menu ? item.menu.name : (item.ingredient ? item.ingredient.label : (item.recipe?.label || 'Sans recette'))}
+                subtitle={item.menu ? `${item.menu.items?.length || 0} item${item.menu.items?.length > 1 ? 's' : ''}` : (item.ingredient ? `${item.quantity || ''} ${item.unit || ''}`.trim() : (item.servings ? `${item.servings} personne${item.servings > 1 ? 's' : ''}` : undefined))}
                 showThumbnail={false}
                 layout="column"
                 size="compact"

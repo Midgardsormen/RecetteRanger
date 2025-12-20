@@ -31,6 +31,11 @@ export class CreateMealTemplateItemDto {
   @IsString()
   ingredientId?: string;
 
+  @ApiProperty({ description: 'ID du menu', required: false })
+  @IsOptional()
+  @IsString()
+  menuId?: string;
+
   @ApiProperty({ description: 'Quantité de l\'ingrédient', required: false, example: 2 })
   @IsOptional()
   @IsNumber()
