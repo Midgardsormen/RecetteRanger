@@ -48,3 +48,18 @@ export class ApplyTemplateDto {
   @IsEnum(['skip', 'replace'])
   conflictMode: 'skip' | 'replace';
 }
+
+export class DuplicateSingleMealDto {
+  @ApiProperty({ description: 'ID du repas (MealPlanItem) à dupliquer' })
+  @IsString()
+  sourceMealItemId: string;
+
+  @ApiProperty({
+    description: 'Dates cibles où dupliquer le repas (ISO 8601)',
+    type: [String],
+    example: ['2025-01-16T00:00:00.000Z', '2025-01-17T00:00:00.000Z']
+  })
+  @IsArray()
+  @IsDateString({}, { each: true })
+  targetDates: string[];
+}

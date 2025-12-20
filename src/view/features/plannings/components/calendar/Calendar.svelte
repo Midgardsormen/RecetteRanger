@@ -14,6 +14,7 @@
     onDateNavigate?: (date: Date) => void;
     onMealEdit?: (item: any) => void;
     onMealDelete?: (item: any) => void;
+    onMealDuplicate?: (item: any) => void;
     onDayDuplicate?: (date: Date) => void;
     showHeader?: boolean;
   }
@@ -28,6 +29,7 @@
     onDateNavigate,
     onMealEdit,
     onMealDelete,
+    onMealDuplicate,
     onDayDuplicate,
     showHeader = true
   }: Props = $props();
@@ -346,6 +348,7 @@
                 size="compact"
                 onEdit={() => onMealEdit?.(item)}
                 onDelete={() => onMealDelete?.(item)}
+                onDuplicate={() => onMealDuplicate?.(item)}
                 onClick={() => onMealEdit?.(item)}
               >
                 {#snippet badge()}

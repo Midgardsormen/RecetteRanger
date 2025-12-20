@@ -26,4 +26,5 @@ export const LIST_ITEM_METADATA_LIMIT = 5;
 export const LIST_ITEM_ARIA_LABELS = {
   edit: 'Modifier',
   delete: 'Supprimer',
+  duplicate: 'Dupliquer',
 } as const;

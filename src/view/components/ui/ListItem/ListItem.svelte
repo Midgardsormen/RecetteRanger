@@ -2,9 +2,9 @@
   import type { ListItemProps } from '../../../types/ui.types';
   import IconButton from '../IconButton';
   import OptimizedImage from '../OptimizedImage';
-  import { Pencil, Trash2, FileText } from 'lucide-svelte';
+  import { Pencil, Trash2, FileText, Copy } from 'lucide-svelte';
   import { LIST_ITEM_DEFAULTS, LIST_ITEM_METADATA_LIMIT, LIST_ITEM_ARIA_LABELS } from './ListItem.config';
-  import { handleClick, handleEdit, handleDelete, handleCheck } from './ListItem.actions';
+  import { handleClick, handleEdit, handleDelete, handleCheck, handleDuplicate } from './ListItem.actions';
 
   let {
     imageUrl,
@@ -17,6 +17,7 @@
     footer,
     onEdit,
     onDelete,
+    onDuplicate,
     onClick,
     children,
     draggable = LIST_ITEM_DEFAULTS.draggable,
@@ -112,7 +113,7 @@
     </div>
 
     <!-- Badge and Actions side column -->
-    {#if badge || onEdit || onDelete}
+    {#if badge || onEdit || onDelete || onDuplicate}
       <div class="list-item__side">
         <!-- Badge -->
         {#if badge}
@@ -122,7 +123,7 @@
         {/if}
 
         <!-- Actions -->
-        {#if onEdit || onDelete}
+        {#if onEdit || onDelete || onDuplicate}
           <div class="list-item__actions">
             {#if onEdit}
               <IconButton
@@ -132,6 +133,16 @@
                 ariaLabel={LIST_ITEM_ARIA_LABELS.edit}
               >
                 <Pencil size={18} />
+              </IconButton>
+            {/if}
+            {#if onDuplicate}
+              <IconButton
+                variant="ghost"
+                size="medium"
+                onclick={(e) => handleDuplicate(e, onDuplicate)}
+                ariaLabel={LIST_ITEM_ARIA_LABELS.duplicate}
+              >
+                <Copy size={18} />
               </IconButton>
             {/if}
             {#if onDelete}

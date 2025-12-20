@@ -3,6 +3,7 @@
   import { Calendar, CalendarControls } from './components/calendar';
   import { MealPlanDrawer } from './components/meal-plan-drawer';
   import { DuplicateMealsDrawer } from './components/duplicate-meals-drawer';
+  import { DuplicateSingleMealDrawer } from './components/duplicate-single-meal-drawer';
   import { Button, PageHero, ConfirmModal, Spinner, IconButton, DropdownMenu } from '../../components/ui';
   import { GenerateShoppingListDrawer } from '../shopping-lists/components';
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../types/meal-plan.types';
@@ -25,6 +26,8 @@
   let showDuplicateDrawer = $state(false);
   let duplicateSourceDate = $state<Date | null>(null);
   let duplicateSourceMealPlan = $state<MealPlanDay | null>(null);
+  let showDuplicateSingleMealDrawer = $state(false);
+  let sourceMealForDuplication = $state<any>(null);
 
   // Modal de confirmation de suppression
   let isConfirmModalOpen = $state(false);
@@ -141,6 +144,17 @@
     loadData(); // Recharger les données
   }
 
+  function handleMealDuplicate(item: any) {
+    sourceMealForDuplication = item;
+    showDuplicateSingleMealDrawer = true;
+  }
+
+  function handleSingleMealDuplicateSuccess() {
+    showDuplicateSingleMealDrawer = false;
+    sourceMealForDuplication = null;
+    loadData(); // Recharger les données
+  }
+
   // Menu de configuration
   const configMenuItems: DropdownMenuItem[] = [
     {
@@ -240,6 +254,7 @@
         onDateNavigate={handleDateNavigate}
         onMealEdit={handleMealEdit}
         onMealDelete={openDeleteConfirmation}
+        onMealDuplicate={handleMealDuplicate}
         onDayDuplicate={handleDuplicateClick}
       />
     {/if}
@@ -270,6 +285,14 @@
   userId={user?.id}
   onClose={() => { showDuplicateDrawer = false; duplicateSourceDate = null; duplicateSourceMealPlan = null; }}
   onSuccess={handleDuplicateSuccess}
+/>
+
+<DuplicateSingleMealDrawer
+  isOpen={showDuplicateSingleMealDrawer}
+  sourceMeal={sourceMealForDuplication}
+  userId={user?.id}
+  onClose={() => { showDuplicateSingleMealDrawer = false; sourceMealForDuplication = null; }}
+  onSuccess={handleSingleMealDuplicateSuccess}
 />
 
 <!-- Modal de confirmation de suppression -->

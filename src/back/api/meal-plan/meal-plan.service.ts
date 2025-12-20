@@ -699,4 +699,92 @@ export class MealPlanService {
 
     return results;
   }
+
+  async duplicateSingleMeal(userId: string, duplicateSingleMealDto: { sourceMealItemId: string; targetDates: string[] }) {
+    const { sourceMealItemId, targetDates } = duplicateSingleMealDto;
+
+    // Récupérer le repas source
+    const sourceMealItem = await this.prisma.mealPlanItem.findUnique({
+      where: { id: sourceMealItemId },
+      include: {
+        day: true,
+      },
+    });
+
+    if (!sourceMealItem) {
+      throw new NotFoundException('Repas source non trouvé');
+    }
+
+    // Vérifier que le repas appartient bien à l'utilisateur
+    if (sourceMealItem.day.userId !== userId) {
+      throw new NotFoundException('Repas non trouvé ou non autorisé');
+    }
+
+    const results = [];
+
+    for (const targetDate of targetDates) {
+      const normalizedTargetDate = this.normalizeToMidnightUTC(targetDate);
+
+      // Récupérer ou créer le jour cible
+      let targetDay = await this.prisma.mealPlanDay.findFirst({
+        where: {
+          userId,
+          date: normalizedTargetDate,
+        },
+      });
+
+      if (!targetDay) {
+        targetDay = await this.prisma.mealPlanDay.create({
+          data: {
+            userId,
+            date: normalizedTargetDate,
+          },
+        });
+      }
+
+      // Créer le repas dupliqué
+      const newMealItem = await this.prisma.mealPlanItem.create({
+        data: {
+          dayId: targetDay.id,
+          slot: sourceMealItem.slot,
+          customSlotName: sourceMealItem.customSlotName,
+          isExceptional: sourceMealItem.isExceptional,
+          recipeId: sourceMealItem.recipeId,
+          ingredientId: sourceMealItem.ingredientId,
+          menuId: sourceMealItem.menuId,
+          quantity: sourceMealItem.quantity,
+          unit: sourceMealItem.unit,
+          servings: sourceMealItem.servings,
+          note: sourceMealItem.note,
+          order: sourceMealItem.order,
+        },
+        include: {
+          recipe: {
+            include: {
+              ingredients: {
+                include: {
+                  ingredient: true,
+                },
+              },
+            },
+          },
+          ingredient: true,
+          menu: {
+            include: {
+              items: {
+                include: {
+                  recipe: true,
+                  ingredient: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      results.push({ date: targetDate, status: 'success', mealItem: newMealItem });
+    }
+
+    return results;
+  }
 }
