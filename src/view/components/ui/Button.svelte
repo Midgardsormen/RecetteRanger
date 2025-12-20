@@ -63,7 +63,11 @@
 
     // Par défaut 100% sur mobile, largeur max au-delà de sm
     width: 100%;
-    
+
+    // Empêcher les icônes SVG de rétrécir
+    :global(svg) {
+      flex-shrink: 0;
+    }
 
     @media (min-width: $breakpoint-sm) {
       max-width: 300px;
