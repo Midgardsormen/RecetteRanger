@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { MealPlanDay, MealSlotConfig } from '../../../../../types/meal-plan.types';
   import { MealSlotColors } from '../../../../../types/meal-plan.types';
-  import { Badge, ListItem, IconButton } from '../../../../../components/ui';
+  import { Badge, ListItem, IconButton, Carousel } from '../../../../../components/ui';
   import { Copy } from 'lucide-svelte';
   import { startOfWeek, addDays, isSameDay, formatDayName } from '../../../../../utils/date-range.utils';
   import { getMealPlanForDate, sortMealItems } from '../utils';
@@ -35,38 +35,12 @@
 
   const today = new Date();
 
-  // Référence au conteneur pour le scroll
-  let weekGridElement: HTMLDivElement;
-
-  // Auto-scroll vers le jour sélectionné
-  $effect(() => {
-    if (weekGridElement && currentDate) {
-      scrollToCurrentDay();
-    }
-  });
-
-  function scrollToCurrentDay() {
-    if (!weekGridElement) return;
-
-    const isMobile = window.innerWidth < 768;
-    if (!isMobile) return;
-
-    const dayIndex = dates.findIndex(date => isSameDay(date, currentDate));
-    if (dayIndex === -1) return;
-
-    // Scroll horizontal en mode mobile
-    const dayWidth = weekGridElement.scrollWidth / 7;
-    const scrollPosition = dayWidth * dayIndex;
-
-    weekGridElement.scrollTo({
-      left: scrollPosition,
-      behavior: 'smooth'
-    });
-  }
+  // Index du jour actif pour le carousel
+  const activeIndex = $derived(dates.findIndex(date => isSameDay(date, currentDate)));
 </script>
 
 <div class="week-view">
-  <div class="week-view__grid" bind:this={weekGridElement}>
+  <Carousel columns={7} itemWidthPercent={83.33} gap="sm" {activeIndex} autoScroll={true}>
     {#each dates as date}
       {@const mealPlan = getMealPlanForDate(mealPlanDays, date)}
       {@const isToday = isSameDay(date, today)}
@@ -74,7 +48,7 @@
       {@const sortedItems = mealPlan ? sortMealItems(mealPlan.items, slotConfigs) : []}
 
       <div
-        class="week-view__day"
+        class="carousel__item week-view__day"
         class:week-view__day--today={isToday}
         class:week-view__day--selected={isSelected}
         class:week-view__day--has-meals={mealPlan && mealPlan.items.length > 0}
@@ -127,7 +101,7 @@
         {/if}
       </div>
     {/each}
-  </div>
+  </Carousel>
 </div>
 
 <style lang="scss">
@@ -138,38 +112,8 @@
     display: flex;
     flex-direction: column;
 
-    // Element: grid (carousel en mobile)
-    &__grid {
-      // Mobile: carousel horizontal avec snap
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scroll-padding-left: 0;
-      gap: $spacing-sm;
-      padding-right: $spacing-base;
-
-      // Masquer la scrollbar mais garder le scroll
-      scrollbar-width: none;
-      &::-webkit-scrollbar {
-        display: none;
-      }
-
-      @media (min-width: $breakpoint-md) {
-        // Desktop: grille normale avec 7 colonnes
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        overflow-x: visible;
-        scroll-snap-type: none;
-        gap: $spacing-md;
-        padding-right: 0;
-      }
-    }
-
     // Element: day
     &__day {
-      // Mobile: chaque jour fait 83.33% de la largeur (1 jour + 0.2 du suivant visible)
-      flex: 0 0 83.33%;
-      scroll-snap-align: start;
       min-height: 150px;
       padding: $spacing-sm;
       border: $border-width-base solid $color-border-primary;
@@ -182,13 +126,7 @@
       gap: $spacing-sm;
       min-width: 0;
 
-      &:last-child {
-        // Le dernier jour peut prendre toute la largeur en mobile
-        flex: 0 0 100%;
-      }
-
       @media (min-width: $breakpoint-md) {
-        flex: unset;
         min-height: 180px;
         padding: $spacing-md;
         border-radius: $radius-xl;
