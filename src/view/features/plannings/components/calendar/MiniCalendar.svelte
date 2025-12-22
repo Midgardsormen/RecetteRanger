@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { CalendarView } from '../../../../types/meal-plan.types';
+  import { startOfWeek, addDays, isSameDay, formatDayName } from '../../../../utils/date-range.utils';
+  import { getDatesToDisplayForMiniCalendar } from './utils';
 
   interface Props {
     currentDate?: Date;
@@ -13,70 +15,13 @@
     onDateSelect
   }: Props = $props();
 
-  // Fonctions utilitaires de date
-  function startOfWeek(date: Date): Date {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Lundi = premier jour
-    return new Date(d.setDate(diff));
-  }
-
-  function startOfMonth(date: Date): Date {
-    return new Date(date.getFullYear(), date.getMonth(), 1);
-  }
-
-  function endOfMonth(date: Date): Date {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  }
-
-  function addDays(date: Date, days: number): Date {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
-
-  function isSameDay(date1: Date, date2: Date): boolean {
-    return date1.getFullYear() === date2.getFullYear() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getDate() === date2.getDate();
-  }
-
-  function formatDayName(date: Date): string {
-    return date.toLocaleDateString('fr-FR', { weekday: 'narrow' });
-  }
-
-  // Générer les dates selon la vue
-  function getDatesToDisplay(): Date[] {
-    if (view === 'week') {
-      // En mode semaine : afficher les 7 jours de la semaine courante
-      const start = startOfWeek(currentDate);
-      return Array.from({ length: 7 }, (_, i) => addDays(start, i));
-    } else {
-      // En mode mois : afficher le mois complet
-      const start = startOfWeek(startOfMonth(currentDate));
-      const end = endOfMonth(currentDate);
-      const dates: Date[] = [];
-      let current = start;
-
-      while (current <= end || dates.length < 42) {
-        dates.push(new Date(current));
-        current = addDays(current, 1);
-
-        // Limiter à 6 semaines (42 jours)
-        if (dates.length >= 42) break;
-      }
-
-      return dates;
-    }
-  }
-
-  let displayDates = $derived(getDatesToDisplay());
+  let displayDates = $derived(getDatesToDisplayForMiniCalendar(currentDate, view));
   const today = new Date();
 
-  // Générer les en-têtes de jours (Lun, Mar, Mer, etc.)
+  // Générer les en-têtes de jours (L, M, M, etc.)
   const weekDays = $derived.by(() => {
     const start = startOfWeek(new Date());
-    return Array.from({ length: 7 }, (_, i) => formatDayName(addDays(start, i)));
+    return Array.from({ length: 7 }, (_, i) => formatDayName(addDays(start, i), 'narrow'));
   });
 
   function handleDateClick(date: Date) {

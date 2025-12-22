@@ -7,9 +7,10 @@
   import { Button, PageHero, ConfirmModal, Spinner, IconButton, DropdownMenu } from '../../components/ui';
   import { GenerateShoppingListDrawer } from '../shopping-lists/components';
   import type { CalendarView, MealPlanDay, MealSlotConfig } from '../../types/meal-plan.types';
-  import type { DropdownMenuItem } from '../../types/ui.types';
   import { Settings, ShoppingCart } from 'lucide-svelte';
   import { loadMealPlanData, deleteMealPlanItem, findMealPlanDayForItem } from './actions';
+  import { configMenuItems } from './config';
+  import { startOfWeek, startOfMonth, endOfMonth, addDays } from '../../utils/date-range.utils';
 
   let { user }: { user: any } = $props();
 
@@ -124,10 +125,6 @@
     loadData(); // Recharger les données
   }
 
-  function openSettings() {
-    window.location.href = '/plannings/settings';
-  }
-
   function handleGenerateClick() {
     showGenerateDrawer = true;
   }
@@ -153,36 +150,6 @@
     showDuplicateSingleMealDrawer = false;
     sourceMealForDuplication = null;
     loadData(); // Recharger les données
-  }
-
-  // Menu de configuration
-  const configMenuItems: DropdownMenuItem[] = [
-    {
-      label: 'Personnaliser les créneaux',
-      onClick: openSettings
-    }
-  ];
-
-  // Fonctions utilitaires de date pour CalendarControls
-  function startOfWeek(date: Date): Date {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(d.setDate(diff));
-  }
-
-  function startOfMonth(date: Date): Date {
-    return new Date(date.getFullYear(), date.getMonth(), 1);
-  }
-
-  function endOfMonth(date: Date): Date {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  }
-
-  function addDays(date: Date, days: number): Date {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
   }
 
   // Calculer les dates à afficher selon la vue

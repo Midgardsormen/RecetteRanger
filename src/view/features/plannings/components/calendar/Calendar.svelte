@@ -3,6 +3,18 @@
   import { MealSlotColors } from '../../../../types/meal-plan.types';
   import { Button, IconButton, Badge, ListItem } from '../../../../components/ui';
   import { ArrowLeft, ArrowRight, Pencil, Trash2, Copy } from 'lucide-svelte';
+  import {
+    startOfWeek,
+    startOfMonth,
+    addDays,
+    addWeeks,
+    addMonths,
+    isSameDay,
+    formatDate,
+    formatDayName,
+    formatMonthYear
+  } from '../../../../utils/date-range.utils';
+  import { getMealPlanForDate, sortMealItems, getDatesToDisplay } from './utils';
 
   interface Props {
     view?: CalendarView;
@@ -34,111 +46,7 @@
     showHeader = true
   }: Props = $props();
 
-  // Fonctions utilitaires de date
-  function startOfWeek(date: Date): Date {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Lundi = premier jour
-    return new Date(d.setDate(diff));
-  }
-
-  function startOfMonth(date: Date): Date {
-    return new Date(date.getFullYear(), date.getMonth(), 1);
-  }
-
-  function endOfMonth(date: Date): Date {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  }
-
-  function addDays(date: Date, days: number): Date {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
-
-  function addWeeks(date: Date, weeks: number): Date {
-    return addDays(date, weeks * 7);
-  }
-
-  function addMonths(date: Date, months: number): Date {
-    const result = new Date(date);
-    result.setMonth(result.getMonth() + months);
-    return result;
-  }
-
-  function isSameDay(date1: Date, date2: Date): boolean {
-    return date1.getFullYear() === date2.getFullYear() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getDate() === date2.getDate();
-  }
-
-  function formatDate(date: Date, format: 'short' | 'long' = 'short'): string {
-    if (format === 'long') {
-      return date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    }
-    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-  }
-
-  function formatDayName(date: Date): string {
-    return date.toLocaleDateString('fr-FR', { weekday: 'short' });
-  }
-
-  function formatMonthYear(date: Date): string {
-    return date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-  }
-
-  // Trouver le MealPlanDay pour une date donnée
-  function getMealPlanForDate(date: Date): MealPlanDay | undefined {
-    return mealPlanDays.find(day => isSameDay(new Date(day.date), date));
-  }
-
-  // Trier les items d'un repas selon l'ordre des créneaux dans slotConfigs
-  function sortMealItems(items: any[]): any[] {
-    if (!items || items.length === 0) return [];
-
-    return [...items].sort((a, b) => {
-      // Les repas exceptionnels à la fin
-      if (a.isExceptional && !b.isExceptional) return 1;
-      if (!a.isExceptional && b.isExceptional) return -1;
-      if (a.isExceptional && b.isExceptional) return 0;
-
-      // Sinon, trier selon l'ordre dans slotConfigs
-      const indexA = slotConfigs.findIndex(c => c.slot === a.slot);
-      const indexB = slotConfigs.findIndex(c => c.slot === b.slot);
-
-      // Si un slot n'est pas trouvé, le mettre à la fin
-      if (indexA === -1 && indexB === -1) return 0;
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
-
-      return indexA - indexB;
-    });
-  }
-
-  // Générer les dates à afficher selon la vue
-  function getDatesToDisplay(): Date[] {
-    if (view === 'day') {
-      return [currentDate];
-    } else if (view === 'week') {
-      const start = startOfWeek(currentDate);
-      return Array.from({ length: 7 }, (_, i) => addDays(start, i));
-    } else {
-      // month
-      const start = startOfWeek(startOfMonth(currentDate));
-      const end = endOfMonth(currentDate);
-      const dates: Date[] = [];
-      let current = start;
-
-      while (current <= end || dates.length < 35) {
-        dates.push(new Date(current));
-        current = addDays(current, 1);
-      }
-
-      return dates;
-    }
-  }
-
-  let dates = $derived(getDatesToDisplay());
+  let dates = $derived(getDatesToDisplay(currentDate, view));
 
   // Navigation
   function goToToday() {
@@ -317,10 +225,10 @@
       <!-- Conteneur scrollable pour les jours en mobile -->
       <div class="month-view-scroll-container">
         {#each dates as date}
-      {@const mealPlan = getMealPlanForDate(date)}
+      {@const mealPlan = getMealPlanForDate(mealPlanDays, date)}
       {@const isToday = isSameDay(date, today)}
       {@const isCurrentMonth = date.getMonth() === currentDate.getMonth()}
-      {@const sortedItems = mealPlan ? sortMealItems(mealPlan.items) : []}
+      {@const sortedItems = mealPlan ? sortMealItems(mealPlan.items, slotConfigs) : []}
 
       <div
         class="calendar-day"
@@ -381,10 +289,10 @@
       </div>
     {:else}
       {#each dates as date}
-      {@const mealPlan = getMealPlanForDate(date)}
+      {@const mealPlan = getMealPlanForDate(mealPlanDays, date)}
       {@const isToday = isSameDay(date, today)}
       {@const isCurrentMonth = date.getMonth() === currentDate.getMonth()}
-      {@const sortedItems = mealPlan ? sortMealItems(mealPlan.items) : []}
+      {@const sortedItems = mealPlan ? sortMealItems(mealPlan.items, slotConfigs) : []}
 
       <div
         class="calendar-day"
@@ -531,34 +439,6 @@
     background: rgba($brand-primary, 0.1);
     padding: $spacing-2xs;
     border-radius: $radius-md;
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
-  }
-
-  .view-btn {
-    padding: $spacing-base * 0.5 $spacing-base;
-    border: none;
-    background: transparent;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: $text-gray;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      background: rgba($brand-primary, 0.15);
-      color: $primary-color;
-    }
-
-    &.active {
-      background: $primary-color;
-      color: $white;
-    }
   }
 
   .calendar-grid {
@@ -786,80 +666,5 @@
     flex-direction: column;
     gap: $spacing-xs;
     flex: 1;
-  }
-
-  .meal-preview-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: $spacing-base * 0.5;
-    padding: $spacing-base * 0.5;
-    background: rgba($brand-primary, 0.08);
-    border-radius: 6px;
-    font-size: 0.85rem;
-    transition: background 0.2s;
-
-    &:hover {
-      background: rgba($brand-primary, 0.12);
-    }
-  }
-
-  .meal-info {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-base * 0.25;
-    flex: 1;
-    min-width: 0; // Pour permettre le text-overflow
-  }
-
-  .meal-actions {
-    display: flex;
-    gap: $spacing-base * 0.25;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .meal-preview-item:hover .meal-actions {
-    opacity: 1;
-  }
-
-  .meal-action-btn {
-    background: none;
-    border: none;
-    padding: $spacing-base * 0.25;
-    cursor: pointer;
-    font-size: 0.9rem;
-    line-height: 1;
-    border-radius: 4px;
-    transition: background 0.2s;
-
-    &:hover {
-      background: $color-black-alpha-10;
-    }
-
-    &.edit {
-      &:hover {
-        background: rgba($brand-primary, 0.2);
-      }
-    }
-
-    &.delete {
-      &:hover {
-        background: $color-danger-alpha-20;
-      }
-    }
-  }
-
-  .recipe-name {
-    color: $text-dark;
-    font-weight: 500;
-  }
-
-  .more-meals {
-    font-size: 0.75rem;
-    color: $text-gray;
-    font-style: italic;
-    padding: $spacing-base * 0.25;
   }
 </style>

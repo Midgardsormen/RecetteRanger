@@ -3,6 +3,7 @@
   import { Button, IconButton, DropdownMenu } from '../../../../components/ui';
   import { ArrowLeft, ArrowRight, Settings, CalendarDays } from 'lucide-svelte';
   import type { DropdownMenuItem } from '../../../../types/ui.types';
+  import { addDays, addWeeks, addMonths, formatDate, formatMonthYear } from '../../../../utils/date-range.utils';
 
   interface Props {
     view?: CalendarView;
@@ -21,34 +22,6 @@
     onDateNavigate,
     settingsMenuItems = []
   }: Props = $props();
-
-  // Fonctions utilitaires de date
-  function addDays(date: Date, days: number): Date {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
-
-  function addWeeks(date: Date, weeks: number): Date {
-    return addDays(date, weeks * 7);
-  }
-
-  function addMonths(date: Date, months: number): Date {
-    const result = new Date(date);
-    result.setMonth(result.getMonth() + months);
-    return result;
-  }
-
-  function formatDate(date: Date, format: 'short' | 'long' = 'short'): string {
-    if (format === 'long') {
-      return date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    }
-    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-  }
-
-  function formatMonthYear(date: Date): string {
-    return date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-  }
 
   // Navigation
   function goToToday() {
