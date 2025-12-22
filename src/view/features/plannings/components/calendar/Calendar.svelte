@@ -213,14 +213,25 @@
         behavior: 'smooth'
       });
     } else if (view === 'month') {
-      // En mode mois : scroll vertical vers le jour
-      const dayElements = calendarGridElement.querySelectorAll('.calendar-day');
+      // En mode mois : scroll vertical avec 40px du jour précédent visible
+      const scrollContainer = calendarGridElement.querySelector('.month-view-scroll-container') as HTMLElement;
+      if (!scrollContainer) return;
+
+      const dayElements = scrollContainer.querySelectorAll('.calendar-day');
       const targetDayElement = dayElements[dayIndex] as HTMLElement;
 
       if (targetDayElement) {
-        targetDayElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
+        // Calculer la position pour avoir 40px du jour précédent visible
+        const containerTop = scrollContainer.getBoundingClientRect().top;
+        const dayTop = targetDayElement.getBoundingClientRect().top;
+        const currentScroll = scrollContainer.scrollTop;
+        const offset = 40; // 40px du jour précédent visible
+
+        const scrollPosition = currentScroll + (dayTop - containerTop) - offset;
+
+        scrollContainer.scrollTo({
+          top: scrollPosition,
+          behavior: 'smooth'
         });
       }
     }
@@ -296,13 +307,80 @@
     bind:this={calendarGridElement}
   >
     {#if view === 'month'}
-      <!-- En-têtes des jours de la semaine -->
-      {#each Array.from({ length: 7 }, (_, i) => addDays(startOfWeek(currentDate), i)) as date}
-        <div class="day-header">{formatDayName(date)}</div>
-      {/each}
-    {/if}
+      <!-- En-têtes des jours de la semaine (en dehors du scroll en mobile) -->
+      <div class="month-view-header">
+        {#each Array.from({ length: 7 }, (_, i) => addDays(startOfWeek(currentDate), i)) as date}
+          <div class="day-header">{formatDayName(date)}</div>
+        {/each}
+      </div>
 
-    {#each dates as date}
+      <!-- Conteneur scrollable pour les jours en mobile -->
+      <div class="month-view-scroll-container">
+        {#each dates as date}
+      {@const mealPlan = getMealPlanForDate(date)}
+      {@const isToday = isSameDay(date, today)}
+      {@const isCurrentMonth = date.getMonth() === currentDate.getMonth()}
+      {@const sortedItems = mealPlan ? sortMealItems(mealPlan.items) : []}
+
+      <div
+        class="calendar-day"
+        class:today={isToday}
+        class:other-month={view === 'month' && !isCurrentMonth}
+        class:has-meals={mealPlan && mealPlan.items.length > 0}
+        onclick={() => handleDateClick(date)}
+      >
+        <div class="day-header-row">
+          <div class="day-number">
+            {#if view === 'week' || view === 'day'}
+              <span class="day-name">{formatDayName(date)}</span>
+            {/if}
+            {date.getDate()}
+          </div>
+          {#if mealPlan && mealPlan.items.length > 0 && onDayDuplicate}
+            <IconButton
+              variant="ghost"
+              size="small"
+              onclick={(e: MouseEvent) => {
+                e.stopPropagation();
+                onDayDuplicate?.(date);
+              }}
+              ariaLabel="Dupliquer ce jour"
+            >
+              <Copy size={16} />
+            </IconButton>
+          {/if}
+        </div>
+
+        {#if mealPlan}
+          <div class="meals-preview">
+            {#each sortedItems as item}
+              <ListItem
+                title={item.menu ? item.menu.name : (item.ingredient ? item.ingredient.label : (item.recipe?.label || 'Sans recette'))}
+                subtitle={item.menu ? `${item.menu.items?.length || 0} item${item.menu.items?.length > 1 ? 's' : ''}` : (item.ingredient ? `${item.quantity || ''} ${item.unit || ''}`.trim() : (item.servings ? `${item.servings} personne${item.servings > 1 ? 's' : ''}` : undefined))}
+                showThumbnail={false}
+                layout="column"
+                size="compact"
+                onEdit={() => onMealEdit?.(item)}
+                onDelete={() => onMealDelete?.(item)}
+                onDuplicate={() => onMealDuplicate?.(item)}
+                onClick={() => onMealEdit?.(item)}
+              >
+                {#snippet badge()}
+                  {#if item.isExceptional && item.customSlotName}
+                    <Badge variant="warning" size="xs">{item.customSlotName}</Badge>
+                  {:else}
+                    <Badge variant={MealSlotColors[item.slot]} size="xs">{slotConfigs.find(c => c.slot === item.slot)?.label || item.slot}</Badge>
+                  {/if}
+                {/snippet}
+              </ListItem>
+            {/each}
+          </div>
+        {/if}
+      </div>
+        {/each}
+      </div>
+    {:else}
+      {#each dates as date}
       {@const mealPlan = getMealPlanForDate(date)}
       {@const isToday = isSameDay(date, today)}
       {@const isCurrentMonth = date.getMonth() === currentDate.getMonth()}
@@ -364,6 +442,7 @@
         {/if}
       </div>
     {/each}
+    {/if}
   </div>
 </div>
 
@@ -537,22 +616,91 @@
     }
 
     &.month-view {
-      // Mobile: vue jour par défaut ou grille compacte avec scroll
-      grid-template-columns: 1fr;
-      max-height: 70vh;
-      overflow-y: auto;
-      scroll-behavior: smooth;
+      // Mobile: flex container pour header + scroll
+      @media (max-width: 767px) {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
 
       @media (min-width: 768px) {
         grid-template-columns: repeat(7, 1fr);
-        max-height: none;
-        overflow-y: visible;
+      }
+    }
+  }
+
+  // En-tête du mois (jours de la semaine) en mode month
+  .month-view-header {
+    display: none;
+
+    @media (max-width: 767px) {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: $spacing-2xs;
+      flex-shrink: 0;
+    }
+
+    @media (min-width: 768px) {
+      display: contents;
+    }
+  }
+
+  // Conteneur scrollable pour les jours en mode month mobile
+  .month-view-scroll-container {
+    @media (max-width: 767px) {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: $spacing-base * 0.5;
+      max-height: 70vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+
+      // Masquer la scrollbar mais garder le scroll
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
       }
 
-      .day-header {
-        @media (max-width: 767px) {
-          display: none;
-        }
+      // Gradient fade au dessus (pour indiquer qu'il y a du contenu au-dessus)
+      &::before {
+        content: '';
+        position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background: linear-gradient(to bottom, $white 0%, rgba($white, 0) 100%);
+        pointer-events: none;
+        z-index: 1;
+        display: block;
+      }
+
+      // Gradient fade en dessous (pour indiquer qu'il y a du contenu en-dessous)
+      &::after {
+        content: '';
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background: linear-gradient(to top, $white 0%, rgba($white, 0) 100%);
+        pointer-events: none;
+        z-index: 1;
+        display: block;
+      }
+    }
+
+    @media (min-width: 768px) {
+      display: contents;
+    }
+  }
+
+  .calendar-grid {
+    .day-header {
+      @media (max-width: 767px) {
+        display: none;
       }
     }
   }
