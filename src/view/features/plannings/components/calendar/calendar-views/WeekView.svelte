@@ -40,7 +40,7 @@
 </script>
 
 <div class="week-view">
-  <Carousel itemsVisible={{ sm: 1.2, md: 1.2, lg: 2.2, xl: 3.2, '2xl': 7 }} gap="sm" {activeIndex} autoScroll={true}>
+  <Carousel itemsVisible={{ sm: 1.2, md: 1.2, lg: 2.2, xl: 3.2, '2xl': 7 }} gap="sm" {activeIndex} autoScroll={true} displayControls="desktop-only">
     {#each dates as date}
       {@const mealPlan = getMealPlanForDate(mealPlanDays, date)}
       {@const isToday = isSameDay(date, today)}
