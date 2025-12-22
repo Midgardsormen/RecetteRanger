@@ -87,12 +87,13 @@
       background-position: center;
       background-blend-mode: overlay;
       color: $color-white;
-      padding: $spacing-lg $spacing-sm;
+      padding: $spacing-lg $spacing-sm $spacing-md;
       box-shadow: $shadow-hero-default;
-      margin-bottom: $spacing-lg;
+      margin-bottom: $spacing-md;
 
       @media (min-width: $breakpoint-md) {
         padding: $spacing-xl $spacing-md;
+        margin-bottom: $spacing-lg;
       }
 
       @media (min-width: $breakpoint-lg) {

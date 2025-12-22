@@ -1,6 +1,6 @@
 <script lang="ts">
   import Layout from '../../layouts/Layout.svelte';
-  import { Calendar, CalendarControls } from './components/calendar';
+  import { Calendar, CalendarControls, MiniCalendar } from './components/calendar';
   import { MealPlanDrawer } from './components/meal-plan-drawer';
   import { DuplicateMealsDrawer } from './components/duplicate-meals-drawer';
   import { DuplicateSingleMealDrawer } from './components/duplicate-single-meal-drawer';
@@ -243,6 +243,17 @@
         <p>Chargement du planning...</p>
       </div>
     {:else}
+      <!-- Mini-calendrier visible uniquement en mode week et month -->
+      {#if view === 'week' || view === 'month'}
+        <div class="meal-planning__mini-calendar">
+          <MiniCalendar
+            bind:currentDate
+            {view}
+            onDateSelect={handleDateNavigate}
+          />
+        </div>
+      {/if}
+
       <Calendar
         bind:view
         bind:currentDate
@@ -314,6 +325,17 @@
   .meal-planning {
     display: flex;
     flex-direction: column;
+
+    // Element: mini-calendar
+    &__mini-calendar {
+      margin-bottom: $spacing-sm;
+    @media (min-width: $breakpoint-md) {
+       margin-bottom: $spacing-md;
+    }
+    @media (min-width: $breakpoint-lg) {
+       margin-bottom: $spacing-lg;
+    }
+    }
 
     // Element: loading
     &__loading {

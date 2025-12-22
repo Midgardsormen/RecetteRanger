@@ -247,8 +247,11 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: $spacing-lg;
-    margin-bottom: $spacing-md;
+    margin-bottom: $spacing-sm;
     @media (min-width: $breakpoint-md) {
+       margin-bottom: $spacing-md;
+    }
+    @media (min-width: $breakpoint-lg) {
        margin-bottom: $spacing-lg;
     }
     // Ajouter un espacement entre l'icône et le texte du bouton d'action
@@ -459,6 +462,12 @@
   }
 
   .page-hero__content {
-    margin-top: $spacing-lg;
+    margin-top: $spacing-md;
+    @media (min-width: $breakpoint-md) {
+      margin-top: $spacing-lg;
+    }
+    @media (min-width: $breakpoint-lg) {
+      margin-top: $spacing-lg;
+    }
   }
 </style>
