@@ -19,6 +19,7 @@ export { default as DropdownMenu } from './DropdownMenu';
 export { default as Hero } from './Hero';
 export { default as PageHero } from './PageHero';
 export { default as Tabs } from './Tabs';
+export { default as Carousel } from './Carousel';
 
 // Input Components
 export { default as ImageUpload } from './ImageUpload/ImageUpload.svelte';
