@@ -97,6 +97,8 @@
   async function handleArticleSaved() {
     closeDrawer();
     await loadArticles();
+    // Notifier les admins qu'un ingrédient a été modifié
+    window.dispatchEvent(new CustomEvent('ingredient-data-changed'));
   }
 
   function openDeleteConfirmation(id: string) {
@@ -120,6 +122,8 @@
       isConfirmModalOpen = false;
       articleToDelete = null;
       deleteError = '';
+      // Notifier les admins qu'un ingrédient a été supprimé
+      window.dispatchEvent(new CustomEvent('ingredient-data-changed'));
     } catch (err: any) {
       deleteError = err.message || 'Erreur lors de la suppression';
     }

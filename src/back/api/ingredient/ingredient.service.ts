@@ -237,4 +237,23 @@ export class IngredientService {
       },
     });
   }
+
+  /**
+   * Compte les ingrédients incomplets (sans image ou unités)
+   * Un ingrédient est incomplet si au moins un de ces critères est vrai :
+   * - Pas d'image (imageUrl === null)
+   * - Pas d'unités (units === [])
+   */
+  async getIncompleteCount() {
+    const count = await this.prisma.article.count({
+      where: {
+        OR: [
+          { imageUrl: null },
+          { units: { isEmpty: true } }
+        ]
+      }
+    });
+
+    return { count };
+  }
 }

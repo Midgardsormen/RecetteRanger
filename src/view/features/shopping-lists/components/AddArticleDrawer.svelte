@@ -182,6 +182,8 @@
 
       onArticleCreated(newArticle);
       onClose();
+      // Notifier les admins qu'un ingrédient a été créé
+      window.dispatchEvent(new CustomEvent('ingredient-data-changed'));
     } catch (err: any) {
       alert('Erreur lors de la création : ' + err.message);
     } finally {

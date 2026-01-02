@@ -14,4 +14,25 @@ export class ArticlesService {
       }
     });
   }
+
+  /**
+   * Compte les articles incomplets (sans image, unités ou saisons)
+   * Un article est incomplet si au moins un de ces critères est vrai :
+   * - Pas d'image (imageUrl === null)
+   * - Pas d'unités (units === [])
+   * - Pas de saisons (seasonMonths === [])
+   */
+  async getIncompleteCount() {
+    const count = await this.prisma.article.count({
+      where: {
+        OR: [
+          { imageUrl: null },
+          { units: { isEmpty: true } },
+          { seasonMonths: { isEmpty: true } }
+        ]
+      }
+    });
+
+    return { count };
+  }
 }

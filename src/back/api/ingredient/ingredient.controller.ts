@@ -61,6 +61,24 @@ export class IngredientController {
     return this.ingredientService.checkDuplicates(checkDto);
   }
 
+  @Get('incomplete/count')
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Compter les ingrédients incomplets (admin uniquement)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Nombre d\'ingrédients incomplets',
+    schema: {
+      type: 'object',
+      properties: {
+        count: { type: 'number' }
+      }
+    }
+  })
+  @ApiResponse({ status: 403, description: 'Accès interdit - droits admin requis' })
+  getIncompleteCount() {
+    return this.ingredientService.getIncompleteCount();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Récupérer un ingrédient par ID' })
   @ApiParam({ name: 'id', description: 'ID de l\'ingrédient' })

@@ -3,15 +3,21 @@
   import { apiService } from '../../../services/api.service';
   import { Button, NotificationBadge, Avatar } from '../../ui';
   import { onMount } from 'svelte';
-  import { Settings, Crown, LogOut, User as UserIcon, Shield } from 'lucide-svelte';
+  import { Settings, Crown, LogOut, User as UserIcon, Shield, Loader2 } from 'lucide-svelte';
   import { logout, navigateToLogin, navigateToRegister, setupClickOutsideListener } from './user-menu.actions';
-  import { setupPendingCountRefresh, setupUserStatusListener } from './user-menu.api';
+  import { getTotalNotificationsCount, type AdminNotificationCounts } from './admin-notifications.api';
+  import { setupAdminNotificationsRefresh, setupAdminNotificationsListener } from './admin-notifications.actions';
+  import { DEFAULT_NOTIFICATION_COUNTS } from './admin-notifications.config';
+  import { formatAggregatedAdminNotification } from '../../../utils/text.utils';
 
   let { user: userProp = null }: { user?: any } = $props();
 
   let showDropdown = $state(false);
   let menuElement: HTMLDivElement;
-  let pendingUsersCount = $state(0);
+  let adminNotifications = $state<AdminNotificationCounts>({ ...DEFAULT_NOTIFICATION_COUNTS });
+
+  // Calculer le total des notifications
+  const totalNotifications = $derived(getTotalNotificationsCount(adminNotifications));
 
   // Utiliser le prop user en priorité, sinon le store
   const { isAuthenticated, user, isLoading } = $derived({
@@ -49,14 +55,14 @@
   );
 
   onMount(() => {
-    // Setup pending count refresh pour les admins
-    const cleanupRefresh = setupPendingCountRefresh(isAdmin, (count) => {
-      pendingUsersCount = count;
+    // Setup admin notifications refresh (toutes les 30 secondes)
+    const cleanupRefresh = setupAdminNotificationsRefresh(isAdmin, (counts) => {
+      adminNotifications = counts;
     });
 
-    // Setup user status listener
-    const cleanupStatusListener = setupUserStatusListener(isAdmin, (count) => {
-      pendingUsersCount = count;
+    // Setup admin notifications listener (événements en temps réel)
+    const cleanupListener = setupAdminNotificationsListener(isAdmin, (counts) => {
+      adminNotifications = counts;
     });
 
     // Setup click outside listener
@@ -65,7 +71,7 @@
     // Cleanup all listeners
     return () => {
       cleanupRefresh();
-      cleanupStatusListener();
+      cleanupListener();
       cleanupClickOutside();
     };
   });
@@ -74,7 +80,7 @@
 <div class="user-menu" bind:this={menuElement}>
   {#if isLoading}
     <div class="user-menu__loading">
-      <span class="user-menu__spinner">⏳</span>
+      <Loader2 class="user-menu__spinner" size={24} />
     </div>
   {:else if isAuthenticated && user}
     <!-- Utilisateur connecté -->
@@ -82,7 +88,9 @@
       class="user-menu__button"
       onclick={toggleDropdown}
       type="button"
-      title={isAdmin && pendingUsersCount > 0 ? `${pendingUsersCount} demande${pendingUsersCount > 1 ? 's' : ''} d'inscription en attente` : ''}
+      title={isAdmin && totalNotifications > 0
+        ? formatAggregatedAdminNotification(adminNotifications.pendingUsers, adminNotifications.incompleteIngredients)
+        : ''}
     >
       <div class="user-menu__avatar-container">
         <Avatar
@@ -93,7 +101,7 @@
         />
         {#if isAdmin}
           <NotificationBadge
-            count={pendingUsersCount}
+            count={totalNotifications}
             size="medium"
             variant="danger"
             position="top-right"
@@ -163,7 +171,7 @@
     }
 
     &__spinner {
-      font-size: $font-size-2xl;
+      color: $color-white;
       animation: spin 1s linear infinite;
     }
 
