@@ -118,8 +118,8 @@
 
   .admin-card-badge {
     position: absolute;
-    top: -8px;
-    right: -8px;
+    top: 0;
+    right: 0;
     z-index: 10;
   }
 
