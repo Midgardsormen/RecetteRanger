@@ -25,6 +25,7 @@
   let selectedAisle = $state<StoreAisle | ''>('');
   let selectedUnit = $state<Unit | ''>('');
   let sortBy = $state<'alpha' | 'date' | 'popularity'>('alpha');
+  let completionFilter = $state<string[]>([]); // Filtre pour les articles incomplets
 
   // Drawer
   let isDrawerOpen = $state(false);
@@ -151,6 +152,42 @@
   function isAdmin(): boolean {
     return user?.role === UserRole.ADMIN;
   }
+
+  // Fonction pour vérifier si un article est incomplet
+  function isIncomplete(article: Ingredient): boolean {
+    return !article.imageUrl || !article.units || article.units.length === 0;
+  }
+
+  // Filtrer les articles selon le filtre de complétion
+  const displayedArticles = $derived(() => {
+    if (completionFilter.length === 0) {
+      return articles;
+    }
+
+    const hasIncomplete = completionFilter.includes('INCOMPLETE');
+    const hasComplete = completionFilter.includes('COMPLETE');
+
+    // Si les deux sont sélectionnés, afficher tous les articles
+    if (hasIncomplete && hasComplete) {
+      return articles;
+    }
+
+    // Si seulement incomplets
+    if (hasIncomplete) {
+      return articles.filter(isIncomplete);
+    }
+
+    // Si seulement complets
+    if (hasComplete) {
+      return articles.filter(article => !isIncomplete(article));
+    }
+
+    return articles;
+  });
+
+  // Compter les articles incomplets et complets
+  const incompleteCount = $derived(articles.filter(isIncomplete).length);
+  const completeCount = $derived(articles.filter(article => !isIncomplete(article)).length);
 </script>
 
 <Layout title="Articles" currentPage="/articles" {user}>
@@ -199,6 +236,22 @@
     {/snippet}
   </PageHero>
 
+  <!-- Filtre de complétion (pills) -->
+  {#if !loading && articles.length > 0 && isAdmin()}
+    <div class="articles__completion-filter">
+      <Filter
+        label="État"
+        mode="pills"
+        multiple={true}
+        options={[
+          { value: 'INCOMPLETE', label: `Incomplets (${incompleteCount})`, count: incompleteCount },
+          { value: 'COMPLETE', label: `Complets (${completeCount})`, count: completeCount }
+        ]}
+        bind:value={completionFilter}
+      />
+    </div>
+  {/if}
+
   {#if error}
     <div class="articles__error">{error}</div>
   {/if}
@@ -220,9 +273,17 @@
         </Button>
       {/if}
     </div>
+  {:else if displayedArticles().length === 0}
+    <div class="articles__empty">
+      <div class="articles__empty-icon">🔍</div>
+      <h2 class="articles__empty-title">Aucun article ne correspond aux filtres</h2>
+      <p class="articles__empty-text">
+        Essayez de modifier vos filtres de recherche
+      </p>
+    </div>
   {:else}
     <div class="articles__list">
-      {#each articles as article (article.id)}
+      {#each displayedArticles() as article (article.id)}
         <ListItem
           imageUrl={article.imageUrl}
           imagePlaceholder={article.isFood ? "🍽️" : "🧴"}
@@ -323,6 +384,11 @@
   .articles {
     display: flex;
     flex-direction: column;
+
+    &__completion-filter {
+      margin-bottom: $spacing-lg;
+    }
+
     &__filter-group {
       display: flex;
       flex-direction: column;

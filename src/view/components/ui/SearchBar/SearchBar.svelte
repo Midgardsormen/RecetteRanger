@@ -71,7 +71,6 @@
   .search-bar__input {
     flex: 1;
     padding: $spacing-sm $spacing-base;
-    padding-right: calc($spacing-base + 32px + $spacing-sm); // Espace pour le bouton clear (32px = taille du bouton small)
     border: none;
     background: transparent;
     font-size: $font-size-base;
@@ -90,6 +89,11 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
+  }
+
+  // Ajouter du padding à droite uniquement quand le bouton clear est visible
+  .search-bar:has(.search-bar__clear-wrapper) .search-bar__input {
+    padding-right: calc($spacing-base + 32px + $spacing-sm); // Espace pour le bouton clear (32px = taille du bouton small)
   }
 
   .search-bar__clear-wrapper {

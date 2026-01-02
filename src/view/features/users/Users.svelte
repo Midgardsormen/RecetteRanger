@@ -174,7 +174,7 @@
             { value: 'APPROVED', label: `Approuvé (${approvedCount})`, count: approvedCount },
             { value: 'REJECTED', label: `Rejeté (${rejectedCount})`, count: rejectedCount }
           ]}
-          bind:selected={statusFilter}
+          bind:value={statusFilter}
         />
       </div>
     {/if}

@@ -2,6 +2,7 @@
   import type { FilterProps } from '../../../types/ui.types';
   import Accordion from '../Accordion.svelte';
   import Dropdown from '../Dropdown/Dropdown.svelte';
+  import Chip from '../Chip/Chip.svelte';
   import { FILTER_DEFAULTS, FILTER_LABELS, FILTER_SIZES } from './Filter.config';
   import {
     createOptionClickHandler,
@@ -70,18 +71,20 @@
     {@render children()}
   {:else if mode === 'select'}
     <!-- Mode Select (HTML select) -->
-    {#if label}
-      <label class="filter__label">{label}</label>
-    {/if}
-    <select
-      class="filter__select"
-      bind:value
-      onchange={handleSelectChange}
-    >
-      {#each options as option (option.value)}
-        <option value={option.value}>{option.label}</option>
-      {/each}
-    </select>
+    <label class="filter__label">
+      {#if label}
+        <span class="filter__label-text">{label}</span>
+      {/if}
+      <select
+        class="filter__select"
+        bind:value
+        onchange={handleSelectChange}
+      >
+        {#each options as option (option.value)}
+          <option value={option.value}>{option.label}</option>
+        {/each}
+      </select>
+    </label>
   {:else if mode === 'dropdown'}
     <!-- Mode Dropdown (Overlay) -->
     <Dropdown bind:isOpen={isDropdownOpen}>
@@ -139,17 +142,14 @@
       {/if}
       <div class="filter__options">
         {#each options as option (option.value)}
-          <button
-            type="button"
-            class="filter__option"
-            class:filter__option--selected={isSelected(option.value, value, multiple)}
-            onclick={() => handleOptionClick(option.value)}
+          <Chip
+            clickable={true}
+            variant={isSelected(option.value, value, multiple) ? 'inverse' : 'default'}
+            size="md"
+            onClick={() => handleOptionClick(option.value)}
           >
-            <span class="filter__option-label">{option.label}</span>
-            {#if showCounts && option.count !== undefined}
-              <span class="filter__option-count">({option.count})</span>
-            {/if}
-          </button>
+            {option.label}
+          </Chip>
         {/each}
       </div>
     </Accordion>
@@ -171,17 +171,14 @@
     {/if}
     <div class="filter__options">
       {#each options as option (option.value)}
-        <button
-          type="button"
-          class="filter__option"
-          class:filter__option--selected={isSelected(option.value, value, multiple)}
-          onclick={() => handleOptionClick(option.value)}
+        <Chip
+          clickable={true}
+          variant={isSelected(option.value, value, multiple) ? 'inverse' : 'default'}
+          size="md"
+          onClick={() => handleOptionClick(option.value)}
         >
-          <span class="filter__option-label">{option.label}</span>
-          {#if showCounts && option.count !== undefined}
-            <span class="filter__option-count">({option.count})</span>
-          {/if}
-        </button>
+          {option.label}
+        </Chip>
       {/each}
     </div>
   {/if}
@@ -206,6 +203,13 @@
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
     color: $color-text-primary;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  .filter__label-text {
+    display: block;
   }
 
   .filter__clear {
@@ -320,47 +324,5 @@
     display: flex;
     flex-wrap: wrap;
     gap: $spacing-sm;
-  }
-
-  .filter__option {
-    display: inline-flex;
-    align-items: center;
-    gap: $spacing-xs;
-    padding: $spacing-sm $spacing-md;
-    background: $color-white;
-    border: 2px solid $color-border-primary;
-    border-radius: $radius-lg;
-    color: $color-text-secondary;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    cursor: pointer;
-    transition: all $transition-base $transition-ease;
-
-    &:hover {
-      border-color: $brand-primary;
-      color: $brand-primary;
-      transform: $transform-hover-lift-sm;
-    }
-
-    &--selected {
-      @include brand-gradient-primary;
-      border-color: transparent;
-      color: $color-white;
-
-      &:hover {
-        transform: $transform-hover-lift-sm;
-        box-shadow: $shadow-filter-selected;
-      }
-    }
-  }
-
-  .filter__option-label {
-    line-height: 1;
-  }
-
-  .filter__option-count {
-    opacity: $opacity-80;
-    font-size: $font-size-xs;
-    line-height: 1;
   }
 </style>

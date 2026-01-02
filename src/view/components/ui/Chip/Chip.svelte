@@ -2,6 +2,7 @@
   import { chipVariantClasses, chipSizeClasses, defaultChipConfig } from './Chip.config';
   import { handleRemove, handleClick } from './Chip.actions';
   import type { ChipVariant, ChipSize } from './Chip.config';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     /**
@@ -42,6 +43,11 @@
      * Classes CSS additionnelles
      */
     class?: string;
+
+    /**
+     * Contenu du chip
+     */
+    children?: Snippet;
   }
 
   let {
@@ -52,6 +58,7 @@
     onRemove,
     onClick,
     class: className = '',
+    children,
   }: Props = $props();
 
   // Calculer les classes CSS
