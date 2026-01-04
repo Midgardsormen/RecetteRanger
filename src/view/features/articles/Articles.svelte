@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
-  import { ListItem, Button, Filter, ConfirmModal, PageHero, Badge } from '../../components/ui';
+  import { ListItem, Button, Filter, ConfirmModal, PageHero, Badge, Pagination } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, SearchIngredientsDto } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, StoreAisleColors, UnitLabels } from '../../types/ingredient.types';
@@ -15,8 +15,35 @@
   let loading = $state(false);
   let error = $state('');
 
+  // Récupérer la page depuis l'URL
+  function getPageFromUrl(): number {
+    if (typeof window === 'undefined') return 0;
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page') || '1', 10);
+    return Math.max(0, page - 1); // Convertir de 1-indexed à 0-indexed
+  }
+
+  // Mettre à jour l'URL avec la page courante
+  function updateUrlWithPage(page: number) {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const displayPage = page + 1; // Convertir de 0-indexed à 1-indexed
+
+    if (displayPage === 1) {
+      params.delete('page'); // Supprimer le paramètre si page 1
+    } else {
+      params.set('page', displayPage.toString());
+    }
+
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname;
+
+    window.history.pushState({}, '', newUrl);
+  }
+
   // Pagination
-  let currentPage = $state(0);
+  let currentPage = $state(getPageFromUrl());
   let totalPages = $state(0);
   let totalArticles = $state(initialArticles.length);
 
@@ -40,10 +67,8 @@
   let searchTimeout: ReturnType<typeof setTimeout>;
 
   onMount(() => {
-    // Si pas de données SSR, charger les articles
-    if (articles.length === 0) {
-      loadArticles();
-    }
+    // Toujours charger les articles pour obtenir la pagination correcte
+    loadArticles();
   });
 
   async function loadArticles() {
@@ -146,6 +171,7 @@
 
   function goToPage(page: number) {
     currentPage = page;
+    updateUrlWithPage(page);
     loadArticles();
   }
 
@@ -290,6 +316,9 @@
           onEdit={isAdmin() ? () => openDrawer(article) : undefined}
           onDelete={isAdmin() ? () => openDeleteConfirmation(article.id) : undefined}
         >
+          {#snippet header()}
+          {/snippet}
+
           {#snippet children()}
             <h3 class="article-title">{article.label}</h3>
           {/snippet}
@@ -304,41 +333,13 @@
     </div>
 
     <!-- Pagination -->
-    {#if totalPages > 1}
-      <div class="articles__pagination">
-        <Button
-          variant="secondary"
-          onclick={previousPage}
-          disabled={currentPage === 0}
-        >
-          ← Précédent
-        </Button>
-
-        <div class="articles__pagination-pages">
-          {#each Array(totalPages) as _, i}
-            <button
-              class="articles__pagination-page"
-              class:articles__pagination-page--active={i === currentPage}
-              onclick={() => goToPage(i)}
-            >
-              {i + 1}
-            </button>
-          {/each}
-        </div>
-
-        <Button
-          variant="secondary"
-          onclick={nextPage}
-          disabled={currentPage >= totalPages - 1}
-        >
-          Suivant →
-        </Button>
-      </div>
-
-      <p class="articles__pagination-info">
-        Page {currentPage + 1} sur {totalPages} • {totalArticles} article{totalArticles > 1 ? 's' : ''}
-      </p>
-    {/if}
+    <Pagination
+      {currentPage}
+      {totalPages}
+      totalItems={totalArticles}
+      itemLabel="article"
+      onPageChange={goToPage}
+    />
   {/if}
 </div>
 
@@ -467,7 +468,19 @@
 
     &__pagination-pages {
       display: flex;
+      align-items: center;
       gap: $spacing-base * 0.5;
+    }
+
+    &__pagination-ellipsis {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      color: $text-gray;
+      font-weight: $font-weight-bold;
+      user-select: none;
     }
 
     &__pagination-page {
@@ -478,6 +491,7 @@
       border-radius: 8px;
       cursor: pointer;
       transition: all $transition-duration ease;
+      font-weight: $font-weight-medium;
 
       &:hover {
         border-color: $primary-color;

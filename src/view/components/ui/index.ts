@@ -63,3 +63,4 @@ export { default as ProgressBar } from './ProgressBar';
 export { default as NumberBadge } from './NumberBadge';
 export { default as NotificationBadge } from './NotificationBadge';
 export { default as StepItem } from './StepItem';
+export { default as Pagination } from './Pagination';

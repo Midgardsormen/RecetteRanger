@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import StoreDrawer from './StoreDrawer.svelte';
-  import { ListItem, Button, ConfirmModal, PageHero } from '../../components/ui';
+  import { ListItem, Button, ConfirmModal, PageHero, Pagination } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import { UserRole } from '../../types/user.types';
 
@@ -22,8 +22,35 @@
   let loading = $state(false);
   let error = $state('');
 
+  // Récupérer la page depuis l'URL
+  function getPageFromUrl(): number {
+    if (typeof window === 'undefined') return 0;
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page') || '1', 10);
+    return Math.max(0, page - 1);
+  }
+
+  // Mettre à jour l'URL avec la page courante
+  function updateUrlWithPage(page: number) {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const displayPage = page + 1;
+
+    if (displayPage === 1) {
+      params.delete('page');
+    } else {
+      params.set('page', displayPage.toString());
+    }
+
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname;
+
+    window.history.pushState({}, '', newUrl);
+  }
+
   // Pagination
-  let currentPage = $state(0);
+  let currentPage = $state(getPageFromUrl());
   let totalPages = $state(0);
   let totalStores = $state(initialStores.length);
 
@@ -43,10 +70,8 @@
   let searchTimeout: ReturnType<typeof setTimeout>;
 
   onMount(() => {
-    // Si pas de données SSR, charger les enseignes
-    if (stores.length === 0) {
-      loadStores();
-    }
+    // Toujours charger les enseignes pour obtenir la pagination correcte
+    loadStores();
   });
 
   async function loadStores() {
@@ -136,6 +161,7 @@
 
   function goToPage(page: number) {
     currentPage = page;
+    updateUrlWithPage(page);
     loadStores();
   }
 
@@ -191,27 +217,14 @@
         {/each}
       </div>
 
-      {#if totalPages > 1}
-        <div class="stores__pagination">
-          <Button
-            variant="secondary"
-            label="← Précédent"
-            onClick={previousPage}
-            disabled={currentPage === 0}
-          />
-
-          <div class="stores__pagination-info">
-            Page {currentPage + 1} sur {totalPages}
-          </div>
-
-          <Button
-            variant="secondary"
-            label="Suivant →"
-            onClick={nextPage}
-            disabled={currentPage >= totalPages - 1}
-          />
-        </div>
-      {/if}
+      <!-- Pagination -->
+      <Pagination
+        {currentPage}
+        {totalPages}
+        totalItems={totalStores}
+        itemLabel="enseigne"
+        onPageChange={goToPage}
+      />
     </div>
   {/if}
 </div>

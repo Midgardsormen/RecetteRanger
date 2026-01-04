@@ -2,12 +2,13 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { RecipeDrawer } from '../recipe-drawer';
-  import { Card, Button, ConfirmModal, PageHero, Badge, IconButton, FilterGroup, AuthorLink } from '../../components/ui';
+  import { Card, Button, ConfirmModal, PageHero, Badge, IconButton, FilterGroup, AuthorLink, Pagination } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Recipe } from '../../types/recipe.types';
   import { RecipeCategory, RecipeCategoryLabels } from '../../types/recipe.types';
   import { UserRole } from '../../types/user.types';
-  import { BookOpen, Clock, Flame, Carrot, Pencil, Trash2 } from 'lucide-svelte';
+  import { BookOpen, Clock, Flame, Carrot, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-svelte';
+  import { getPageRange, hasPreviousPage, hasNextPage } from '../../utils/pagination.utils';
 
   // Recevoir les données du SSR
   let { recipes: initialRecipes = [], user = null }: { recipes?: Recipe[], user?: any } = $props();
@@ -16,8 +17,35 @@
   let loading = $state(false);
   let error = $state('');
 
+  // Récupérer la page depuis l'URL
+  function getPageFromUrl(): number {
+    if (typeof window === 'undefined') return 0;
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page') || '1', 10);
+    return Math.max(0, page - 1);
+  }
+
+  // Mettre à jour l'URL avec la page courante
+  function updateUrlWithPage(page: number) {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const displayPage = page + 1;
+
+    if (displayPage === 1) {
+      params.delete('page');
+    } else {
+      params.set('page', displayPage.toString());
+    }
+
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname;
+
+    window.history.pushState({}, '', newUrl);
+  }
+
   // Pagination
-  let currentPage = $state(0);
+  let currentPage = $state(getPageFromUrl());
   let totalPages = $state(0);
   let totalRecipes = $state(initialRecipes.length);
 
@@ -40,10 +68,8 @@
   let searchTimeout: ReturnType<typeof setTimeout>;
 
   onMount(() => {
-    // Si pas de données SSR, charger les recettes
-    if (recipes.length === 0) {
-      loadRecipes();
-    }
+    // Toujours charger les recettes pour obtenir la pagination correcte
+    loadRecipes();
   });
 
   async function loadRecipes() {
@@ -63,7 +89,7 @@
       const result = await apiService.searchRecipes(searchParams);
       recipes = result.data || result.items || [];
       totalRecipes = result.pagination?.total || recipes.length;
-      totalPages = result.pagination?.totalPages || Math.ceil(totalRecipes / 20);
+      totalPages = result.pagination?.totalPages || Math.ceil(totalRecipes / 10);
     } catch (err: any) {
       error = err.message || 'Erreur lors du chargement des recettes';
       recipes = [];
@@ -142,6 +168,7 @@
 
   function goToPage(page: number) {
     currentPage = page;
+    updateUrlWithPage(page);
     loadRecipes();
   }
 
@@ -314,41 +341,13 @@
     </div>
 
     <!-- Pagination -->
-    {#if totalPages > 1}
-      <div class="recipes__pagination">
-        <Button
-          variant="secondary"
-          onclick={previousPage}
-          disabled={currentPage === 0}
-        >
-          ← Précédent
-        </Button>
-
-        <div class="recipes__pagination-pages">
-          {#each Array(totalPages) as _, i}
-            <button
-              class="recipes__pagination-page"
-              class:recipes__pagination-page--active={i === currentPage}
-              onclick={() => goToPage(i)}
-            >
-              {i + 1}
-            </button>
-          {/each}
-        </div>
-
-        <Button
-          variant="secondary"
-          onclick={nextPage}
-          disabled={currentPage >= totalPages - 1}
-        >
-          Suivant →
-        </Button>
-      </div>
-
-      <p class="recipes__pagination-info">
-        Page {currentPage + 1} sur {totalPages} • {totalRecipes} recette{totalRecipes > 1 ? 's' : ''}
-      </p>
-    {/if}
+    <Pagination
+      {currentPage}
+      {totalPages}
+      totalItems={totalRecipes}
+      itemLabel="recette"
+      onPageChange={goToPage}
+    />
   {/if}
 </div>
 

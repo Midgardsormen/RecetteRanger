@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { MenuDrawer } from '../menu-drawer';
-  import { Card, Button, ConfirmModal, PageHero, Badge, IconButton, FilterGroup } from '../../components/ui';
+  import { Card, Button, ConfirmModal, PageHero, Badge, IconButton, FilterGroup, Pagination } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Menu } from '../../types/menu.types';
   import { UserRole } from '../../types/user.types';
@@ -15,8 +15,35 @@
   let loading = $state(false);
   let error = $state('');
 
+  // Récupérer la page depuis l'URL
+  function getPageFromUrl(): number {
+    if (typeof window === 'undefined') return 0;
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page') || '1', 10);
+    return Math.max(0, page - 1);
+  }
+
+  // Mettre à jour l'URL avec la page courante
+  function updateUrlWithPage(page: number) {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const displayPage = page + 1;
+
+    if (displayPage === 1) {
+      params.delete('page');
+    } else {
+      params.set('page', displayPage.toString());
+    }
+
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname;
+
+    window.history.pushState({}, '', newUrl);
+  }
+
   // Pagination
-  let currentPage = $state(0);
+  let currentPage = $state(getPageFromUrl());
   let totalPages = $state(0);
   let totalMenus = $state(initialMenus.length);
 
@@ -38,9 +65,8 @@
   let searchTimeout: ReturnType<typeof setTimeout>;
 
   onMount(() => {
-    if (menus.length === 0) {
-      loadMenus();
-    }
+    // Toujours charger les menus pour obtenir la pagination correcte
+    loadMenus();
   });
 
   async function loadMenus() {
@@ -59,7 +85,7 @@
       const result = await apiService.searchMenus(searchParams);
       menus = result.data || result.items || [];
       totalMenus = result.pagination?.total || menus.length;
-      totalPages = result.pagination?.totalPages || Math.ceil(totalMenus / 20);
+      totalPages = result.pagination?.totalPages || Math.ceil(totalMenus / 10);
     } catch (err: any) {
       error = err.message || 'Erreur lors du chargement des menus';
       menus = [];
@@ -138,6 +164,7 @@
 
   function goToPage(page: number) {
     currentPage = page;
+    updateUrlWithPage(page);
     loadMenus();
   }
 
@@ -271,39 +298,13 @@
 
     <!-- Pagination -->
     {#if totalPages > 1}
-      <div class="menus__pagination">
-        <Button
-          variant="secondary"
-          onclick={previousPage}
-          disabled={currentPage === 0}
-        >
-          ← Précédent
-        </Button>
-
-        <div class="menus__pagination-pages">
-          {#each Array(totalPages) as _, i}
-            <button
-              class="menus__pagination-page"
-              class:menus__pagination-page--active={i === currentPage}
-              onclick={() => goToPage(i)}
-            >
-              {i + 1}
-            </button>
-          {/each}
-        </div>
-
-        <Button
-          variant="secondary"
-          onclick={nextPage}
-          disabled={currentPage >= totalPages - 1}
-        >
-          Suivant →
-        </Button>
-      </div>
-
-      <p class="menus__pagination-info">
-        Page {currentPage + 1} sur {totalPages} • {totalMenus} menu{totalMenus > 1 ? 's' : ''}
-      </p>
+      <Pagination
+        {currentPage}
+        {totalPages}
+        totalItems={totalMenus}
+        itemLabel="menu"
+        onPageChange={goToPage}
+      />
     {/if}
   {/if}
 </div>
