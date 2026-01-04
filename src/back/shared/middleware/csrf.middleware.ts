@@ -78,6 +78,15 @@ export class CsrfMiddleware implements NestMiddleware {
       return next();
     }
 
+    // ✅ skip CSRF pour toutes les routes API (sauf auth)
+    // Les routes API utilisent JWT pour l'authentification, pas de formulaires HTML
+    if (path.startsWith('/api/') && !path.startsWith('/api/auth/')) {
+      if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
+        console.log('[CSRF] Skipped for API route:', req.method, path);
+      }
+      return next();
+    }
+
     // Debug
     if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
       console.log('[CSRF] Request:', req.method, path);
