@@ -13,6 +13,7 @@
     title,
     subtitle,
     metadata = LIST_ITEM_DEFAULTS.metadata,
+    header,
     badge,
     footer,
     onEdit,
@@ -35,6 +36,7 @@
   class="list-item"
   class:list-item--clickable={!!onClick}
   class:list-item--has-footer={!!footer}
+  class:list-item--has-header={!!header}
   class:list-item--checked={checkable && checked}
   class:list-item--column={layout === 'column'}
   class:list-item--compact={size === 'compact'}
@@ -42,6 +44,19 @@
   role={onClick ? 'button' : undefined}
   tabindex={onClick ? 0 : undefined}
 >
+  <!-- Header -->
+  {#if header}
+    <div class="list-item__header">
+      {@render header()}
+
+      {#if badge}
+        <div class="list-item__badge-slot">
+          {@render badge()}
+        </div>
+      {/if}
+    </div>
+  {/if}
+
   <div class="list-item__main">
     <!-- Drag handle (if draggable) -->
     {#if draggable && dragHandleSlot}
@@ -113,10 +128,10 @@
     </div>
 
     <!-- Badge and Actions side column -->
-    {#if badge || onEdit || onDelete || onDuplicate}
+    {#if (badge && !header) || onEdit || onDelete || onDuplicate}
       <div class="list-item__side">
-        <!-- Badge -->
-        {#if badge}
+        <!-- Badge (uniquement si pas de header) -->
+        {#if badge && !header}
           <div class="list-item__badge-slot">
             {@render badge()}
           </div>
@@ -218,9 +233,27 @@
       .list-item__side {
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         align-self: stretch;
       }
+    }
+  }
+
+  .list-item__header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    border-bottom: $border-width-thin solid $color-border-primary;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: $spacing-sm $spacing-base;
+    }
+
+    // Si le header a du contenu en plus du badge, utiliser space-between
+    &:has(> :not(.list-item__badge-slot)) {
+      justify-content: space-between;
     }
   }
 
@@ -234,6 +267,15 @@
 
     @media (min-width: $breakpoint-sm) {
       padding: $spacing-base;
+    }
+  }
+
+  // Ajuster le padding du main si on a un header
+  .list-item--has-header .list-item__main {
+    padding-top: $spacing-sm;
+
+    @media (min-width: $breakpoint-sm) {
+      padding-top: $spacing-sm;
     }
   }
 
@@ -392,6 +434,8 @@
 
   .list-item__footer {
     display: flex;
+    justify-content: flex-end;
+    align-items: center;
     padding: $spacing-sm $spacing-md $spacing-md $spacing-md;
     border-top: $border-width-thin solid $color-border-primary;
     width: 100%;

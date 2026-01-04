@@ -2,7 +2,7 @@
   import type { MealPlanDay, MealSlotConfig } from '../../../../../types/meal-plan.types';
   import { MealSlotColors } from '../../../../../types/meal-plan.types';
   import { Badge, ListItem, IconButton, Carousel } from '../../../../../components/ui';
-  import { Copy } from 'lucide-svelte';
+  import { Copy, Plus, Eraser } from 'lucide-svelte';
   import { startOfWeek, addDays, isSameDay, formatDayName } from '../../../../../utils/date-range.utils';
   import { getMealPlanForDate, sortMealItems } from '../utils';
 
@@ -15,6 +15,7 @@
     onMealDelete?: (item: any) => void;
     onMealDuplicate?: (item: any) => void;
     onDayDuplicate?: (date: Date) => void;
+    onDayDelete?: (date: Date) => void;
   }
 
   let {
@@ -25,7 +26,8 @@
     onMealEdit,
     onMealDelete,
     onMealDuplicate,
-    onDayDuplicate
+    onDayDuplicate,
+    onDayDelete
   }: Props = $props();
 
   const dates = $derived.by(() => {
@@ -34,6 +36,16 @@
   });
 
   const today = new Date();
+
+  function handleItemClick(item: any) {
+    if (item.menu) {
+      window.location.href = `/menus/${item.menu.id}`;
+    } else if (item.recipe) {
+      window.location.href = `/recettes/${item.recipe.id}`;
+    } else if (item.ingredient) {
+      window.location.href = `/ingredients/${item.ingredient.id}`;
+    }
+  }
 
   // Index du jour actif pour le carousel
   const activeIndex = $derived(dates.findIndex(date => isSameDay(date, currentDate)));
@@ -52,26 +64,53 @@
         class:week-view__day--today={isToday}
         class:week-view__day--selected={isSelected}
         class:week-view__day--has-meals={mealPlan && mealPlan.items.length > 0}
-        onclick={() => onDateClick?.(date)}
       >
         <div class="week-view__day-header">
           <div class="week-view__day-number">
             <span class="week-view__day-name">{formatDayName(date)}</span>
             {date.getDate()}
           </div>
-          {#if mealPlan && mealPlan.items.length > 0 && onDayDuplicate}
+          <div class="week-view__day-header-actions">
             <IconButton
               variant="ghost"
-              size="small"
+              size="medium"
               onclick={(e: MouseEvent) => {
                 e.stopPropagation();
-                onDayDuplicate?.(date);
+                onDateClick?.(date);
               }}
-              ariaLabel="Dupliquer ce jour"
+              ariaLabel="Ajouter un repas"
             >
-              <Copy size={16} />
+              <Plus size={18} />
             </IconButton>
-          {/if}
+            {#if mealPlan && mealPlan.items.length > 0}
+              {#if onDayDuplicate}
+                <IconButton
+                  variant="ghost"
+                  size="medium"
+                  onclick={(e: MouseEvent) => {
+                    e.stopPropagation();
+                    onDayDuplicate?.(date);
+                  }}
+                  ariaLabel="Dupliquer ce jour"
+                >
+                  <Copy size={18} />
+                </IconButton>
+              {/if}
+              {#if onDayDelete}
+                <IconButton
+                  variant="danger"
+                  size="medium"
+                  onclick={(e: MouseEvent) => {
+                    e.stopPropagation();
+                    onDayDelete?.(date);
+                  }}
+                  ariaLabel="Vider ce jour"
+                >
+                  <Eraser size={18} />
+                </IconButton>
+              {/if}
+            {/if}
+          </div>
         </div>
 
         {#if mealPlan}
@@ -86,8 +125,11 @@
                 onEdit={() => onMealEdit?.(item)}
                 onDelete={() => onMealDelete?.(item)}
                 onDuplicate={() => onMealDuplicate?.(item)}
-                onClick={() => onMealEdit?.(item)}
+                onClick={() => handleItemClick(item)}
               >
+                {#snippet header()}
+                {/snippet}
+
                 {#snippet badge()}
                   {#if item.isExceptional && item.customSlotName}
                     <Badge variant="warning" size="xs">{item.customSlotName}</Badge>
@@ -118,7 +160,6 @@
       padding: $spacing-sm;
       border: $border-width-base solid $color-border-primary;
       border-radius: $radius-lg;
-      cursor: pointer;
       transition: all $transition-base;
       background: $color-background-primary;
       display: flex;
@@ -130,12 +171,6 @@
         min-height: 180px;
         padding: $spacing-md;
         border-radius: $radius-xl;
-      }
-
-      &:hover {
-        border-color: $brand-primary;
-        box-shadow: 0 4px 12px rgba($brand-primary, 0.15);
-        transform: translateY(-2px);
       }
 
       // Modifier: today
@@ -188,6 +223,13 @@
       @media (min-width: $breakpoint-md) {
         font-size: $font-size-base;
       }
+    }
+
+    // Element: day-header-actions
+    &__day-header-actions {
+      display: flex;
+      gap: $spacing-2xs;
+      align-items: center;
     }
 
     // Element: meals

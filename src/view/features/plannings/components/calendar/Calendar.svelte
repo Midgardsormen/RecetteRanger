@@ -20,6 +20,7 @@
     onMealDelete?: (item: any) => void;
     onMealDuplicate?: (item: any) => void;
     onDayDuplicate?: (date: Date) => void;
+    onDayDelete?: (date: Date) => void;
     showHeader?: boolean;
   }
 
@@ -35,6 +36,7 @@
     onMealDelete,
     onMealDuplicate,
     onDayDuplicate,
+    onDayDelete,
     showHeader = true
   }: Props = $props();
 
@@ -151,6 +153,7 @@
         {onMealDelete}
         {onMealDuplicate}
         {onDayDuplicate}
+        {onDayDelete}
       />
     {:else if view === 'week'}
       <WeekView
@@ -162,6 +165,7 @@
         {onMealDelete}
         {onMealDuplicate}
         {onDayDuplicate}
+        {onDayDelete}
       />
     {:else}
       <MonthView
@@ -173,6 +177,7 @@
         {onMealDelete}
         {onMealDuplicate}
         {onDayDuplicate}
+        {onDayDelete}
       />
     {/if}
   </div>

@@ -30,10 +30,15 @@
   let showDuplicateSingleMealDrawer = $state(false);
   let sourceMealForDuplication = $state<any>(null);
 
-  // Modal de confirmation de suppression
+  // Modal de confirmation de suppression d'un item
   let isConfirmModalOpen = $state(false);
   let mealToDelete = $state<any>(null);
   let deleteError = $state<string>('');
+
+  // Modal de confirmation de suppression d'un jour complet
+  let isConfirmDayDeleteModalOpen = $state(false);
+  let dayToDelete = $state<Date | null>(null);
+  let deleteDayError = $state<string>('');
 
   // Charger les données
   async function loadData() {
@@ -152,6 +157,43 @@
     loadData(); // Recharger les données
   }
 
+  function handleDayDelete(date: Date) {
+    dayToDelete = date;
+    isConfirmDayDeleteModalOpen = true;
+    deleteDayError = '';
+  }
+
+  function cancelDayDelete() {
+    dayToDelete = null;
+    isConfirmDayDeleteModalOpen = false;
+    deleteDayError = '';
+  }
+
+  async function confirmDayDelete() {
+    if (!dayToDelete) return;
+
+    // Trouver le MealPlanDay correspondant à cette date
+    const mealDay = mealPlanDays.find(d => new Date(d.date).toDateString() === dayToDelete.toDateString());
+
+    if (!mealDay || mealDay.items.length === 0) {
+      cancelDayDelete();
+      return;
+    }
+
+    // Supprimer tous les items de ce jour
+    try {
+      await Promise.all(
+        mealDay.items.map(item => deleteMealPlanItem(item.id))
+      );
+      await loadData(); // Recharger les données
+      isConfirmDayDeleteModalOpen = false;
+      dayToDelete = null;
+      deleteDayError = '';
+    } catch (err: any) {
+      deleteDayError = err.message || 'Erreur lors de la suppression du jour';
+    }
+  }
+
   // Calculer les dates à afficher selon la vue
   let dates = $derived.by(() => {
     if (view === 'day') {
@@ -234,6 +276,7 @@
         onMealDelete={openDeleteConfirmation}
         onMealDuplicate={handleMealDuplicate}
         onDayDuplicate={handleDuplicateClick}
+        onDayDelete={handleDayDelete}
       />
     {/if}
   </div>
@@ -273,7 +316,7 @@
   onSuccess={handleSingleMealDuplicateSuccess}
 />
 
-<!-- Modal de confirmation de suppression -->
+<!-- Modal de confirmation de suppression d'un item -->
 <ConfirmModal
   isOpen={isConfirmModalOpen}
   title="Supprimer le repas"
@@ -283,6 +326,18 @@
   onConfirm={confirmDelete}
   onCancel={cancelDelete}
   variant={deleteError ? 'danger' : 'warning'}
+/>
+
+<!-- Modal de confirmation de suppression d'un jour complet -->
+<ConfirmModal
+  isOpen={isConfirmDayDeleteModalOpen}
+  title="Vider ce jour"
+  message={deleteDayError || "Êtes-vous sûr de vouloir supprimer tous les repas de ce jour ? Cette action est irréversible."}
+  confirmLabel="Vider"
+  cancelLabel="Annuler"
+  onConfirm={confirmDayDelete}
+  onCancel={cancelDayDelete}
+  variant={deleteDayError ? 'danger' : 'warning'}
 />
 
 <style lang="scss">

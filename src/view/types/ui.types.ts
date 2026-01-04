@@ -493,6 +493,7 @@ export interface ListItemProps {
   title: string;
   subtitle?: string;
   metadata?: string[];
+  header?: Snippet;
   badge?: Snippet;
   footer?: Snippet;
   onEdit?: () => void;

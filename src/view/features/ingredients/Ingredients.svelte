@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Layout from '../../layouts/Layout.svelte';
   import { IngredientDrawer } from '../ingredient-drawer';
-  import { ListItem, Button, ConfirmModal, Badge, Tag, PageHero, FilterGroup } from '../../components/ui';
+  import { ListItem, Button, ConfirmModal, Badge, Tag, PageHero, FilterGroup, Pagination } from '../../components/ui';
   import { apiService } from '../../services/api.service';
   import type { Ingredient, SearchIngredientsDto } from '../../types/ingredient.types';
   import { StoreAisle, Unit, StoreAisleLabels, StoreAisleColors, UnitLabels } from '../../types/ingredient.types';
@@ -16,8 +16,35 @@
   let loading = $state(false);
   let error = $state('');
 
+  // Récupérer la page depuis l'URL
+  function getPageFromUrl(): number {
+    if (typeof window === 'undefined') return 0;
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page') || '1', 10);
+    return Math.max(0, page - 1);
+  }
+
+  // Mettre à jour l'URL avec la page courante
+  function updateUrlWithPage(page: number) {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const displayPage = page + 1;
+
+    if (displayPage === 1) {
+      params.delete('page');
+    } else {
+      params.set('page', displayPage.toString());
+    }
+
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname;
+
+    window.history.pushState({}, '', newUrl);
+  }
+
   // Pagination
-  let currentPage = $state(0);
+  let currentPage = $state(getPageFromUrl());
   let totalPages = $state(0);
   let totalIngredients = $state(initialIngredients.length);
 
@@ -40,10 +67,8 @@
   let searchTimeout: ReturnType<typeof setTimeout>;
 
   onMount(() => {
-    // Si pas de données SSR, charger les ingrédients
-    if (ingredients.length === 0) {
-      loadIngredients();
-    }
+    // Toujours charger les ingrédients pour obtenir la pagination correcte
+    loadIngredients();
   });
 
   async function loadIngredients() {
@@ -142,6 +167,7 @@
 
   function goToPage(page: number) {
     currentPage = page;
+    updateUrlWithPage(page);
     loadIngredients();
   }
 
@@ -220,6 +246,9 @@
           onEdit={isAdmin() ? () => openDrawer(ingredient) : undefined}
           onDelete={isAdmin() ? () => openDeleteConfirmation(ingredient.id) : undefined}
         >
+          {#snippet header()}
+          {/snippet}
+
           {#snippet children()}
             <h3 class="ingredient-title">{ingredient.label}</h3>
           {/snippet}
@@ -249,43 +278,13 @@
     </div>
 
     <!-- Pagination -->
-    {#if totalPages > 1}
-      <div class="ingredients__pagination">
-        <Button
-          variant="secondary"
-          onclick={previousPage}
-          disabled={currentPage === 0}
-          size="small"
-        >
-          ← Précédent
-        </Button>
-
-        <div class="ingredients__pagination-pages">
-          {#each Array(totalPages) as _, i}
-            <button
-              class="ingredients__pagination-page"
-              class:ingredients__pagination-page--active={i === currentPage}
-              onclick={() => goToPage(i)}
-            >
-              {i + 1}
-            </button>
-          {/each}
-        </div>
-
-        <Button
-          variant="secondary"
-          onclick={nextPage}
-          disabled={currentPage >= totalPages - 1}
-          size="small"
-        >
-          Suivant →
-        </Button>
-      </div>
-
-      <p class="ingredients__pagination-info">
-        Page {currentPage + 1} sur {totalPages} • {totalIngredients} ingrédient{totalIngredients > 1 ? 's' : ''}
-      </p>
-    {/if}
+    <Pagination
+      {currentPage}
+      {totalPages}
+      totalItems={totalIngredients}
+      itemLabel="ingrédient"
+      onPageChange={goToPage}
+    />
   {/if}
 </div>
 
